@@ -78,7 +78,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [x] Fase 1a — Despliegue temprano en Railway: Postgres, web y worker rastreando en produccion desde el primer minuto, por la urgencia pedida por el usuario (acerca C2, C11) (#3)
 - [x] Fase 2 — Motor de contraste: agrupacion entre medios, extraccion de afirmaciones, conectores de datos reales, veredictos con evidencia, comparativa de cobertura y omisiones, fiabilidad por medio (acerca C4, C5, C6) (#4)
 - [x] Fase 2b — Temas, sintesis y analisis propio: agrupacion por tema (articulos relacionados con distinto enfoque), sintesis por medio (que dice cada uno, en que coinciden, en que difieren), valoracion con todos los datos, piezas propias de analisis y opinion como seccion principal generadas con IA y con enlazado interno; la portada pasa a ser "como cuentan los medios cada tema" (peticion del usuario 2026-10-18; acerca C6, C12, C13) (#6; generacion real NO VERIFICADO sin ANTHROPIC_API_KEY)
-- [ ] Fase 3 — Administracion e investigaciones: panel con balance, cola de revision, gestion de fuentes, investigaciones a demanda (acerca C8)
+- [x] Fase 3 — Administracion e investigaciones: panel con balance, cola de revision, gestion de fuentes, investigaciones a demanda (acerca C8) (#8; gestion de fuentes desde el panel queda pendiente)
 - [ ] Fase 4 — Distribucion: generadores y adaptadores de redes sociales, RSS, sitemap y SEO, interfaz en ingles (acerca C9, C10)
 - [ ] Fase 5 — Despliegue en Railway: Postgres, web, worker programado, medido en produccion (acerca C2, C11)
 - [ ] Fase 6 — Marca nosmienten.com: identidad sobria y neutral (logotipo, favicon, imagen social, cabecera), dominio propio en Railway (peticion del usuario 2026-10-18; acerca C9, C11)

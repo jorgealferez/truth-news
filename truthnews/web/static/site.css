@@ -1,15 +1,18 @@
-/* Tema claro fijo: un periodico se lee sobre papel (peticion del usuario, 2026-10-18). */
-:root { color-scheme: light; --ink:#1a1a1a; --muted:#5b5b5b; --line:#e3e0d8; --paper:#fdfcf8; --accent:#b3001b; --soft:#f3efe4; }
+/* Tema claro fijo: un periodico se lee sobre papel (peticion del usuario, 2026-10-18).
+   Marca nosmienten.com (ADR 0011): tinta y ambar, fuera de los colores asociados a partidos. --brand solo
+   para superficies y barras; --accent es su version oscura para texto (contraste >= 4.5:1 sobre papel). */
+:root { color-scheme: light; --ink:#14161b; --muted:#595959; --line:#e3e0d8; --paper:#fbfaf6; --brand:#e8a317; --accent:#8a5a00; --soft:#f3efe4; }
 * { box-sizing: border-box; }
 body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.5 Georgia, "Times New Roman", serif; }
 a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; }
 .wrap { max-width:1180px; margin:0 auto; padding:0 16px; }
-.masthead { border-bottom:3px double var(--ink); }
+.masthead { border-bottom:3px solid var(--ink); box-shadow:0 3px 0 var(--brand); }
 .top { display:flex; justify-content:space-between; font:13px system-ui, sans-serif; color:var(--muted); padding-top:8px; }
 .langs a { margin-left:8px; } .langs a.on { color:var(--accent); font-weight:700; }
-.brand { text-align:center; padding:12px 16px 4px; }
-.logo { font-size:clamp(34px, 7vw, 64px); font-weight:900; letter-spacing:-1px; }
-.tagline { margin:0 0 8px; font-style:italic; color:var(--muted); }
+.brand { text-align:center; padding:14px 16px 6px; }
+.logo { display:inline-block; } .logo img { display:block; height:clamp(36px, 7vw, 60px); width:auto; max-width:100%; }
+.tagline { margin:8px 0 10px; font:500 clamp(14px, 1.8vw, 17px) system-ui, sans-serif; color:var(--muted); }
+.foot-brand { display:flex; align-items:center; gap:8px; color:var(--ink); }
 .sections { border-top:1px solid var(--line); font:600 14px system-ui, sans-serif; text-transform:uppercase; }
 .sections .wrap { display:flex; gap:18px; overflow-x:auto; padding:10px 16px; white-space:nowrap; }
 .stats { font:13px system-ui, sans-serif; color:var(--muted); padding:10px 0; border-bottom:1px solid var(--line); }
@@ -21,7 +24,7 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .kicker { margin:0; font:700 11px system-ui, sans-serif; text-transform:uppercase; color:var(--accent); letter-spacing:.04em; }
 .meta { margin:0; font:12px system-ui, sans-serif; color:var(--muted); }
 .section-block { padding:18px 0; border-bottom:1px solid var(--line); }
-.section-block h2, .page-title { font-size:26px; margin:6px 0 14px; border-left:5px solid var(--accent); padding-left:10px; }
+.section-block h2, .page-title { font-size:26px; margin:6px 0 14px; border-left:5px solid var(--brand); padding-left:10px; }
 .chips { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 16px; font:13px system-ui, sans-serif; }
 .chips a, .chips span { background:var(--soft); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
 .story { max-width:760px; margin:20px auto; } .story h1 { font-size:clamp(28px, 4.5vw, 44px); line-height:1.15; margin:8px 0; }
@@ -37,7 +40,7 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .front-grid { display:grid; grid-template-columns:3fr 1fr; gap:28px; }
 .wire { border-left:1px solid var(--line); padding-left:18px; font-size:15px; } .wire h2 { font-size:18px; margin-top:4px; }
 .scard { border-top:2px solid var(--ink); padding-top:8px; } .scard h3 { margin:4px 0; font-size:20px; line-height:1.25; }
-.scard.lead { border-top:4px solid var(--accent); margin-bottom:22px; } .scard.lead h3 { font-size:clamp(26px, 3.6vw, 38px); }
+.scard.lead { border-top:4px solid var(--brand); margin-bottom:22px; } .scard.lead h3 { font-size:clamp(26px, 3.6vw, 38px); }
 .outlets { margin:2px 0 4px; font:13px system-ui, sans-serif; color:var(--muted); }
 .count { color:var(--ink); }
 .badge { display:inline-block; font:700 11px system-ui, sans-serif; text-transform:uppercase; padding:2px 7px; border-radius:3px; margin-left:4px; color:#fff; background:#666; }
@@ -50,8 +53,8 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .sections a.hl { color:var(--accent); } .more { font:600 14px system-ui, sans-serif; }
 @media (max-width: 860px) { .front-grid, .two { grid-template-columns:1fr; } .wire { border-left:0; padding-left:0; } }
 .analysis-band { border-bottom:3px double var(--ink); padding:14px 0 20px; } .band-title { font-size:28px; margin:6px 0 12px; }
-.pcard { border-top:2px solid var(--accent); padding-top:8px; } .pcard h3 { font-size:21px; margin:4px 0; line-height:1.25; }
+.pcard { border-top:2px solid var(--brand); padding-top:8px; } .pcard h3 { font-size:21px; margin:4px 0; line-height:1.25; }
 .pcard.lead h3 { font-size:clamp(24px, 3vw, 32px); } .pcard .dek { font-size:15px; }
 .dek.big { font-size:20px; color:var(--muted); line-height:1.4; } .lead-text { color:var(--muted); max-width:800px; }
 .prose p { font-size:18px; line-height:1.65; max-width:760px; } .assessment { background:var(--soft); padding:12px 16px; }
-.opinion { border-left:4px solid var(--accent); padding-left:16px; }
+.opinion { border-left:4px solid var(--brand); padding-left:16px; }

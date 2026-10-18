@@ -139,6 +139,13 @@
       "unidad": "piezas",
       "direccion": "max",
       "objetivo": 0
+    },
+    {
+      "id": "marca_contraste_texto_min",
+      "descripcion": "Marca (ADR 0011): contraste WCAG minimo de los colores de texto de la paleta sobre el papel",
+      "unidad": "ratio",
+      "direccion": "min",
+      "objetivo": 4.5
     }
   ]
 }
