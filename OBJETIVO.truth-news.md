@@ -58,7 +58,7 @@ alcanza; el sistema nunca afirma sin fuente.
 ## Criterios de salida
 
 - [x] C1 Registro de medios — medida: `python -m truthnews sources stats` — objetivo: >= 80 medios de Espana, con los tres ambitos (nacional, autonomico, local) y las 17 comunidades autonomas cubiertas
-- [ ] C2 Ingesta real — medida: una ejecucion de `python -m truthnews crawl` contra la red real — objetivo: >= 30 feeds con respuesta valida y >= 300 articulos ingeridos, 0 URLs prohibidas por robots.txt descargadas
+- [x] C2 Ingesta real — medida: una ejecucion de `python -m truthnews crawl` contra la red real — objetivo: >= 30 feeds con respuesta valida y >= 300 articulos ingeridos, 0 URLs prohibidas por robots.txt descargadas
 - [ ] C3 Calidad del codigo — medida: `pytest --cov` y `ruff check` — objetivo: 100 % tests en verde, cobertura >= 80 %, 0 avisos de ruff
 - [ ] C4 Agrupacion entre medios — medida: precision y exhaustividad sobre el conjunto etiquetado `tests/fixtures/clusters.json` — objetivo: F1 >= 0.80
 - [ ] C5 Contraste con datos reales — medida: conectores con test de contrato (fixture) y una consulta en vivo — objetivo: >= 5 fuentes de datos (INE, Eurostat, Banco Mundial, BOE, GDELT) respondiendo en vivo
@@ -73,7 +73,7 @@ alcanza; el sistema nunca afirma sin fuente.
 
 - [x] Fase 0 — Encuadre: esta carta rellena desde la base real, ledger sembrado, primer gauntlet en VERDE (#1)
 - [x] Fase 1 — Nucleo: modelo de datos, registro de medios de Espana, crawler RSS con robots.txt, web publica segmentada, configuracion de Railway (acerca C1, C2, C3, C7, C10) (#2)
-- [ ] Fase 1a — Despliegue temprano en Railway: Postgres, web y worker rastreando en produccion desde el primer minuto, por la urgencia pedida por el usuario (acerca C2, C11)
+- [x] Fase 1a — Despliegue temprano en Railway: Postgres, web y worker rastreando en produccion desde el primer minuto, por la urgencia pedida por el usuario (acerca C2, C11) (#3)
 - [ ] Fase 2 — Motor de contraste: agrupacion entre medios, extraccion de afirmaciones, conectores de datos reales, veredictos con evidencia, comparativa de cobertura y omisiones, fiabilidad por medio (acerca C4, C5, C6)
 - [ ] Fase 3 — Administracion e investigaciones: panel con balance, cola de revision, gestion de fuentes, investigaciones a demanda (acerca C8)
 - [ ] Fase 4 — Distribucion: generadores y adaptadores de redes sociales, RSS, sitemap y SEO, interfaz en ingles (acerca C9, C10)
@@ -97,4 +97,6 @@ tal; el crawler se identifica con su User-Agent y respeta `robots.txt` y un ritm
 - 2026-10-18 (suposicion revisable): stack Python 3.12 + FastAPI + SQLAlchemy + PostgreSQL; LLM de
   Anthropic (`ANTHROPIC_API_KEY`) con modo heuristico sin clave; los servicios del holding se integran
   como adaptadores opcionales mientras falte `HOLDING_PLATFORM_API_KEY`.
+- 2026-10-18 (peticion): el producto es un **comparador** de noticias, no un agregador: contrastar entre medios y con datos globales y dar una valoracion; tema visual claro.
+- 2026-10-18 (peticion): valorar el dominio nosmienten.com para una marca solida, profesional, neutral y creible.
 - 2026-10-18 (suposicion revisable): no hay CI con runners; la pasada local del gauntlet es el veredicto.
