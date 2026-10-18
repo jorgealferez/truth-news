@@ -21,6 +21,11 @@ CASES = [
     ("La tasa de paro baja 0,3 puntos hasta el 10 %.", []),
     ("El desempleo de agosto se situó en el 6,4% en la eurozona y el 6,1% en la Unión Europea.", []),
     ("El desempleo de agosto se situó en el 6,4% en la eurozona.", [("paro", "EA", 6.4, None)]),
+    # Caso real (El Mundo, 18/10/2026): poblacion de Canada atribuida a Espana por la v2.
+    ("Canadá es el segundo más extenso del planeta, con solo unos 40 millones de habitantes.", []),
+    ("En Japón la tasa de paro se sitúa en el 2,5 %.", []),
+    ("La tasa de paro se sitúa en el 10 % mientras Turquía sufre.", []),
+    ("Tiene 49,3 millones de habitantes.", []),
     ("El PIB crece un 0,7 % este año.", []),  # sin trimestre: no es la serie trimestral
 ]
 

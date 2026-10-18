@@ -55,6 +55,12 @@ def indicators() -> dict:
 
 
 @lru_cache(maxsize=1)
+def _world() -> dict[str, list[str]]:
+    data = yaml.safe_load((REGISTRY_DIR / "world.yaml").read_text(encoding="utf-8"))
+    return {iso: [normalize(n) for n in names] for iso, names in data.items()}
+
+
+@lru_cache(maxsize=1)
 def _region_names() -> list[str]:
     names = []
     for c in countries().values():
@@ -160,7 +166,7 @@ def _word_in(needle: str, haystack: str) -> bool:
     return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", haystack) is not None
 
 
-def _geo(sentence_n: str, default: str) -> str | None:
+def _geo(sentence_n: str, default: str, explicit_only: bool = False) -> str | None:
     named = {
         iso
         for iso, names in indicators()["geo_names"].items()
@@ -168,8 +174,17 @@ def _geo(sentence_n: str, default: str) -> str | None:
     }
     if len(named) > 1:
         return None  # varios territorios en la frase: no se adivina a cual se refiere la cifra
+    others = {
+        iso
+        for iso, names in _world().items()
+        if iso not in named and any(_word_in(n, sentence_n) for n in names)
+    }
+    if others:
+        return None  # nombra un pais del que no tenemos serie (o ademas de otro): no se atribuye
     if named:
         return named.pop()
+    if explicit_only:
+        return None
     if any(_word_in(normalize(m), sentence_n) for m in indicators()["foreign_markers"]):
         return None  # habla de otro pais sin nombrarlo: no se atribuye al del medio
     return default if default not in ("XX", "") else None
@@ -222,7 +237,7 @@ def extract(
                     break
             if value is None:
                 continue
-            geo = _geo(sn, default_geo)
+            geo = _geo(sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False))
             if geo is None:
                 continue
             direction = "sube" if _UP.search(verb) else "baja" if _DOWN.search(verb) else None

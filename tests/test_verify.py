@@ -32,7 +32,7 @@ def claim(value, indicator="paro", direction=None, unit="pct", geo="ES"):
 def test_level_verdicts(claimed, official, verdict):
     r = Verifier(lambda s, g, label: obs(official)).judge(claim(claimed))
     assert r.verdict == verdict and r.observations and "dato oficial" in r.explanation
-    assert r.method.endswith("/v2")
+    assert r.method.endswith("/v3")
 
 
 def test_direction_misleading_and_consistent():
@@ -52,12 +52,12 @@ def test_absolute_values():
 def test_no_source_stale_and_failing_source():
     assert Verifier(lambda s, g, label: None).judge(claim(10)).verdict == "sin-datos"
     stale = Verifier(lambda s, g, label: obs(10.0, period="2019-01")).judge(claim(10))
-    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v2"
+    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v3"
 
     def boom(s, g, label):
         raise RuntimeError("caida")
 
-    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v2"
+    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v3"
 
 
 def test_cited_period_is_compared_with_that_period():
@@ -74,7 +74,7 @@ def test_cited_period_is_compared_with_that_period():
     up = ClaimCandidate("sube al 4,3 % en agosto", "inflacion", "ES", 4.3, "pct", "baja", "2026-08")
     assert v.judge(up).verdict == "enganoso"  # julio 3,58 -> agosto 4,28: sube
     gone = v.judge(ClaimCandidate("x", "inflacion", "ES", 4.3, "pct", None, "2020-01"))
-    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v2"
+    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v3"
     assert latest.at("2026-07").previous is None
 
 

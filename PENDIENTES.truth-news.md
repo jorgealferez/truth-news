@@ -26,12 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 2b — Temas, sintesis por medio, valoracion con datos y piezas propias de analisis y opinion con IA (portada: como cuentan los medios cada tema) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] Medido: temas por heuristica no sirven (lexico y entidades encadenan historias sin relacion) -> temas por IA
-  - [x] Cliente IA (salida estructurada, cache de sistema, fallbacks) probado con el SDK oficial y transporte simulado
-  - [x] Dossier verificado, comprobacion de fundamento (cifras, medios, historias) y piezas analisis/opinion
-  - [x] Web: /analisis (seccion principal), /tema/{id}, /verificaciones; portada con banda de analisis
-  - [ ] Generacion real: NO VERIFICADO hasta que el usuario configure ANTHROPIC_API_KEY en Railway
+- [ ] Correccion urgente (v3): poblacion de Canada atribuida a Espana en produccion; nomenclator mundial, poblacion con pais explicito, retirada con nota publica (ADR 0009) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
@@ -43,7 +38,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Bloqueado
 
-(vacio)
+- [ ] Verificar en produccion la generacion real de temas y piezas (C12, C13) — BLOQUEADO: se necesita una credencial que el entorno no concede (ANTHROPIC_API_KEY en el servicio worker de Railway); pedida al usuario el 2026-10-18. Opciones: (a) el usuario la anade en Railway y el siguiente ciclo la usa; (b) usar el servicio `ai` del holding con HOLDING_PLATFORM_API_KEY
 
 ## Hecho
 
@@ -52,3 +47,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [x] Fase 1a — Despliegue temprano en Railway: produccion rastreando cada 30 min (#3)
 - [x] Fase 2 — Motor de contraste: comparador por historia, datos oficiales, veredictos trazables (#4)
 - [x] Correccion (Fase 2): veredictos contra el periodo citado, eurozona != UE, correccion publica (#5)
+- [x] Fase 2b — Temas, sintesis por medio y piezas propias de analisis y opinion con IA (#6); generacion real pendiente de clave (ver Bloqueado)

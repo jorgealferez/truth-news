@@ -89,12 +89,18 @@ def test_reverify_outdated_methods_and_note_corrections(session, world):
     pipeline.assign_stories(session)
     pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(10.0))
     ver = session.scalars(select(Verification)).one()
-    assert ver.verdict == "falso" and ver.method.endswith("/v2")
+    assert ver.verdict == "falso" and ver.method.endswith("/v3")
     assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {}  # ya en la version vigente
     ver.method = "nivel"  # veredicto de la version anterior del metodo
     session.flush()
     assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {"falso->verdadero": 1}
     assert ver.verdict == "verdadero" and "Corregido el" in ver.explanation and len(ver.evidence) == 1
+    # Una afirmacion que ya no es atribuible con las reglas vigentes se retira con nota publica.
+    ver.claim.text = "Canadá tiene una tasa de paro que se sitúa en el 12,5 %."
+    ver.method = "nivel/v2"
+    session.flush()
+    assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {"verdadero->sin-datos": 1}
+    assert ver.method.startswith("retirada/") and "retirada" in ver.explanation and not ver.evidence
 
 
 def test_run_and_c6_invariant(session, world, monkeypatch):
