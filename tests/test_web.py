@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
-from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Story, Verification
+from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Piece, Story, Topic, Verification
 from truthnews.web.app import _ago, create_app
 
 
@@ -205,6 +205,119 @@ def test_comparator_pages(client, session):
     assert "Verdadero" in client.get("/metodologia").text
     assert "Falso 1" in client.get("/medio/otro").text
     assert "2 medios" in client.get(f"/noticia/{a2.id}").text
+
+
+def test_analysis_topic_and_verifications_pages(client, session):
+    now = datetime.now(UTC)
+    tp = Topic(
+        title="Protestas en Francia",
+        category="internacional",
+        country="ES",
+        first_seen=now,
+        last_seen=now,
+        n_stories=1,
+        n_outlets=1,
+    )
+    session.add(tp)
+    session.flush()
+    st = Story(
+        title="Historia del tema",
+        category="internacional",
+        country="ES",
+        first_seen=now,
+        last_seen=now,
+        n_articles=1,
+        n_outlets=1,
+        topic_id=tp.id,
+    )
+    session.add(st)
+    synth = {
+        "que_dice_cada_medio": [
+            {"medio_slug": "medio", "sintesis": "Cuenta el balance", "enfoque": "Cifras"},
+            {"medio_slug": "desconocido", "sintesis": "x", "enfoque": "y"},
+        ],
+        "coincidencias": ["Hubo detenidos"],
+        "diferencias": [{"aspecto": "Cifra", "detalle": "2.000 frente a 2.400"}],
+        "datos": [{"dato": "2.000 detenidos", "fuente": "Medio Uno"}],
+        "valoracion": {
+            "conclusion": "Cobertura coherente",
+            "confianza": "media",
+            "lo_que_no_sabemos": ["El total"],
+        },
+        "historias_citadas": [],
+    }
+    session.add_all(
+        [
+            Piece(
+                topic_id=tp.id,
+                kind="analisis",
+                status="publicada",
+                title="Análisis de Francia",
+                dek="Entradilla A",
+                body=[{"subtitulo": "Qué pasó", "parrafos": ["Párrafo de análisis"]}],
+                synthesis=synth,
+                grounding={},
+                model="claude-opus-5-5",
+                input_hash="h",
+                usage={},
+            ),
+            Piece(
+                topic_id=tp.id,
+                kind="opinion",
+                status="publicada",
+                title="Contar bien",
+                dek="Conclusión",
+                body=[{"subtitulo": "", "parrafos": ["Párrafo de opinión"]}],
+                synthesis={},
+                grounding={},
+                model="claude-opus-5-5",
+                input_hash="h",
+                usage={},
+            ),
+            Piece(
+                topic_id=tp.id,
+                kind="analisis",
+                status="revision",
+                title="Pieza no publicada",
+                dek="x",
+                body=[],
+                synthesis={},
+                grounding={"ok": False},
+                model="m",
+                input_hash="h2",
+                usage={},
+            ),
+        ]
+    )
+    session.commit()
+    home = client.get("/").text
+    assert "Análisis de Francia" in home and "Pieza no publicada" not in home
+    lst = client.get("/analisis").text
+    assert "Análisis de Francia" in lst and "Contar bien" in lst
+    assert "Contar bien" in client.get("/analisis?tipo=opinion").text
+    assert "Análisis de Francia" not in client.get("/analisis?tipo=opinion").text
+    assert client.get("/analisis?page=2").status_code == 200
+    page = client.get(f"/tema/{tp.id}").text
+    for needle in [
+        "Qué dice cada medio",
+        "Cuenta el balance",
+        "desconocido",
+        "Hubo detenidos",
+        "2.000 frente a 2.400",
+        "Cobertura coherente",
+        "El total",
+        "Párrafo de análisis",
+        "Párrafo de opinión",
+        "Historia del tema",
+        "elaborada con IA",
+    ]:
+        assert needle in page, needle
+    assert client.get("/tema/9999").status_code == 404
+    empty_topic = Topic(title="Sin piezas", category="politica", country="ES", first_seen=now, last_seen=now)
+    session.add(empty_topic)
+    session.commit()
+    assert "Sin piezas" in client.get(f"/tema/{empty_topic.id}").text
+    assert "Verificaciones" in client.get("/verificaciones").text
 
 
 def test_empty_home(engine):

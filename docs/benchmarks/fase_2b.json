@@ -1,0 +1,40 @@
+{
+  "fase": "2b",
+  "titulo": "Temas, sintesis por medio y piezas propias de analisis y opinion con IA",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16",
+      "anthropic": "1.15.0"
+    }
+  },
+  "medidas": {
+    "portada_p95_ms_10k": 13.5,
+    "piezas_sin_fundamento_publicadas": 0,
+    "tests_cobertura_pct": 98,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "temas_heuristicos": "Medido sobre 187 historias reales: similitud lexica (umbral 0,12-0,20) y entidades compartidas agrupan cosas sin relacion (p. ej. 83 historias encadenadas por 'Sevilla'/'Barcelona'); por eso los temas los propone la IA (ADR 0007)",
+    "ia": "Cliente con salida estructurada, prompt de sistema cacheado, pensamiento adaptativo, streaming y fallbacks 'default'; test con el SDK oficial y transporte simulado: la peticion se serializa y la respuesta se lee",
+    "fundamento": "tests/test_ai.py: una pieza con una cifra, un medio o una historia fuera del dossier queda en 'revision' y no se publica (0 publicadas)",
+    "portada": "tools/bench_web.py x3 tras cachear 60 s las cifras de cabecera: p95 13,9 / 13,5 / 12,4 ms (se publica la mediana); sin la cache, la consulta de piezas la llevaba a 16,4-19,1 ms",
+    "historia": "no se publica: la pagina no cambia en esta fase y su p95 oscila 9,2-13,5 ms entre ejecuciones (ruido del entorno), por encima y por debajo del 8,2 ms de la Fase 2",
+    "tests": "pytest --cov: 104 passed, cobertura 98 %"
+  },
+  "criterios_de_salida": {
+    "C12": "implementado; NO VERIFICADO en produccion hasta que el usuario configure ANTHROPIC_API_KEY",
+    "C13": "fundamento comprobado por test (0 piezas sin fundamento publicadas); NO VERIFICADO con la API real hasta tener clave"
+  },
+  "no_verificable": [
+    "Generacion real de temas y piezas con la API de Anthropic: NO VERIFICADO (falta ANTHROPIC_API_KEY; se pidio al usuario el 2026-10-18)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Con la clave: medir coste por pieza (usage), cache de prompt (cache_read_input_tokens) y % de piezas en revision",
+    "Extraccion de afirmaciones asistida por IA para aumentar exhaustividad (veredicto siempre del codigo)",
+    "El ratchet sobre p95 en milisegundos es sensible al ruido del entorno: valorar medir con mas peticiones o percentil sobre varias ejecuciones (propuesta, no cambio de presupuesto)"
+  ]
+}

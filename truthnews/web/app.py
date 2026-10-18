@@ -1,6 +1,7 @@
 """Aplicacion FastAPI: portada, secciones, paises, comunidades, medios y noticia."""
 # Sin `from __future__ import annotations`: FastAPI resuelve los alias Annotated locales al definir.
 
+import time
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Annotated
@@ -65,6 +66,15 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     SessionDep = Annotated[Session, Depends(get_session)]
     PageQ = Annotated[int, Query(ge=1)]
 
+    totals_cache: dict = {}
+
+    def totals_cached(session: Session) -> dict:
+        # Las cifras de cabecera cambian cada ciclo del worker (30 min): 60 s de cache bastan.
+        now = time.monotonic()
+        if not totals_cache or now - totals_cache["at"] > 60:
+            totals_cache.update(at=now, value=queries.totals(session))
+        return totals_cache["value"]
+
     def lang_of(request: Request) -> str:
         lang = request.query_params.get("lang") or request.cookies.get("lang") or settings.default_language
         return lang if lang in registry.languages() else settings.default_language
@@ -95,8 +105,39 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             outlet_names=queries.story_outlet_names(session, ids),
             verdicts=queries.verdict_counts(session, ids),
             wire=wire,
-            totals=queries.totals(session),
+            totals=totals_cached(session),
+            pieces=queries.latest_pieces(session, kind="analisis", limit=4),
         )
+
+    @app.get("/analisis", response_class=HTMLResponse)
+    def analyses(request: Request, session: SessionDep, page: PageQ = 1, tipo: str | None = None):
+        kind = tipo if tipo in ("analisis", "opinion") else None
+        pieces = queries.latest_pieces(session, kind=kind, limit=20, offset=(page - 1) * 20)
+        return render(request, "analyses.html", pieces=pieces, page=page, tipo=kind)
+
+    @app.get("/tema/{topic_id}", response_class=HTMLResponse)
+    def topic(request: Request, topic_id: int, session: SessionDep):
+        tp, pieces, stories = queries.topic_view(session, topic_id)
+        if tp is None:
+            raise HTTPException(404)
+        synth = pieces["analisis"].synthesis if "analisis" in pieces else {}
+        slugs = [m["medio_slug"] for m in synth.get("que_dice_cada_medio", [])]
+        ids = [s.id for s in stories]
+        return render(
+            request,
+            "topic.html",
+            tp=tp,
+            pieces=pieces,
+            stories=stories,
+            synth=synth,
+            outlets=queries.outlets_by_slug(session, slugs),
+            outlet_names=queries.story_outlet_names(session, ids),
+            verdicts=queries.verdict_counts(session, ids),
+        )
+
+    @app.get("/verificaciones", response_class=HTMLResponse)
+    def verifications(request: Request, session: SessionDep):
+        return render(request, "verifications.html", claims=queries.all_verifications(session))
 
     @app.get("/historia/{story_id}", response_class=HTMLResponse)
     def story(request: Request, story_id: int, session: SessionDep):

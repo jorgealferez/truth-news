@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% set a = pieces.get('analisis') %}{% set o = pieces.get('opinion') %}
+{% block title %}{{ a.title if a else tp.title }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ a.dek if a else tp.title }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/tema/{{ tp.id }}">
+<meta property="og:title" content="{{ a.title if a else tp.title }}"><meta property="og:type" content="article">{% endblock %}
+{% block content %}
+<article class="story wide">
+  <p class="kicker"><a href="/analisis">{{ t(lang, 'analysis') }}</a> · <a href="/seccion/{{ tp.category }}">{{ category_name(tp.category, lang) }}</a> · {{ tp.n_stories }} {{ t(lang, 'topic_stories')|lower }} · {{ tp.n_outlets }} {{ t(lang, 'n_outlets') }}</p>
+  <h1>{{ a.title if a else tp.title }}</h1>
+  {% if a %}<p class="dek big">{{ a.dek }}</p>{% endif %}
+
+  {% if a %}
+  <section class="block"><h2>{{ t(lang, 'what_each_says') }}</h2>
+    <table class="table"><tbody>
+    {% for m in synth.get('que_dice_cada_medio', []) %}{% set out = outlets.get(m.medio_slug) %}
+      <tr><td>{% if out %}<a href="/medio/{{ out.slug }}">{{ out.name }}</a><br><span class="meta">{{ t(lang, 'scope_' ~ out.scope) }}</span>{% else %}{{ m.medio_slug }}{% endif %}</td>
+        <td>{{ m.sintesis }}<br><span class="meta">{{ t(lang, 'focus') }}: {{ m.enfoque }}</span></td></tr>
+    {% endfor %}
+    </tbody></table>
+  </section>
+  <section class="block two">
+    <div><h2>{{ t(lang, 'agree') }}</h2><ul>{% for c in synth.get('coincidencias', []) %}<li>{{ c }}</li>{% endfor %}</ul></div>
+    <div><h2>{{ t(lang, 'differ') }}</h2><ul>{% for d in synth.get('diferencias', []) %}<li><strong>{{ d.aspecto }}</strong>: {{ d.detalle }}</li>{% endfor %}</ul></div>
+  </section>
+  {% if synth.get('datos') %}<section class="block"><h2>{{ t(lang, 'data') }}</h2>
+    <ul>{% for d in synth.get('datos', []) %}<li>{{ d.dato }} <span class="meta">({{ d.fuente }})</span></li>{% endfor %}</ul></section>{% endif %}
+  <section class="block assessment"><h2>{{ t(lang, 'assessment') }}</h2>
+    {% set v = synth.get('valoracion', {}) %}<p>{{ v.get('conclusion') }}</p>
+    <p class="meta">{{ t(lang, 'confidence') }}: {{ v.get('confianza') }}</p>
+    {% if v.get('lo_que_no_sabemos') %}<h3>{{ t(lang, 'unknowns') }}</h3><ul>{% for u in v.get('lo_que_no_sabemos') %}<li>{{ u }}</li>{% endfor %}</ul>{% endif %}
+  </section>
+  <section class="block prose"><h2>{{ t(lang, 'analysis') }}</h2>
+    {% for sec in a.body %}{% if sec.subtitulo %}<h3>{{ sec.subtitulo }}</h3>{% endif %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}{% endfor %}
+  </section>
+  {% endif %}
+  {% if o %}<section class="block prose opinion"><h2>{{ t(lang, 'opinion') }}: {{ o.title }}</h2>
+    {% for sec in o.body %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}{% endfor %}</section>{% endif %}
+
+  <section class="block"><h2>{{ t(lang, 'topic_stories') }}</h2>
+    <div class="grid">{% for st in stories %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div>
+  </section>
+  <p class="meta">{{ t(lang, 'ai_disclosure') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a>{% if a %} · {{ a.model }}{% endif %}</p>
+</article>
+{% endblock %}

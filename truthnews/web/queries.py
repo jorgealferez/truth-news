@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.models import Article, Claim, CrawlRun, Outlet, Story, Verification
+from truthnews.models import Article, Claim, CrawlRun, Outlet, Piece, Story, Topic, Verification
 
 PAGE_SIZE = 30
 
@@ -138,3 +138,51 @@ def verdict_counts(
         out.setdefault(key, {}).setdefault(verdict, 0)
         out[key][verdict] += n
     return out
+
+
+def latest_pieces(
+    session: Session, *, kind: str | None = None, limit: int = 12, offset: int = 0
+) -> list[Piece]:
+    q = select(Piece).options(joinedload(Piece.topic)).where(Piece.status == "publicada")
+    if kind:
+        q = q.where(Piece.kind == kind)
+    q = q.order_by(Piece.created_at.desc(), Piece.id.desc()).limit(limit).offset(offset)
+    return list(session.scalars(q))
+
+
+def topic_view(session: Session, topic_id: int) -> tuple[Topic | None, dict[str, Piece], list[Story]]:
+    topic = session.get(Topic, topic_id)
+    if topic is None:
+        return None, {}, []
+    pieces: dict[str, Piece] = {}
+    for p in sorted(topic.pieces, key=lambda p: p.created_at):
+        if p.status == "publicada":
+            pieces[p.kind] = p  # la mas reciente de cada tipo
+    stories = list(
+        session.scalars(
+            select(Story)
+            .where(Story.topic_id == topic.id)
+            .order_by(Story.n_outlets.desc(), Story.last_seen.desc())
+        )
+    )
+    return topic, pieces, stories
+
+
+def outlets_by_slug(session: Session, slugs: list[str]) -> dict[str, Outlet]:
+    if not slugs:
+        return {}
+    return {o.slug: o for o in session.scalars(select(Outlet).where(Outlet.slug.in_(slugs)))}
+
+
+def all_verifications(session: Session, limit: int = 200) -> list[Claim]:
+    q = (
+        select(Claim)
+        .options(
+            joinedload(Claim.verification).joinedload(Verification.evidence),
+            joinedload(Claim.outlet),
+            joinedload(Claim.article),
+        )
+        .order_by(Claim.id.desc())
+        .limit(limit)
+    )
+    return list(session.scalars(q).unique())

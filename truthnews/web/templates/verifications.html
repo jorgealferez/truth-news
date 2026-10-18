@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'verifications') }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'verifications') }}</h1>
+<p class="lead-text">{{ t(lang, 'verifications_lead') }}</p>
+{% if not claims %}<p class="empty">{{ t(lang, 'no_claims') }}</p>{% endif %}
+{% for c in claims %}{% set v = c.verification %}{% if v %}
+<div class="claim">
+  <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <a href="/medio/{{ c.outlet.slug }}"><strong>{{ c.outlet.name }}</strong></a>: «{{ c.text }}» <a class="meta" href="/noticia/{{ c.article_id }}">→</a></p>
+  <p>{{ v.explanation }}</p>
+  {% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+</div>{% endif %}{% endfor %}
+{% endblock %}

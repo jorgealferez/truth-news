@@ -1,0 +1,6 @@
+<article class="pcard{{ ' lead' if lead }}">
+  <p class="kicker"><a href="/analisis?tipo={{ p.kind }}">{{ t(lang, p.kind) }}</a> · <a href="/seccion/{{ p.topic.category }}">{{ category_name(p.topic.category, lang) }}</a> · {{ p.topic.n_outlets }} {{ t(lang, 'n_outlets') }}</p>
+  <h3><a href="/tema/{{ p.topic_id }}">{{ p.title }}</a></h3>
+  <p class="dek">{{ p.dek }}</p>
+  <p class="meta">{{ p.created_at|ago(lang) }}</p>
+</article>

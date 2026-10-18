@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'analysis') }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'analysis') }} · {{ t(lang, 'opinion') }}</h1>
+<p class="lead-text">{{ t(lang, 'analysis_lead') }}</p>
+<nav class="chips"><a href="/analisis">{{ t(lang, 'all') }}</a><a href="/analisis?tipo=analisis">{{ t(lang, 'analysis') }}</a><a href="/analisis?tipo=opinion">{{ t(lang, 'opinion') }}</a></nav>
+{% if not pieces %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% endif %}
+<div class="grid">{% for p in pieces %}{% with lead = False %}{% include "_piece_card.html" %}{% endwith %}{% endfor %}</div>
+<nav class="pager">
+  {% if page > 1 %}<a href="?page={{ page - 1 }}{% if tipo %}&tipo={{ tipo }}{% endif %}">← {{ t(lang, 'previous') }}</a>{% endif %}
+  {% if pieces|length >= 20 %}<a href="?page={{ page + 1 }}{% if tipo %}&tipo={{ tipo }}{% endif %}">{{ t(lang, 'next') }} →</a>{% endif %}
+</nav>
+{% endblock %}
