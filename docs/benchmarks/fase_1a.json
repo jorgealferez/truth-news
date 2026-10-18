@@ -1,0 +1,30 @@
+{
+  "fase": "1a",
+  "titulo": "Despliegue temprano en Railway",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "Railway, region europe-west4: servicios web y worker (imagen Dockerfile) y PostgreSQL 18",
+    "toolchains": {"python": "3.12 (imagen python:3.12-slim)"}
+  },
+  "medidas": {
+    "rastreo_feeds_ok": 126,
+    "rastreo_articulos_nuevos": 2842,
+    "rastreo_descargas_prohibidas": 0,
+    "rastreo_duracion_s": 90
+  },
+  "detalle": {
+    "despliegue": "web y worker desde la rama claude/truth-news (393fef7): build y arranque correctos; https://web-production-04314.up.railway.app/healthz -> 200",
+    "rastreo": "logs del worker: 'rastreo 1: 126 feeds ok, 8 fallidos, 2842 articulos nuevos', robots_blocked 1 (no descargada); inicio 22:29:29, fin 22:30:59 UTC"
+  },
+  "criterios_de_salida": {
+    "C2": "cumplido en produccion: 126 feeds ok y 2842 articulos en el primer ciclo",
+    "C11": "parcial: /healthz 200, web y worker en marcha, ingesta automatica cada 30 min; falta el motor de contraste y el dominio propio"
+  },
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Fase 2: comparador (agrupacion entre medios, cifras en disputa, omisiones, contraste con datos oficiales) como eje de la portada",
+    "Dominio propio (el usuario propone nosmienten.com): valoracion de marca pendiente de decision del usuario",
+    "Los logs de Alembic siguen saliendo por stderr al arrancar (alembic.ini); se cambia con su revision de datos cuando se toque la capa"
+  ]
+}
