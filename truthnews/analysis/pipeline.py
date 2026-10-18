@@ -9,10 +9,9 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.analysis.claims import ClaimCandidate, extract, period_of
+from truthnews.analysis.claims import extract
 from truthnews.analysis.cluster import DEFAULT_THRESHOLD, Doc, cluster, representative
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
-from truthnews.classify import normalize
 from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
 
 log = logging.getLogger(__name__)
@@ -144,7 +143,11 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
 
 
 def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dict:
-    """Vuelve a juzgar los veredictos guardados con una version anterior del metodo (ADR 0004)."""
+    """Vuelve a juzgar los veredictos de una version anterior del metodo (ADR 0004/0006/0009).
+
+    La afirmacion se vuelve a extraer con las reglas vigentes: si ya no es atribuible, se retira (veredicto
+    `sin-datos`) con nota publica; si lo es, se juzga con el territorio y el periodo vigentes.
+    """
     verifier = verifier or Verifier()
     changed: Counter = Counter()
     stale = session.scalars(
@@ -154,18 +157,28 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
     ).unique()
     for ver in stale:
         c = ver.claim
-        pub = _aware(c.article.published_at)
-        cand = ClaimCandidate(
-            c.text,
-            c.indicator,
-            c.geo,
-            c.value,
-            c.unit,
-            c.direction,
-            period_of(normalize(c.text), pub.year, pub.month),
-        )
+        a = c.article
+        pub = _aware(a.published_at)
         before = ver.verdict
-        _store(ver, verifier.judge(cand))
+        current = [
+            k
+            for k in extract(c.text, a.language, a.country, pub.year, pub.month)
+            if k.indicator == c.indicator and k.value == c.value
+        ]
+        if not current:
+            _store(
+                ver,
+                Result(
+                    "sin-datos",
+                    0.0,
+                    "Afirmación retirada: con las reglas vigentes no se puede "
+                    "atribuir con seguridad a un territorio o periodo con datos oficiales.",
+                    f"retirada/{METHOD_VERSION}",
+                ),
+            )
+        else:
+            c.geo = current[0].geo
+            _store(ver, verifier.judge(current[0]))
         if before != ver.verdict:
             # Transparencia: la correccion queda escrita en el propio veredicto publicado.
             ver.explanation += (

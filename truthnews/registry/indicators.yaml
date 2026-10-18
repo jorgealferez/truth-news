@@ -61,6 +61,7 @@ poblacion:
     es: ["habitantes", "población"]
     en: ["population", "inhabitants"]
     pt: ["habitantes", "população"]
+  requires_explicit_geo: true  # las cifras de poblacion casi nunca son del pais del medio por defecto
   sources:
     - {connector: worldbank, indicator: SP.POP.TOTL}
 
