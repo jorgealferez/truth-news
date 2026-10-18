@@ -30,7 +30,16 @@ def test_eurostat_latest_skips_empty_periods_and_maps_geo():
     t = transport({"une_rt_m": httpx.Response(200, json=EUROSTAT)})
     o = eurostat.latest("une_rt_m", "GR", {"unit": "PC_ACT"}, "Paro", transport=t)
     assert (o.period, o.value, o.previous.value) == ("2026-08", 10.0, 10.1)
+    assert o.history == {"2026-07": 10.1, "2026-08": 10.0} and o.at("2026-07").value == 10.1
     assert "geo=EL" in o.url and o.extra["dataset"] == "une_rt_m"
+
+    def ea_only20(request):
+        if "geo=EA20" in str(request.url):
+            return httpx.Response(200, json=EUROSTAT)
+        return httpx.Response(200, json={**EUROSTAT, "value": {}})
+
+    ea = eurostat.latest("une_rt_m", "EA", {}, transport=httpx.MockTransport(ea_only20))
+    assert "geo=EA20" in ea.url  # EA21 sin datos -> se prueba el siguiente codigo
 
 
 def test_eurostat_rejects_ambiguous_and_errors():
@@ -72,7 +81,7 @@ def test_ine_annual_change_uses_period_fields():
         ],
     }
     o = ine.annual_change("IPC290751", transport=transport({"IPC290751": httpx.Response(200, json=data)}))
-    assert (o.period, o.value) == ("2026-09", 4.9)
+    assert (o.period, o.value) == ("2026-09", 4.9) and o.history == {"2026-09": 4.9}
     assert ine.annual_change("X", transport=transport({})) is None
     one = {"Nombre": "x", "Data": [data["Data"][1]]}
     assert ine.annual_change("Y", transport=transport({"Y": httpx.Response(200, json=one)})) is None

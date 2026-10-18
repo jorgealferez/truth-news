@@ -87,12 +87,13 @@ geo_names:
   AR: [argentina]
   MX: [méxico, mexico]
   IL: [israel]
-  EU: [unión europea, zona euro, eurozona, european union, euro area]
-eu_geos: [AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK, EU]
+  EU: [unión europea, european union, união europeia]
+  EA: [eurozona, zona euro, euro area, eurozone, zona do euro]
+eu_geos: [AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK, EU, EA]
 # Gentilicios y lideres: si aparecen en la frase sin pais explicito, la afirmacion no se atribuye al pais
 # del medio (no se extrae). Mejor callar que atribuir mal.
 foreign_markers: [ruso, rusa, frances, francesa, aleman, alemana, italiano, italiana, britanico, britanica,
   estadounidense, norteamericano, chino, china, marroqui, israeli, ucraniano, ucraniana, portugues,
   portuguesa, griego, griega, europeo, europea, argentino, mexicano, venezolano, turco, iraní, irani,
   macron, trump, putin, zelenski, netanyahu, meloni, merz, starmer, xi jinping, lula, milei, bruselas,
-  eurozona, otan]
+  otan]

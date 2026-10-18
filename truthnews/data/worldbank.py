@@ -12,7 +12,7 @@ BASE = "https://api.worldbank.org/v2"
 def latest(
     indicator: str, geo: str, label: str = "", transport: httpx.BaseTransport | None = None
 ) -> Observation | None:
-    geo = "EUU" if geo == "EU" else geo
+    geo = {"EU": "EUU", "EA": "EMU"}.get(geo, geo)
     url = f"{BASE}/country/{geo}/indicator/{indicator}?format=json&mrv=6"
     with client(transport) as c:
         resp = c.get(url)
@@ -36,4 +36,5 @@ def latest(
         points[-1][1],
         previous=prev,
         extra={"indicator": indicator, "geo": geo},
+        history=dict(points),
     )

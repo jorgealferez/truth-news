@@ -9,14 +9,25 @@ import httpx
 from truthnews.data import Observation, client
 
 BASE = "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data"
-_GEO = {"GR": "EL", "EU": "EU27_2020"}
+# Codigos de Eurostat. Los agregados cambian con las adhesiones: se prueban en orden (EA21 desde 2026).
+_GEO = {"GR": ["EL"], "EU": ["EU27_2020"], "EA": ["EA21", "EA20", "EA19"]}
 
 
 def latest(
     dataset: str, geo: str, params: dict, label: str = "", transport: httpx.BaseTransport | None = None
 ) -> Observation | None:
     """Ultima observacion no vacia (y la anterior) de una serie unidimensional."""
-    query = {**params, "geo": _GEO.get(geo, geo), "lastTimePeriod": 8}
+    for code in _GEO.get(geo, [geo]):
+        obs = _latest(dataset, geo, code, params, label, transport)
+        if obs is not None:
+            return obs
+    return None
+
+
+def _latest(
+    dataset: str, geo: str, code: str, params: dict, label: str, transport: httpx.BaseTransport | None
+) -> Observation | None:
+    query = {**params, "geo": code, "lastTimePeriod": 14}
     url = f"{BASE}/{dataset}?{urlencode(query)}"
     with client(transport) as c:
         resp = c.get(url)
@@ -49,4 +60,5 @@ def latest(
         value,
         previous=prev,
         extra={"dataset": dataset, "updated": data.get("updated"), "geo": geo},
+        history=dict(points),
     )
