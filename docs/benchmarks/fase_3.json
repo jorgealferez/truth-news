@@ -1,0 +1,36 @@
+{
+  "fase": "3",
+  "titulo": "Administracion con balance e investigaciones a demanda",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "portada_p95_ms_10k": 13.5,
+    "piezas_sin_fundamento_publicadas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "portada": "tools/bench_web.py x3: p95 13,5 / 11,6 / 14,7 ms (se publica la mediana); la portada no cambia en esta fase",
+    "historia": "no se publica: la pagina no cambia en esta fase; p95 27,3 / 10,4 / 8,8 ms entre ejecuciones (ruido del entorno)",
+    "investigaciones": "Medido con datos reales de produccion (2026-10-18): la pregunta sobre disturbios en Europa encuentra mas de 10 historias multimedio (Francia con 20 medios, Italia, Limoges) y datos de paro e inflacion de UE, FR, DE, IT, ES, PT y GR; la pregunta sobre EEUU encuentra historias de Ucrania, Trump y Netanyahu y 19 puntos de GDELT con la consulta en ingles",
+    "fundamento": "tests/test_investigate.py: un analisis de IA con una cifra fuera del informe se guarda como 'analisis_en_revision' y no se muestra como analisis",
+    "panel": "tests/test_investigate.py: 503 sin ADMIN_PASSWORD, 401 sin credenciales o con credenciales malas, 403 con token CSRF invalido, 422 con pregunta fuera de 10-500 caracteres, 303 al crear"
+  },
+  "criterios_de_salida": {
+    "C8": "balance (ingesta, verificaciones, veredictos, fiabilidad por medio), cola de revision y alta de investigaciones operativos y protegidos por credencial: comprobado por tests de integracion"
+  },
+  "no_verificable": [
+    "Analisis de IA de las investigaciones con la API real: NO VERIFICADO (falta ANTHROPIC_API_KEY)",
+    "Panel en produccion: NO VERIFICADO hasta que el usuario configure ADMIN_PASSWORD en el servicio web de Railway"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Gestion de fuentes desde el panel (activar/desactivar feeds): hoy se hace en el registro YAML",
+    "Reintento de investigaciones en estado 'error' desde el panel"
+  ]
+}

@@ -255,3 +255,26 @@ class Piece(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     topic: Mapped[Topic] = relationship(back_populates="pieces")
+
+
+INVESTIGATION_STATUSES = ("pendiente", "en-curso", "publicada", "error")
+
+
+class Investigation(Base):
+    """Investigacion a demanda sobre una pregunta (ADR 0010)."""
+
+    __tablename__ = "investigation"
+    __table_args__ = (
+        CheckConstraint(f"status IN {INVESTIGATION_STATUSES!r}", name="ck_investigation_status"),
+        Index("ix_investigation_status_created", "status", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    question: Mapped[str] = mapped_column(String(500))
+    status: Mapped[str] = mapped_column(String(16), default="pendiente")
+    language: Mapped[str] = mapped_column(String(8), default="es")
+    country: Mapped[str] = mapped_column(String(2), default="ES")
+    report: Mapped[dict] = mapped_column(JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

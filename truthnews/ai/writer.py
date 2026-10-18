@@ -140,7 +140,7 @@ def build_dossier(session: Session, topic: Topic, verifier: Verifier | None = No
     }
 
 
-def _numbers(text: str) -> set[str]:
+def numbers_in(text: str) -> set[str]:
     out = set()
     for raw in _NUMBER.findall(text):
         n = raw.replace(".", "").replace(",", ".")
@@ -154,11 +154,11 @@ def _numbers(text: str) -> set[str]:
 
 def check_grounding(output: dict, dossier: dict, story_ids: set[int], slugs: set[str]) -> dict:
     """Cifras, medios e historias del texto generado que no estan en el dossier (vacio = fundamentado)."""
-    dossier_numbers = _numbers(json.dumps(dossier, ensure_ascii=False))
+    dossier_numbers = numbers_in(json.dumps(dossier, ensure_ascii=False))
     text = json.dumps({k: v for k, v in output.items() if k != "historias_citadas"}, ensure_ascii=False)
     unsupported = sorted(
         n
-        for n in _numbers(text) - dossier_numbers
+        for n in numbers_in(text) - dossier_numbers
         if not (float(n).is_integer() and (float(n) <= 10 or 1990 <= float(n) <= 2035))
     )
     bad_slugs = sorted({m["medio_slug"] for m in output.get("que_dice_cada_medio", [])} - slugs)
