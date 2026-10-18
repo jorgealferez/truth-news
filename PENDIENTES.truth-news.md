@@ -26,13 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 2 — Motor de contraste: el comparador como eje (peticion del usuario 2026-10-18: "comparador de noticias, no agregador"): agrupacion, cifras en disputa, omisiones, conectores de datos, veredictos, fiabilidad por medio — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] Agrupacion entre medios: F1 0,885 (precision 0,93) sobre 155 titulares reales etiquetados a mano
-  - [x] Conectores en vivo: Eurostat, INE, Banco Mundial, BOE, GDELT (5/5)
-  - [x] Extractor estricto de afirmaciones (banco de 19 casos) y veredictos trazables con frescura
-  - [x] Comparador: cobertura, cifras en disputa, omisiones, lenguaje valorativo; portada de contrastes, /historia, /metodologia
-  - [x] ADR 0004 (comparador) y 0005 (datos: historias, afirmaciones, verificaciones, evidencias)
-- [ ] Fase 2b — Temas, sintesis por medio, valoracion con datos y piezas propias de analisis y opinion con IA (portada: como cuentan los medios cada tema)
+- [ ] Fase 2b — Temas, sintesis por medio, valoracion con datos y piezas propias de analisis y opinion con IA (portada: como cuentan los medios cada tema) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
@@ -51,3 +45,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [x] Fase 0 — Encuadre (#1)
 - [x] Fase 1 — Nucleo: registro, rastreador, web segmentada, configuracion de Railway (#2)
 - [x] Fase 1a — Despliegue temprano en Railway: produccion rastreando cada 30 min (#3)
+- [x] Fase 2 — Motor de contraste: comparador por historia, datos oficiales, veredictos trazables (#4)
