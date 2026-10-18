@@ -55,7 +55,7 @@ def indicators() -> dict:
 
 
 @lru_cache(maxsize=1)
-def _world() -> dict[str, list[str]]:
+def world_countries() -> dict[str, list[str]]:
     data = yaml.safe_load((REGISTRY_DIR / "world.yaml").read_text(encoding="utf-8"))
     return {iso: [normalize(n) for n in names] for iso, names in data.items()}
 
@@ -176,7 +176,7 @@ def _geo(sentence_n: str, default: str, explicit_only: bool = False) -> str | No
         return None  # varios territorios en la frase: no se adivina a cual se refiere la cifra
     others = {
         iso
-        for iso, names in _world().items()
+        for iso, names in world_countries().items()
         if iso not in named and any(_word_in(n, sentence_n) for n in names)
     }
     if others:

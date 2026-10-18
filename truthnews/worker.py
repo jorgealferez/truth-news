@@ -7,11 +7,13 @@ import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from truthnews.ai.client import AIClient
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis.pipeline import run as analyze
 from truthnews.config import Settings, get_settings
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
+from truthnews.investigate import process_pending, seed_defaults
 
 log = logging.getLogger(__name__)
 
@@ -35,6 +37,10 @@ def run_cycle(settings: Settings | None = None) -> dict:
         summary["analysis"] = analyze(session, since=started)
     with session_scope(engine) as session:
         summary["ai"] = ai_step(session, settings)
+    with session_scope(engine) as session:
+        seed_defaults(session)
+        ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
+        summary["investigations"] = process_pending(session, ai=ai)
     log.info("ciclo terminado: %s", summary)
     return summary
 

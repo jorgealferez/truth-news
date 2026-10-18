@@ -18,8 +18,8 @@ from truthnews import registry
 from truthnews.analysis.compare import compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
-from truthnews.models import Article, Outlet, Story
-from truthnews.web import queries
+from truthnews.models import Article, Investigation, Outlet, Story
+from truthnews.web import admin, queries
 
 HERE = Path(__file__).resolve().parent
 
@@ -280,5 +280,26 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
                 for a in items
             ]
         )
+
+    @app.get("/investigaciones", response_class=HTMLResponse)
+    def investigations(request: Request, session: SessionDep):
+        items = list(
+            session.scalars(
+                select(Investigation)
+                .where(Investigation.status == "publicada")
+                .order_by(Investigation.updated_at.desc())
+                .limit(50)
+            )
+        )
+        return render(request, "investigations.html", items=items)
+
+    @app.get("/investigacion/{inv_id}", response_class=HTMLResponse)
+    def investigation(request: Request, inv_id: int, session: SessionDep):
+        inv = session.get(Investigation, inv_id)
+        if inv is None or inv.status != "publicada":
+            raise HTTPException(404)
+        return render(request, "investigation.html", inv=inv, r=inv.report)
+
+    app.include_router(admin.make_router(settings, get_session, templates, render))
 
     return app

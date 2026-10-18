@@ -65,6 +65,18 @@ es:
   topic_stories: Historias de este tema
   ai_disclosure: Pieza elaborada con IA a partir de un dossier verificado (artículos, comparativa entre medios, veredictos y datos oficiales). Solo se publica si cada cifra y cada medio citado están en el dossier.
   verifications: Verificaciones
+  investigations: Investigaciones
+  investigations_lead: Preguntas de fondo respondidas con lo que publican los medios, los datos oficiales y la evolución de la cobertura mundial.
+  question: Pregunta
+  related_stories: Historias relacionadas
+  official_data: Datos oficiales
+  world_coverage: Cobertura mundial (GDELT)
+  short_answer: Respuesta corta
+  hypotheses: Hipótesis
+  for: A favor
+  against: En contra
+  conclusion: Conclusión
+  method: Método
   verifications_lead: Registro público de todas las afirmaciones comprobadas, con su veredicto, su fuente y las correcciones.
   methodology_text: >-
     1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
@@ -143,6 +155,18 @@ en:
   topic_stories: Stories in this topic
   ai_disclosure: Piece produced with AI from a verified dossier (articles, cross-outlet comparison, verdicts and official data). Published only if every figure and outlet cited is in the dossier.
   verifications: Fact checks
+  investigations: Investigations
+  investigations_lead: Big questions answered with what outlets publish, official data and the evolution of world coverage.
+  question: Question
+  related_stories: Related stories
+  official_data: Official data
+  world_coverage: World coverage (GDELT)
+  short_answer: Short answer
+  hypotheses: Hypotheses
+  for: For
+  against: Against
+  conclusion: Conclusion
+  method: Method
   verifications_lead: Public log of every checked claim, with its verdict, source and corrections.
   methodology_text: >-
     1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the

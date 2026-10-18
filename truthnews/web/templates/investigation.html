@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% set an = r.get('analisis') %}
+{% block title %}{{ (an.titular if an else inv.question) }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ an.respuesta_corta if an else inv.question }}{% endblock %}
+{% block content %}
+<article class="story wide">
+  <p class="kicker"><a href="/investigaciones">{{ t(lang, 'investigations') }}</a> · {{ inv.updated_at.strftime('%d/%m/%Y') }}</p>
+  <h1>{{ an.titular if an else inv.question }}</h1>
+  <p class="meta">{{ t(lang, 'question') }}: {{ inv.question }}</p>
+  {% if an %}
+  <section class="block assessment"><h2>{{ t(lang, 'short_answer') }}</h2><p>{{ an.respuesta_corta }}</p></section>
+  <section class="block prose">{% for p in an.contexto %}<p>{{ p }}</p>{% endfor %}</section>
+  {% if an.hipotesis %}<section class="block"><h2>{{ t(lang, 'hypotheses') }}</h2>
+    {% for h in an.hipotesis %}<div class="claim"><p><strong>{{ h.hipotesis }}</strong></p><p>{{ t(lang, 'for') }}: {{ h.a_favor }}</p><p>{{ t(lang, 'against') }}: {{ h.en_contra }}</p><p class="meta">{{ h.evaluacion }}</p></div>{% endfor %}</section>{% endif %}
+  {% if an.lo_que_no_sabemos %}<section class="block"><h2>{{ t(lang, 'unknowns') }}</h2><ul>{% for u in an.lo_que_no_sabemos %}<li>{{ u }}</li>{% endfor %}</ul></section>{% endif %}
+  <section class="block"><h2>{{ t(lang, 'conclusion') }}</h2><p>{{ an.conclusion }}</p></section>
+  {% endif %}
+  <section class="block"><h2>{{ t(lang, 'related_stories') }}</h2>
+    <ul>{% for h in r.get('historias', []) %}<li><a href="/historia/{{ h.id }}">{{ h.titular }}</a> <span class="meta">· {{ h.medios }} {{ t(lang, 'n_outlets') }} · {{ h.ultima }}</span></li>{% endfor %}</ul></section>
+  {% if r.get('datos') %}<section class="block"><h2>{{ t(lang, 'official_data') }}</h2>
+    <table class="table"><tbody>{% for d in r.datos %}<tr><td>{{ d.pais }}</td><td>{{ d.indicador }}</td><td>{{ d.periodo }}</td><td><strong>{{ d.valor }}</strong></td>
+      <td class="meta">{% for k, v in d.serie_reciente.items() %}{{ k }}: {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td><td><a href="{{ d.url }}" rel="nofollow noopener" target="_blank">{{ d.fuente }}</a></td></tr>{% endfor %}</tbody></table></section>{% endif %}
+  {% set c = r.get('cobertura_mundial', {}) %}{% if c.get('puntos') %}<section class="block"><h2>{{ t(lang, 'world_coverage') }}</h2>
+    <p>«{{ c.consulta }}»: media {{ c.media }} %, último {{ c.ultimo }} %, máximo {{ c.maximo }} % ({{ c.puntos }} puntos, 30 días). <span class="meta">{{ c.fuente }}</span></p></section>{% endif %}
+  <p class="meta">{{ t(lang, 'method') }}: {{ r.get('metodo') }} {% if an %}{{ t(lang, 'ai_disclosure') }}{% endif %}</p>
+</article>
+{% endblock %}
