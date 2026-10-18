@@ -1,0 +1,42 @@
+# Paises soportados. Anadir un pais = anadir una entrada aqui y un fichero sources/<iso>.yaml.
+ES:
+  name: {es: España, en: Spain, pt: Espanha}
+  languages: [es, ca, gl, eu]
+  default_language: es
+  regions:
+    ES-AN: Andalucía
+    ES-AR: Aragón
+    ES-AS: Asturias
+    ES-IB: Illes Balears
+    ES-CN: Canarias
+    ES-CB: Cantabria
+    ES-CM: Castilla-La Mancha
+    ES-CL: Castilla y León
+    ES-CT: Cataluña
+    ES-VC: Comunitat Valenciana
+    ES-EX: Extremadura
+    ES-GA: Galicia
+    ES-MD: Comunidad de Madrid
+    ES-MC: Región de Murcia
+    ES-NC: Navarra
+    ES-PV: País Vasco
+    ES-RI: La Rioja
+    ES-CE: Ceuta
+    ES-ML: Melilla
+  autonomous_communities: [ES-AN, ES-AR, ES-AS, ES-IB, ES-CN, ES-CB, ES-CM, ES-CL, ES-CT, ES-VC, ES-EX, ES-GA, ES-MD, ES-MC, ES-NC, ES-PV, ES-RI]
+PT:
+  name: {es: Portugal, en: Portugal, pt: Portugal}
+  languages: [pt]
+  default_language: pt
+  regions:
+    PT-11: Lisboa
+    PT-13: Porto
+    PT-20: Açores
+    PT-30: Madeira
+  autonomous_communities: []
+XX:
+  name: {es: Internacional, en: International, pt: Internacional}
+  languages: [en, fr, de, es]
+  default_language: en
+  regions: {}
+  autonomous_communities: []

@@ -1,3 +1,8 @@
 # Loop Engineering: estado local del gauntlet y bytecode de los hooks
 .claude/.gauntlet/
 .claude/loop-engineering/**/__pycache__/
+*.db
+.coverage
+.pytest_cache/
+*.egg-info/
+__pycache__/

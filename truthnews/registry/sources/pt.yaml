@@ -1,0 +1,9 @@
+country: PT
+default_language: pt
+outlets:
+  - {slug: publico-pt, name: Público, homepage: "https://www.publico.pt", scope: national, feeds: [{url: "https://feeds.feedburner.com/PublicoRSS"}]}
+  - {slug: observador, name: Observador, homepage: "https://observador.pt", scope: national}
+  - {slug: rtp-noticias, name: RTP Notícias, homepage: "https://www.rtp.pt/noticias/", scope: national, kind: tv, owner: RTP (pública), feeds: [{url: "https://www.rtp.pt/noticias/rss"}]}
+  - {slug: expresso, name: Expresso, homepage: "https://expresso.pt", scope: national}
+  - {slug: jornal-de-noticias, name: Jornal de Notícias, homepage: "https://www.jn.pt", scope: regional, region: PT-13, city: Porto}
+  - {slug: diario-de-noticias, name: Diário de Notícias, homepage: "https://www.dn.pt", scope: national}

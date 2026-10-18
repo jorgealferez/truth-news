@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ heading }}</h1>
+{% if outlet is defined and outlet %}
+<p class="outlet-meta">{{ t(lang, 'scope_' ~ outlet.scope) }}{% if outlet.region %} · {{ region_name(outlet.region) }}{% endif %}{% if outlet.owner %} · {{ outlet.owner }}{% endif %} · <a href="{{ outlet.homepage }}" rel="noopener nofollow">{{ outlet.homepage }}</a></p>
+{% endif %}
+{% if regions is defined and regions %}
+<nav class="chips">{% for code, name in regions.items() %}<a href="/region/{{ code }}">{{ name }}</a>{% endfor %}</nav>
+{% endif %}
+{% if not items %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% endif %}
+<div class="grid">{% for a in items %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div>
+<nav class="pager">
+  {% if page > 1 %}<a href="?page={{ page - 1 }}">← {{ t(lang, 'previous') }}</a>{% endif %}
+  {% if items|length >= 30 %}<a href="?page={{ page + 1 }}">{{ t(lang, 'next') }} →</a>{% endif %}
+</nav>
+{% endblock %}

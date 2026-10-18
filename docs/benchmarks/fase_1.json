@@ -1,0 +1,46 @@
+{
+  "fase": 1,
+  "titulo": "Nucleo: registro de medios, rastreador, web segmentada y configuracion de Railway",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18, red con proxy de salida)",
+    "toolchains": {"python": "3.13.16", "base_de_datos": "SQLite local de medicion"}
+  },
+  "medidas": {
+    "registro_medios_es": 115,
+    "registro_ccaa_cubiertas": 17,
+    "rastreo_feeds_ok": 125,
+    "rastreo_articulos_nuevos": 2805,
+    "rastreo_medios_con_articulos": 87,
+    "rastreo_descargas_prohibidas": 0,
+    "rastreo_duracion_s": 119.9,
+    "tests_cobertura_pct": 98,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0,
+    "portada_p95_ms_10k": 21.9
+  },
+  "detalle": {
+    "registro": "python -m truthnews sources stats: 130 medios (ES 115: 40 nacionales, 45 autonomicos, 30 locales; PT 6; internacionales 9); 17/17 comunidades autonomas + Ceuta y Melilla",
+    "rastreo": "python -m truthnews crawl sobre base vacia: 134 feeds (73 descubiertos en portada), 125 ok, 9 fallidos, 2805 articulos nuevos de 87 medios, 571 textos completos (tope 600), 11 URLs prohibidas por robots.txt no descargadas, 119.9 s",
+    "tests": "pytest --cov: 45 passed, 0 fallidos, cobertura 98 %",
+    "portada": "python tools/bench_web.py --articles 10000 --requests 60: p50 16.0 ms, p95 21.9 ms, max 79.3 ms"
+  },
+  "criterios_de_salida": {
+    "C1": "cumplido: 115 medios de Espana, 3 ambitos, 17/17 comunidades",
+    "C2": "cumplido en este entorno: 125 feeds ok, 2805 articulos, 0 descargas prohibidas (en produccion se mide en la Fase 5)",
+    "C3": "cumplido: 0 fallidos, 98 % de cobertura, 0 avisos de ruff",
+    "C7": "cumplido: p95 21.9 ms < 300 ms",
+    "C10": "parcial: 3 paises en el registro solo con datos (ES, PT, internacional) e interfaz es/en; contenidos traducidos en la Fase 4"
+  },
+  "no_verificable": [
+    "Imagen Docker: NO VERIFICADO (el contenedor no tiene demonio de Docker); se construye y mide en Railway en la Fase 5",
+    "Grupo Prensa Iberica (Levante-EMV, Faro de Vigo, La Nueva Espana, Diario de Mallorca...): 406 a cualquier agente desde este entorno; se reintenta desde Railway",
+    "El Pais, Cinco Dias, AS, elEconomista: robots.txt prohibe sus feeds a agentes genericos; no se eluden (ADR 0003)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Fase 2: agrupacion de la misma noticia entre medios, afirmaciones, conectores de datos y veredictos",
+    "Rellenar en segundo plano el texto completo de los articulos que superan el tope por rastreo",
+    "Clasificacion por categoria con LLM cuando haya ANTHROPIC_API_KEY (hoy, lexico y pistas de URL)"
+  ]
+}

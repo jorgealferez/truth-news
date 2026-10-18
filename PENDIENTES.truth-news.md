@@ -26,10 +26,12 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 0 — Encuadre: carta rellena, ledger sembrado, gauntlet en VERDE, PR con squash merge — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] loop-init v0.3.0 instalado
-  - [x] OBJETIVO.truth-news.md encuadrado (11 criterios, 5 fases)
-- [ ] Fase 1 — Nucleo: modelo de datos, registro de medios de Espana, crawler RSS con robots.txt, web publica segmentada, configuracion de Railway
+- [ ] Fase 1 — Nucleo: modelo de datos, registro de medios de Espana, crawler RSS con robots.txt, web publica segmentada, configuracion de Railway — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
+  - [x] ADR 0001 (stack), 0002 (datos: esquema inicial), 0003 (rastreo responsable)
+  - [x] Registro: 130 medios (ES 115, 17/17 CCAA), PT e internacionales solo con datos
+  - [x] Rastreador real: 125 feeds ok, 2805 articulos, 0 descargas prohibidas
+  - [x] Web SSR segmentada (seccion, pais, comunidad, medio), es/en, p95 21,9 ms con 10k
+  - [x] Dockerfile, bin/start, railway.json; benchmark fase_1.json
 - [ ] Fase 2 — Motor de contraste: agrupacion, afirmaciones, conectores de datos, veredictos, omisiones, fiabilidad por medio
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
@@ -45,4 +47,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
-(vacio)
+- [x] Fase 0 — Encuadre (#1)

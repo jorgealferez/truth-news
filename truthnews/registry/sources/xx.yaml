@@ -1,0 +1,21 @@
+# Medios internacionales de referencia para contrastar la cobertura global.
+country: XX
+default_language: en
+outlets:
+  - {slug: bbc-news, name: BBC News, homepage: "https://www.bbc.com/news", scope: international, kind: tv, owner: BBC (pública),
+     feeds: [{url: "https://feeds.bbci.co.uk/news/world/rss.xml", category: internacional}]}
+  - {slug: bbc-mundo, name: BBC Mundo, homepage: "https://www.bbc.com/mundo", scope: international, language: es, owner: BBC (pública),
+     feeds: [{url: "https://feeds.bbci.co.uk/mundo/rss.xml"}]}
+  - {slug: the-guardian, name: The Guardian, homepage: "https://www.theguardian.com", scope: international,
+     feeds: [{url: "https://www.theguardian.com/world/rss", category: internacional}]}
+  - {slug: france24-es, name: France 24 Español, homepage: "https://www.france24.com/es/", scope: international, kind: tv, language: es, owner: France Médias Monde (pública),
+     feeds: [{url: "https://www.france24.com/es/rss"}]}
+  - {slug: dw-es, name: DW Español, homepage: "https://www.dw.com/es/", scope: international, kind: tv, language: es, owner: Deutsche Welle (pública),
+     feeds: [{url: "https://rss.dw.com/rdf/rss-sp-all"}]}
+  - {slug: al-jazeera, name: Al Jazeera English, homepage: "https://www.aljazeera.com", scope: international, kind: tv,
+     feeds: [{url: "https://www.aljazeera.com/xml/rss/all.xml", category: internacional}]}
+  - {slug: euronews-es, name: Euronews Español, homepage: "https://es.euronews.com", scope: international, kind: tv, language: es,
+     feeds: [{url: "https://es.euronews.com/rss"}]}
+  - {slug: rfi-es, name: RFI Español, homepage: "https://www.rfi.fr/es/", scope: international, kind: radio, language: es, owner: France Médias Monde (pública),
+     feeds: [{url: "https://www.rfi.fr/es/rss"}]}
+  - {slug: npr, name: NPR, homepage: "https://www.npr.org", scope: international, kind: radio, feeds: [{url: "https://feeds.npr.org/1004/rss.xml", category: internacional}]}

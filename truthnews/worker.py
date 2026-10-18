@@ -1,0 +1,53 @@
+"""Proceso worker: rastreo periodico (y, en fases siguientes, analisis y distribucion)."""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+
+from apscheduler.schedulers.blocking import BlockingScheduler
+
+from truthnews.config import Settings, get_settings
+from truthnews.crawler.ingest import crawl, sync_registry
+from truthnews.db import get_engine, session_scope
+
+log = logging.getLogger(__name__)
+
+
+def run_cycle(settings: Settings | None = None) -> dict:
+    settings = settings or get_settings()
+    engine = get_engine(settings.database_url)
+    with session_scope(engine) as session:
+        sync_registry(session)
+    with session_scope(engine) as session:
+        run = asyncio.run(crawl(session, settings))
+        summary = {
+            "run": run.id,
+            "feeds_ok": run.feeds_ok,
+            "feeds_failed": run.feeds_failed,
+            "articles_new": run.articles_new,
+            "robots_blocked": run.robots_blocked,
+        }
+    log.info("ciclo terminado: %s", summary)
+    return summary
+
+
+def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle infinito
+    settings = settings or get_settings()
+    scheduler = BlockingScheduler(timezone="UTC")
+    scheduler.add_job(
+        run_cycle,
+        "interval",
+        minutes=settings.crawl_interval_minutes,
+        args=[settings],
+        id="crawl",
+        max_instances=1,
+        coalesce=True,
+        next_run_time=None,
+    )
+    log.info("worker: primer ciclo inmediato, despues cada %s min", settings.crawl_interval_minutes)
+    try:
+        run_cycle(settings)
+    except Exception:
+        log.exception("el primer ciclo fallo; el planificador lo reintentara")
+    scheduler.start()
