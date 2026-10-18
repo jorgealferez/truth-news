@@ -27,6 +27,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 ## Activo
 
 - [ ] Marca nosmienten.com: identidad sobria y neutral, logotipo SVG, favicon, imagen para redes, cabecera y SITE_NAME; dominio propio en Railway (peticion del usuario 2026-10-18: "prioriza cambiar imagen de marca y logotipos") — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
+  - [x] ADR 0011: simbolo (dos barras, la inferior mas corta), logotipo en contornos, paleta tinta/ambar fuera de colores de partido, lema "Sin bandos. Con datos."
+  - [x] logo.svg, mark.svg, favicon, iconos, manifest, imagen social 1200x630 y metadatos Open Graph/Twitter (tools/brand.py)
+  - [x] Railway: SITE_NAME/SITE_DOMAIN/SITE_URL en web y worker; nosmienten.com verificado con certificado; www.nosmienten.com pendiente de DNS del usuario
 - [ ] Priorizar lo que tiene datos que difieren: puntuacion de contraste por historia (cifras en disputa, veredictos, omisiones) que ordena portada y contrastes; relanzar historias antiguas cuando hay datos nuevos relevantes y tendencia (peticion del usuario 2026-10-18)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion

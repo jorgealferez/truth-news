@@ -1,6 +1,7 @@
 # Textos de interfaz por idioma. Anadir un idioma = anadir una clave con todas las cadenas.
 es:
-  tagline: Contrastamos lo que publican los medios con los datos
+  tagline: Comparamos lo que cuentan los medios con lo que dicen los datos
+  motto: Sin bandos. Con datos.
   latest: Última hora
   sections: Secciones
   countries: Países
@@ -18,9 +19,11 @@ es:
   articles_count: noticias
   about: Qué es esto
   about_text: >-
-    Truth News rastrea automáticamente cientos de medios, agrupa la misma noticia contada por cada uno,
-    contrasta sus afirmaciones con fuentes de datos oficiales y abiertas y señala lo que cada medio omite.
-    Cada veredicto enlaza su evidencia; cuando no hay datos suficientes, lo decimos.
+    Rastreamos automáticamente cientos de medios, agrupamos la misma noticia contada por cada uno,
+    contrastamos sus afirmaciones con fuentes de datos oficiales y abiertas y señalamos lo que cada medio
+    omite. Cada veredicto enlaza su evidencia; cuando no hay datos suficientes, lo decimos. El nombre no
+    señala a nadie: «¿nos mienten?» es la pregunta que se hace cualquier lector, y aquí se responde con
+    datos y con el mismo método para todos los medios, sea cual sea su línea editorial.
   copyright_note: Titulares y extractos citados con enlace al medio original (derecho de cita). El análisis es propio.
   ai_note: Contenido elaborado de forma automatizada y revisable.
   page: Página
@@ -90,7 +93,8 @@ es:
     comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
     tomamos partido: aplicamos las mismas reglas a todos los medios.
 en:
-  tagline: We check what the media publish against the data
+  tagline: We compare what the media report with what the data say
+  motto: No sides. Just data.
   latest: Latest
   sections: Sections
   countries: Countries
@@ -108,9 +112,11 @@ en:
   articles_count: stories
   about: About
   about_text: >-
-    Truth News automatically crawls hundreds of outlets, groups the same story as told by each one,
-    checks their claims against official and open data sources and flags what each outlet leaves out.
-    Every verdict links its evidence; when the data is not enough, we say so.
+    We automatically crawl hundreds of outlets, group the same story as told by each one, check their
+    claims against official and open data sources and flag what each outlet leaves out. Every verdict
+    links its evidence; when the data is not enough, we say so. The name ("are they lying to us?") points
+    at no one: it is the question every reader asks, answered here with data and with the same method
+    for every outlet, whatever its editorial line.
   copyright_note: Headlines and short excerpts quoted with a link to the original outlet. The analysis is our own.
   ai_note: Automatically produced, reviewable content.
   page: Page

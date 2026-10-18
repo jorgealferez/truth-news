@@ -331,3 +331,40 @@ def test_ago():
     assert _ago(now - timedelta(minutes=5)) == "5 min"
     assert _ago((now - timedelta(hours=3)).replace(tzinfo=None)) == "3 h"
     assert _ago(datetime(2020, 1, 2, tzinfo=UTC)) == "02/01/2020"
+
+
+def _contrast(fg: str, bg: str) -> float:
+    def lum(hex_color: str) -> float:
+        rgb = [int(hex_color[i : i + 2], 16) / 255 for i in (1, 3, 5)]
+        lin = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in rgb]
+        return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2]
+
+    hi, lo = sorted((lum(fg), lum(bg)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def test_brand_palette_is_readable():
+    import re
+    from pathlib import Path
+
+    css = (Path(__file__).parents[1] / "truthnews/web/static/site.css").read_text()
+    tokens = dict(re.findall(r"--(\w+):(#[0-9a-f]{6})", css))
+    for text_token in ("ink", "muted", "accent"):  # colores de texto: WCAG AA (4.5:1) sobre papel
+        assert _contrast(tokens[text_token], tokens["paper"]) >= 4.5, text_token
+
+
+def test_brand_assets_and_social_meta(client):
+    home = client.get("/").text
+    assert '<img src="/static/logo.svg" alt="NosMienten"' in home
+    assert 'property="og:image" content="http://localhost:8000/static/og-default.png"' in home
+    assert 'name="twitter:card" content="summary_large_image"' in home
+    assert "Sin bandos. Con datos." in home and "nosmienten.com" in home
+    assert '<meta property="og:title" content="NosMienten — Comparamos' in home
+    ico = client.get("/favicon.ico")
+    assert ico.status_code == 200 and ico.headers["content-type"] == "image/x-icon"
+    manifest = client.get("/site.webmanifest").json()
+    assert manifest["name"] == "NosMienten" and manifest["icons"][1]["sizes"] == "512x512"
+    for path in ("/static/logo.svg", "/static/mark.svg", "/static/og-default.png", "/static/icon-180.png"):
+        assert client.get(path).status_code == 200, path
+    en = client.get("/acerca?lang=en").text
+    assert "No sides. Just data." in en and 'content="en_GB"' in en

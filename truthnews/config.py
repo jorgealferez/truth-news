@@ -26,8 +26,9 @@ def _database_url() -> str:
 @dataclass(frozen=True)
 class Settings:
     database_url: str = field(default_factory=_database_url)
-    site_name: str = field(default_factory=lambda: os.environ.get("SITE_NAME", "Truth News"))
+    site_name: str = field(default_factory=lambda: os.environ.get("SITE_NAME", "NosMienten"))
     site_url: str = field(default_factory=lambda: os.environ.get("SITE_URL", "http://localhost:8000"))
+    site_domain: str = field(default_factory=lambda: os.environ.get("SITE_DOMAIN", "nosmienten.com"))
     default_language: str = field(default_factory=lambda: os.environ.get("DEFAULT_LANGUAGE", "es"))
     default_country: str = field(default_factory=lambda: os.environ.get("DEFAULT_COUNTRY", "ES"))
     user_agent: str = field(

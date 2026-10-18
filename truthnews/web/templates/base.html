@@ -6,6 +6,21 @@
   <title>{% block title %}{{ site.site_name }} — {{ t(lang, 'tagline') }}{% endblock %}</title>
   <meta name="description" content="{% block description %}{{ t(lang, 'tagline') }}{% endblock %}">
   <link rel="stylesheet" href="/static/site.css">
+  <link rel="icon" href="/static/mark.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon.ico" sizes="48x48">
+  <link rel="apple-touch-icon" href="/static/icon-180.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#14161b">
+  <meta property="og:site_name" content="{{ site.site_name }}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="{{ 'es_ES' if lang == 'es' else 'en_GB' }}">
+  <meta property="og:title" content="{{ self.title() }}">
+  <meta property="og:description" content="{{ self.description() }}">
+  <meta property="og:url" content="{{ site.site_url }}{{ request.url.path }}">
+  <meta property="og:image" content="{{ site.site_url }}/static/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -17,7 +32,7 @@
     </nav>
   </div>
   <div class="wrap brand">
-    <a href="/" class="logo">{{ site.site_name }}</a>
+    <a href="/" class="logo"><img src="/static/logo.svg" alt="{{ site.site_name }}" width="540" height="64"></a>
     <p class="tagline">{{ t(lang, 'tagline') }}</p>
   </div>
   <nav class="sections" aria-label="{{ t(lang, 'sections') }}">
@@ -35,7 +50,8 @@
 </main>
 <footer class="foot">
   <div class="wrap">
-    <p><strong>{{ site.site_name }}</strong> · {{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
+    <p class="foot-brand"><img src="/static/mark.svg" alt="" width="22" height="22"> <strong>{{ site.site_domain }}</strong> · {{ t(lang, 'motto') }}</p>
+    <p>{{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
     <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a></p>
   </div>
 </footer>

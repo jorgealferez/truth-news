@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, text
@@ -85,6 +85,29 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         if request.query_params.get("lang") == lang:
             resp.set_cookie("lang", lang, max_age=60 * 60 * 24 * 365, samesite="lax")
         return resp
+
+    @app.get("/favicon.ico", include_in_schema=False)
+    def favicon():
+        return FileResponse(HERE / "static" / "favicon.ico", media_type="image/x-icon")
+
+    @app.get("/site.webmanifest", include_in_schema=False)
+    def manifest():
+        return JSONResponse(
+            {
+                "name": settings.site_name,
+                "short_name": settings.site_name,
+                "description": registry.t(settings.default_language, "tagline"),
+                "start_url": "/",
+                "display": "standalone",
+                "background_color": "#fbfaf6",
+                "theme_color": "#14161b",
+                "icons": [
+                    {"src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png"},
+                    {"src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                ],
+            },
+            media_type="application/manifest+json",
+        )
 
     @app.get("/healthz")
     def healthz(session: SessionDep):

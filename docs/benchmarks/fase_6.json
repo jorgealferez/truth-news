@@ -1,0 +1,37 @@
+{
+  "fase": "6",
+  "titulo": "Marca nosmienten.com: identidad sobria y neutral, logotipo, iconos, imagen social y dominio propio",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16",
+      "pillow": "12.3.0",
+      "fonttools": "4.67.0"
+    }
+  },
+  "medidas": {
+    "marca_contraste_texto_min": 5.67,
+    "portada_p95_ms_10k": 12.9,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "contraste": "WCAG sobre papel #fbfaf6: tinta #14161b 17,33:1, gris #595959 6,71:1, ambar de texto #8a5a00 5,67:1 (se publica el minimo); comprobado por tests/test_web.py",
+    "portada": "tools/bench_web.py x3: p95 12,1 / 13,4 / 12,9 ms (mediana); el logotipo es un SVG estatico de 4 KB servido aparte",
+    "activos": "logo.svg 4 KB (contornos Inter, OFL 1.1), mark.svg 0,3 KB, og-default.png 42 KB (1200x630), iconos 180/192/512, favicon.ico 16/32/48",
+    "dominio": "nosmienten.com conectado al servicio web en Railway: verificado, certificado valido, /healthz 200 (2026-10-18); www.nosmienten.com anadido, pendiente de DNS del usuario",
+    "movil": "captura a 375 px: logotipo y lema caben sin desbordar; la barra de secciones se desplaza en horizontal como antes"
+  },
+  "criterios_de_salida": {
+    "C11": "la web responde en https://nosmienten.com/healthz con 200"
+  },
+  "no_verificable": [
+    "www.nosmienten.com: NO VERIFICADO hasta que el usuario cree el CNAME y el TXT de verificacion en su DNS"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Imagenes sociales por pieza e historia (titular + veredicto) en la Fase 4",
+    "User-Agent del rastreador con la URL de nosmienten.com/acerca"
+  ]
+}
