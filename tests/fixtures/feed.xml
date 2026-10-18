@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/">
+<channel><title>Medio de prueba</title><link>https://medio.test/</link>
+<item><title>&lt;![CDATA[El Gobierno aprueba el decreto de vivienda]]&gt;</title>
+  <link>https://medio.test/politica/decreto?utm_source=rss</link>
+  <description>&lt;p&gt;El Consejo de Ministros aprobó hoy &lt;b&gt;el decreto&lt;/b&gt;.&lt;/p&gt;</description>
+  <pubDate>Sun, 18 Oct 2026 10:00:00 +0200</pubDate><category>Vivienda</category>
+  <media:content url="https://medio.test/img/1.jpg" medium="image"/></item>
+<item><title>El IPC sube al 3,1 % en septiembre</title><link>https://medio.test/economia/ipc</link>
+  <description>La inflación repunta.</description><pubDate>Sun, 18 Oct 2026 09:00:00 +0200</pubDate></item>
+<item><title>Prohibida por robots</title><link>https://medio.test/privado/x</link></item>
+<item><title></title><link>https://medio.test/sin-titulo</link></item>
+</channel></rss>

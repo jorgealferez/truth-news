@@ -1,0 +1,59 @@
+# Textos de interfaz por idioma. Anadir un idioma = anadir una clave con todas las cadenas.
+es:
+  tagline: Contrastamos lo que publican los medios con los datos
+  latest: Última hora
+  sections: Secciones
+  countries: Países
+  regions: Comunidades
+  outlets: Medios
+  outlet: Medio
+  read_original: Leer en el medio original
+  published: Publicado
+  no_articles: Todavía no hay noticias en esta sección. El rastreador trabaja cada hora.
+  more: Más
+  scope_national: Nacional
+  scope_regional: Autonómico
+  scope_local: Local
+  scope_international: Internacional
+  articles_count: noticias
+  about: Qué es esto
+  about_text: >-
+    Truth News rastrea automáticamente cientos de medios, agrupa la misma noticia contada por cada uno,
+    contrasta sus afirmaciones con fuentes de datos oficiales y abiertas y señala lo que cada medio omite.
+    Cada veredicto enlaza su evidencia; cuando no hay datos suficientes, lo decimos.
+  copyright_note: Titulares y extractos citados con enlace al medio original (derecho de cita). El análisis es propio.
+  ai_note: Contenido elaborado de forma automatizada y revisable.
+  page: Página
+  previous: Anterior
+  next: Siguiente
+  all: Todo
+  language: Idioma
+en:
+  tagline: We check what the media publish against the data
+  latest: Latest
+  sections: Sections
+  countries: Countries
+  regions: Regions
+  outlets: Outlets
+  outlet: Outlet
+  read_original: Read on the original outlet
+  published: Published
+  no_articles: No stories in this section yet. The crawler runs every hour.
+  more: More
+  scope_national: National
+  scope_regional: Regional
+  scope_local: Local
+  scope_international: International
+  articles_count: stories
+  about: About
+  about_text: >-
+    Truth News automatically crawls hundreds of outlets, groups the same story as told by each one,
+    checks their claims against official and open data sources and flags what each outlet leaves out.
+    Every verdict links its evidence; when the data is not enough, we say so.
+  copyright_note: Headlines and short excerpts quoted with a link to the original outlet. The analysis is our own.
+  ai_note: Automatically produced, reviewable content.
+  page: Page
+  previous: Previous
+  next: Next
+  all: All
+  language: Language

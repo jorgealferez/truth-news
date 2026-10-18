@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ a.title }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ (a.summary or a.title)[:200] }}{% endblock %}
+{% block head %}
+<link rel="canonical" href="{{ site.site_url }}/noticia/{{ a.id }}">
+<meta property="og:title" content="{{ a.title }}">
+<meta property="og:type" content="article">
+{% if a.image_url %}<meta property="og:image" content="{{ a.image_url }}">{% endif %}
+{% endblock %}
+{% block content %}
+<article class="story">
+  <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a> · <a href="/pais/{{ a.country }}">{{ country_name(a.country, lang) }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>
+  <h1>{{ a.title }}</h1>
+  <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
+  {% if a.summary %}<blockquote class="excerpt">{{ a.summary[:600] }}</blockquote>{% endif %}
+  <p><a class="button" href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'read_original') }} ↗</a></p>
+  {% if a.topics %}<nav class="chips">{% for tp in a.topics %}<span>{{ tp }}</span>{% endfor %}</nav>{% endif %}
+</article>
+{% if related %}
+<section class="section-block"><h2>{{ t(lang, 'more') }}: {{ category_name(a.category, lang) }}</h2>
+<div class="grid">{% for a in related %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div></section>
+{% endif %}
+{% endblock %}

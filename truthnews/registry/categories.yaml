@@ -1,0 +1,79 @@
+# Categorias editoriales. `keywords` (por idioma) y `url_hints` alimentan el clasificador.
+# El orden importa en empates: se elige la primera.
+politica:
+  name: {es: Política, en: Politics, pt: Política}
+  url_hints: [politica, politics, elecciones, parlamento, gobierno, espana/politica]
+  keywords:
+    es: [gobierno, congreso, senado, parlamento, ministro, ministra, presidente del gobierno, elecciones, pp, psoe, vox, sumar, podemos, junts, erc, pnv, bildu, partido político, diputado, diputada, moncloa, oposición, investidura, ley, decreto, pleno, alcalde, alcaldesa, consejero, consejera, sánchez, feijóo, abascal, ayuso]
+    en: [government, parliament, minister, election, senate, congress, party, prime minister, president, vote, legislation]
+    pt: [governo, parlamento, ministro, eleições, partido, deputado, presidente]
+economia:
+  name: {es: Economía, en: Economy, pt: Economia}
+  url_hints: [economia, economy, business, mercados, empresas, finanzas, dinero, vivienda]
+  keywords:
+    es: [economía, pib, inflación, ipc, paro, empleo, desempleo, salario, pensiones, impuestos, hacienda, bce, euríbor, hipoteca, vivienda, alquiler, bolsa, ibex, empresa, déficit, deuda, presupuestos, exportaciones, precios, tipos de interés, epa, afiliados]
+    en: [economy, gdp, inflation, unemployment, jobs, wages, taxes, market, stocks, debt, deficit, interest rates, prices]
+    pt: [economia, pib, inflação, desemprego, salário, impostos, dívida, preços]
+internacional:
+  name: {es: Internacional, en: World, pt: Internacional}
+  url_hints: [internacional, mundo, world, international, europa, america, oriente-proximo]
+  keywords:
+    es: [estados unidos, trump, rusia, putin, ucrania, israel, gaza, palestina, irán, china, otan, onu, unión europea, bruselas, francia, alemania, reino unido, marruecos, venezuela, argentina, méxico, guerra, embajada, sanciones]
+    en: [united states, russia, ukraine, israel, gaza, iran, china, nato, united nations, european union, war, sanctions, embassy]
+    pt: [estados unidos, rússia, ucrânia, israel, china, nato, união europeia, guerra]
+sociedad:
+  name: {es: Sociedad, en: Society, pt: Sociedade}
+  url_hints: [sociedad, society, educacion, igualdad, local, comunidad]
+  keywords:
+    es: [educación, colegio, universidad, inmigración, migrantes, igualdad, violencia de género, familia, jóvenes, mayores, religión, protesta, manifestación, huelga, okupación, transporte, tráfico]
+    en: [education, school, university, immigration, migrants, equality, protest, strike, families, transport]
+    pt: [educação, escola, imigração, protesto, greve]
+sucesos:
+  name: {es: Sucesos y tribunales, en: Crime and courts, pt: Crimes e tribunais}
+  url_hints: [sucesos, tribunales, justicia, crime, courts, policia]
+  keywords:
+    es: [detenido, detenida, policía, guardia civil, mossos, ertzaintza, juez, jueza, tribunal, juicio, fiscalía, condena, sentencia, asesinato, homicidio, robo, agresión, investigado, imputado, supremo, audiencia nacional, disturbios]
+    en: [arrested, police, court, judge, trial, sentenced, murder, robbery, assault, riot]
+    pt: [detido, polícia, tribunal, juiz, julgamento, homicídio]
+salud:
+  name: {es: Salud, en: Health, pt: Saúde}
+  url_hints: [salud, health, sanidad]
+  keywords:
+    es: [salud, sanidad, hospital, médico, médica, enfermedad, virus, vacuna, cáncer, pacientes, listas de espera, atención primaria, oms]
+    en: [health, hospital, doctor, disease, virus, vaccine, cancer, patients, who]
+    pt: [saúde, hospital, médico, doença, vacina]
+ciencia:
+  name: {es: Ciencia y tecnología, en: Science and technology, pt: Ciência e tecnologia}
+  url_hints: [ciencia, science, tecnologia, technology, tech]
+  keywords:
+    es: [ciencia, científicos, investigación, estudio, tecnología, inteligencia artificial, ia, espacio, nasa, internet, ciberataque, móvil, datos]
+    en: [science, scientists, research, study, technology, artificial intelligence, ai, space, cyberattack]
+    pt: [ciência, investigação, tecnologia, inteligência artificial]
+medio-ambiente:
+  name: {es: Clima y medio ambiente, en: Climate and environment, pt: Clima e ambiente}
+  url_hints: [medio-ambiente, clima, climate, environment, sostenibilidad]
+  keywords:
+    es: [clima, cambio climático, sequía, incendio, dana, inundaciones, temperaturas, ola de calor, emisiones, contaminación, renovables, energía, agua, embalses]
+    en: [climate, drought, wildfire, floods, heatwave, emissions, pollution, renewable, energy]
+    pt: [clima, seca, incêndio, inundações, emissões, energia]
+cultura:
+  name: {es: Cultura, en: Culture, pt: Cultura}
+  url_hints: [cultura, culture, cine, musica, libros, television, gente]
+  keywords:
+    es: [cine, película, música, concierto, libro, novela, exposición, museo, teatro, serie, festival, premio]
+    en: [film, movie, music, concert, book, novel, exhibition, museum, theatre, series, festival]
+    pt: [cinema, filme, música, livro, exposição, museu]
+deportes:
+  name: {es: Deportes, en: Sport, pt: Desporto}
+  url_hints: [deportes, deporte, sport, sports, futbol, football, baloncesto, motor]
+  keywords:
+    es: [fútbol, liga, laliga, real madrid, barcelona, atlético, partido de fútbol, gol, goles, entrenador, míster, mister, plantilla, fichaje, jornada, derbi, penalti, árbitro, champions, baloncesto, tenis, fórmula 1, motogp, selección, osasuna, sevilla fc, betis, valencia cf, athletic, real sociedad, celta, mirandés, real valladolid]
+    en: [football, soccer, league, match, goal, coach, champions league, basketball, tennis]
+    pt: [futebol, liga, jogo, golo, treinador, benfica, sporting, hóquei, taça, mundial, campeonato]
+opinion:
+  name: {es: Opinión, en: Opinion, pt: Opinião}
+  url_hints: [opinion, opinión, tribuna, editorial, columnas, blogs]
+  keywords:
+    es: []
+    en: []
+    pt: []

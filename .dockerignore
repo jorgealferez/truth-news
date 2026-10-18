@@ -1,0 +1,9 @@
+.git
+.claude
+.githooks
+tests
+docs
+*.db
+__pycache__
+.pytest_cache
+.coverage

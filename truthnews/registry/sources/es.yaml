@@ -1,0 +1,166 @@
+# Medios de España. Campos: slug, name, homepage, scope (national|regional|local), region (ISO 3166-2),
+# city, kind (press|tv|radio|agency|factcheck), language, feeds (opcional: [{url, category}]).
+# Sin `feeds`, el rastreador descubre los feeds del medio por <link rel="alternate"> en su portada.
+country: ES
+default_language: es
+outlets:
+  # --- Nacionales ---
+  - {slug: el-pais, name: El País, homepage: "https://elpais.com", scope: national, owner: PRISA,
+     feeds: [{url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada"},
+             {url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/espana/portada", category: politica},
+             {url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/economia/portada", category: economia},
+             {url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/internacional/portada", category: internacional}]}
+  - {slug: el-mundo, name: El Mundo, homepage: "https://www.elmundo.es", scope: national, owner: Unidad Editorial,
+     feeds: [{url: "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml"},
+             {url: "https://e00-elmundo.uecdn.es/elmundo/rss/espana.xml", category: politica},
+             {url: "https://e00-elmundo.uecdn.es/elmundo/rss/economia.xml", category: economia},
+             {url: "https://e00-elmundo.uecdn.es/elmundo/rss/internacional.xml", category: internacional}]}
+  - {slug: abc, name: ABC, homepage: "https://www.abc.es", scope: national, owner: Vocento,
+     feeds: [{url: "https://www.abc.es/rss/2.0/portada/"}, {url: "https://www.abc.es/rss/2.0/espana/", category: politica},
+             {url: "https://www.abc.es/rss/2.0/economia/", category: economia}, {url: "https://www.abc.es/rss/2.0/internacional/", category: internacional}]}
+  - {slug: la-vanguardia, name: La Vanguardia, homepage: "https://www.lavanguardia.com", scope: national, owner: Grupo Godó,
+     feeds: [{url: "https://www.lavanguardia.com/rss/home.xml"}, {url: "https://www.lavanguardia.com/rss/politica.xml", category: politica},
+             {url: "https://www.lavanguardia.com/rss/economia.xml", category: economia}, {url: "https://www.lavanguardia.com/rss/internacional.xml", category: internacional}]}
+  - {slug: el-confidencial, name: El Confidencial, homepage: "https://www.elconfidencial.com", scope: national,
+     feeds: [{url: "https://rss.elconfidencial.com/espana/", category: politica}, {url: "https://rss.elconfidencial.com/economia/", category: economia},
+             {url: "https://rss.elconfidencial.com/mundo/", category: internacional}]}
+  - {slug: eldiario-es, name: elDiario.es, homepage: "https://www.eldiario.es", scope: national, feeds: [{url: "https://www.eldiario.es/rss/"}]}
+  - {slug: publico, name: Público, homepage: "https://www.publico.es", scope: national, feeds: [{url: "https://www.publico.es/rss/"}]}
+  - {slug: la-razon, name: La Razón, homepage: "https://www.larazon.es", scope: national, owner: Planeta, feeds: [{url: "https://www.larazon.es/rss/portada.xml"}]}
+  - {slug: 20minutos, name: 20minutos, homepage: "https://www.20minutos.es", scope: national, owner: Henneo, feeds: [{url: "https://www.20minutos.es/rss/"}]}
+  - {slug: rtve, name: RTVE Noticias, homepage: "https://www.rtve.es/noticias/", scope: national, kind: tv, owner: Corporación RTVE (pública),
+     feeds: [{url: "https://api2.rtve.es/rss/temas_noticias.xml"}]}
+  - {slug: europa-press, name: Europa Press, homepage: "https://www.europapress.es", scope: national, kind: agency,
+     feeds: [{url: "https://www.europapress.es/rss/rss.aspx"}, {url: "https://www.europapress.es/rss/rss.aspx?ch=00066", category: politica},
+             {url: "https://www.europapress.es/rss/rss.aspx?ch=00136", category: economia}, {url: "https://www.europapress.es/rss/rss.aspx?ch=00069", category: internacional}]}
+  - {slug: efe, name: Agencia EFE, homepage: "https://efe.com", scope: national, kind: agency, owner: SEPI (pública), feeds: [{url: "https://efe.com/feed/"}]}
+  - {slug: el-espanol, name: El Español, homepage: "https://www.elespanol.com", scope: national, feeds: [{url: "https://www.elespanol.com/rss/"}]}
+  - {slug: okdiario, name: OKDIARIO, homepage: "https://okdiario.com", scope: national, feeds: [{url: "https://okdiario.com/feed"}]}
+  - {slug: libertad-digital, name: Libertad Digital, homepage: "https://www.libertaddigital.com", scope: national,
+     feeds: [{url: "https://feeds2.feedburner.com/libertaddigital/portada"}]}
+  - {slug: infolibre, name: infoLibre, homepage: "https://www.infolibre.es", scope: national, feeds: [{url: "https://www.infolibre.es/rss"}]}
+  - {slug: the-objective, name: The Objective, homepage: "https://theobjective.com", scope: national, feeds: [{url: "https://theobjective.com/feed/"}]}
+  - {slug: vozpopuli, name: Vozpópuli, homepage: "https://www.vozpopuli.com", scope: national, feeds: [{url: "https://www.vozpopuli.com/rss/"}]}
+  - {slug: el-periodico, name: El Periódico, homepage: "https://www.elperiodico.com/es/", scope: national, owner: Prensa Ibérica,
+     feeds: [{url: "https://www.elperiodico.com/es/rss/rss_portada.xml"}]}
+  - {slug: cadena-ser, name: Cadena SER, homepage: "https://cadenaser.com", scope: national, kind: radio, owner: PRISA, feeds: [{url: "https://cadenaser.com/feed/"}]}
+  - {slug: cope, name: COPE, homepage: "https://www.cope.es", scope: national, kind: radio, owner: Conferencia Episcopal Española}
+  - {slug: onda-cero, name: Onda Cero, homepage: "https://www.ondacero.es", scope: national, kind: radio, owner: Atresmedia}
+  - {slug: antena3-noticias, name: Antena 3 Noticias, homepage: "https://www.antena3.com/noticias/", scope: national, kind: tv, owner: Atresmedia,
+     feeds: [{url: "https://www.antena3.com/noticias/rss/4013050.xml"}]}
+  - {slug: lasexta, name: laSexta, homepage: "https://www.lasexta.com/noticias/", scope: national, kind: tv, owner: Atresmedia,
+     feeds: [{url: "https://www.lasexta.com/rss/351410.xml"}]}
+  - {slug: informativos-telecinco, name: Informativos Telecinco, homepage: "https://www.telecinco.es/noticias/", scope: national, kind: tv, owner: Mediaset}
+  - {slug: expansion, name: Expansión, homepage: "https://www.expansion.com", scope: national, owner: Unidad Editorial,
+     feeds: [{url: "https://e00-expansion.uecdn.es/rss/portada.xml", category: economia}]}
+  - {slug: cinco-dias, name: Cinco Días, homepage: "https://cincodias.elpais.com", scope: national, owner: PRISA,
+     feeds: [{url: "https://feeds.elpais.com/mrss-s/pages/ep/site/cincodias.elpais.com/portada", category: economia}]}
+  - {slug: el-economista, name: elEconomista, homepage: "https://www.eleconomista.es", scope: national, feeds: [{url: "https://www.eleconomista.es/rss/rss-seleccion-ee.php", category: economia}]}
+  - {slug: el-salto, name: El Salto, homepage: "https://www.elsaltodiario.com", scope: national, feeds: [{url: "https://www.elsaltodiario.com/general/feed"}]}
+  - {slug: ctxt, name: CTXT, homepage: "https://ctxt.es", scope: national}
+  - {slug: huffpost-es, name: El HuffPost, homepage: "https://www.huffingtonpost.es", scope: national, feeds: [{url: "https://www.huffingtonpost.es/feeds/index.xml"}]}
+  - {slug: el-plural, name: El Plural, homepage: "https://www.elplural.com", scope: national}
+  - {slug: esdiario, name: ESdiario, homepage: "https://www.esdiario.com", scope: national}
+  - {slug: el-debate, name: El Debate, homepage: "https://www.eldebate.com", scope: national}
+  - {slug: el-independiente, name: El Independiente, homepage: "https://www.elindependiente.com", scope: national, feeds: [{url: "https://www.elindependiente.com/feed/"}]}
+  - {slug: la-informacion, name: La Información, homepage: "https://www.lainformacion.com", scope: national}
+  - {slug: newtral, name: Newtral, homepage: "https://www.newtral.es", scope: national, kind: factcheck, feeds: [{url: "https://www.newtral.es/feed/"}]}
+  - {slug: maldita, name: Maldita.es, homepage: "https://maldita.es", scope: national, kind: factcheck}
+  - {slug: marca, name: Marca, homepage: "https://www.marca.com", scope: national, owner: Unidad Editorial,
+     feeds: [{url: "https://e00-marca.uecdn.es/rss/portada.xml", category: deportes}]}
+  - {slug: as, name: AS, homepage: "https://as.com", scope: national, owner: PRISA, feeds: [{url: "https://feeds.as.com/mrss-s/pages/as/site/as.com/portada/", category: deportes}]}
+  # --- Andalucía ---
+  - {slug: diario-de-sevilla, name: Diario de Sevilla, homepage: "https://www.diariodesevilla.es", scope: regional, region: ES-AN, city: Sevilla, owner: Grupo Joly}
+  - {slug: diario-sur, name: Diario Sur, homepage: "https://www.diariosur.es", scope: regional, region: ES-AN, city: Málaga, owner: Vocento}
+  - {slug: ideal, name: Ideal, homepage: "https://www.ideal.es", scope: regional, region: ES-AN, city: Granada, owner: Vocento}
+  - {slug: diario-de-cadiz, name: Diario de Cádiz, homepage: "https://www.diariodecadiz.es", scope: local, region: ES-AN, city: Cádiz, owner: Grupo Joly}
+  - {slug: malaga-hoy, name: Málaga Hoy, homepage: "https://www.malagahoy.es", scope: local, region: ES-AN, city: Málaga, owner: Grupo Joly}
+  - {slug: huelva-informacion, name: Huelva Información, homepage: "https://www.huelvainformacion.es", scope: local, region: ES-AN, city: Huelva, owner: Grupo Joly}
+  - {slug: diario-cordoba, name: Diario Córdoba, homepage: "https://www.diariocordoba.com", scope: local, region: ES-AN, city: Córdoba, owner: Prensa Ibérica}
+  - {slug: diario-jaen, name: Diario Jaén, homepage: "https://www.diariojaen.es", scope: local, region: ES-AN, city: Jaén}
+  - {slug: la-voz-de-almeria, name: La Voz de Almería, homepage: "https://www.lavozdealmeria.com", scope: local, region: ES-AN, city: Almería}
+  - {slug: canal-sur, name: Canal Sur Noticias, homepage: "https://www.canalsur.es/noticias", scope: regional, region: ES-AN, kind: tv, owner: RTVA (pública)}
+  # --- Aragón ---
+  - {slug: heraldo, name: Heraldo de Aragón, homepage: "https://www.heraldo.es", scope: regional, region: ES-AR, city: Zaragoza, owner: Henneo}
+  - {slug: el-periodico-de-aragon, name: El Periódico de Aragón, homepage: "https://www.elperiodicodearagon.com", scope: regional, region: ES-AR, city: Zaragoza, owner: Prensa Ibérica}
+  - {slug: diario-del-altoaragon, name: Diario del AltoAragón, homepage: "https://www.diariodelaltoaragon.es", scope: local, region: ES-AR, city: Huesca}
+  # --- Asturias ---
+  - {slug: la-nueva-espana, name: La Nueva España, homepage: "https://www.lne.es", scope: regional, region: ES-AS, city: Oviedo, owner: Prensa Ibérica}
+  - {slug: el-comercio, name: El Comercio, homepage: "https://www.elcomercio.es", scope: regional, region: ES-AS, city: Gijón, owner: Vocento}
+  # --- Illes Balears ---
+  - {slug: diario-de-mallorca, name: Diario de Mallorca, homepage: "https://www.diariodemallorca.es", scope: regional, region: ES-IB, city: Palma, owner: Prensa Ibérica}
+  - {slug: ultima-hora, name: Última Hora, homepage: "https://www.ultimahora.es", scope: regional, region: ES-IB, city: Palma, owner: Grupo Serra}
+  - {slug: diario-de-ibiza, name: Diario de Ibiza, homepage: "https://www.diariodeibiza.es", scope: local, region: ES-IB, city: Eivissa, owner: Prensa Ibérica}
+  # --- Canarias ---
+  - {slug: canarias7, name: Canarias7, homepage: "https://www.canarias7.es", scope: regional, region: ES-CN, city: Las Palmas de Gran Canaria}
+  - {slug: el-dia, name: El Día, homepage: "https://www.eldia.es", scope: regional, region: ES-CN, city: Santa Cruz de Tenerife, owner: Prensa Ibérica}
+  - {slug: la-provincia, name: La Provincia, homepage: "https://www.laprovincia.es", scope: regional, region: ES-CN, city: Las Palmas de Gran Canaria, owner: Prensa Ibérica}
+  - {slug: diario-de-avisos, name: Diario de Avisos, homepage: "https://diariodeavisos.elespanol.com", scope: local, region: ES-CN, city: Santa Cruz de Tenerife}
+  # --- Cantabria ---
+  - {slug: el-diario-montanes, name: El Diario Montañés, homepage: "https://www.eldiariomontanes.es", scope: regional, region: ES-CB, city: Santander, owner: Vocento}
+  - {slug: el-diario-cantabria, name: El Diario Cantabria, homepage: "https://www.eldiariocantabria.es", scope: regional, region: ES-CB, city: Santander}
+  # --- Castilla-La Mancha ---
+  - {slug: la-tribuna-de-toledo, name: La Tribuna de Toledo, homepage: "https://www.latribunadetoledo.es", scope: local, region: ES-CM, city: Toledo}
+  - {slug: encastillalamancha, name: encastillalamancha.es, homepage: "https://www.encastillalamancha.es", scope: regional, region: ES-CM}
+  - {slug: lanza, name: Lanza Digital, homepage: "https://www.lanzadigital.com", scope: local, region: ES-CM, city: Ciudad Real}
+  - {slug: nueva-alcarria, name: Nueva Alcarria, homepage: "https://nuevaalcarria.com", scope: local, region: ES-CM, city: Guadalajara}
+  # --- Castilla y León ---
+  - {slug: el-norte-de-castilla, name: El Norte de Castilla, homepage: "https://www.elnortedecastilla.es", scope: regional, region: ES-CL, city: Valladolid, owner: Vocento}
+  - {slug: diario-de-leon, name: Diario de León, homepage: "https://www.diariodeleon.es", scope: local, region: ES-CL, city: León}
+  - {slug: diario-de-burgos, name: Diario de Burgos, homepage: "https://www.diariodeburgos.es", scope: local, region: ES-CL, city: Burgos}
+  - {slug: la-gaceta-de-salamanca, name: La Gaceta de Salamanca, homepage: "https://www.lagacetadesalamanca.es", scope: local, region: ES-CL, city: Salamanca}
+  - {slug: el-adelantado, name: El Adelantado de Segovia, homepage: "https://www.eladelantado.com", scope: local, region: ES-CL, city: Segovia}
+  - {slug: la-opinion-de-zamora, name: La Opinión de Zamora, homepage: "https://www.laopiniondezamora.es", scope: local, region: ES-CL, city: Zamora, owner: Prensa Ibérica}
+  # --- Cataluña ---
+  - {slug: ara, name: Ara, homepage: "https://www.ara.cat", scope: regional, region: ES-CT, language: ca}
+  - {slug: el-nacional, name: El Nacional.cat, homepage: "https://www.elnacional.cat", scope: regional, region: ES-CT, language: ca}
+  - {slug: nacio-digital, name: Nació Digital, homepage: "https://www.naciodigital.cat", scope: regional, region: ES-CT, language: ca}
+  - {slug: vilaweb, name: VilaWeb, homepage: "https://www.vilaweb.cat", scope: regional, region: ES-CT, language: ca}
+  - {slug: 3cat, name: 3Cat Notícies, homepage: "https://www.3cat.cat/3catinfo/", scope: regional, region: ES-CT, kind: tv, language: ca, owner: CCMA (pública)}
+  - {slug: segre, name: Segre, homepage: "https://www.segre.com", scope: local, region: ES-CT, city: Lleida}
+  - {slug: diari-de-girona, name: Diari de Girona, homepage: "https://www.diaridegirona.cat", scope: local, region: ES-CT, city: Girona, language: ca, owner: Prensa Ibérica}
+  - {slug: diari-de-tarragona, name: Diari de Tarragona, homepage: "https://www.diaridetarragona.com", scope: local, region: ES-CT, city: Tarragona}
+  # --- Comunitat Valenciana ---
+  - {slug: levante-emv, name: Levante-EMV, homepage: "https://www.levante-emv.com", scope: regional, region: ES-VC, city: València, owner: Prensa Ibérica}
+  - {slug: las-provincias, name: Las Provincias, homepage: "https://www.lasprovincias.es", scope: regional, region: ES-VC, city: València, owner: Vocento}
+  - {slug: informacion, name: Información, homepage: "https://www.informacion.es", scope: local, region: ES-VC, city: Alicante, owner: Prensa Ibérica}
+  - {slug: mediterraneo, name: El Periódico Mediterráneo, homepage: "https://www.elperiodicomediterraneo.com", scope: local, region: ES-VC, city: Castellón, owner: Prensa Ibérica}
+  - {slug: valencia-plaza, name: Valencia Plaza, homepage: "https://valenciaplaza.com", scope: regional, region: ES-VC, city: València}
+  - {slug: a-punt, name: À Punt Notícies, homepage: "https://www.apuntmedia.es/noticies", scope: regional, region: ES-VC, kind: tv, language: ca, owner: CVMC (pública)}
+  # --- Extremadura ---
+  - {slug: hoy, name: Hoy, homepage: "https://www.hoy.es", scope: regional, region: ES-EX, city: Badajoz, owner: Vocento}
+  - {slug: el-periodico-extremadura, name: El Periódico Extremadura, homepage: "https://www.elperiodicoextremadura.com", scope: regional, region: ES-EX, city: Cáceres, owner: Prensa Ibérica}
+  # --- Galicia ---
+  - {slug: la-voz-de-galicia, name: La Voz de Galicia, homepage: "https://www.lavozdegalicia.es", scope: regional, region: ES-GA, city: A Coruña, owner: Corporación Voz de Galicia,
+     feeds: [{url: "https://www.lavozdegalicia.es/index.xml"}]}
+  - {slug: faro-de-vigo, name: Faro de Vigo, homepage: "https://www.farodevigo.es", scope: regional, region: ES-GA, city: Vigo, owner: Prensa Ibérica}
+  - {slug: el-correo-gallego, name: El Correo Gallego, homepage: "https://www.elcorreogallego.es", scope: local, region: ES-GA, city: Santiago de Compostela, owner: Prensa Ibérica}
+  - {slug: la-opinion-a-coruna, name: La Opinión A Coruña, homepage: "https://www.laopinioncoruna.es", scope: local, region: ES-GA, city: A Coruña, owner: Prensa Ibérica}
+  - {slug: la-region, name: La Región, homepage: "https://www.laregion.es", scope: local, region: ES-GA, city: Ourense}
+  - {slug: el-progreso, name: El Progreso, homepage: "https://www.elprogreso.es", scope: local, region: ES-GA, city: Lugo}
+  - {slug: galiciapress, name: Galiciapress, homepage: "https://www.galiciapress.es", scope: regional, region: ES-GA}
+  # --- Comunidad de Madrid ---
+  - {slug: telemadrid, name: Telemadrid, homepage: "https://www.telemadrid.es", scope: regional, region: ES-MD, kind: tv, owner: Radio Televisión Madrid (pública)}
+  - {slug: madridiario, name: Madridiario, homepage: "https://www.madridiario.es", scope: regional, region: ES-MD}
+  - {slug: el-mundo-madrid, name: El Mundo Madrid, homepage: "https://www.elmundo.es/madrid.html", scope: regional, region: ES-MD, owner: Unidad Editorial,
+     feeds: [{url: "https://e00-elmundo.uecdn.es/elmundo/rss/madrid.xml"}]}
+  # --- Región de Murcia ---
+  - {slug: la-verdad, name: La Verdad, homepage: "https://www.laverdad.es", scope: regional, region: ES-MC, city: Murcia, owner: Vocento}
+  - {slug: la-opinion-de-murcia, name: La Opinión de Murcia, homepage: "https://www.laopiniondemurcia.es", scope: regional, region: ES-MC, city: Murcia, owner: Prensa Ibérica}
+  # --- Navarra ---
+  - {slug: diario-de-navarra, name: Diario de Navarra, homepage: "https://www.diariodenavarra.es", scope: regional, region: ES-NC, city: Pamplona}
+  - {slug: noticias-de-navarra, name: Diario de Noticias de Navarra, homepage: "https://www.noticiasdenavarra.com", scope: regional, region: ES-NC, city: Pamplona}
+  # --- País Vasco ---
+  - {slug: el-correo, name: El Correo, homepage: "https://www.elcorreo.com", scope: regional, region: ES-PV, city: Bilbao, owner: Vocento}
+  - {slug: diario-vasco, name: El Diario Vasco, homepage: "https://www.diariovasco.com", scope: regional, region: ES-PV, city: Donostia, owner: Vocento}
+  - {slug: deia, name: Deia, homepage: "https://www.deia.eus", scope: regional, region: ES-PV, city: Bilbao}
+  - {slug: naiz, name: Naiz, homepage: "https://www.naiz.eus", scope: regional, region: ES-PV}
+  - {slug: eitb, name: EITB, homepage: "https://www.eitb.eus/es/", scope: regional, region: ES-PV, kind: tv, owner: EITB (pública)}
+  - {slug: berria, name: Berria, homepage: "https://www.berria.eus", scope: regional, region: ES-PV, language: eu}
+  # --- La Rioja ---
+  - {slug: la-rioja, name: La Rioja, homepage: "https://www.larioja.com", scope: regional, region: ES-RI, city: Logroño, owner: Vocento}
+  - {slug: nuevecuatrouno, name: Nuevecuatrouno, homepage: "https://nuevecuatrouno.com", scope: local, region: ES-RI, city: Logroño}
+  # --- Ceuta y Melilla ---
+  - {slug: el-faro-de-ceuta, name: El Faro de Ceuta, homepage: "https://elfarodeceuta.es", scope: local, region: ES-CE, city: Ceuta}
+  - {slug: el-faro-de-melilla, name: El Faro de Melilla, homepage: "https://elfarodemelilla.es", scope: local, region: ES-ML, city: Melilla}
+  - {slug: melilla-hoy, name: Melilla Hoy, homepage: "https://melillahoy.es", scope: local, region: ES-ML, city: Melilla}

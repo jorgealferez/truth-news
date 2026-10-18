@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="{{ lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site.site_name }} — {{ t(lang, 'tagline') }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ t(lang, 'tagline') }}{% endblock %}">
+  <link rel="stylesheet" href="/static/site.css">
+  {% block head %}{% endblock %}
+</head>
+<body>
+<header class="masthead">
+  <div class="wrap top">
+    <span class="date">{{ now_label if now_label is defined else '' }}</span>
+    <nav class="langs" aria-label="{{ t(lang, 'language') }}">
+      {% for l in languages %}<a href="/idioma/{{ l }}" class="{{ 'on' if l == lang }}">{{ l|upper }}</a>{% endfor %}
+    </nav>
+  </div>
+  <div class="wrap brand">
+    <a href="/" class="logo">{{ site.site_name }}</a>
+    <p class="tagline">{{ t(lang, 'tagline') }}</p>
+  </div>
+  <nav class="sections" aria-label="{{ t(lang, 'sections') }}">
+    <div class="wrap">
+      {% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}
+      <a href="/medios">{{ t(lang, 'outlets') }}</a>
+    </div>
+  </nav>
+</header>
+<main class="wrap">
+{% block content %}{% endblock %}
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p><strong>{{ site.site_name }}</strong> · {{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
+    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/acerca">{{ t(lang, 'about') }}</a></p>
+  </div>
+</footer>
+</body>
+</html>

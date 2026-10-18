@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Arranque en contenedor: migraciones y despues el proceso del rol pedido (web, worker o all).
+set -euo pipefail
+
+python -m truthnews db upgrade
+
+case "${TRUTHNEWS_ROLE:-web}" in
+  web)
+    exec python -m truthnews serve
+    ;;
+  worker)
+    exec python -m truthnews worker
+    ;;
+  all)
+    python -m truthnews worker &
+    exec python -m truthnews serve
+    ;;
+  *)
+    echo "TRUTHNEWS_ROLE desconocido: ${TRUTHNEWS_ROLE}" >&2
+    exit 2
+    ;;
+esac

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="stats">
+  <span>{{ totals.articles }} {{ t(lang, 'articles_count') }}</span> · <span>{{ totals.outlets }} {{ t(lang, 'outlets')|lower }}</span>
+  {% if totals.last_crawl %} · <span>{{ t(lang, 'latest') }}: {{ totals.last_crawl|ago(lang) }}</span>{% endif %}
+</section>
+{% if not top %}
+  <p class="empty">{{ t(lang, 'no_articles') }}</p>
+{% else %}
+<section class="front">
+  <div class="lead-col">{% with a = top[0], lead = True %}{% include "_card.html" %}{% endwith %}</div>
+  <div class="grid">{% for a in top[1:] %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div>
+</section>
+{% for c, items in by_section.items() if items %}
+<section class="section-block">
+  <h2><a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a></h2>
+  <div class="grid">{% for a in items %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div>
+</section>
+{% endfor %}
+{% endif %}
+{% endblock %}
