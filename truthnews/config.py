@@ -51,6 +51,13 @@ class Settings:
     max_text_fetch_per_run: int = field(
         default_factory=lambda: int(os.environ.get("MAX_TEXT_FETCH_PER_RUN", "600"))
     )
+    # IA (ADR 0007). Sin ANTHROPIC_API_KEY no se generan temas ni piezas; el resto funciona igual.
+    ai_enabled: bool = field(default_factory=lambda: bool(os.environ.get("ANTHROPIC_API_KEY")))
+    ai_model: str = field(default_factory=lambda: os.environ.get("AI_MODEL", "claude-opus-5-5"))
+    ai_effort: str = field(default_factory=lambda: os.environ.get("AI_EFFORT", "high"))
+    ai_max_pieces_per_cycle: int = field(
+        default_factory=lambda: int(os.environ.get("AI_MAX_PIECES_PER_CYCLE", "6"))
+    )
     admin_user: str = field(default_factory=lambda: os.environ.get("ADMIN_USER", "admin"))
     admin_password: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD", ""))
     role: str = field(default_factory=lambda: os.environ.get("TRUTHNEWS_ROLE", "web"))

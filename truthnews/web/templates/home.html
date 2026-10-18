@@ -5,6 +5,12 @@
   {% if totals.last_crawl %} · <span>{{ t(lang, 'latest') }}: {{ totals.last_crawl|ago(lang) }}</span>{% endif %}
   · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>
 </section>
+{% if pieces %}
+<section class="analysis-band">
+  <h2 class="band-title"><a href="/analisis">{{ t(lang, 'analysis') }}</a></h2>
+  <div class="grid">{% for p in pieces %}{% with lead = loop.first %}{% include "_piece_card.html" %}{% endwith %}{% endfor %}</div>
+</section>
+{% endif %}
 <section class="intro"><h1>{{ t(lang, 'contrasts') }}</h1><p>{{ t(lang, 'contrasts_lead') }}</p></section>
 <div class="front-grid">
   <div class="main-col">

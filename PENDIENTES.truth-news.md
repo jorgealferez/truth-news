@@ -26,8 +26,12 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Correccion urgente (Fase 2): veredicto erroneo en produccion contra OKDIARIO por comparar con el ultimo mes y no con el citado; eurozona != UE; re-verificacion con nota publica de correccion (ADR 0006) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
 - [ ] Fase 2b — Temas, sintesis por medio, valoracion con datos y piezas propias de analisis y opinion con IA (portada: como cuentan los medios cada tema) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
+  - [x] Medido: temas por heuristica no sirven (lexico y entidades encadenan historias sin relacion) -> temas por IA
+  - [x] Cliente IA (salida estructurada, cache de sistema, fallbacks) probado con el SDK oficial y transporte simulado
+  - [x] Dossier verificado, comprobacion de fundamento (cifras, medios, historias) y piezas analisis/opinion
+  - [x] Web: /analisis (seccion principal), /tema/{id}, /verificaciones; portada con banda de analisis
+  - [ ] Generacion real: NO VERIFICADO hasta que el usuario configure ANTHROPIC_API_KEY en Railway
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
@@ -47,3 +51,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [x] Fase 1 — Nucleo: registro, rastreador, web segmentada, configuracion de Railway (#2)
 - [x] Fase 1a — Despliegue temprano en Railway: produccion rastreando cada 30 min (#3)
 - [x] Fase 2 — Motor de contraste: comparador por historia, datos oficiales, veredictos trazables (#4)
+- [x] Correccion (Fase 2): veredictos contra el periodo citado, eurozona != UE, correccion publica (#5)

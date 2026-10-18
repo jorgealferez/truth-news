@@ -132,6 +132,13 @@
       "unidad": "s",
       "direccion": "max",
       "objetivo": 600
+    },
+    {
+      "id": "piezas_sin_fundamento_publicadas",
+      "descripcion": "C13: piezas con cifras, medios o historias que no estan en el dossier y que aun asi se publican",
+      "unidad": "piezas",
+      "direccion": "max",
+      "objetivo": 0
     }
   ]
 }

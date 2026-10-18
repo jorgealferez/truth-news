@@ -133,8 +133,12 @@ class Story(Base):
     n_articles: Mapped[int] = mapped_column(Integer, default=1)
     n_outlets: Mapped[int] = mapped_column(Integer, default=1)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    topic_id: Mapped[int | None] = mapped_column(
+        ForeignKey("topic.id", ondelete="SET NULL", name="fk_story_topic_id"), nullable=True, index=True
+    )
 
     articles: Mapped[list[Article]] = relationship(back_populates="story")
+    topic: Mapped[Topic | None] = relationship(back_populates="stories")
 
 
 class Claim(Base):
@@ -198,3 +202,56 @@ class Evidence(Base):
     payload: Mapped[dict] = mapped_column(JSON, default=dict)
 
     verification: Mapped[Verification] = relationship(back_populates="evidence")
+
+
+PIECE_KINDS = ("analisis", "opinion")
+PIECE_STATUSES = ("publicada", "revision")
+
+
+class Topic(Base):
+    """Tema: historias relacionadas aunque cada una tenga un enfoque distinto (ADR 0007/0008)."""
+
+    __tablename__ = "topic"
+    __table_args__ = (Index("ix_topic_country_last_seen", "country", "last_seen"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(300))
+    category: Mapped[str] = mapped_column(String(40))
+    country: Mapped[str] = mapped_column(String(2))
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    n_stories: Mapped[int] = mapped_column(Integer, default=0)
+    n_outlets: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    stories: Mapped[list[Story]] = relationship(back_populates="topic")
+    pieces: Mapped[list[Piece]] = relationship(back_populates="topic", cascade="all, delete-orphan")
+
+
+class Piece(Base):
+    """Pieza propia (analisis u opinion) redactada con IA sobre un dossier verificado."""
+
+    __tablename__ = "piece"
+    __table_args__ = (
+        CheckConstraint(f"kind IN {PIECE_KINDS!r}", name="ck_piece_kind"),
+        CheckConstraint(f"status IN {PIECE_STATUSES!r}", name="ck_piece_status"),
+        Index("ix_piece_status_created", "status", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    topic_id: Mapped[int] = mapped_column(ForeignKey("topic.id", ondelete="CASCADE"), index=True)
+    kind: Mapped[str] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(16))
+    language: Mapped[str] = mapped_column(String(8), default="es")
+    title: Mapped[str] = mapped_column(String(300))
+    dek: Mapped[str] = mapped_column(Text)
+    body: Mapped[list] = mapped_column(JSON, default=list)
+    synthesis: Mapped[dict] = mapped_column(JSON, default=dict)
+    grounding: Mapped[dict] = mapped_column(JSON, default=dict)
+    model: Mapped[str] = mapped_column(String(60))
+    input_hash: Mapped[str] = mapped_column(String(64))
+    usage: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    topic: Mapped[Topic] = relationship(back_populates="pieces")

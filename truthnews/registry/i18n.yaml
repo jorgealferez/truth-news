@@ -53,6 +53,19 @@ es:
   verdict_sin-datos: Sin datos suficientes
   checked_claims: afirmaciones comprobadas
   outlet_record: Afirmaciones de este medio contrastadas con datos
+  analysis: Análisis
+  opinion: Opinión
+  analysis_lead: Piezas propias sobre cada tema, a partir de lo que publican los medios y de los datos oficiales. Cada afirmación está en nuestras fuentes; lo que no sabemos, lo decimos.
+  what_each_says: Qué dice cada medio
+  focus: Enfoque
+  data: Datos
+  assessment: Valoración
+  confidence: Confianza
+  unknowns: Lo que no sabemos
+  topic_stories: Historias de este tema
+  ai_disclosure: Pieza elaborada con IA a partir de un dossier verificado (artículos, comparativa entre medios, veredictos y datos oficiales). Solo se publica si cada cifra y cada medio citado están en el dossier.
+  verifications: Verificaciones
+  verifications_lead: Registro público de todas las afirmaciones comprobadas, con su veredicto, su fuente y las correcciones.
   methodology_text: >-
     1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
     artículos que cuentan lo mismo (similitud de titulares y entradillas, medida contra un conjunto etiquetado a
@@ -118,6 +131,19 @@ en:
   verdict_sin-datos: Not enough data
   checked_claims: checked claims
   outlet_record: This outlet's claims checked against data
+  analysis: Analysis
+  opinion: Opinion
+  analysis_lead: Our own pieces on each topic, built from what outlets publish and official data. Every claim is in our sources; what we do not know, we say.
+  what_each_says: What each outlet says
+  focus: Angle
+  data: Data
+  assessment: Assessment
+  confidence: Confidence
+  unknowns: What we do not know
+  topic_stories: Stories in this topic
+  ai_disclosure: Piece produced with AI from a verified dossier (articles, cross-outlet comparison, verdicts and official data). Published only if every figure and outlet cited is in the dossier.
+  verifications: Fact checks
+  verifications_lead: Public log of every checked claim, with its verdict, source and corrections.
   methodology_text: >-
     1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the
     same story. 3) We compare who reports it, which figures each gives and when, what most report and some omit,
