@@ -71,7 +71,7 @@ alcanza; el sistema nunca afirma sin fuente.
 
 ## Fases
 
-- [ ] Fase 0 — Encuadre: esta carta rellena desde la base real, ledger sembrado, primer gauntlet en VERDE
+- [x] Fase 0 — Encuadre: esta carta rellena desde la base real, ledger sembrado, primer gauntlet en VERDE (#1)
 - [ ] Fase 1 — Nucleo: modelo de datos, registro de medios de Espana, crawler RSS con robots.txt, web publica segmentada, configuracion de Railway (acerca C1, C2, C3, C7, C10)
 - [ ] Fase 2 — Motor de contraste: agrupacion entre medios, extraccion de afirmaciones, conectores de datos reales, veredictos con evidencia, comparativa de cobertura y omisiones, fiabilidad por medio (acerca C4, C5, C6)
 - [ ] Fase 3 — Administracion e investigaciones: panel con balance, cola de revision, gestion de fuentes, investigaciones a demanda (acerca C8)
