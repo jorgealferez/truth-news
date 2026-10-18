@@ -63,6 +63,81 @@ def _region_names() -> list[str]:
     return sorted(set(names), key=len, reverse=True)
 
 
+_MONTHS = {
+    "enero": 1,
+    "febrero": 2,
+    "marzo": 3,
+    "abril": 4,
+    "mayo": 5,
+    "junio": 6,
+    "julio": 7,
+    "agosto": 8,
+    "septiembre": 9,
+    "setiembre": 9,
+    "octubre": 10,
+    "noviembre": 11,
+    "diciembre": 12,
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+    "janeiro": 1,
+    "fevereiro": 2,
+    "marco": 3,
+    "maio": 5,
+    "junho": 6,
+    "julho": 7,
+    "setembro": 9,
+    "outubro": 10,
+    "novembro": 11,
+    "dezembro": 12,
+}
+_MONTH_RE = re.compile(r"\b(" + "|".join(_MONTHS) + r")\b(?:\s+(?:de|del)\s+(\d{4}))?")
+_QUARTER_RE = re.compile(
+    r"\b(primer|segundo|tercer|cuarto|first|second|third|fourth)\s+(?:trimestre|quarter)(?:\s+(?:de|del|of)\s+(\d{4}))?"
+)
+_QUARTERS = {
+    "primer": 1,
+    "first": 1,
+    "segundo": 2,
+    "second": 2,
+    "tercer": 3,
+    "third": 3,
+    "cuarto": 4,
+    "fourth": 4,
+}
+
+
+def period_of(sentence_n: str, published_year: int, published_month: int = 12) -> str | None:
+    """Periodo citado en la frase ('2026-08', '2026-Q2') o None si no cita ninguno.
+
+    Sin ano explicito, un mes posterior al de publicacion se entiende del ano anterior.
+    """
+    m = _MONTH_RE.search(sentence_n)
+    # "mayo" solo cuenta como mes con ano o tras "en" (tambien es sustantivo).
+    if m and (m.group(1) != "mayo" or m.group(2) or re.search(r"\ben\s+mayo\b", sentence_n)):
+        month = _MONTHS[m.group(1)]
+        year = int(m.group(2)) if m.group(2) else published_year - (1 if month > published_month else 0)
+        return f"{year}-{month:02d}"
+    q = _QUARTER_RE.search(sentence_n)
+    if q:
+        quarter = _QUARTERS[q.group(1)]
+        year = (
+            int(q.group(2))
+            if q.group(2)
+            else published_year - (1 if quarter * 3 > published_month + 2 else 0)
+        )
+        return f"{year}-Q{quarter}"
+    return None
+
+
 @dataclass
 class ClaimCandidate:
     text: str
@@ -71,6 +146,7 @@ class ClaimCandidate:
     value: float
     unit: str
     direction: str | None
+    period: str | None = None  # periodo citado: se compara con el dato de ese periodo, no con el ultimo
 
 
 def _number(raw: str) -> float:
@@ -85,10 +161,15 @@ def _word_in(needle: str, haystack: str) -> bool:
 
 
 def _geo(sentence_n: str, default: str) -> str | None:
-    for iso, names in indicators()["geo_names"].items():
-        for n in names:
-            if _word_in(normalize(n), sentence_n):
-                return iso
+    named = {
+        iso
+        for iso, names in indicators()["geo_names"].items()
+        if any(_word_in(normalize(n), sentence_n) for n in names)
+    }
+    if len(named) > 1:
+        return None  # varios territorios en la frase: no se adivina a cual se refiere la cifra
+    if named:
+        return named.pop()
     if any(_word_in(normalize(m), sentence_n) for m in indicators()["foreign_markers"]):
         return None  # habla de otro pais sin nombrarlo: no se atribuye al del medio
     return default if default not in ("XX", "") else None
@@ -98,7 +179,9 @@ def sentences(text: str) -> list[str]:
     return [s.strip() for s in _SENTENCE.split(text or "") if 20 <= len(s.strip()) <= 600]
 
 
-def extract(text: str, language: str, default_geo: str, published_year: int) -> list[ClaimCandidate]:
+def extract(
+    text: str, language: str, default_geo: str, published_year: int, published_month: int = 12
+) -> list[ClaimCandidate]:
     out: list[ClaimCandidate] = []
     seen: set[tuple] = set()
     for sentence in sentences(text):
@@ -122,7 +205,11 @@ def extract(text: str, language: str, default_geo: str, published_year: int) -> 
                 pn = re.escape(normalize(p))
                 if ind["unit"] == "pct":
                     link = rf"(?:(?P<verb>{_VERBS})\s+(?:{_CONNECT}\s+)?|{_CONNECT}\s+)"
-                    rx = rf"(?<!\w){pn}(?!\w)\s+{link}{_PCT}"
+                    # Periodo entre indicador y verbo: "la inflacion de agosto se situo en el 4,3 %".
+                    gap = (
+                        rf"(?:(?:de|en|del mes de|in)\s+(?:{'|'.join(_MONTHS)})(?:\s+(?:de\s+)?\d{{4}})?\s+)?"
+                    )
+                    rx = rf"(?<!\w){pn}(?!\w)\s+{gap}{link}{_PCT}"
                     m = re.search(rx, sn)
                     if m and "del pib" not in sn[m.end() : m.end() + 8]:
                         value = _number(m.group("num"))
@@ -145,7 +232,8 @@ def extract(text: str, language: str, default_geo: str, published_year: int) -> 
             if k in seen:
                 continue
             seen.add(k)
-            out.append(ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction))
+            period = period_of(sn, published_year, published_month)
+            out.append(ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction, period))
     return out
 
 

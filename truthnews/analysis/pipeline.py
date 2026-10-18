@@ -9,9 +9,10 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.analysis.claims import extract
+from truthnews.analysis.claims import ClaimCandidate, extract, period_of
 from truthnews.analysis.cluster import DEFAULT_THRESHOLD, Doc, cluster, representative
-from truthnews.analysis.verify import Verifier
+from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
+from truthnews.classify import normalize
 from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
 
 log = logging.getLogger(__name__)
@@ -82,6 +83,26 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
     return {"articles": len(arts), "stories_created": created, "stories_updated": updated}
 
 
+def _store(ver: Verification, result: Result) -> None:
+    if result.verdict != "sin-datos" and not result.observations:
+        raise AssertionError("C6: un veredicto sin evidencia no se publica")
+    ver.verdict, ver.confidence = result.verdict, result.confidence
+    ver.explanation, ver.method, ver.checked_at = result.explanation, result.method, utcnow()
+    ver.evidence.clear()
+    for obs in result.observations:
+        ver.evidence.append(
+            Evidence(
+                source=obs.source,
+                label=obs.label,
+                url=obs.url,
+                period=obs.period,
+                value=obs.value,
+                retrieved_at=obs.retrieved_at,
+                payload=obs.extra,
+            )
+        )
+
+
 def verify_claims(session: Session, since: datetime, verifier: Verifier | None = None) -> dict:
     """Extrae y verifica afirmaciones de los articulos ingeridos desde `since`."""
     verifier = verifier or Verifier()
@@ -90,7 +111,8 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     verdicts: Counter = Counter()
     for a in arts:
         text = f"{a.title}. {a.summary or ''}\n{a.content_text or ''}"
-        for cand in extract(text, a.language, a.country, _aware(a.published_at).year):
+        pub = _aware(a.published_at)
+        for cand in extract(text, a.language, a.country, pub.year, pub.month):
             exists = session.scalars(
                 select(Claim).where(
                     Claim.article_id == a.id, Claim.indicator == cand.indicator, Claim.value == cand.value
@@ -112,27 +134,8 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
             session.add(claim)
             session.flush()
             result = verifier.judge(cand)
-            if result.verdict != "sin-datos" and not result.observations:
-                raise AssertionError("C6: un veredicto sin evidencia no se publica")
-            ver = Verification(
-                claim_id=claim.id,
-                verdict=result.verdict,
-                confidence=result.confidence,
-                explanation=result.explanation,
-                method=result.method,
-            )
-            for obs in result.observations:
-                ver.evidence.append(
-                    Evidence(
-                        source=obs.source,
-                        label=obs.label,
-                        url=obs.url,
-                        period=obs.period,
-                        value=obs.value,
-                        retrieved_at=obs.retrieved_at,
-                        payload=obs.extra,
-                    )
-                )
+            ver = Verification(claim_id=claim.id)
+            _store(ver, result)
             session.add(ver)
             n_claims += 1
             verdicts[result.verdict] += 1
@@ -140,8 +143,44 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     return {"claims": n_claims, "verdicts": dict(verdicts)}
 
 
+def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dict:
+    """Vuelve a juzgar los veredictos guardados con una version anterior del metodo (ADR 0004)."""
+    verifier = verifier or Verifier()
+    changed: Counter = Counter()
+    stale = session.scalars(
+        select(Verification)
+        .options(joinedload(Verification.claim).joinedload(Claim.article))
+        .where(~Verification.method.endswith(f"/{METHOD_VERSION}"))
+    ).unique()
+    for ver in stale:
+        c = ver.claim
+        pub = _aware(c.article.published_at)
+        cand = ClaimCandidate(
+            c.text,
+            c.indicator,
+            c.geo,
+            c.value,
+            c.unit,
+            c.direction,
+            period_of(normalize(c.text), pub.year, pub.month),
+        )
+        before = ver.verdict
+        _store(ver, verifier.judge(cand))
+        if before != ver.verdict:
+            # Transparencia: la correccion queda escrita en el propio veredicto publicado.
+            ver.explanation += (
+                f" [Corregido el {utcnow():%d/%m/%Y}: el veredicto anterior era «{before}» "
+                "por un error de nuestro método, ya subsanado.]"
+            )
+        changed[f"{before}->{ver.verdict}"] += 1
+    session.flush()
+    return dict(changed)
+
+
 def run(session: Session, since: datetime, verifier: Verifier | None = None) -> dict:
+    verifier = verifier or Verifier()
     out = assign_stories(session)
     out.update(verify_claims(session, since, verifier))
+    out["reverified"] = reverify_outdated(session, verifier)
     log.info("analisis: %s", out)
     return out

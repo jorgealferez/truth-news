@@ -8,6 +8,10 @@ from dataclasses import dataclass, field
 from truthnews.analysis.claims import ClaimCandidate, indicator_name, indicators
 from truthnews.data import Observation, eurostat, ine, worldbank
 
+# Version del metodo: un veredicto guardado con otra version se vuelve a juzgar en el siguiente ciclo.
+METHOD_VERSION = (
+    "v2"  # v2: compara con el periodo citado en la frase (mes o trimestre), no con el ultimo dato
+)
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -77,19 +81,33 @@ class Verifier:
         return self._cache[key]
 
     def judge(self, claim: ClaimCandidate) -> Result:
+        result = self._judge(claim)
+        result.method = f"{result.method}/{METHOD_VERSION}"
+        return result
+
+    def _judge(self, claim: ClaimCandidate) -> Result:
         name = indicator_name(claim.indicator)
-        obs = self.observation(claim.indicator, claim.geo)
-        if obs is None:
+        latest = self.observation(claim.indicator, claim.geo)
+        if latest is None:
             msg = f"No hay una serie oficial disponible de «{name}» para {claim.geo}."
             return Result("sin-datos", 0.0, msg, "sin-fuente")
-        if obs.is_stale():
+        obs = latest
+        if claim.period:
+            obs = latest.at(claim.period)
+            if obs is None:
+                msg = (
+                    f"El texto se refiere a {claim.period} y la serie oficial de «{name}» ({latest.source}) "
+                    f"no tiene dato publicado para ese periodo."
+                )
+                return Result("sin-datos", 0.0, msg, "sin-periodo", [latest])
+        elif latest.is_stale():
             return Result(
                 "sin-datos",
                 0.0,
-                f"El último dato oficial de «{name}» ({obs.period}) es demasiado "
+                f"El último dato oficial de «{name}» ({latest.period}) es demasiado "
                 "antiguo para juzgar una afirmación actual.",
                 "dato-obsoleto",
-                [obs],
+                [latest],
             )
         official = obs.value
         if claim.unit == "pct":
@@ -102,8 +120,9 @@ class Verifier:
             close, rough = diff <= ABS_TRUE, diff <= ABS_ROUGH
             gap = f"{diff * 100:.1f} %".replace(".", ",")
             fmt = _fmt_abs
+        which = "del periodo citado" if claim.period else "más reciente"
         base = (
-            f"El texto dice {fmt(claim.value)}; el dato oficial más reciente de «{name}» ({claim.geo}, "
+            f"El texto dice {fmt(claim.value)}; el dato oficial {which} de «{name}» ({claim.geo}, "
             f"{obs.period}, fuente {obs.source}) es {fmt(official)}: diferencia de {gap}."
         )
         if claim.direction and obs.previous is not None and obs.previous.value != official:
