@@ -19,7 +19,7 @@ from fastapi.testclient import TestClient
 from truthnews.config import Settings
 from truthnews.db import make_engine, session_scope
 from truthnews.migrate import upgrade
-from truthnews.models import Article, Outlet
+from truthnews.models import Article, Outlet, Story
 from truthnews.registry import categories
 from truthnews.web.app import create_app
 
@@ -65,6 +65,24 @@ def main() -> None:
                 )
                 for i in range(args.articles)
             )
+            s.flush()
+            # Una historia cada 5 articulos, contada por 5 medios: la portada lee historias.
+            stories = [
+                Story(
+                    title=f"Historia {j}",
+                    category=cats[j % len(cats)],
+                    country="ES",
+                    first_seen=now - timedelta(minutes=5 * j),
+                    last_seen=now - timedelta(minutes=5 * j),
+                    n_articles=5,
+                    n_outlets=5,
+                )
+                for j in range(args.articles // 5)
+            ]
+            s.add_all(stories)
+            s.flush()
+            for a in s.query(Article):
+                a.story_id = stories[(a.id - 1) // 5].id
         client = TestClient(create_app(Settings(database_url=url), engine=engine))
         client.get("/")  # calentamiento
         times = []
@@ -72,19 +90,17 @@ def main() -> None:
             t0 = time.perf_counter()
             assert client.get("/").status_code == 200
             times.append((time.perf_counter() - t0) * 1000)
-        times.sort()
-        p95 = times[max(0, int(len(times) * 0.95) - 1)]
-        print(
-            json.dumps(
-                {
-                    "articles": args.articles,
-                    "requests": args.requests,
-                    "p50_ms": round(statistics.median(times), 1),
-                    "p95_ms": round(p95, 1),
-                    "max_ms": round(times[-1], 1),
-                }
-            )
-        )
+        story_times = []
+        for j in range(args.requests):
+            t0 = time.perf_counter()
+            assert client.get(f"/historia/{j + 1}").status_code == 200
+            story_times.append((time.perf_counter() - t0) * 1000)
+        out = {"articles": args.articles, "requests": args.requests}
+        for name, ts in (("portada", times), ("historia", story_times)):
+            ts.sort()
+            out[f"{name}_p50_ms"] = round(statistics.median(ts), 1)
+            out[f"{name}_p95_ms"] = round(ts[max(0, int(len(ts) * 0.95) - 1)], 1)
+        print(json.dumps(out))
         engine.dispose()
 
 

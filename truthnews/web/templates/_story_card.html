@@ -1,0 +1,7 @@
+<article class="scard{{ ' lead' if lead }}">
+  <p class="kicker"><a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a> · <span class="count">{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}</span>
+    {% set v = verdicts.get(st.id, {}) %}{% for k, n in v.items() %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }} {{ n }}</span>{% endfor %}</p>
+  <h3><a href="/historia/{{ st.id }}">{{ st.title }}</a></h3>
+  <p class="outlets">{{ (outlet_names.get(st.id, []))[:8]|join(' · ') }}{% if (outlet_names.get(st.id, []))|length > 8 %} …{% endif %}</p>
+  <p class="meta">{{ st.last_seen|ago(lang) }} · <a href="/historia/{{ st.id }}">{{ t(lang, 'compare_cta') }} →</a></p>
+</article>

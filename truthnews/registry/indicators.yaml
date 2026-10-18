@@ -1,0 +1,98 @@
+# Indicadores comprobables. Cada uno: como se reconoce en un texto (por idioma) y de que serie oficial
+# sale el dato para cada pais. `geo` de la afirmacion: pais nombrado en la frase o, si no, el del medio.
+# unit: pct (porcentaje: se compara en puntos) | abs (cantidad: se compara en %).
+paro:
+  name: {es: Tasa de paro, en: Unemployment rate}
+  unit: pct
+  patterns:
+    es: ["tasa de paro", "tasa de desempleo", "paro", "desempleo"]
+    en: ["unemployment rate", "unemployment"]
+    pt: ["taxa de desemprego", "desemprego"]
+  sources:
+    - {connector: eurostat, dataset: une_rt_m, params: {s_adj: SA, age: TOTAL, sex: T, unit: PC_ACT}, geos: EU}
+    - {connector: worldbank, indicator: SL.UEM.TOTL.ZS}
+inflacion:
+  name: {es: Inflación interanual, en: Annual inflation}
+  unit: pct
+  patterns:
+    es: ["inflación", "ipc", "ipca", "precios al consumo", "subida de precios"]
+    en: ["inflation", "consumer prices", "cpi"]
+    pt: ["inflação", "preços no consumidor"]
+  sources:
+    - {connector: ine_yoy, serie: IPC290751, geos: [ES]}
+    - {connector: eurostat, dataset: prc_hicp_minr, params: {unit: RCH_A, coicop18: TOTAL}, geos: EU}
+    - {connector: worldbank, indicator: FP.CPI.TOTL.ZG}
+pib_trimestral:
+  name: {es: Crecimiento trimestral del PIB, en: Quarterly GDP growth}
+  unit: pct
+  patterns:
+    es: ["pib", "producto interior bruto", "la economía"]
+    en: ["gdp", "the economy"]
+    pt: ["pib", "a economia"]
+  requires: ["trimestre", "trimestral", "quarter"]
+  directional: false  # "el PIB crece un 0,7 %" describe la economia, no la evolucion de la tasa
+  sources:
+    - {connector: eurostat, dataset: namq_10_gdp, params: {unit: CLV_PCH_PRE, s_adj: SCA, na_item: B1GQ}, geos: EU}
+    - {connector: worldbank, indicator: NY.GDP.MKTP.KD.ZG}
+deuda_publica:
+  name: {es: Deuda pública (% del PIB), en: Government debt (% of GDP)}
+  unit: pct
+  patterns:
+    es: ["deuda pública", "deuda de las administraciones"]
+    en: ["public debt", "government debt", "national debt"]
+    pt: ["dívida pública"]
+  sources:
+    - {connector: eurostat, dataset: gov_10q_ggdebt, params: {unit: PC_GDP, sector: S13, na_item: GD}, geos: EU}
+    - {connector: worldbank, indicator: GC.DOD.TOTL.GD.ZS}
+precio_vivienda:
+  name: {es: Precio de la vivienda (variación anual), en: House prices (annual change)}
+  unit: pct
+  patterns:
+    es: ["precio de la vivienda", "precios de la vivienda", "precio de los pisos", "precio de la casa"]
+    en: ["house prices", "home prices", "housing prices"]
+    pt: ["preço da habitação", "preços das casas"]
+  directional: false
+  sources:
+    - {connector: eurostat, dataset: prc_hpi_q, params: {purchase: TOTAL, unit: RCH_A}, geos: EU}
+poblacion:
+  name: {es: Población, en: Population}
+  unit: abs
+  patterns:
+    es: ["habitantes", "población"]
+    en: ["population", "inhabitants"]
+    pt: ["habitantes", "população"]
+  sources:
+    - {connector: worldbank, indicator: SP.POP.TOTL}
+
+# Nombres de pais en el texto -> codigo ISO 3166-1 alfa-2 (Eurostat usa EL para Grecia).
+geo_names:
+  ES: [españa, spain, espanha]
+  FR: [francia, france, frança]
+  DE: [alemania, germany, alemanha]
+  IT: [italia, italy, itália]
+  PT: [portugal]
+  GB: [reino unido, united kingdom, gran bretaña, britain]
+  US: [estados unidos, eeuu, ee.uu., united states, usa]
+  GR: [grecia, greece, grécia]
+  NL: [países bajos, holanda, netherlands]
+  BE: [bélgica, belgium]
+  IE: [irlanda, ireland]
+  PL: [polonia, poland]
+  SE: [suecia, sweden]
+  AT: [austria]
+  RU: [rusia, russia]
+  UA: [ucrania, ukraine]
+  CN: [china]
+  MA: [marruecos, morocco]
+  AR: [argentina]
+  MX: [méxico, mexico]
+  IL: [israel]
+  EU: [unión europea, zona euro, eurozona, european union, euro area]
+eu_geos: [AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK, EU]
+# Gentilicios y lideres: si aparecen en la frase sin pais explicito, la afirmacion no se atribuye al pais
+# del medio (no se extrae). Mejor callar que atribuir mal.
+foreign_markers: [ruso, rusa, frances, francesa, aleman, alemana, italiano, italiana, britanico, britanica,
+  estadounidense, norteamericano, chino, china, marroqui, israeli, ucraniano, ucraniana, portugues,
+  portuguesa, griego, griega, europeo, europea, argentino, mexicano, venezolano, turco, iraní, irani,
+  macron, trump, putin, zelenski, netanyahu, meloni, merz, starmer, xi jinping, lula, milei, bruselas,
+  eurozona, otan]

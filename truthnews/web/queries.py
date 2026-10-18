@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime, timedelta
+
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.models import Article, CrawlRun, Outlet
+from truthnews.models import Article, Claim, CrawlRun, Outlet, Story, Verification
 
 PAGE_SIZE = 30
 
@@ -55,7 +57,84 @@ def outlets(session: Session, country: str | None = None) -> list[tuple[Outlet, 
 def totals(session: Session) -> dict:
     last = session.scalars(select(CrawlRun).order_by(CrawlRun.id.desc()).limit(1)).first()
     return {
+        "stories": session.scalar(select(func.count(Story.id)).where(Story.n_outlets >= 2)) or 0,
+        "claims": session.scalar(select(func.count(Claim.id))) or 0,
         "articles": session.scalar(select(func.count(Article.id))) or 0,
         "outlets": session.scalar(select(func.count(Outlet.id)).where(Outlet.active.is_(True))) or 0,
         "last_crawl": last.finished_at if last else None,
     }
+
+
+def top_stories(
+    session: Session,
+    *,
+    country: str | None = None,
+    category: str | None = None,
+    min_outlets: int = 2,
+    hours: int = 48,
+    limit: int = 20,
+    offset: int = 0,
+) -> list[Story]:
+    since = datetime.now(UTC) - timedelta(hours=hours)
+    q = select(Story).where(Story.n_outlets >= min_outlets, Story.last_seen >= since)
+    if country:
+        q = q.where(Story.country == country)
+    if category:
+        q = q.where(Story.category == category)
+    q = q.order_by(Story.n_outlets.desc(), Story.last_seen.desc()).limit(limit).offset(offset)
+    return list(session.scalars(q))
+
+
+def story_articles(session: Session, story_id: int) -> list[Article]:
+    q = (
+        select(Article)
+        .options(joinedload(Article.outlet))
+        .where(Article.story_id == story_id)
+        .order_by(Article.published_at)
+    )
+    return list(session.scalars(q))
+
+
+def story_outlet_names(session: Session, story_ids: list[int]) -> dict[int, list[str]]:
+    if not story_ids:
+        return {}
+    rows = session.execute(
+        select(Article.story_id, Outlet.name)
+        .join(Outlet, Outlet.id == Article.outlet_id)
+        .where(Article.story_id.in_(story_ids))
+        .distinct()
+    )
+    out: dict[int, list[str]] = {}
+    for sid, name in rows:
+        out.setdefault(sid, []).append(name)
+    return {k: sorted(v) for k, v in out.items()}
+
+
+def claims_for_story(session: Session, story_id: int) -> list[Claim]:
+    q = (
+        select(Claim)
+        .options(joinedload(Claim.verification).joinedload(Verification.evidence), joinedload(Claim.outlet))
+        .where(Claim.story_id == story_id)
+        .order_by(Claim.id)
+    )
+    return list(session.scalars(q).unique())
+
+
+def verdict_counts(
+    session: Session, story_ids: list[int] | None = None, outlet_id: int | None = None
+) -> dict:
+    q = (
+        select(Claim.story_id, Verification.verdict, func.count())
+        .join(Verification, Verification.claim_id == Claim.id)
+        .group_by(Claim.story_id, Verification.verdict)
+    )
+    if story_ids is not None:
+        q = q.where(Claim.story_id.in_(story_ids or [-1]))
+    if outlet_id is not None:
+        q = q.where(Claim.outlet_id == outlet_id)
+    out: dict = {}
+    for sid, verdict, n in session.execute(q):
+        key = sid if story_ids is not None else "total"
+        out.setdefault(key, {}).setdefault(verdict, 0)
+        out[key][verdict] += n
+    return out

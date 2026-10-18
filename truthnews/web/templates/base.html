@@ -22,6 +22,7 @@
   </div>
   <nav class="sections" aria-label="{{ t(lang, 'sections') }}">
     <div class="wrap">
+      <a href="/contrastes" class="hl">{{ t(lang, 'contrasts') }}</a>
       {% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}
       <a href="/medios">{{ t(lang, 'outlets') }}</a>
     </div>
@@ -33,7 +34,7 @@
 <footer class="foot">
   <div class="wrap">
     <p><strong>{{ site.site_name }}</strong> · {{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
-    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/acerca">{{ t(lang, 'about') }}</a></p>
+    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a></p>
   </div>
 </footer>
 </body>

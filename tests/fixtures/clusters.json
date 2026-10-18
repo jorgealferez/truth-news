@@ -1,0 +1,1090 @@
+{
+ "$comentario": "Titulares reales del rastreo del 2026-10-18 etiquetados a mano por historia (criterio C4). La etiqueta la decide una persona leyendo el titular, no el algoritmo.",
+ "docs": [
+  {
+   "key": 439,
+   "outlet": "eldiario-es",
+   "title": "Francia arde en una jornada de protestas con 2.000 detenidos",
+   "published_at": "2026-10-18 06:12:30.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 472,
+   "outlet": "20minutos",
+   "title": "Caos en las protestas contra el coste de la vida en toda Francia: un muerto, 2.000 detenidos, 600 policías heridos, saqueos e incendios...",
+   "published_at": "2026-10-18 06:50:30.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 2199,
+   "outlet": "la-region",
+   "title": "Vídeo | Más de 1.800 detenidos y 500 policías heridos en una jornada de protestas con destrozos en Francia",
+   "published_at": "2026-10-18 07:28:29.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 842,
+   "outlet": "informativos-telecinco",
+   "title": "Caos en Francia por unos disturbios que dejan más de 2.397 arrestos y 500 policías heridos: en Limoges, arde el ayuntamiento",
+   "published_at": "2026-10-18 07:54:44.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 1423,
+   "outlet": "canal-sur",
+   "title": "1.800 detenidos y 500 policías heridos en la jornada de masivas protestas sociales en Francia",
+   "published_at": "2026-10-18 08:52:09.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 522,
+   "outlet": "europa-press",
+   "title": "El Gobierno francés eleva a casi 2.400 los detenidos y a 500 policías heridos durante las protestas",
+   "published_at": "2026-10-18 09:37:19.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 275,
+   "outlet": "abc",
+   "title": "Arde Francia en graves disturbios y saqueos en las protestas por el coste de la vida",
+   "published_at": "2026-10-18 12:19:03.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 441,
+   "outlet": "eldiario-es",
+   "title": "Las imágenes de las masivas protestas en Francia",
+   "published_at": "2026-10-18 12:50:16.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 1220,
+   "outlet": "diario-de-sevilla",
+   "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+   "published_at": "2026-10-18 14:58:00.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 1336,
+   "outlet": "malaga-hoy",
+   "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+   "published_at": "2026-10-18 14:58:00.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 1370,
+   "outlet": "huelva-informacion",
+   "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+   "published_at": "2026-10-18 14:58:00.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 670,
+   "outlet": "the-objective",
+   "title": "El caos reina en Francia: 600 policías heridos, 1.500 comercios arrasados y 2.400 detenidos",
+   "published_at": "2026-10-18 14:59:51.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 948,
+   "outlet": "huffpost-es",
+   "title": "Francia vive otra jornada de disturbios con 2.000 detenidos y Macron se dirige a la nación tras la ola de violencia",
+   "published_at": "2026-10-18 19:03:34.000000",
+   "story": "francia-balance-protestas"
+  },
+  {
+   "key": 298,
+   "outlet": "la-vanguardia",
+   "title": "Los disturbios vuelven a París en plena conmoción por los destrozos del sábado",
+   "published_at": "2026-10-18 08:58:03.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 524,
+   "outlet": "europa-press",
+   "title": "El alcalde de París cuestiona los medios de la Policía ante los disturbios y saqueos del sábado",
+   "published_at": "2026-10-18 12:04:12.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2,
+   "outlet": "el-pais",
+   "title": "Los disturbios vuelven al centro de París un día después de la gran revuelta",
+   "published_at": "2026-10-18 16:46:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1577,
+   "outlet": "canarias7",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 18:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1261,
+   "outlet": "diario-sur",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1291,
+   "outlet": "ideal",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1519,
+   "outlet": "el-comercio",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1602,
+   "outlet": "el-diario-montanes",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1709,
+   "outlet": "el-norte-de-castilla",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2127,
+   "outlet": "hoy",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2315,
+   "outlet": "la-verdad",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2378,
+   "outlet": "el-correo",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2407,
+   "outlet": "diario-vasco",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 2483,
+   "outlet": "la-rioja",
+   "title": "Los disturbios vuelven al centro de París un día después",
+   "published_at": "2026-10-18 19:25:26.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1460,
+   "outlet": "heraldo",
+   "title": "París vive una nueva jornada de disturbios y saqueos tras las protestas masivas en Francia",
+   "published_at": "2026-10-18 17:28:34.000000",
+   "story": "paris-disturbios-dia-despues"
+  },
+  {
+   "key": 1576,
+   "outlet": "canarias7",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 18:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 1260,
+   "outlet": "diario-sur",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 1289,
+   "outlet": "ideal",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 1518,
+   "outlet": "el-comercio",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 1599,
+   "outlet": "el-diario-montanes",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 1706,
+   "outlet": "el-norte-de-castilla",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 2125,
+   "outlet": "hoy",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 2314,
+   "outlet": "la-verdad",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 2376,
+   "outlet": "el-correo",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 2405,
+   "outlet": "diario-vasco",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 2482,
+   "outlet": "la-rioja",
+   "title": "«Lo he perdido todo, mis esperanzas estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:37:24.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 204,
+   "outlet": "abc",
+   "title": "Los comerciantes galos tras las violentas protestas: «Lo he perdido todo, mis sueños estaban dentro de esta tienda»",
+   "published_at": "2026-10-18 19:38:34.000000",
+   "story": "comerciantes-lo-he-perdido-todo"
+  },
+  {
+   "key": 138,
+   "outlet": "el-mundo",
+   "title": "La Policía se despliega en Los Rosales y el Tarajal para retirar a los últimos migrantes de las calles de Ceuta",
+   "published_at": "2026-10-18 08:52:27.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 490,
+   "outlet": "20minutos",
+   "title": "La Policía despliega su primer operativo en barrios de Ceuta y desaloja cerca de 500 migrantes",
+   "published_at": "2026-10-18 09:15:32.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 26,
+   "outlet": "el-pais",
+   "title": "Más de 350 agentes desalojan los últimos asentamientos de migrantes en Ceuta",
+   "published_at": "2026-10-18 11:03:31.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 535,
+   "outlet": "el-espanol",
+   "title": "La Policía desaloja la barriada de Los Rosales y el último asentamiento de las naves de El Tarajal de Ceuta",
+   "published_at": "2026-10-18 11:10:59.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 451,
+   "outlet": "eldiario-es",
+   "title": "La Policía Nacional desaloja los asentamientos de personas migrantes del Tarajal y otros puntos de Ceuta",
+   "published_at": "2026-10-18 11:21:45.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 1422,
+   "outlet": "canal-sur",
+   "title": "La policía desaloja a unos 500 migrante de el Tarajal y los barrios periféricos de Ceuta",
+   "published_at": "2026-10-18 13:12:15.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 324,
+   "outlet": "la-vanguardia",
+   "title": "Ceuta desaloja a unos 500 migrantes de varios asentamientos con un operativo de 350 agentes",
+   "published_at": "2026-10-18 14:02:18.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 244,
+   "outlet": "abc",
+   "title": "Desalojados 500 inmigrantes de zonas periféricas de Ceuta en un operativo con 350 agentes",
+   "published_at": "2026-10-18 17:20:50.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 766,
+   "outlet": "antena3-noticias",
+   "title": "Ceuta intensifica los desalojos de migrantes en sus barriadas y en El Tarajal",
+   "published_at": "2026-10-18 19:47:31.000000",
+   "story": "ceuta-desalojo-migrantes"
+  },
+  {
+   "key": 400,
+   "outlet": "el-confidencial",
+   "title": "Desalojan en Ceuta un autobús con migrantes al utilizar uno de ellos un espray de gas pimienta",
+   "published_at": "2026-10-18 14:26:00.000000",
+   "story": "ceuta-autobus-gas-pimienta"
+  },
+  {
+   "key": 134,
+   "outlet": "el-mundo",
+   "title": "Desalojado en Ceuta un autobús con migrantes después de que uno de los ocupantes usara gas pimienta",
+   "published_at": "2026-10-18 17:44:13.000000",
+   "story": "ceuta-autobus-gas-pimienta"
+  },
+  {
+   "key": 1033,
+   "outlet": "el-debate",
+   "title": "Feijóo le encarga a Albiol liderar la ley antiokupación en España",
+   "published_at": "2026-10-18 10:19:54.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 293,
+   "outlet": "la-vanguardia",
+   "title": "Feijóo promete una nueva ley antiocupaciones de la mano de Albiol",
+   "published_at": "2026-10-18 10:55:28.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 7,
+   "outlet": "el-pais",
+   "title": "Feijóo pide a Albiol que lidere una “ley antiocupas” y que le ayude a obtener una “mayoría grande” el 29-N",
+   "published_at": "2026-10-18 11:26:16.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 860,
+   "outlet": "informativos-telecinco",
+   "title": "Alberto Núñez Feijóo promete una ley antiocupaciones tras el 29N y se la encarga a Xavier Garcia Albiol",
+   "published_at": "2026-10-18 11:26:36.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 744,
+   "outlet": "onda-cero",
+   "title": "Feijóo encarga a Albiol que sea el \"ponente\" de una ley antiokupación cuando lleguen al Gobierno: \"Tolerancia cero, fuera en 48 horas sí o sí\"",
+   "published_at": "2026-10-18 11:45:50.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 623,
+   "outlet": "infolibre",
+   "title": "Feijóo responde a la crisis de vivienda con la promesa de una ley antiocupación que le encargará a Albiol si gobierna",
+   "published_at": "2026-10-18 11:46:21.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 990,
+   "outlet": "esdiario",
+   "title": "Albiol recibe su primer encargo nacional de Feijóo: liderar la ley antiokupas",
+   "published_at": "2026-10-18 11:52:06.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 476,
+   "outlet": "20minutos",
+   "title": "Feijóo pide \"impulsar\" el cambio desde Cataluña y encarga a Albiol una ley antiokupación",
+   "published_at": "2026-10-18 12:07:55.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 594,
+   "outlet": "libertad-digital",
+   "title": "Feijóo encarga a Albiol una ley para echar a los okupas: \"Fuera en 48 horas, sí o sí\"",
+   "published_at": "2026-10-18 13:06:41.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 976,
+   "outlet": "el-plural",
+   "title": "Feijóo encarga a Albiol liderar la ley antiokupación del PP: \"Fuera en 48 horas sí o sí\"",
+   "published_at": "2026-10-18 13:18:55.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 212,
+   "outlet": "abc",
+   "title": "Feijóo encarga a Albiol una ley 'antiokupación' y pone el foco en Cataluña para «impulsar» el cambio de Gobierno",
+   "published_at": "2026-10-18 17:25:29.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 498,
+   "outlet": "europa-press",
+   "title": "Feijóo pide que Catalunya impulse una gran mayoría: \"Decencia sí, Sánchez no\"",
+   "published_at": "2026-10-18 10:54:50.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 1230,
+   "outlet": "diario-de-sevilla",
+   "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+   "published_at": "2026-10-18 11:06:50.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 1347,
+   "outlet": "malaga-hoy",
+   "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+   "published_at": "2026-10-18 11:06:51.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 1379,
+   "outlet": "huelva-informacion",
+   "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+   "published_at": "2026-10-18 11:06:51.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 98,
+   "outlet": "el-mundo",
+   "title": "Feijóo pide a Cataluña \"impulsar una gran mayoría para lograr el cambio\": \"¿Sánchez y Colau o Albiol?\"",
+   "published_at": "2026-10-18 11:10:17.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 2184,
+   "outlet": "la-region",
+   "title": "Feijóo pide una amplia mayoría en Cataluña y encarga a Albiol la ley anitokupas: \"Decencia sí, Sánchez no\"",
+   "published_at": "2026-10-18 11:42:34.000000",
+   "story": "feijoo-cataluna-albiol-antiokupas"
+  },
+  {
+   "key": 1569,
+   "outlet": "canarias7",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 19:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 1255,
+   "outlet": "diario-sur",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 1285,
+   "outlet": "ideal",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 1511,
+   "outlet": "el-comercio",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 1596,
+   "outlet": "el-diario-montanes",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 1702,
+   "outlet": "el-norte-de-castilla",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 2123,
+   "outlet": "hoy",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 2312,
+   "outlet": "la-verdad",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 2371,
+   "outlet": "el-correo",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 2399,
+   "outlet": "diario-vasco",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 2480,
+   "outlet": "la-rioja",
+   "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "published_at": "2026-10-18 20:22:33.000000",
+   "story": "macron-republica-pagaran"
+  },
+  {
+   "key": 427,
+   "outlet": "el-confidencial",
+   "title": "El Ayuntamiento de Limoges, destruido por las llamas en la jornada de protestas en Francia",
+   "published_at": "2026-10-18 06:57:00.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 1048,
+   "outlet": "el-independiente",
+   "title": "El incendio del Ayuntamiento de Limoges (Francia) queda controlado tras los disturbios",
+   "published_at": "2026-10-18 08:12:45.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 276,
+   "outlet": "abc",
+   "title": "El incendio del Ayuntamiento de Limoges: una tragedia para el patrimonio francés",
+   "published_at": "2026-10-18 08:47:49.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 748,
+   "outlet": "onda-cero",
+   "title": "Las impactantes imágenes del Ayuntamiento de Limoges destruido por un incendio que fue provocado por los manifestantes en Francia",
+   "published_at": "2026-10-18 09:07:45.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 728,
+   "outlet": "cope",
+   "title": "El incendio del Ayuntamiento de Limoges simboliza el caos de las revueltas en Francia. «Hay un derecho a manifestarse, pero no al vandalismo»",
+   "published_at": "2026-10-18 10:25:39.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 379,
+   "outlet": "la-vanguardia",
+   "title": "Así ha quedado el ayuntamiento de Limoges tras derrumbarse la aguja durante los disturbios en Francia",
+   "published_at": "2026-10-18 11:13:32.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 5,
+   "outlet": "el-pais",
+   "title": "El incendio del ayuntamiento de Limoges el día después del ataque: “Es inadmisible, hay que castigar a los culpables”",
+   "published_at": "2026-10-18 16:15:11.000000",
+   "story": "limoges-ayuntamiento-incendio"
+  },
+  {
+   "key": 493,
+   "outlet": "20minutos",
+   "title": "Muere un sacerdote en Ecuador tras caerle un crucifijo en la cabeza en plena misa",
+   "published_at": "2026-10-18 10:24:51.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 182,
+   "outlet": "el-mundo",
+   "title": "Muere un sacerdote en Ecuador tras caerle una cruz durante una misa transmitida en directo",
+   "published_at": "2026-10-18 15:28:14.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 738,
+   "outlet": "onda-cero",
+   "title": "Muere un sacerdote en Ecuador tras caerle encima una cruz durante una misa emitida en directo",
+   "published_at": "2026-10-18 16:44:48.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 776,
+   "outlet": "antena3-noticias",
+   "title": "Muere en plena misa un sacerdote tras caerle encima un crucifijo",
+   "published_at": "2026-10-18 16:46:17.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 213,
+   "outlet": "abc",
+   "title": "Un sacerdote muere en plena misa tras caerle encima una cruz en Ecuador",
+   "published_at": "2026-10-18 17:15:10.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 841,
+   "outlet": "informativos-telecinco",
+   "title": "Muere un sacerdote en plena misa tras caerle una cruz de madera en la cabeza en Ecuador",
+   "published_at": "2026-10-18 18:35:44.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 2207,
+   "outlet": "el-progreso",
+   "title": "Muere un sacerdote tras caerle encima una gran cruz mientras realizaba una misa transmitida en directo",
+   "published_at": "2026-10-18 20:44:58.000000",
+   "story": "ecuador-sacerdote-cruz"
+  },
+  {
+   "key": 461,
+   "outlet": "eldiario-es",
+   "title": "Trump apoya a Netanyahu ante las elecciones israelíes tras los ataques de colonos en Cisjordania y con la guerra en Irán abierta",
+   "published_at": "2026-10-18 15:26:55.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 529,
+   "outlet": "europa-press",
+   "title": "Trump otorga su apoyo formal al \"primer ministro guerrero\" Netanyahu para las elecciones israelíes",
+   "published_at": "2026-10-18 16:08:21.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 809,
+   "outlet": "lasexta",
+   "title": "Trump traslada su apoyo al \"guerrero\" Netanyahu para las elecciones israelíes: \"Bibi ha sido un socio para la paz\"",
+   "published_at": "2026-10-18 17:08:53.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 83,
+   "outlet": "el-pais",
+   "title": "Trump respalda a Netanyahu a nueve días de las elecciones israelíes: “Es un gran guerrero, fuerte, valiente y brillante”",
+   "published_at": "2026-10-18 17:26:37.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 771,
+   "outlet": "antena3-noticias",
+   "title": "Donald Trump muestra su apoyo total a Netanyahu para las elecciones israelíes",
+   "published_at": "2026-10-18 17:50:02.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 736,
+   "outlet": "onda-cero",
+   "title": "Trump expresa su \"respaldo total\" a Netanyahu en las elecciones de Israel para \"completar la misión\" contra Irán",
+   "published_at": "2026-10-18 18:09:09.000000",
+   "story": "trump-apoya-netanyahu"
+  },
+  {
+   "key": 658,
+   "outlet": "the-objective",
+   "title": "Netanyahu responde al apoyo de Trump prometiendo gasolina más barata si cae Irán",
+   "published_at": "2026-10-18 20:12:09.000000",
+   "story": "netanyahu-gasolina-iran"
+  },
+  {
+   "key": 87,
+   "outlet": "el-pais",
+   "title": "Ucrania, en punto muerto: asediada por Putin y abandonada por Trump",
+   "published_at": "2026-10-18 03:30:01.000000",
+   "story": "ucrania-analisis-punto-muerto"
+  },
+  {
+   "key": 384,
+   "outlet": "la-vanguardia",
+   "title": "Ucrania responde a Trump con uno de los mayores ataques de la guerra en San Petersburgo, la ciudad de Putin",
+   "published_at": "2026-10-18 07:17:59.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 485,
+   "outlet": "20minutos",
+   "title": "Ucrania responde a Trump golpeando San Petersburgo, la ciudad de Putin, con el mayor ataque de drones de la guerra",
+   "published_at": "2026-10-18 08:45:39.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 1591,
+   "outlet": "canarias7",
+   "title": "Ucrania responde a Trump con un gran ataque sobre San Petersburgo",
+   "published_at": "2026-10-18 15:12:49.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 1618,
+   "outlet": "el-diario-montanes",
+   "title": "Ucrania responde a Trump con un gran ataque sobre San Petersburgo",
+   "published_at": "2026-10-18 16:12:49.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 2156,
+   "outlet": "la-voz-de-galicia",
+   "title": "Kiev responde a la ofensiva rusa con un ataque masivo a San Petersburgo",
+   "published_at": "2026-10-18 17:28:00.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 545,
+   "outlet": "el-espanol",
+   "title": "Ucrania siembra el caos en Rusia en uno de los mayores ataques con drones desde el inicio de la guerra",
+   "published_at": "2026-10-18 07:19:12.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 455,
+   "outlet": "eldiario-es",
+   "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+   "published_at": "2026-10-18 07:55:17.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 426,
+   "outlet": "el-confidencial",
+   "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+   "published_at": "2026-10-18 09:21:00.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 183,
+   "outlet": "el-mundo",
+   "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+   "published_at": "2026-10-18 12:28:26.000000",
+   "story": "ucrania-ataque-san-petersburgo"
+  },
+  {
+   "key": 740,
+   "outlet": "onda-cero",
+   "title": "Vox pide al Tribunal Constitucional que inadmita el recurso del Defensor del Pueblo por la ley de nietos",
+   "published_at": "2026-10-18 14:08:34.000000",
+   "story": "vox-tc-ley-nietos"
+  },
+  {
+   "key": 671,
+   "outlet": "the-objective",
+   "title": "Vox pide al Constitucional que inadmita el recurso de Gabilondo por la ‘ley de nietos’",
+   "published_at": "2026-10-18 14:28:54.000000",
+   "story": "vox-tc-ley-nietos"
+  },
+  {
+   "key": 1021,
+   "outlet": "el-debate",
+   "title": "Vox pide al TC que inadmita el recurso del Defensor del Pueblo por la ley de nietos",
+   "published_at": "2026-10-18 14:37:54.000000",
+   "story": "vox-tc-ley-nietos"
+  },
+  {
+   "key": 501,
+   "outlet": "europa-press",
+   "title": "Vox pide al Constitucional inadmitir el recurso del Defensor del Pueblo sobre la 'ley de nietos'",
+   "published_at": "2026-10-18 16:33:52.000000",
+   "story": "vox-tc-ley-nietos"
+  },
+  {
+   "key": 992,
+   "outlet": "esdiario",
+   "title": "Crece la guerra en el Constitucional por la \"ley de nietos\": Vox combate el recurso de Gabilondo",
+   "published_at": "2026-10-18 18:00:00.000000",
+   "story": "vox-tc-ley-nietos"
+  },
+  {
+   "key": 1022,
+   "outlet": "el-debate",
+   "title": "Iustitia Europa pide al Constitucional rechazar la petición del Defensor del Pueblo sobre la 'ley de nietos'",
+   "published_at": "2026-10-18 17:57:46.000000",
+   "story": "iustitia-europa-ley-nietos"
+  },
+  {
+   "key": 29,
+   "outlet": "el-pais",
+   "title": "El Papa habla por primera vez a los fieles en la plaza de San Pedro tras su operación: “Retomaré gradualmente mis actividades”",
+   "published_at": "2026-10-18 10:30:05.000000",
+   "story": "papa-reaparece-angelus"
+  },
+  {
+   "key": 854,
+   "outlet": "informativos-telecinco",
+   "title": "El Papa reaparece para rezar el Ángelus en el Vaticano tras su operación de pulmón: \"Retomaré gradualmente mi actividad\"",
+   "published_at": "2026-10-18 10:49:46.000000",
+   "story": "papa-reaparece-angelus"
+  },
+  {
+   "key": 378,
+   "outlet": "la-vanguardia",
+   "title": "El papa León XIV reaparece tras su operación y anuncia que retomará gradualmente su actividad",
+   "published_at": "2026-10-18 11:13:35.000000",
+   "story": "papa-reaparece-angelus"
+  },
+  {
+   "key": 544,
+   "outlet": "el-espanol",
+   "title": "El Papa reaparece para rezar el ángelus tras su operación de pulmón: \"Retomaré gradualmente mi actividad\"",
+   "published_at": "2026-10-18 11:44:11.000000",
+   "story": "papa-reaparece-angelus"
+  },
+  {
+   "key": 2229,
+   "outlet": "el-progreso",
+   "title": "León XIV reaparece en el ángelus: \"Retomaré gradualmente mis actividades con la ayuda de Dios\"",
+   "published_at": "2026-10-18 13:07:20.000000",
+   "story": "papa-reaparece-angelus"
+  },
+  {
+   "key": 920,
+   "outlet": "el-salto",
+   "title": "De España a Francia y de Portugal a Italia, pasando por Albania: estalla la juventud europea sin futuro",
+   "published_at": "2026-10-18 04:00:00.000000",
+   "story": "europa-protestas-contagio"
+  },
+  {
+   "key": 471,
+   "outlet": "20minutos",
+   "title": "Las protestas por la inflación y la vivienda se contagian por Europa: caos en Francia, Italia y Albania y acampadas de España y Portugal",
+   "published_at": "2026-10-18 15:40:07.000000",
+   "story": "europa-protestas-contagio"
+  },
+  {
+   "key": 209,
+   "outlet": "abc",
+   "title": "De Portugal a Albania, pasando por Italia, Europa clama contra los recortes y el alto coste de la vida",
+   "published_at": "2026-10-18 18:41:05.000000",
+   "story": "europa-protestas-contagio"
+  },
+  {
+   "key": 6,
+   "outlet": "el-pais",
+   "title": "Italia se contagia de las protestas estudiantiles en Francia",
+   "published_at": "2026-10-18 19:34:29.000000",
+   "story": "europa-protestas-contagio"
+  },
+  {
+   "key": 1233,
+   "outlet": "diario-de-sevilla",
+   "title": "Ceuta, ¿y ahora qué?",
+   "published_at": "2026-10-18 04:51:02.000000",
+   "story": "ceuta-y-ahora-que"
+  },
+  {
+   "key": 1382,
+   "outlet": "huelva-informacion",
+   "title": "Ceuta, ¿y ahora qué?",
+   "published_at": "2026-10-18 04:51:05.000000",
+   "story": "ceuta-y-ahora-que"
+  },
+  {
+   "key": 1350,
+   "outlet": "malaga-hoy",
+   "title": "Ceuta, ¿y ahora qué?",
+   "published_at": "2026-10-18 04:51:06.000000",
+   "story": "ceuta-y-ahora-que"
+  },
+  {
+   "key": 600,
+   "outlet": "libertad-digital",
+   "title": "¿Por qué ahora un nuevo partido pseudoliberal?",
+   "published_at": "2026-10-18 19:11:43.000000",
+   "story": "partido-pseudoliberal"
+  },
+  {
+   "key": 278,
+   "outlet": "abc",
+   "title": "Un incendio en una base militar de Canadá deja varios muertos y numerosos heridos",
+   "published_at": "2026-10-18 07:15:40.000000",
+   "story": "canada-base-militar-incendio"
+  },
+  {
+   "key": 374,
+   "outlet": "la-vanguardia",
+   "title": "Cuatro soldados muertos y decenas de heridos en un incendio en una base militar de Canadá",
+   "published_at": "2026-10-18 17:09:36.000000",
+   "story": "canada-base-militar-incendio"
+  },
+  {
+   "key": 110,
+   "outlet": "el-mundo",
+   "title": "El primer ministro canadiense confirma cuatro militares muertos y decenas de heridos graves en una base militar en Alberta",
+   "published_at": "2026-10-18 17:27:37.000000",
+   "story": "canada-base-militar-incendio"
+  },
+  {
+   "key": 837,
+   "outlet": "informativos-telecinco",
+   "title": "Al menos cuatro muertos por un gran incendio en una base militar de Alberta, Canadá",
+   "published_at": "2026-10-18 19:16:27.000000",
+   "story": "canada-base-militar-incendio"
+  },
+  {
+   "key": 857,
+   "outlet": "informativos-telecinco",
+   "title": "Encuentran muerta a la mujer que cayó y fue arrastrada por el agua de las lluvias en Cabrera de Mar, Barcelona",
+   "published_at": "2026-10-18 08:35:36.000000",
+   "story": "cabrera-de-mar-mujer-riera"
+  },
+  {
+   "key": 2034,
+   "outlet": "diari-de-tarragona",
+   "title": "Localizan el cuerpo sin vida de la mujer arrastrada por la riera en Cabrera de Mar",
+   "published_at": "2026-10-18 10:41:29.000000",
+   "story": "cabrera-de-mar-mujer-riera"
+  },
+  {
+   "key": 2231,
+   "outlet": "el-progreso",
+   "title": "Una mujer muere en Barcelona arrastrada las lluvias en plena dana Adam",
+   "published_at": "2026-10-18 12:33:48.000000",
+   "story": "cabrera-de-mar-mujer-riera"
+  },
+  {
+   "key": 1418,
+   "outlet": "canal-sur",
+   "title": "Una mujer muere en Barcelona tras tratar de cruzar una riera en pleno temporal",
+   "published_at": "2026-10-18 12:53:32.000000",
+   "story": "cabrera-de-mar-mujer-riera"
+  },
+  {
+   "key": 662,
+   "outlet": "the-objective",
+   "title": "Macron culpa de los disturbios a la «extrema izquierda» y llama a un diálogo entre partidos",
+   "published_at": "2026-10-18 18:13:47.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 1459,
+   "outlet": "heraldo",
+   "title": "Macron culpa a la extrema izquierda de los disturbios en Francia: \"Quienes han destruido deben pagar\"",
+   "published_at": "2026-10-18 18:35:24.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 573,
+   "outlet": "okdiario",
+   "title": "Macron culpa de las revueltas en Francia a radicales de «grupos de extrema izquierda»",
+   "published_at": "2026-10-18 18:36:11.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 735,
+   "outlet": "onda-cero",
+   "title": "Macron culpa a la extrema izquierda de la violencia en Francia: \"Quienes han causado daños tienen que pagar\"",
+   "published_at": "2026-10-18 18:44:57.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 807,
+   "outlet": "lasexta",
+   "title": "Macron anuncia un gabinete de crisis ante la violencia en Francia y apunta a \"la extrema izquierda\": \"Siento vergüenza\"",
+   "published_at": "2026-10-18 18:14:20.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 543,
+   "outlet": "el-espanol",
+   "title": "Macron acusa a la extrema izquierda de la violencia en las manifestaciones y anuncia la \"prohibición de reuniones\"",
+   "published_at": "2026-10-18 18:21:48.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 1,
+   "outlet": "el-pais",
+   "title": "Macron acusa a la “extrema izquierda” de inflamar la calle",
+   "published_at": "2026-10-18 18:53:03.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 469,
+   "outlet": "20minutos",
+   "title": "Macron acusa de la violencia a la extrema izquierda, apoya a la Policía y comerciantes e insta a prohibir \"ciertas reuniones\"",
+   "published_at": "2026-10-18 19:10:33.000000",
+   "story": "macron-culpa-extrema-izquierda"
+  },
+  {
+   "key": 23,
+   "outlet": "el-pais",
+   "title": "Zelenski afirma que Trump busca la rendición de Ucrania ante Rusia",
+   "published_at": "2026-10-18 20:12:59.000000",
+   "story": "zelenski-trump-rendicion"
+  },
+  {
+   "key": 484,
+   "outlet": "20minutos",
+   "title": "Zelenski afirma que Trump está intentando forzar que Ucrania se rinda ante Rusia",
+   "published_at": "2026-10-18 21:00:22.000000",
+   "story": "zelenski-trump-rendicion"
+  },
+  {
+   "key": 795,
+   "outlet": "lasexta",
+   "title": "Guerra Rusia-Ucrania en directo | Zelenski denuncia que parece que Trump está intentando \"convencer a Ucrania para que capitule\"",
+   "published_at": "2026-10-18 21:01:45.000000",
+   "story": "zelenski-trump-rendicion"
+  },
+  {
+   "key": 793,
+   "outlet": "lasexta",
+   "title": "Trump acusa a Zelenski de \"no tener intención de poner fin\" a la guerra en Ucrania: \"Su país está en ruinas\"",
+   "published_at": "2026-10-18 21:13:25.000000",
+   "story": "trump-acusa-zelenski"
+  },
+  {
+   "key": 329,
+   "outlet": "la-vanguardia",
+   "title": "La batalla de los nietos por su voto",
+   "published_at": "2026-10-18 04:00:00.000000",
+   "story": "ley-nietos-alegaciones-supremo"
+  },
+  {
+   "key": 500,
+   "outlet": "europa-press",
+   "title": "Los nacionalizados por la 'ley de nietos' con el voto suspendido apuran plazos para presentar alegaciones al Supremo",
+   "published_at": "2026-10-18 08:32:50.000000",
+   "story": "ley-nietos-alegaciones-supremo"
+  },
+  {
+   "key": 875,
+   "outlet": "expansion",
+   "title": "Los afectados por la suspensión de la 'ley de nietos' apuran los días para presentar alegaciones al Supremo",
+   "published_at": "2026-10-18 10:06:04.000000",
+   "story": "ley-nietos-alegaciones-supremo"
+  },
+  {
+   "key": 1231,
+   "outlet": "diario-de-sevilla",
+   "title": "Pensiones: error no forzado",
+   "published_at": "2026-10-18 04:50:59.000000",
+   "story": "pensiones-error-no-forzado"
+  },
+  {
+   "key": 1348,
+   "outlet": "malaga-hoy",
+   "title": "Pensiones: error no forzado",
+   "published_at": "2026-10-18 04:51:01.000000",
+   "story": "pensiones-error-no-forzado"
+  },
+  {
+   "key": 1380,
+   "outlet": "huelva-informacion",
+   "title": "Pensiones: error no forzado",
+   "published_at": "2026-10-18 04:51:01.000000",
+   "story": "pensiones-error-no-forzado"
+  }
+ ]
+}

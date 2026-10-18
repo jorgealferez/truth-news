@@ -63,6 +63,19 @@ def _cmd_crawl(args) -> int:
     return 0
 
 
+def _cmd_analyze(args) -> int:
+    from datetime import timedelta
+
+    from truthnews.analysis.pipeline import run
+    from truthnews.db import get_engine, session_scope
+    from truthnews.models import utcnow
+
+    with session_scope(get_engine()) as session:
+        out = run(session, since=utcnow() - timedelta(hours=args.hours))
+    print(json.dumps(out, indent=2))
+    return 0
+
+
 def _cmd_serve(args) -> int:  # pragma: no cover - arranca un servidor
     import uvicorn
 
@@ -96,6 +109,11 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--outlet", action="append", help="limitar a uno o varios slugs")
     c.add_argument("--no-text", action="store_true", help="no descargar el texto completo")
     c.set_defaults(func=_cmd_crawl)
+    an = sub.add_parser("analyze", help="agrupa en historias y verifica afirmaciones")
+    an.add_argument(
+        "--hours", type=int, default=72, help="verificar articulos ingeridos en las ultimas N horas"
+    )
+    an.set_defaults(func=_cmd_analyze)
     s = sub.add_parser("serve")
     s.add_argument("--host", default="0.0.0.0")
     s.add_argument("--port", default=8000, type=int)
@@ -107,7 +125,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(
         stream=sys.stdout,  # Railway marca stderr como error
-        level=os.environ.get("LOG_LEVEL", "INFO"), format="%(asctime)s %(levelname)s %(name)s: %(message)s"
+        level=os.environ.get("LOG_LEVEL", "INFO"),
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("trafilatura").setLevel(logging.ERROR)

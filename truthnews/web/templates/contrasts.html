@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'contrasts') }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'contrasts') }}{% if seccion %} · {{ category_name(seccion, lang) }}{% endif %}</h1>
+<nav class="chips">{% for c in categories %}<a href="/contrastes?seccion={{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}</nav>
+{% if not stories %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% endif %}
+<div class="grid">{% for st in stories %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div>
+<nav class="pager">
+  {% if page > 1 %}<a href="?page={{ page - 1 }}{% if seccion %}&seccion={{ seccion }}{% endif %}">← {{ t(lang, 'previous') }}</a>{% endif %}
+  {% if stories|length >= 30 %}<a href="?page={{ page + 1 }}{% if seccion %}&seccion={{ seccion }}{% endif %}">{{ t(lang, 'next') }} →</a>{% endif %}
+</nav>
+{% endblock %}

@@ -1,21 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
 <section class="stats">
-  <span>{{ totals.articles }} {{ t(lang, 'articles_count') }}</span> · <span>{{ totals.outlets }} {{ t(lang, 'outlets')|lower }}</span>
+  <span>{{ totals.stories }} {{ t(lang, 'contrasts')|lower }}</span> · <span>{{ totals.articles }} {{ t(lang, 'articles_count') }}</span> · <span>{{ totals.outlets }} {{ t(lang, 'outlets')|lower }}</span> · <span>{{ totals.claims }} {{ t(lang, 'checked_claims') }}</span>
   {% if totals.last_crawl %} · <span>{{ t(lang, 'latest') }}: {{ totals.last_crawl|ago(lang) }}</span>{% endif %}
+  · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>
 </section>
-{% if not top %}
-  <p class="empty">{{ t(lang, 'no_articles') }}</p>
-{% else %}
-<section class="front">
-  <div class="lead-col">{% with a = top[0], lead = True %}{% include "_card.html" %}{% endwith %}</div>
-  <div class="grid">{% for a in top[1:] %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div>
-</section>
-{% for c, items in by_section.items() if items %}
-<section class="section-block">
-  <h2><a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a></h2>
-  <div class="grid">{% for a in items %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div>
-</section>
-{% endfor %}
-{% endif %}
+<section class="intro"><h1>{{ t(lang, 'contrasts') }}</h1><p>{{ t(lang, 'contrasts_lead') }}</p></section>
+<div class="front-grid">
+  <div class="main-col">
+    {% if not stories %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% else %}
+    {% with st = stories[0], lead = True %}{% include "_story_card.html" %}{% endwith %}
+    <div class="grid">{% for st in stories[1:] %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div>
+    <p class="more"><a href="/contrastes">{{ t(lang, 'more') }} {{ t(lang, 'contrasts')|lower }} →</a></p>
+    {% endif %}
+  </div>
+  <aside class="wire">
+    <h2>{{ t(lang, 'latest_wire') }}</h2>
+    {% for a in wire %}<p><span class="meta">{{ a.published_at|ago(lang) }} · {{ a.outlet.name }}</span><br><a href="/noticia/{{ a.id }}">{{ a.title }}</a></p>{% endfor %}
+  </aside>
+</div>
 {% endblock %}

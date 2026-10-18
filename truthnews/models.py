@@ -4,7 +4,18 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
-from sqlalchemy import JSON, DateTime, ForeignKey, Index, Integer, String, Text
+from sqlalchemy import (
+    JSON,
+    CheckConstraint,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -82,8 +93,12 @@ class Article(Base):
     topics: Mapped[list] = mapped_column(JSON, default=list)
     content_hash: Mapped[str | None] = mapped_column(String(64), nullable=True)
     word_count: Mapped[int] = mapped_column(Integer, default=0)
+    story_id: Mapped[int | None] = mapped_column(
+        ForeignKey("story.id", ondelete="SET NULL", name="fk_article_story_id"), nullable=True, index=True
+    )
 
     outlet: Mapped[Outlet] = relationship()
+    story: Mapped[Story | None] = relationship(back_populates="articles")
 
 
 class CrawlRun(Base):
@@ -98,3 +113,88 @@ class CrawlRun(Base):
     articles_new: Mapped[int] = mapped_column(Integer, default=0)
     robots_blocked: Mapped[int] = mapped_column(Integer, default=0)
     stats: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+VERDICTS = ("verdadero", "impreciso", "falso", "enganoso", "sin-datos")
+
+
+class Story(Base):
+    """La misma noticia contada por uno o varios medios (ADR 0004/0005)."""
+
+    __tablename__ = "story"
+    __table_args__ = (Index("ix_story_country_last_seen", "country", "last_seen"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    title: Mapped[str] = mapped_column(String(600))
+    category: Mapped[str] = mapped_column(String(40))
+    country: Mapped[str] = mapped_column(String(2))
+    first_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    n_articles: Mapped[int] = mapped_column(Integer, default=1)
+    n_outlets: Mapped[int] = mapped_column(Integer, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    articles: Mapped[list[Article]] = relationship(back_populates="story")
+
+
+class Claim(Base):
+    """Afirmacion comprobable extraida de un articulo."""
+
+    __tablename__ = "claim"
+    __table_args__ = (
+        UniqueConstraint("article_id", "indicator", "value", name="uq_claim_article_indicator"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    article_id: Mapped[int] = mapped_column(ForeignKey("article.id", ondelete="CASCADE"), index=True)
+    story_id: Mapped[int | None] = mapped_column(
+        ForeignKey("story.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    outlet_id: Mapped[int] = mapped_column(ForeignKey("outlet.id", ondelete="CASCADE"), index=True)
+    text: Mapped[str] = mapped_column(Text)
+    indicator: Mapped[str] = mapped_column(String(60))
+    geo: Mapped[str] = mapped_column(String(8))
+    value: Mapped[float] = mapped_column(Float)
+    unit: Mapped[str] = mapped_column(String(16))
+    direction: Mapped[str | None] = mapped_column(String(8), nullable=True)  # sube | baja
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    article: Mapped[Article] = relationship()
+    outlet: Mapped[Outlet] = relationship()
+    verification: Mapped[Verification | None] = relationship(back_populates="claim", uselist=False)
+
+
+class Verification(Base):
+    __tablename__ = "verification"
+    __table_args__ = (CheckConstraint(f"verdict IN {VERDICTS!r}", name="ck_verification_verdict"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    claim_id: Mapped[int] = mapped_column(ForeignKey("claim.id", ondelete="CASCADE"), unique=True)
+    verdict: Mapped[str] = mapped_column(String(16))
+    confidence: Mapped[float] = mapped_column(Float)
+    explanation: Mapped[str] = mapped_column(Text)
+    method: Mapped[str] = mapped_column(String(40))
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    claim: Mapped[Claim] = relationship(back_populates="verification")
+    evidence: Mapped[list[Evidence]] = relationship(
+        back_populates="verification", cascade="all, delete-orphan"
+    )
+
+
+class Evidence(Base):
+    __tablename__ = "evidence"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    verification_id: Mapped[int] = mapped_column(
+        ForeignKey("verification.id", ondelete="CASCADE"), index=True
+    )
+    source: Mapped[str] = mapped_column(String(60))
+    label: Mapped[str] = mapped_column(String(300))
+    url: Mapped[str] = mapped_column(String(1000))
+    period: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    payload: Mapped[dict] = mapped_column(JSON, default=dict)
+
+    verification: Mapped[Verification] = relationship(back_populates="evidence")

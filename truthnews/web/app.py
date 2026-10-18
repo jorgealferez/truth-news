@@ -14,9 +14,10 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from truthnews import registry
+from truthnews.analysis.compare import compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
-from truthnews.models import Article, Outlet
+from truthnews.models import Article, Outlet, Story
 from truthnews.web import queries
 
 HERE = Path(__file__).resolve().parent
@@ -82,14 +83,60 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request, session: SessionDep):
-        # La portada es la del pais por defecto; los demas paises tienen su propia pagina.
+        # Portada de contrastes: historias contadas por varios medios del pais por defecto.
         home_country = settings.default_country
-        top = queries.latest(session, country=home_country, limit=13)
-        by_section = {
-            c: queries.latest(session, category=c, country=home_country, limit=5)
-            for c in registry.categories()
-        }
-        return render(request, "home.html", top=top, by_section=by_section, totals=queries.totals(session))
+        stories = queries.top_stories(session, country=home_country, limit=24)
+        ids = [s.id for s in stories]
+        wire = queries.latest(session, country=home_country, limit=12)
+        return render(
+            request,
+            "home.html",
+            stories=stories,
+            outlet_names=queries.story_outlet_names(session, ids),
+            verdicts=queries.verdict_counts(session, ids),
+            wire=wire,
+            totals=queries.totals(session),
+        )
+
+    @app.get("/historia/{story_id}", response_class=HTMLResponse)
+    def story(request: Request, story_id: int, session: SessionDep):
+        st = session.get(Story, story_id)
+        if st is None:
+            raise HTTPException(404)
+        arts = queries.story_articles(session, st.id)
+        return render(
+            request,
+            "story.html",
+            st=st,
+            arts=arts,
+            comp=compare(arts),
+            claims=queries.claims_for_story(session, st.id),
+        )
+
+    @app.get("/contrastes", response_class=HTMLResponse)
+    def contrasts(request: Request, session: SessionDep, page: PageQ = 1, seccion: str | None = None):
+        stories = queries.top_stories(
+            session,
+            country=settings.default_country,
+            category=seccion,
+            hours=24 * 7,
+            limit=30,
+            offset=(page - 1) * 30,
+        )
+        ids = [s.id for s in stories]
+        return render(
+            request,
+            "contrasts.html",
+            stories=stories,
+            page=page,
+            seccion=seccion,
+            outlet_names=queries.story_outlet_names(session, ids),
+            verdicts=queries.verdict_counts(session, ids),
+        )
+
+    @app.get("/metodologia", response_class=HTMLResponse)
+    def methodology(request: Request):
+        return render(request, "methodology.html")
 
     @app.get("/seccion/{slug}", response_class=HTMLResponse)
     def section(request: Request, slug: str, session: SessionDep, page: PageQ = 1):
@@ -139,7 +186,8 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         if o is None:
             raise HTTPException(404)
         items = queries.latest(session, outlet_id=o.id, page=page)
-        return render(request, "list.html", items=items, page=page, heading=o.name, outlet=o)
+        record = queries.verdict_counts(session, outlet_id=o.id).get("total", {})
+        return render(request, "list.html", items=items, page=page, heading=o.name, outlet=o, record=record)
 
     @app.get("/noticia/{article_id}", response_class=HTMLResponse)
     def article(request: Request, article_id: int, session: SessionDep):

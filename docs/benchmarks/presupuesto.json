@@ -7,16 +7,131 @@
   ],
   "version": 1,
   "metricas": [
-    {"id": "registro_medios_es", "descripcion": "C1: medios de Espana en el registro", "unidad": "medios", "direccion": "min", "objetivo": 80},
-    {"id": "registro_ccaa_cubiertas", "descripcion": "C1: comunidades autonomas con al menos un medio", "unidad": "comunidades", "direccion": "min", "objetivo": 17},
-    {"id": "rastreo_feeds_ok", "descripcion": "C2: feeds con respuesta valida en un rastreo real", "unidad": "feeds", "direccion": "min", "objetivo": 30},
-    {"id": "rastreo_articulos_nuevos", "descripcion": "C2: articulos ingeridos en un rastreo real sobre base vacia", "unidad": "articulos", "direccion": "min", "objetivo": 300},
-    {"id": "rastreo_medios_con_articulos", "descripcion": "C2: medios distintos con articulos en un rastreo real", "unidad": "medios", "direccion": "min", "objetivo": 50},
-    {"id": "rastreo_descargas_prohibidas", "descripcion": "C2: URLs prohibidas por robots.txt descargadas", "unidad": "urls", "direccion": "max", "objetivo": 0},
-    {"id": "rastreo_duracion_s", "descripcion": "Duracion de un rastreo completo con texto (tope de 600 textos)", "unidad": "s", "direccion": "max", "objetivo": 1800},
-    {"id": "tests_cobertura_pct", "descripcion": "C3: cobertura de lineas de truthnews", "unidad": "%", "direccion": "min", "objetivo": 80},
-    {"id": "tests_fallidos", "descripcion": "C3: tests fallidos", "unidad": "tests", "direccion": "max", "objetivo": 0},
-    {"id": "ruff_avisos", "descripcion": "C3: avisos de ruff en el codigo propio", "unidad": "avisos", "direccion": "max", "objetivo": 0},
-    {"id": "portada_p95_ms_10k", "descripcion": "C7: p95 de la portada con 10 000 articulos (tools/bench_web.py)", "unidad": "ms", "direccion": "max", "objetivo": 300}
+    {
+      "id": "registro_medios_es",
+      "descripcion": "C1: medios de Espana en el registro",
+      "unidad": "medios",
+      "direccion": "min",
+      "objetivo": 80
+    },
+    {
+      "id": "registro_ccaa_cubiertas",
+      "descripcion": "C1: comunidades autonomas con al menos un medio",
+      "unidad": "comunidades",
+      "direccion": "min",
+      "objetivo": 17
+    },
+    {
+      "id": "rastreo_feeds_ok",
+      "descripcion": "C2: feeds con respuesta valida en un rastreo real",
+      "unidad": "feeds",
+      "direccion": "min",
+      "objetivo": 30
+    },
+    {
+      "id": "rastreo_articulos_nuevos",
+      "descripcion": "C2: articulos ingeridos en un rastreo real sobre base vacia",
+      "unidad": "articulos",
+      "direccion": "min",
+      "objetivo": 300
+    },
+    {
+      "id": "rastreo_medios_con_articulos",
+      "descripcion": "C2: medios distintos con articulos en un rastreo real",
+      "unidad": "medios",
+      "direccion": "min",
+      "objetivo": 50
+    },
+    {
+      "id": "rastreo_descargas_prohibidas",
+      "descripcion": "C2: URLs prohibidas por robots.txt descargadas",
+      "unidad": "urls",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "rastreo_duracion_s",
+      "descripcion": "Duracion de un rastreo completo con texto (tope de 600 textos)",
+      "unidad": "s",
+      "direccion": "max",
+      "objetivo": 1800
+    },
+    {
+      "id": "tests_cobertura_pct",
+      "descripcion": "C3: cobertura de lineas de truthnews",
+      "unidad": "%",
+      "direccion": "min",
+      "objetivo": 80
+    },
+    {
+      "id": "tests_fallidos",
+      "descripcion": "C3: tests fallidos",
+      "unidad": "tests",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "ruff_avisos",
+      "descripcion": "C3: avisos de ruff en el codigo propio",
+      "unidad": "avisos",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "portada_p95_ms_10k",
+      "descripcion": "C7: p95 de la portada con 10 000 articulos (tools/bench_web.py)",
+      "unidad": "ms",
+      "direccion": "max",
+      "objetivo": 300
+    },
+    {
+      "id": "agrupacion_f1",
+      "descripcion": "C4: F1 por pares sobre tests/fixtures/clusters.json (155 titulares reales etiquetados a mano)",
+      "unidad": "F1",
+      "direccion": "min",
+      "objetivo": 0.8
+    },
+    {
+      "id": "agrupacion_precision",
+      "descripcion": "C4: precision por pares de la agrupacion (un falso agrupamiento atribuye a un medio lo que no dijo)",
+      "unidad": "precision",
+      "direccion": "min",
+      "objetivo": 0.9
+    },
+    {
+      "id": "fuentes_datos_vivas",
+      "descripcion": "C5: fuentes de datos oficiales respondiendo en vivo (tools/check_sources.py)",
+      "unidad": "fuentes",
+      "direccion": "min",
+      "objetivo": 5
+    },
+    {
+      "id": "verificaciones_sin_evidencia",
+      "descripcion": "C6: veredictos distintos de sin-datos sin evidencia enlazada",
+      "unidad": "veredictos",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "extraccion_casos_ok_pct",
+      "descripcion": "Rigor: casos del banco de afirmaciones (tests/test_claims.py) resueltos como se espera, incluidos los que no deben extraerse",
+      "unidad": "%",
+      "direccion": "min",
+      "objetivo": 100
+    },
+    {
+      "id": "historia_p95_ms_10k",
+      "descripcion": "C7: p95 de la pagina de historia con 10 000 articulos (tools/bench_web.py)",
+      "unidad": "ms",
+      "direccion": "max",
+      "objetivo": 300
+    },
+    {
+      "id": "analisis_duracion_s",
+      "descripcion": "Duracion del analisis (agrupacion + afirmaciones) sobre el volumen de un rastreo completo",
+      "unidad": "s",
+      "direccion": "max",
+      "objetivo": 600
+    }
   ]
 }
