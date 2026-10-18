@@ -27,7 +27,10 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 ## Activo
 
 - [ ] Fase 1a — Despliegue temprano en Railway: Postgres, web y worker en marcha desde el primer minuto — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-- [ ] Fase 2 — Motor de contraste: agrupacion, afirmaciones, conectores de datos, veredictos, omisiones, fiabilidad por medio
+  - [x] Proyecto Railway truth-news: Postgres, web (healthcheck /healthz) y worker (cada 30 min)
+  - [x] Produccion: /healthz 200; primer ciclo 126 feeds ok, 2842 articulos
+  - [x] Tema claro fijo y logs a stdout (feedback del usuario)
+- [ ] Fase 2 — Motor de contraste: el comparador como eje (peticion del usuario 2026-10-18: "comparador de noticias, no agregador"): agrupacion, cifras en disputa, omisiones, conectores de datos, veredictos, fiabilidad por medio
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
