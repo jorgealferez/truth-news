@@ -7,6 +7,7 @@ import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
+from truthnews.analysis.pipeline import run as analyze
 from truthnews.config import Settings, get_settings
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
@@ -28,6 +29,9 @@ def run_cycle(settings: Settings | None = None) -> dict:
             "articles_new": run.articles_new,
             "robots_blocked": run.robots_blocked,
         }
+        started = run.started_at
+    with session_scope(engine) as session:
+        summary["analysis"] = analyze(session, since=started)
     log.info("ciclo terminado: %s", summary)
     return summary
 

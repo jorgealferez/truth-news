@@ -26,14 +26,17 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 1a — Despliegue temprano en Railway: Postgres, web y worker en marcha desde el primer minuto — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] Proyecto Railway truth-news: Postgres, web (healthcheck /healthz) y worker (cada 30 min)
-  - [x] Produccion: /healthz 200; primer ciclo 126 feeds ok, 2842 articulos
-  - [x] Tema claro fijo y logs a stdout (feedback del usuario)
-- [ ] Fase 2 — Motor de contraste: el comparador como eje (peticion del usuario 2026-10-18: "comparador de noticias, no agregador"): agrupacion, cifras en disputa, omisiones, conectores de datos, veredictos, fiabilidad por medio
+- [ ] Fase 2 — Motor de contraste: el comparador como eje (peticion del usuario 2026-10-18: "comparador de noticias, no agregador"): agrupacion, cifras en disputa, omisiones, conectores de datos, veredictos, fiabilidad por medio — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
+  - [x] Agrupacion entre medios: F1 0,885 (precision 0,93) sobre 155 titulares reales etiquetados a mano
+  - [x] Conectores en vivo: Eurostat, INE, Banco Mundial, BOE, GDELT (5/5)
+  - [x] Extractor estricto de afirmaciones (banco de 19 casos) y veredictos trazables con frescura
+  - [x] Comparador: cobertura, cifras en disputa, omisiones, lenguaje valorativo; portada de contrastes, /historia, /metodologia
+  - [x] ADR 0004 (comparador) y 0005 (datos: historias, afirmaciones, verificaciones, evidencias)
+- [ ] Fase 2b — Temas, sintesis por medio, valoracion con datos y piezas propias de analisis y opinion con IA (portada: como cuentan los medios cada tema)
 - [ ] Fase 3 — Administracion e investigaciones a demanda
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
+- [ ] Marca y dominio: valorar nosmienten.com (peticion del usuario 2026-10-18) para una imagen solida, profesional, politicamente neutral y creible para el gran publico; aplicar el nombre via SITE_NAME y el dominio en Railway cuando el usuario decida
 
 ## Esperando
 
@@ -47,3 +50,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 - [x] Fase 0 — Encuadre (#1)
 - [x] Fase 1 — Nucleo: registro, rastreador, web segmentada, configuracion de Railway (#2)
+- [x] Fase 1a — Despliegue temprano en Railway: produccion rastreando cada 30 min (#3)

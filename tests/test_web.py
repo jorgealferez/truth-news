@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
-from truthnews.models import Article, CrawlRun, Outlet
+from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Story, Verification
 from truthnews.web.app import _ago, create_app
 
 
@@ -60,7 +60,7 @@ def test_pages_render(client):
         r = client.get(path)
         assert r.status_code == 200, path
     home = client.get("/").text
-    assert "Titular 0" in home and "35 noticias" in home
+    assert "Titular 0" in home and "35 noticias" in home and "Contrastes de hoy" in home
 
 
 def test_article_and_related(client, session):
@@ -118,6 +118,93 @@ def test_home_shows_default_country_only(client, session):
     session.commit()
     assert "Noticia portuguesa" not in client.get("/").text
     assert "Noticia portuguesa" in client.get("/pais/PT").text
+
+
+def test_comparator_pages(client, session):
+    o2 = Outlet(
+        slug="otro", name="Otro Medio", homepage="https://o.es", country="ES", language="es", scope="national"
+    )
+    session.add(o2)
+    session.flush()
+    now = datetime.now(UTC)
+    st = Story(
+        title="Historia comparada",
+        category="politica",
+        country="ES",
+        first_seen=now,
+        last_seen=now,
+        n_articles=2,
+        n_outlets=2,
+    )
+    session.add(st)
+    session.flush()
+    a1 = session.query(Article).filter_by(url="https://m.es/1").one()
+    a1.story_id = st.id
+    a1.title = "Caos: 2.000 detenidos"
+    a2 = Article(
+        outlet_id=o2.id,
+        url="https://o.es/1",
+        url_hash="o" * 64,
+        title="2.400 detenidos",
+        published_at=now,
+        language="es",
+        country="ES",
+        category="politica",
+        topics=[],
+        story_id=st.id,
+    )
+    session.add(a2)
+    session.flush()
+    c = Claim(
+        article_id=a2.id,
+        story_id=st.id,
+        outlet_id=o2.id,
+        text="La tasa de paro es del 12 %",
+        indicator="paro",
+        geo="ES",
+        value=12.0,
+        unit="pct",
+    )
+    session.add(c)
+    session.flush()
+    v = Verification(
+        claim_id=c.id,
+        verdict="falso",
+        confidence=0.8,
+        explanation="El dato oficial es 10,0 %.",
+        method="nivel",
+    )
+    v.evidence.append(
+        Evidence(
+            source="eurostat",
+            label="Tasa de paro",
+            url="https://ec.europa.eu/x",
+            period="2026-08",
+            value=10.0,
+            payload={},
+        )
+    )
+    session.add(v)
+    session.commit()
+
+    home = client.get("/").text
+    assert "Historia comparada" in home and "2 medios" in home and "Falso 1" in home
+    page = client.get(f"/historia/{st.id}").text
+    for needle in [
+        "Quién lo cuenta y cómo",
+        "Cifras distintas según el medio",
+        "2.400",
+        "caos",
+        "El dato oficial es 10,0 %.",
+        "https://ec.europa.eu/x",
+    ]:
+        assert needle in page, needle
+    assert client.get("/historia/99999").status_code == 404
+    assert "Historia comparada" in client.get("/contrastes?seccion=politica").text
+    assert client.get("/contrastes?page=2").status_code == 200
+    assert "Verdadero" in client.get("/metodologia").text
+    assert "Falso 1" in client.get("/medio/otro").text
+    assert "2 medios" in client.get(f"/noticia/{a2.id}").text
 
 
 def test_empty_home(engine):

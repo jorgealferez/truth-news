@@ -1,0 +1,46 @@
+{
+  "fase": 2,
+  "titulo": "Motor de contraste: el comparador como eje",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18, red con proxy de salida)",
+    "toolchains": {"python": "3.13.16", "base_de_datos": "SQLite local con los 2805 articulos del rastreo real de la Fase 1"}
+  },
+  "medidas": {
+    "agrupacion_f1": 0.885,
+    "agrupacion_precision": 0.93,
+    "fuentes_datos_vivas": 5,
+    "verificaciones_sin_evidencia": 0,
+    "extraccion_casos_ok_pct": 100,
+    "historia_p95_ms_10k": 8.2,
+    "portada_p95_ms_10k": 14.0,
+    "analisis_duracion_s": 11.2,
+    "tests_cobertura_pct": 98,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "agrupacion": "tests/fixtures/clusters.json: 155 titulares reales en 26 historias etiquetadas a mano; umbral 0,30: precision 0,930, exhaustividad 0,844, F1 0,885. Sobre el rastreo completo: 2805 articulos -> 2072 historias, 192 con >= 2 medios; con indice invertido 2,0 s (5,9 s sin el)",
+    "fuentes": "python tools/check_sources.py: eurostat (paro ES 2026-08 10,0 %), ine (IPC interanual 2026-09 4,92 %), worldbank (poblacion ES 2025), boe (218 disposiciones), gdelt (81 puntos; reintento ante 429)",
+    "rigor": "Primera version del extractor: 8 afirmaciones, 6 'falso' que eran errores de atribucion (PIB ruso, deuda del 119 % del PIB, dato del ano pasado, 'shock de la inflacion en torno al 40 %'). Extractor estricto: 1 afirmacion, verdadera (inflacion 4,9 % en laSexta = INE 4,92 %). Banco de 19 casos en tests/test_claims.py, 100 % correctos",
+    "web": "python tools/bench_web.py --articles 10000 --requests 60: portada p50 9,9 ms, p95 14,0 ms; historia p50 6,8 ms, p95 8,2 ms",
+    "analisis": "python -m truthnews analyze sobre los 2805 articulos: 11,2 s (agrupacion de la ventana de 72 h + afirmaciones)",
+    "tests": "pytest --cov: 88 passed, cobertura 98 %"
+  },
+  "criterios_de_salida": {
+    "C4": "cumplido: F1 0,885 >= 0,80 (precision 0,93)",
+    "C5": "cumplido: 5 fuentes respondiendo en vivo con test de contrato cada una",
+    "C6": "cumplido en codigo y test: un veredicto distinto de sin-datos sin evidencia aborta el ciclo (AssertionError C6); 0 en la base de medicion",
+    "C7": "cumplido: portada 14,0 ms y historia 8,2 ms de p95 con 10 000 articulos"
+  },
+  "no_verificable": [
+    "Bloqueo consultivo de PostgreSQL en alembic/env.py: NO VERIFICADO en local (sin PostgreSQL en el entorno); se verifica en el despliegue de Railway con dos servicios migrando a la vez",
+    "Exhaustividad de la extraccion de afirmaciones: sin conjunto etiquetado aun; la version estricta prioriza no acusar en falso (precision) sobre encontrar todas"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Fase 2b: temas que agrupan historias de distinto enfoque, sintesis por medio, piezas propias de analisis y opinion con IA (necesita ANTHROPIC_API_KEY)",
+    "Extraccion de afirmaciones asistida por IA para subir la exhaustividad, siempre juzgada contra la serie oficial",
+    "Omisiones mas utiles con mas texto completo (subir MAX_TEXT_FETCH_PER_RUN en produccion) y entidades mejores"
+  ]
+}

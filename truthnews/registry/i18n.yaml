@@ -28,6 +28,42 @@ es:
   next: Siguiente
   all: Todo
   language: Idioma
+  contrasts: Contrastes de hoy
+  contrasts_lead: La misma noticia contada por distintos medios. Comparamos qué dice cada uno, en qué coinciden, en qué difieren y qué dicen los datos.
+  n_outlets: medios
+  compare_cta: Ver la comparativa
+  coverage: Quién lo cuenta y cómo
+  agree: En qué coinciden
+  differ: En qué difieren
+  disputed: Cifras distintas según el medio
+  disputed_note: Las cifras pueden diferir porque el balance se actualizó a lo largo del día; mostramos la hora de cada medio.
+  omissions: Lo que la mayoría cuenta y este medio no
+  omissions_note: Solo se evalúa a los medios de los que hemos leído el texto completo.
+  loaded: Lenguaje valorativo
+  data_check: Contraste con datos oficiales
+  no_claims: Esta historia no contiene afirmaciones numéricas sobre indicadores oficiales que podamos comprobar.
+  basis: Base del análisis
+  evidence: Evidencia
+  methodology: Metodología
+  latest_wire: Lo último de los medios
+  verdict_verdadero: Verdadero
+  verdict_impreciso: Impreciso
+  verdict_falso: Falso
+  verdict_enganoso: Engañoso
+  verdict_sin-datos: Sin datos suficientes
+  checked_claims: afirmaciones comprobadas
+  outlet_record: Afirmaciones de este medio contrastadas con datos
+  methodology_text: >-
+    1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
+    artículos que cuentan lo mismo (similitud de titulares y entradillas, medida contra un conjunto etiquetado a
+    mano). 3) Comparamos: quién lo cuenta, qué cifras da cada uno y a qué hora, qué datos cuenta la mayoría y
+    alguno omite, y qué palabras valorativas usa cada medio. 4) Extraemos solo afirmaciones numéricas
+    explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, vivienda, población) y las comparamos
+    con la última serie publicada por Eurostat, el INE o el Banco Mundial. 5) Veredictos: Verdadero (diferencia
+    de hasta 0,2 puntos o 3 %), Impreciso (hasta 0,6 puntos o 10 %), Falso (más), Engañoso (la tendencia
+    afirmada contradice el dato) y Sin datos suficientes (no hay serie fresca o la afirmación no es
+    comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
+    tomamos partido: aplicamos las mismas reglas a todos los medios.
 en:
   tagline: We check what the media publish against the data
   latest: Latest
@@ -57,3 +93,36 @@ en:
   next: Next
   all: All
   language: Language
+  contrasts: Today's contrasts
+  contrasts_lead: The same story told by different outlets. We compare what each says, where they agree, where they differ and what the data says.
+  n_outlets: outlets
+  compare_cta: See the comparison
+  coverage: Who reports it and how
+  agree: Where they agree
+  differ: Where they differ
+  disputed: Figures differ by outlet
+  disputed_note: Figures may differ because tolls were updated during the day; we show each outlet's time.
+  omissions: What most outlets report and this one does not
+  omissions_note: Only outlets whose full text we read are assessed.
+  loaded: Loaded language
+  data_check: Checked against official data
+  no_claims: This story has no explicit numeric claims about official indicators that we can check.
+  basis: Analysis basis
+  evidence: Evidence
+  methodology: Methodology
+  latest_wire: Latest from the outlets
+  verdict_verdadero: True
+  verdict_impreciso: Imprecise
+  verdict_falso: False
+  verdict_enganoso: Misleading
+  verdict_sin-datos: Not enough data
+  checked_claims: checked claims
+  outlet_record: This outlet's claims checked against data
+  methodology_text: >-
+    1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the
+    same story. 3) We compare who reports it, which figures each gives and when, what most report and some omit,
+    and the loaded words each outlet uses. 4) We extract only explicit numeric claims about official indicators
+    and compare them with the latest Eurostat, INE or World Bank series. 5) Verdicts: True (up to 0.2 points or
+    3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
+    Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules
+    for every outlet.

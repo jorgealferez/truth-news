@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 from alembic import context
 from truthnews.config import get_settings
@@ -27,6 +27,10 @@ def run_migrations_online() -> None:
         config.get_section(config.config_ini_section, {}), prefix="sqlalchemy.", poolclass=pool.NullPool
     )
     with connectable.connect() as connection:
+        if connection.dialect.name == "postgresql":
+            # web y worker arrancan a la vez y ambos migran: el bloqueo consultivo serializa las migraciones.
+            connection.execute(text("SELECT pg_advisory_lock(727274)"))
+            connection.commit()
         context.configure(
             connection=connection,
             target_metadata=target_metadata,

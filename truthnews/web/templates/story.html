@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ st.title }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ st.title }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/historia/{{ st.id }}">
+<meta property="og:title" content="{{ st.title }}"><meta property="og:type" content="article">{% endblock %}
+{% block content %}
+<article class="story wide">
+  <p class="kicker"><a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a> · {{ st.n_outlets }} {{ t(lang, 'n_outlets') }} · {{ st.n_articles }} {{ t(lang, 'articles_count') }}</p>
+  <h1>{{ st.title }}</h1>
+  <p class="meta">{{ st.first_seen.strftime('%d/%m/%Y %H:%M') }} – {{ st.last_seen.strftime('%d/%m/%Y %H:%M') }} UTC · {{ t(lang, 'basis') }}: {{ comp.basis }} · <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+
+  <section class="block"><h2>{{ t(lang, 'coverage') }}</h2>
+    <table class="table"><tbody>
+    {% for a in arts %}<tr><td class="nowrap">{{ a.published_at.strftime('%d/%m %H:%M') }}</td><td><a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a><br><span class="meta">{{ t(lang, 'scope_' ~ a.outlet.scope) }}</span></td>
+      <td><a href="/noticia/{{ a.id }}">{{ a.title }}</a>{% set lw = comp.loaded.get(a.outlet.name) %}{% if lw %} <span class="loaded">{{ lw|join(', ') }}</span>{% endif %}</td></tr>{% endfor %}
+    </tbody></table>
+  </section>
+
+  <section class="block two">
+    <div><h2>{{ t(lang, 'agree') }}</h2>
+      {% if comp.consensus %}<ul>{% for c in comp.consensus %}<li>{{ c }}</li>{% endfor %}</ul>{% else %}<p class="meta">—</p>{% endif %}
+    </div>
+    <div><h2>{{ t(lang, 'differ') }}</h2>
+      {% if comp.disputes %}<h3>{{ t(lang, 'disputed') }}</h3>
+        {% for noun, figs in comp.disputes.items() %}<p><strong>{{ noun }}</strong>:
+          {% for f in figs %}<span class="fig">{{ f.outlet }} ({{ f.published_at.strftime('%d/%m %H:%M') }}): {{ f.qualifier }} {{ '{:,.0f}'.format(f.value).replace(',', '.') }}</span>{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endfor %}
+        <p class="meta">{{ t(lang, 'disputed_note') }}</p>{% endif %}
+      {% if comp.omissions %}<h3>{{ t(lang, 'omissions') }}</h3>
+        <ul>{% for o, miss in comp.omissions.items() %}<li><strong>{{ o }}</strong>: {{ miss|join(', ') }}</li>{% endfor %}</ul>
+        <p class="meta">{{ t(lang, 'omissions_note') }}</p>{% endif %}
+      {% if comp.loaded %}<h3>{{ t(lang, 'loaded') }}</h3>
+        <ul>{% for o, words in comp.loaded.items() %}<li><strong>{{ o }}</strong>: {{ words|join(', ') }}</li>{% endfor %}</ul>{% endif %}
+      {% if not comp.disputes and not comp.omissions and not comp.loaded %}<p class="meta">—</p>{% endif %}
+    </div>
+  </section>
+
+  <section class="block"><h2>{{ t(lang, 'data_check') }}</h2>
+    {% if not claims %}<p class="meta">{{ t(lang, 'no_claims') }}</p>{% endif %}
+    {% for c in claims %}{% set v = c.verification %}
+      <div class="claim">
+        <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <strong>{{ c.outlet.name }}</strong>: «{{ c.text }}»</p>
+        <p>{{ v.explanation }}</p>
+        {% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+  <p class="meta">{{ t(lang, 'ai_note') }} {{ t(lang, 'copyright_note') }}</p>
+</article>
+{% endblock %}
