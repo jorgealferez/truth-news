@@ -1,0 +1,10 @@
+{
+  "$comentario": [
+    "Presupuesto del proyecto como DATOS, nunca como prosa. Cada metrica que una fase publique en `medidas` tiene que existir aqui.",
+    "direccion: 'max' -> el valor medido debe ser <= objetivo (tiempos, tamanos, errores); 'min' -> >= objetivo (cobertura, throughput).",
+    "Una metrica sin medida publicada no es una violacion; una medida publicada sin metrica si (queda fuera del ratchet).",
+    "Bajar un objetivo exige peticion explicita del usuario, commit aparte y ADR."
+  ],
+  "version": 1,
+  "metricas": []
+}

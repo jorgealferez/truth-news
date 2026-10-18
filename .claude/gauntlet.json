@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "project": "truth-news",
+  "description": "Puertas del Gauntlet Loop, en orden de ejecucion (de la mas barata a la mas cara). Generado por loop-init v0.3.0 para los toolchains: ninguno detectado. Documentacion: skill gauntlet-loop (reference.md).",
+  "defaults": {
+    "timeout_seconds": 900
+  },
+  "gates": [
+    {
+      "id": "hygiene",
+      "title": "Higiene del repositorio",
+      "command": "bash .claude/loop-engineering/checks/hygiene.sh",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 180,
+      "notes": "Unica puerta activa desde el primer commit de cualquier proyecto: no depende de ningun toolchain."
+    },
+    {
+      "id": "enforcement",
+      "title": "Integridad del cumplimiento (hooks, pre-commit, ledger, carta)",
+      "command": "bash .claude/loop-engineering/checks/enforcement.sh",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 120,
+      "notes": "Impide que la regla se desactive en silencio: capa mecanica presente y ejecutable, hooks registrados, core.hooksPath enganchado, estado local ignorado, ledger y carta presentes.",
+      "fix_hint": "restaura lo que falte con `loop-init --update` (desde el repositorio de reglas) o `git config core.hooksPath .githooks`; desactivar el sistema exige peticion explicita del usuario"
+    },
+    {
+      "id": "ledger",
+      "title": "Ledger de continuidad y carta de meta (un fichero por repositorio)",
+      "command": "python3 .claude/loop-engineering/checks/ledger.py",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 60,
+      "notes": "PENDIENTES.<repo>.md y OBJETIVO.<repo>.md con estructura valida; falla si se falsea la meta o si aparece un fichero sin nombre de repositorio junto al nombrado.",
+      "fix_hint": "corrige la estructura (secciones, cabecera, `BLOQUEADO:`), no bajes el liston: una meta no se declara alcanzada, se mide"
+    },
+    {
+      "id": "datos",
+      "title": "Revision de arquitectura de datos: todo cambio de esquema o migracion lleva su ADR de datos",
+      "command": "python3 .claude/loop-engineering/checks/datos.py",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 120,
+      "notes": "Detecta por ruta (migrations/, alembic/, prisma/, *.sql con DDL...) y por contenido (DDL, marcadores de ORM o de almacen) los ficheros de la capa de datos que cambian frente a la rama por omision y en el arbol de trabajo, y exige que cada uno este cubierto por un ADR `Tipo: datos` que tambien cambie en el diff, con las diez secciones de la plantilla escritas y una cifra en Escalabilidad. Sin cambios de datos pasa en silencio. Config opcional con motivo por exclusion: .claude/datos.json.",
+      "fix_hint": "copia docs/adr/0000-plantilla-datos.md a docs/adr/NNNN-<decision>.md y responde cada seccion (por que, necesidad, escalabilidad con cifras, coherencia, alternativas, necesidades futuras, migracion y reversibilidad) con el fichero listado en ## Alcance; si la revision concluye que el cambio no hace falta, no lo hagas. Excluir una ruta en .claude/datos.json exige motivo escrito y peticion explicita del usuario"
+    },
+    {
+      "id": "ratchet",
+      "title": "Ratchet: las medidas publicadas no empeoran ni se salen del presupuesto",
+      "command": "python3 .claude/loop-engineering/checks/ratchet.py",
+      "when": "ls docs/benchmarks/fase_*.json >/dev/null 2>&1",
+      "when_description": "no aplica: todavia no hay benchmarks de fase publicados en docs/benchmarks/",
+      "blocking": true,
+      "profiles": [
+        "full"
+      ],
+      "timeout_seconds": 120,
+      "fix_hint": "no toques el presupuesto para que cuadre: si una medida empeora, el cambio es el problema; si la metrica no existe, anadela al presupuesto en un commit aparte con su ADR"
+    },
+    {
+      "id": "sh:syntax",
+      "title": "Sintaxis de los scripts de shell",
+      "command": "set -e; files=$(git ls-files -- '*.sh' '.githooks/*' 'bin/*' | while read -r f; do head -c 64 \"$f\" 2>/dev/null | grep -qE '^#!.*(ba)?sh' && echo \"$f\"; done); [ -z \"$files\" ] || printf '%s\\n' \"$files\" | xargs -r -n1 bash -n",
+      "when": "git ls-files -- '*.sh' '.githooks/*' 'bin/*' | grep -q .",
+      "when_description": "no aplica: no hay scripts de shell versionados",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "id": "sh:shellcheck",
+      "title": "shellcheck de los scripts de shell",
+      "command": "files=$(git ls-files -- '*.sh' '.githooks/*' 'bin/*' | while read -r f; do head -c 64 \"$f\" 2>/dev/null | grep -qE '^#!.*(ba)?sh' && echo \"$f\"; done); [ -z \"$files\" ] || printf '%s\\n' \"$files\" | xargs -r shellcheck",
+      "when": "command -v shellcheck >/dev/null 2>&1 && git ls-files -- '*.sh' '.githooks/*' 'bin/*' | grep -q .",
+      "when_description": "no aplica: shellcheck no esta instalado (SKIP declarado, no es un PASS) o no hay scripts",
+      "blocking": true,
+      "profiles": [
+        "fast",
+        "full"
+      ],
+      "timeout_seconds": 300,
+      "fix_hint": "corrige el aviso; una directiva `# shellcheck disable` solo con justificacion en el propio script",
+      "notes": "Sin filtro de severidad: los avisos de estilo tambien cuentan. Si shellcheck no esta instalado la puerta se omite con motivo, no en silencio, porque es la unica herramienta del sistema que ningun proyecto declara."
+    }
+  ]
+}
