@@ -66,6 +66,14 @@ _FIGURE = re.compile(
     + "|".join(_COUNTABLE)
     + r")\b"
 )
+# "personas" no dice que les paso: el contexto decide si son muertos, heridos, detenidos o evacuados. Sin
+# contexto no se compara ("mata a dos personas" frente a "11 personas resultaron heridas" no es disputa).
+_PERSONAS_CONTEXT = (
+    ("muertos", re.compile(r"\b(mata|matan|mato|mataron|muert|fallec|mueren|murieron|pierden la vida)")),
+    ("heridos", re.compile(r"\bherid")),
+    ("detenidos", re.compile(r"\b(detenid|arrestad)")),
+    ("evacuados", re.compile(r"\b(evacuad|desalojad|realojad)")),
+)
 _LIVE = re.compile(r"\b(en directo|directo|ultima hora|minuto a minuto|live)\b")
 LEAD_CHARS = 400  # las cifras se toman del titular, el resumen y el arranque del texto
 LOADED = {
@@ -176,7 +184,13 @@ def figures(text: str) -> list[tuple[str, float, str, str]]:
         if value < 2 and m.group(2) in ("un", "una", "uno"):
             continue
         frag = tn[max(0, m.start() - 30) : m.end() + 10].strip()
-        out.append((_COUNTABLE[m.group(4)], value, (m.group(1) or "").strip(), frag))
+        noun = _COUNTABLE[m.group(4)]
+        if noun == "personas":
+            around = f"{tn[max(0, m.start() - 20) : m.start()]} | {tn[m.end() : m.end() + 25]}"
+            noun = next((n for n, rx in _PERSONAS_CONTEXT if rx.search(around)), None)
+            if noun is None:
+                continue
+        out.append((noun, value, (m.group(1) or "").strip(), frag))
     return out
 
 

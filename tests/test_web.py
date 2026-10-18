@@ -368,3 +368,26 @@ def test_brand_assets_and_social_meta(client):
         assert client.get(path).status_code == 200, path
     en = client.get("/acerca?lang=en").text
     assert "No sides. Just data." in en and 'content="en_GB"' in en
+
+
+def test_story_card_shows_what_differs_and_relaunch(client, session):
+    now = datetime.now(UTC)
+    st = Story(
+        title="Historia con contraste",
+        category="sucesos",
+        country="ES",
+        first_seen=now - timedelta(days=5),
+        last_seen=now - timedelta(days=5),
+        n_articles=2,
+        n_outlets=2,
+        contrast_score=4.5,
+        priority=4.6,
+        contrast={"disputas": ["detenidos"], "veredictos": {}, "omisiones": 1, "lenguaje_cargado": 2},
+        relaunched_at=now,
+    )
+    session.add(st)
+    session.commit()
+    home = client.get("/").text
+    assert "Historia con contraste" in home and "Vuelve con datos nuevos" in home
+    assert "Cifras en disputa: detenidos" in home and "Omisiones en 1 medio<" in home
+    assert "Lenguaje cargado en 2 medios" in home

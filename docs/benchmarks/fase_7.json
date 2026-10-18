@@ -1,0 +1,30 @@
+{
+  "fase": "7",
+  "titulo": "Prioridad a lo que difiere: puntuacion de contraste por historia y relanzamiento con datos nuevos",
+  "fecha": "2026-10-18",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "analisis_duracion_s": 6.4,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "datos_reales": "Rastreo real local sin texto completo (2 790 articulos, 130 medios) y `analyze --hours 72` en 6,4 s: 175 historias multimedio puntuadas, 24 con algo que marcar; en cabeza las protestas de Francia (detenidos y heridos en disputa entre 20 medios), Ceuta (migrantes), Italia (detenidos), San Petersburgo (heridos), cayuco en El Hierro (muertos)",
+    "falso_positivo_corregido": "'mata a dos personas' frente a '11 personas resultaron heridas' (Kansas) salia como disputa de 'personas'; ahora 'personas' se desambigua por contexto (muertos/heridos/detenidos/evacuados) y sin contexto no se compara",
+    "compare": "compare() de 8 articulos de 500 palabras: 21 ms de mediana, 31 ms p95: por eso la puntuacion se calcula en el worker y se guarda (ADR 0012)",
+    "consulta_portada": "top_stories con 2 000 historias: 0,53 ms de mediana con el nuevo orden por (priority, id) sobre ix_story_country_priority, frente a 0,81 ms de la consulta anterior",
+    "portada_p95": "no se publica: el ruido del entorno domina. A/B en las mismas condiciones con 400 peticiones por pasada: rama 13,7 / 13,8 / 13,3 ms frente a main 14,4 / 14,6 / 14,6 ms (la rama es mas rapida); con 60 peticiones main oscilo entre 11,9 y 16,2 ms en la misma sesion"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Medir la portada con 400 peticiones y A/B contra main para que el ratchet de milisegundos no dependa del ruido (propuesta de metodo, no cambio de presupuesto)",
+    "Con texto completo (produccion) las omisiones entraran en la puntuacion; verificar en produccion tras el despliegue"
+  ]
+}

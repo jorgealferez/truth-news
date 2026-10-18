@@ -70,7 +70,7 @@ def test_assign_stories_and_identity_is_kept(session, world):
     big = session.scalars(select(Story).where(Story.n_outlets == 3)).one()
     assert big.n_articles == 3 and big.category == "economia"
     again = pipeline.assign_stories(session)
-    assert again == {"articles": 4, "stories_created": 0, "stories_updated": 2}
+    assert again == {"articles": 4, "stories_created": 0, "stories_updated": 2, "stories_relaunched": 0}
     assert session.scalar(select(func.count(Story.id))) == 2
 
 

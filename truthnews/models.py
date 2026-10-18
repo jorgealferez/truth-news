@@ -122,7 +122,11 @@ class Story(Base):
     """La misma noticia contada por uno o varios medios (ADR 0004/0005)."""
 
     __tablename__ = "story"
-    __table_args__ = (Index("ix_story_country_last_seen", "country", "last_seen"),)
+    __table_args__ = (
+        Index("ix_story_country_last_seen", "country", "last_seen"),
+        Index("ix_story_country_priority", "country", "priority"),
+        Index("ix_story_country_relaunched", "country", "relaunched_at"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     title: Mapped[str] = mapped_column(String(600))
@@ -136,6 +140,11 @@ class Story(Base):
     topic_id: Mapped[int | None] = mapped_column(
         ForeignKey("topic.id", ondelete="SET NULL", name="fk_story_topic_id"), nullable=True, index=True
     )
+    # Contraste y relanzamiento (ADR 0012): se recalculan en cada ciclo del worker.
+    contrast_score: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
+    priority: Mapped[float] = mapped_column(Float, default=0.0, server_default="0")
+    contrast: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    relaunched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     articles: Mapped[list[Article]] = relationship(back_populates="story")
     topic: Mapped[Topic | None] = relationship(back_populates="stories")

@@ -48,3 +48,12 @@ def test_helpers():
     assert proper_nouns("Ayer, Emmanuel Macron dijo algo.  Este lunes") == {"Emmanuel Macron"}
     assert loaded_words("Una auténtica masacre y un escándalo") == ["escandalo", "masacre"]
     assert compare([art("A", "Uno")]).basis == "titulares y resumenes"
+
+
+def test_personas_is_disambiguated_by_context():
+    from truthnews.analysis.compare import figures
+
+    assert [f[:2] for f in figures("Un coche mata a dos personas en Kansas")] == [("muertos", 2.0)]
+    assert [f[:2] for f in figures("11 personas resultaron heridas")] == [("heridos", 11.0)]
+    assert [f[:2] for f in figures("Unas 300 personas fueron evacuadas")] == [("evacuados", 300.0)]
+    assert figures("Un cayuco con 132 personas llega a El Hierro") == []

@@ -81,7 +81,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [x] Fase 3 — Administracion e investigaciones: panel con balance, cola de revision, gestion de fuentes, investigaciones a demanda (acerca C8) (#8; gestion de fuentes desde el panel queda pendiente)
 - [ ] Fase 4 — Distribucion: generadores y adaptadores de redes sociales, RSS, sitemap y SEO, interfaz en ingles (acerca C9, C10)
 - [ ] Fase 5 — Despliegue en Railway: Postgres, web, worker programado, medido en produccion (acerca C2, C11)
-- [ ] Fase 6 — Marca nosmienten.com: identidad sobria y neutral (logotipo, favicon, imagen social, cabecera), dominio propio en Railway (peticion del usuario 2026-10-18; acerca C9, C11)
+- [x] Fase 6 — Marca nosmienten.com: identidad sobria y neutral (logotipo, favicon, imagen social, cabecera), dominio propio en Railway (peticion del usuario 2026-10-18; acerca C9, C11) (#9; www pendiente de DNS)
 - [ ] Fase 7 — Prioridad a lo que difiere: puntuacion de contraste por historia que ordena portada y contrastes, y relanzamiento de historias antiguas con datos nuevos y tendencia (peticion del usuario 2026-10-18; acerca C6, C12)
 
 ## Calidad y proyeccion
@@ -107,3 +107,4 @@ tal; el crawler se identifica con su User-Agent y respeta `robots.txt` y un ritm
 - 2026-10-18 (peticion): temas que reunen articulos de distinto enfoque, sintesis por medio, piezas propias de analisis y opinion como categoria principal, enlazado interno, y la portada "como cuentan los medios un tema: coincidencias, diferencias y la verdad segun los datos y el analisis de la IA".
 - 2026-10-18 (suposicion revisable): no hay CI con runners; la pasada local del gauntlet es el veredicto.
 - 2026-10-18 (peticion): mejorar de forma indefinida con PR y squash merge por mejora; prioridad a la marca y los logotipos, y a las historias con datos que difieren sobre las que no tienen nada que marcar; relanzar historias antiguas si hay datos nuevos relevantes y es tendencia.
+- 2026-10-18 (peticion): mejorar la navegacion en movil y escritorio, sitemap, compartir en redes, mejores comparativas y subir el nivel de verdad y mentira por medio: el producto no es un sitio de noticias sino de quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos.
