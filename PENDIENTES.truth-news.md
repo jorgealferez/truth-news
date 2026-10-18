@@ -26,13 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Fase 3 — Administracion e investigaciones a demanda — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] ADR 0010 (Tipo: datos) y migracion 0004 de la tabla `investigation` (ida y vuelta comprobada)
-  - [x] `truthnews/investigate.py`: historias relacionadas, datos oficiales por pais, cobertura GDELT en ingles, analisis IA con control de fundamento
-  - [x] Panel `/admin` (HTTP Basic, CSRF, 503 sin ADMIN_PASSWORD) con balance, feeds con errores, medios mudos, fiabilidad por medio, piezas en revision y alta de investigaciones
-  - [x] Paginas publicas `/investigaciones` y `/investigacion/{id}`; el worker siembra las preguntas del usuario y procesa las pendientes
-  - [x] Tests (tests/test_investigate.py) y benchmark docs/benchmarks/fase_3.json
-- [ ] Marca nosmienten.com: identidad sobria y neutral, logotipo SVG, favicon, imagen para redes, cabecera y SITE_NAME; dominio propio en Railway (peticion del usuario 2026-10-18: "prioriza cambiar imagen de marca y logotipos")
+- [ ] Marca nosmienten.com: identidad sobria y neutral, logotipo SVG, favicon, imagen para redes, cabecera y SITE_NAME; dominio propio en Railway (peticion del usuario 2026-10-18: "prioriza cambiar imagen de marca y logotipos") — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
 - [ ] Priorizar lo que tiene datos que difieren: puntuacion de contraste por historia (cifras en disputa, veredictos, omisiones) que ordena portada y contrastes; relanzar historias antiguas cuando hay datos nuevos relevantes y tendencia (peticion del usuario 2026-10-18)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
@@ -55,3 +49,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [x] Correccion (Fase 2): veredictos contra el periodo citado, eurozona != UE, correccion publica (#5)
 - [x] Fase 2b — Temas, sintesis por medio y piezas propias de analisis y opinion con IA (#6); generacion real pendiente de clave (ver Bloqueado)
 - [x] Correccion v3: atribucion de territorio con nomenclator mundial y retirada con nota publica (#7)
+- [x] Fase 3 — Administracion e investigaciones a demanda (#8)
+  - [x] ADR 0010 (Tipo: datos) y migracion 0004 de la tabla `investigation` (ida y vuelta comprobada)
+  - [x] `truthnews/investigate.py`: historias relacionadas, datos oficiales por pais, cobertura GDELT en ingles, analisis IA con control de fundamento
+  - [x] Panel `/admin` (HTTP Basic, CSRF, 503 sin ADMIN_PASSWORD) con balance, feeds con errores, medios mudos, fiabilidad por medio, piezas en revision y alta de investigaciones
+  - [x] Paginas publicas `/investigaciones` y `/investigacion/{id}`; el worker siembra las preguntas del usuario y procesa las pendientes
+  - [x] Tests (tests/test_investigate.py) y benchmark docs/benchmarks/fase_3.json
