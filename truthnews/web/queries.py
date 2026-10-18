@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from truthnews.models import Article, Claim, CrawlRun, Outlet, Piece, Story, Topic, Verification
@@ -75,13 +75,17 @@ def top_stories(
     limit: int = 20,
     offset: int = 0,
 ) -> list[Story]:
+    """Historias multimedio recientes o relanzadas; primero lo que tiene datos que difieren (ADR 0012)."""
     since = datetime.now(UTC) - timedelta(hours=hours)
-    q = select(Story).where(Story.n_outlets >= min_outlets, Story.last_seen >= since)
+    q = select(Story).where(
+        Story.n_outlets >= min_outlets, or_(Story.last_seen >= since, Story.relaunched_at >= since)
+    )
     if country:
         q = q.where(Story.country == country)
     if category:
         q = q.where(Story.category == category)
-    q = q.order_by(Story.n_outlets.desc(), Story.last_seen.desc()).limit(limit).offset(offset)
+    q = q.order_by(Story.priority.desc(), Story.id.desc())  # recorre ix_story_country_priority
+    q = q.limit(limit).offset(offset)
     return list(session.scalars(q))
 
 

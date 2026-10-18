@@ -6,16 +6,31 @@ import logging
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
 from truthnews.analysis.claims import extract
-from truthnews.analysis.cluster import DEFAULT_THRESHOLD, Doc, cluster, representative
+from truthnews.analysis.cluster import (
+    DEFAULT_THRESHOLD,
+    Doc,
+    cluster,
+    cosine,
+    idf_table,
+    representative,
+    vectorize,
+)
+from truthnews.analysis.score import score_stories
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
 from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
 
 log = logging.getLogger(__name__)
 WINDOW = timedelta(hours=72)
+# Relanzamiento (ADR 0012): una historia antigua con contraste vuelve si varios medios la retoman o si
+# llegan datos nuevos que la contrastan.
+RELAUNCH_LOOKBACK = timedelta(days=14)
+RELAUNCH_MIN_SCORE = 2.0
+RELAUNCH_THRESHOLD = 0.45  # coseno entre titulares; mas estricto que el de agrupacion (0,30)
+RELAUNCH_AGE = timedelta(hours=48)
 
 
 def _aware(dt: datetime) -> datetime:
@@ -41,13 +56,31 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
         for a in arts
     ]
     by_id = {a.id: a for a in arts}
-    created = updated = 0
+    idf = idf_table(docs)
+    older = [
+        (st, vectorize(Doc(key=st.id, title=st.title), idf))
+        for st in session.scalars(
+            select(Story).where(
+                Story.last_seen >= now - RELAUNCH_LOOKBACK,
+                Story.last_seen < now - window,
+                Story.contrast_score >= RELAUNCH_MIN_SCORE,
+            )
+        )
+    ]
+    created = updated = relaunched = 0
     used: set[int] = set()
-    for group in cluster(docs, threshold=DEFAULT_THRESHOLD):
+    for group in cluster(docs, threshold=DEFAULT_THRESHOLD, idf=idf):
         members = [by_id[d.key] for d in group.members]
+        lead = by_id[representative(group).key]
         # La historia conserva el id que tenga la mayoria de sus articulos (y que no se haya usado ya).
         votes = Counter(a.story_id for a in members if a.story_id and a.story_id not in used)
         story = session.get(Story, votes.most_common(1)[0][0]) if votes else None
+        if story is None and len({a.outlet_id for a in members}) >= 2 and older:
+            vec = vectorize(Doc(key=lead.id, title=lead.title), idf)
+            sim, best = max(((cosine(vec, v), st) for st, v in older if st.id not in used), default=(0, None))
+            if best is not None and sim >= RELAUNCH_THRESHOLD:
+                story, best.relaunched_at = best, now
+                relaunched += 1
         if story is None:
             story = Story(
                 title=members[0].title,
@@ -62,8 +95,6 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
         else:
             updated += 1
         used.add(story.id)
-        outlets = {a.outlet_id for a in members}
-        lead = by_id[representative(group).key]
         story.title = lead.title
         story.category = (
             Counter(a.category for a in members if a.category != "opinion").most_common(1)[0][0]
@@ -71,15 +102,31 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
             else lead.category
         )
         story.country = Counter(a.country for a in members).most_common(1)[0][0]
-        story.first_seen = min(a.published_at for a in members)
-        story.last_seen = max(a.published_at for a in members)
-        story.n_articles = len(members)
-        story.n_outlets = len(outlets)
         story.updated_at = now
         for a in members:
             a.story_id = story.id
     session.flush()
-    return {"articles": len(arts), "stories_created": created, "stories_updated": updated}
+    # Recuento desde la base: una historia relanzada o de larga vida conserva sus articulos antiguos.
+    for sid, n_arts, n_outlets, first, last in session.execute(
+        select(
+            Article.story_id,
+            func.count(Article.id),
+            func.count(func.distinct(Article.outlet_id)),
+            func.min(Article.published_at),
+            func.max(Article.published_at),
+        )
+        .where(Article.story_id.in_(used or {-1}))
+        .group_by(Article.story_id)
+    ):
+        st = session.get(Story, sid)
+        st.n_articles, st.n_outlets, st.first_seen, st.last_seen = n_arts, n_outlets, first, last
+    session.flush()
+    return {
+        "articles": len(arts),
+        "stories_created": created,
+        "stories_updated": updated,
+        "stories_relaunched": relaunched,
+    }
 
 
 def _store(ver: Verification, result: Result) -> None:
@@ -136,6 +183,14 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
             ver = Verification(claim_id=claim.id)
             _store(ver, result)
             session.add(ver)
+            # Datos nuevos sobre una historia antigua: vuelve a portada (ADR 0012).
+            story = session.get(Story, a.story_id) if a.story_id else None
+            if (
+                story is not None
+                and result.verdict != "sin-datos"
+                and _aware(story.first_seen) < utcnow() - RELAUNCH_AGE
+            ):
+                story.relaunched_at = utcnow()
             n_claims += 1
             verdicts[result.verdict] += 1
     session.flush()
@@ -195,5 +250,6 @@ def run(session: Session, since: datetime, verifier: Verifier | None = None) -> 
     out = assign_stories(session)
     out.update(verify_claims(session, since, verifier))
     out["reverified"] = reverify_outdated(session, verifier)
+    out["scores"] = score_stories(session, since)
     log.info("analisis: %s", out)
     return out

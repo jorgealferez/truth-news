@@ -35,6 +35,10 @@ es:
   contrasts_lead: La misma noticia contada por distintos medios. Comparamos qué dice cada uno, en qué coinciden, en qué difieren y qué dicen los datos.
   n_outlets: medios
   compare_cta: Ver la comparativa
+  disputed_figures: Cifras en disputa
+  omissions_in: Omisiones en
+  loaded_in: Lenguaje cargado en
+  relaunched: Vuelve con datos nuevos
   coverage: Quién lo cuenta y cómo
   agree: En qué coinciden
   differ: En qué difieren
@@ -128,6 +132,10 @@ en:
   contrasts_lead: The same story told by different outlets. We compare what each says, where they agree, where they differ and what the data says.
   n_outlets: outlets
   compare_cta: See the comparison
+  disputed_figures: Disputed figures
+  omissions_in: Omissions in
+  loaded_in: Loaded language in
+  relaunched: Back with new data
   coverage: Who reports it and how
   agree: Where they agree
   differ: Where they differ
