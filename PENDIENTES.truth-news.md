@@ -26,8 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Correccion urgente (v3): poblacion de Canada atribuida a Espana en produccion; nomenclator mundial, poblacion con pais explicito, retirada con nota publica (ADR 0009) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-- [ ] Fase 3 — Administracion e investigaciones a demanda
+- [ ] Fase 3 — Administracion e investigaciones a demanda — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
 - [ ] Marca y dominio: valorar nosmienten.com (peticion del usuario 2026-10-18) para una imagen solida, profesional, politicamente neutral y creible para el gran publico; aplicar el nombre via SITE_NAME y el dominio en Railway cuando el usuario decida
@@ -48,3 +47,4 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [x] Fase 2 — Motor de contraste: comparador por historia, datos oficiales, veredictos trazables (#4)
 - [x] Correccion (Fase 2): veredictos contra el periodo citado, eurozona != UE, correccion publica (#5)
 - [x] Fase 2b — Temas, sintesis por medio y piezas propias de analisis y opinion con IA (#6); generacion real pendiente de clave (ver Bloqueado)
+- [x] Correccion v3: atribucion de territorio con nomenclator mundial y retirada con nota publica (#7)
