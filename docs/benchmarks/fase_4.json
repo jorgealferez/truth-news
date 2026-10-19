@@ -1,0 +1,27 @@
+{
+  "fase": 4,
+  "titulo": "Distribucion: medida consolidada de C9 y C10 (redes, RSS, sitemap, interfaz en ingles)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local (tests) y produccion https://nosmienten.com (Railway)",
+    "toolchains": {"python": "3.13 local / 3.12 en produccion"}
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "redes": "tests/test_social.py: 10 pasan; piezas para X (280), Bluesky (300), Mastodon (500) y Telegram (1.024) dentro de sus limites (fase_4b, #33/#38)",
+    "rss": "https://nosmienten.com/rss.xml 200, 52 elementos (2026-10-19 01:5x UTC)",
+    "sitemap": "https://nosmienten.com/sitemap.xml 200, 630 URL",
+    "idiomas": "i18n.yaml: es y en con las mismas 345 cadenas; https://nosmienten.com/?lang=en responde con lang=\"en\" y textos en ingles",
+    "paises": "21 ficheros de pais en truthnews/registry/sources (fase_g1)"
+  },
+  "criterios_de_salida": {
+    "C9": "cumplido segun su medida (tests de generadores y adaptadores para 4 redes); publicacion real NO VERIFICADO (sin credenciales de redes)",
+    "C10": "cumplido: interfaz en es y en (345 cadenas cada uno, medida en produccion) y 21 paises en el registro"
+  },
+  "no_verificable": ["Publicacion real en redes: faltan las credenciales de las cuentas (item Autopublicacion en redes)"],
+  "fuera_de_alcance": [],
+  "pendientes": ["Paginas en ingles (contenido y URL): reservado por la sesion SEO en seo/paginas-en-ingles; la Fase 4 se cierra cuando se fusione"]
+}
