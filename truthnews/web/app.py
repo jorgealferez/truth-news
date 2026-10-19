@@ -142,6 +142,8 @@ def create_app(
     # Paginas en otros idiomas bajo /<lang>/ (SEO: una URL indexable por idioma, con hreflang).
     prefixed = [lang for lang in registry.languages() if lang != settings.default_language]
     app.add_middleware(LangPrefix, prefixes=prefixed, site_url=settings.site_url)
+    indexed = [lang for lang in registry.languages() if lang in settings.indexed_languages]
+    indexed_prefixed = [lang for lang in prefixed if lang in indexed]
     templates = Jinja2Templates(directory=HERE / "templates")
     templates.env.filters["ago"] = _ago
     templates.env.filters["epoch_ms"] = _epoch_ms
@@ -162,6 +164,7 @@ def create_app(
         countries=list(registry.countries().keys()),
         languages=registry.languages(),
         url=seo.path,
+        indexed_languages=indexed,
         lang_path=lambda path, lang: path if lang == settings.default_language else localize(path, lang),
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
@@ -280,13 +283,14 @@ def create_app(
         return PlainTextResponse(
             "User-agent: *\nDisallow: /admin\nDisallow: /api/\n"
             + "".join(
-                f"Sitemap: {settings.site_url}/sitemap{s}.xml\n" for s in ["", *(f"-{p}" for p in prefixed)]
+                f"Sitemap: {settings.site_url}/sitemap{s}.xml\n"
+                for s in ["", *(f"-{p}" for p in indexed_prefixed)]
             )
         )
 
     @app.get("/sitemap-{lang}.xml", include_in_schema=False)
     def sitemap_lang(lang: str, session: SessionDep):
-        if lang not in prefixed:
+        if lang not in indexed_prefixed:
             raise HTTPException(404)
         return sitemap(session, lang)
 
@@ -338,7 +342,9 @@ def create_app(
             (base + seo.path("investigacion", inv.id, investigation_title(inv)), inv.updated_at)
             for inv in session.scalars(select(Investigation).where(Investigation.status == "publicada"))
         ]
-        alternates = {settings.default_language: "", **{p: f"/{p}" for p in prefixed}}
+        alternates = {settings.default_language: "", **{p: f"/{p}" for p in indexed_prefixed}}
+        if len(alternates) < 2:
+            alternates = {}
         if lang:  # el sitemap de otro idioma lista sus URLs con prefijo (los ficheros compartidos no)
             n = len(base)
             urls = [(base + localize(loc[n:] or "/", lang), mod) for loc, mod in urls]

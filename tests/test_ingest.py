@@ -1,5 +1,6 @@
 import asyncio
 from dataclasses import replace
+from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
@@ -7,7 +8,7 @@ from sqlalchemy import func, select
 
 from truthnews.config import Settings
 from truthnews.crawler.http import PoliteClient
-from truthnews.crawler.ingest import MAX_FEED_ERRORS, crawl, sync_registry
+from truthnews.crawler.ingest import MAX_FEED_ERRORS, backfill_texts, crawl, sync_registry
 from truthnews.models import Article, ArticleRevision, Feed, Outlet
 from truthnews.registry import FeedSpec, OutletSpec
 
@@ -148,11 +149,65 @@ def test_crawl_tracks_title_and_summary_changes(session):
 def test_text_fetch_cap_prefers_newest(session):
     sync_registry(session, SPECS[:1])
     run = asyncio.run(
-        crawl(session, settings(max_text_fetch_per_run=1), transport=httpx.MockTransport(Server()))
+        crawl(
+            session,
+            settings(max_text_fetch_per_run=1, max_text_backfill_per_run=0),
+            transport=httpx.MockTransport(Server()),
+        )
     )
     assert run.stats["with_full_text"] == 1
     with_text = [a.url for a in session.scalars(select(Article)) if a.content_text]
     assert with_text == ["https://medio.test/politica/decreto"]  # la mas reciente
+
+
+def test_backfill_fills_recent_verifiable_articles_without_text(session):
+    sync_registry(session, SPECS[:1])
+    server = Server()
+    run = asyncio.run(
+        crawl(session, settings(max_text_fetch_per_run=0), transport=httpx.MockTransport(server))
+    )
+    arts = {a.url: a for a in session.scalars(select(Article))}
+    filled = {u for u, a in arts.items() if a.content_text}
+    assert run.stats["with_full_text"] == 0 and run.stats["texts_backfilled"] == len(filled) >= 1
+    assert all(arts[u].category in ("politica", "economia") for u in filled)
+    assert all(arts[u].word_count > 50 and arts[u].content_hash for u in filled)
+    assert "https://medio.test/privado/x" not in server.hits  # robots.txt sigue mandando
+    again = asyncio.run(
+        crawl(session, settings(max_text_fetch_per_run=0), transport=httpx.MockTransport(Server()))
+    )
+    assert again.stats["texts_backfilled"] == 0  # lo que ya tiene texto no se vuelve a pedir
+
+
+def test_backfill_gives_up_on_a_failing_domain(session):
+    sync_registry(session, SPECS[:1])
+    o = session.scalars(select(Outlet)).one()
+    now = datetime.now(UTC)
+    for i in range(4):
+        session.add(
+            Article(
+                outlet_id=o.id,
+                url=f"https://caido.test/politica/{i}",
+                url_hash=f"c{i}".ljust(64, "0"),
+                title=f"t{i}",
+                published_at=now,
+                language="es",
+                country="ES",
+                category="politica",
+            )
+        )
+    session.commit()
+    hits = []
+
+    def handler(request):
+        hits.append(str(request.url))
+        return httpx.Response(404) if request.url.path == "/robots.txt" else httpx.Response(503)
+
+    async def go():
+        async with PoliteClient("ua", 0, transport=httpx.MockTransport(handler)) as client:
+            return await backfill_texts(session, client, limit=10)
+
+    assert asyncio.run(go()) == 0
+    assert len([h for h in hits if "/politica/" in h]) == 2  # dos fallos y se deja el dominio
 
 
 def test_feed_deactivated_after_repeated_errors(session):

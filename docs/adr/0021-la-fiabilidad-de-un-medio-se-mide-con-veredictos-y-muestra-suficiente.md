@@ -1,4 +1,4 @@
-# ADR 0023 — La fiabilidad de un medio se mide con veredictos y con muestra suficiente
+# ADR 0021 — La fiabilidad de un medio se mide con veredictos y con muestra suficiente
 
 - **Estado:** aceptado
 - **Fecha:** 2026-10-19

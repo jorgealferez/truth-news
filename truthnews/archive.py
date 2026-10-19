@@ -128,12 +128,25 @@ def parse(row: list[str], hosts: dict[str, Outlet]) -> dict | None:
     }
 
 
-def oldest(session: Session, now: datetime) -> datetime:
-    """Desde donde seguir: la noticia de archivo mas antigua, o la primera rastreada si aun no hay."""
-    first = session.scalar(select(func.min(Article.published_at)).where(Article.origin == "archivo"))
-    if first is None:
-        first = session.scalar(select(func.min(Article.published_at)).where(Article.origin == "rss"))
-    return floor_slot(min(_aware(first), now) if first else now)
+def oldest(session: Session, now: datetime, stride: timedelta = timedelta(hours=6)) -> datetime:
+    """Desde donde seguir: el tramo mas antiguo de la serie contigua de archivo que baja desde la primera
+    noticia rastreada. Lo suelto mas atras (importado por otra via, o un salto) no cuenta: si contara, el
+    recorrido saltaria años y dejaria el hueco sin importar (medido en produccion el 2026-10-19)."""
+    first = session.scalar(select(func.min(Article.published_at)).where(Article.origin == "rss"))
+    cur = floor_slot(min(_aware(first), now) if first else now)
+    gap = max(3 * stride, timedelta(days=2))  # unos pocos tramos vacios seguidos no cortan la serie
+    for (when,) in session.execute(
+        select(Article.published_at)
+        .where(Article.origin == "archivo", Article.published_at <= cur)
+        .group_by(Article.published_at)
+        .order_by(Article.published_at.desc())
+        .limit(20000)
+    ):
+        when = _aware(when)
+        if cur - when > gap:
+            break
+        cur = min(cur, floor_slot(when))
+    return cur
 
 
 def import_slot(
@@ -194,7 +207,7 @@ def run(
     hosts = outlet_hosts(session, countries)
     began = clock()
     done = []
-    slot = oldest(session, now) - stride
+    slot = oldest(session, now, stride) - stride
     while len(done) < slots and slot >= FLOOR and hosts:
         if clock() - began > max_seconds:
             break
