@@ -438,6 +438,10 @@ es:
   speakers_persona: Personas
   speakers_empty: "Aún nadie tiene {n} afirmaciones comprobadas: la lista se llenará a medida que verifiquemos."
   speakers_few: "Con pocas verificaciones todavía ({n})"
+  speakers_own: "{n} de sus canales"
+  speakers_no_channel: >-
+    También juzgamos lo que cada partido publica en sus canales oficiales verificados. Sin canal verificado
+    todavía (sus declaraciones directas no se pueden juzgar aún; sí lo que la prensa les atribuye): {names}.
 
 en:
   tagline: We compare what the media report with what the data say
@@ -874,3 +878,7 @@ en:
   speakers_persona: People
   speakers_empty: "Nobody has {n} checked claims yet: the list fills up as we verify."
   speakers_few: "With few checks so far ({n})"
+  speakers_own: "{n} from their channels"
+  speakers_no_channel: >-
+    We also judge what each party publishes on its verified official channels. No verified channel yet (their
+    direct statements cannot be judged yet; what the press attributes to them still counts): {names}.
