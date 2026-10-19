@@ -488,7 +488,7 @@ def test_nav_prefers_spain_and_links_the_world(engine):
     elections = cal.Calendar(0, registry_raw=reg)
     src = (cal.Source("IFES", "https://www.electionguide.org/elections/id/1/"),)
     name = "Elecciones presidenciales · Brasil"
-    other = cal.Election("BR", "presidenciales", today + timedelta(days=6), name, "convocada", src)
+    other = cal.Election("BR", "presidenciales", today + timedelta(days=6), name, "declarada", src)
     elections._world = (0.0, [other])
     client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, elections=elections))
     home = client.get("/").text
