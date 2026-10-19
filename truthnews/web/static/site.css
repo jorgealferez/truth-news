@@ -340,3 +340,25 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .rep-card { background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 14px; margin:10px 0; font-family:system-ui, sans-serif; }
 .rep-head { margin:0 0 4px; display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; overflow-wrap:anywhere; } .rep-v { font-size:22px; }
 .rep-list { list-style:none; margin:6px 0; padding:0; } .rep-list li { margin:4px 0; line-height:1.45; font-size:14px; overflow-wrap:anywhere; }
+/* Objetivos tactiles de 44 px como minimo en pantallas tactiles (ADR 0046). En bloques el alto se
+   gana con min-height; en enlaces de linea o de una fila compacta, con relleno vertical y margen
+   negativo: el area que se toca crece y el diseno no se mueve. */
+@media (pointer: coarse) {
+  .langs a { display:inline-block; min-width:44px; line-height:44px; margin:-14px 0 -14px 4px; text-align:center; }
+  .logo { padding:7px 0; margin:-7px 0; }
+  .sections .mini { padding:9px; margin:-9px 0 -9px -9px; }
+  .scroller { padding:0; } .scroller a { display:flex; align-items:center; min-height:44px; }
+  .menu summary { display:inline-flex; align-items:center; gap:5px; min-height:44px; padding:0 12px; }
+  .menu-panel a { display:flex; align-items:center; min-height:44px; padding:0; }
+  .tabbar a { min-height:44px; justify-content:center; }
+  details > summary { min-height:44px; }
+  .chips a { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; }
+  .share a, .share button { display:inline-flex; align-items:center; justify-content:center; min-height:44px; min-width:44px; padding:0 14px; }
+  .share [hidden] { display:none; }
+  .bk-meta a { padding:15px 8px; margin:-15px -8px; }
+  .pager a { display:flex; align-items:center; min-height:44px; }
+  .jump a { display:inline-flex; align-items:center; min-height:44px; padding:0 14px; }
+  /* Llamadas a fuentes dentro del texto: el area de toque crece con un pseudoelemento, sin mover lineas. */
+  .cite { position:relative; } .cite::after { content:""; position:absolute; inset:-15px -8px; }
+  h2 > a, h3 > a { padding:12px 0; } .stats a { padding:15px 0; }
+}
