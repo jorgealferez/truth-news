@@ -151,6 +151,7 @@ class TedAwards:
             if not stale or self._running:
                 return self._value
             self._running = True
+            current = self._value  # lo que habia al pedirlo: el hilo puede terminar antes de devolver
 
         def job():
             since = today - timedelta(days=self.days)
@@ -166,7 +167,7 @@ class TedAwards:
 
         if self._background:
             threading.Thread(target=job, name="ted-awards", daemon=True).start()
-            return self._value
+            return current
         job()
         with self._lock:
             return self._value
