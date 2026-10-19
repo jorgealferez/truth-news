@@ -73,6 +73,7 @@
       </div>{% endfor %}
     </div>{% if outlets_view|length > 6 %}</details>{% endif %}
   </section>
+  {% with ad = (ads or {}).get('story-inline'), slot = 'story-inline' %}{% include "_ad.html" %}{% endwith %}
 
   {% if claims %}<details class="block fold" id="datos" open><summary><h2>{{ t(lang, 'data_check') }}</h2></summary>
     {% for c in claims %}{% set v = c.verification %}

@@ -21,6 +21,7 @@ from sqlalchemy import select, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
+from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import translate
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
@@ -103,8 +104,13 @@ def investigation_title(inv) -> str:
     return (inv.report or {}).get("analisis", {}).get("titular") or inv.question
 
 
-def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None,
+    engine: Engine | None = None,
+    ads_client: adsmod.AdsClient | None = None,
+) -> FastAPI:
     settings = settings or get_settings()
+    ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -166,10 +172,25 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
 
     def render(request: Request, name: str, **ctx) -> HTMLResponse:
         lang = lang_of(request)
-        resp = templates.TemplateResponse(request, name, {"lang": lang, **ctx})
+        resp = templates.TemplateResponse(request, name, {"lang": lang, "ads": {}, **ctx})
         if request.query_params.get("lang") == lang:
             resp.set_cookie("lang", lang, max_age=60 * 60 * 24 * 365, samesite="lax")
         return resp
+
+    def ads_for(request: Request, slots, title: str, category, texts, country: str) -> dict:
+        """Anuncios por el contenido de la pagina (ads-service); {} si no hay servicio o falla."""
+        if not ads_client.enabled:
+            return {}
+        context = adsmod.page_context(
+            f"{settings.site_url}{request.url.path}", title, category, texts, country, lang_of(request)
+        )
+        ip = adsmod.client_ip(request.headers, request.client.host if request.client else None)
+        viewer = adsmod.viewer_hash(ip, request.headers.get("user-agent", ""))
+        return ads_client.serve(slots, context, viewer)
+
+    def list_ads(request: Request, heading: str, items, country: str, category=None) -> dict:
+        texts = [a.title for a in items] + [a.summary or "" for a in items[:10]]
+        return ads_for(request, ("list-native", "footer-strip"), heading, category, texts, country)
 
     @app.get("/favicon.ico", include_in_schema=False)
     def favicon():
@@ -220,6 +241,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
                 "/medios",
                 "/investigaciones",
                 "/metodologia",
+                "/publicidad",
                 "/acerca",
             )
         ]
@@ -321,13 +343,29 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             threads=queries.front_threads(session, ids),
             totals=totals_cached(session),
             pieces=queries.latest_pieces(session, kind="analisis", limit=4),
+            ads=ads_for(
+                request,
+                ("list-native", "footer-strip"),
+                registry.t(lang_of(request), "home"),
+                None,
+                [s.title for s in stories[:12]],
+                home_country,
+            ),
         )
 
     @app.get("/analisis", response_class=HTMLResponse)
     def analyses(request: Request, session: SessionDep, page: PageQ = 1, tipo: str | None = None):
         kind = tipo if tipo in ("analisis", "opinion") else None
         pieces = queries.latest_pieces(session, kind=kind, limit=20, offset=(page - 1) * 20)
-        return render(request, "analyses.html", pieces=pieces, page=page, tipo=kind)
+        ads = ads_for(
+            request,
+            ("list-native", "footer-strip"),
+            registry.t(lang_of(request), "analysis"),
+            None,
+            [p.title for p in pieces] + [p.dek or "" for p in pieces],
+            settings.default_country,
+        )
+        return render(request, "analyses.html", pieces=pieces, page=page, tipo=kind, ads=ads)
 
     @app.get("/tema/{ref}", response_class=HTMLResponse)
     def topic(request: Request, ref: str, session: SessionDep):
@@ -389,6 +427,14 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             ),
             spread=spread(arts),
             tr=translate.titles(session, [a.id for a in arts], lang_of(request)),
+            ads=ads_for(
+                request,
+                ("story-inline", "footer-strip"),
+                st.title,
+                st.category,
+                [a.title for a in arts] + [a.summary or "" for a in arts],
+                st.country,
+            ),
         )
 
     @app.get("/hilo/{ref}", response_class=HTMLResponse)
@@ -437,6 +483,9 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             items=items,
             page=page,
             heading=registry.category_name(slug, lang_of(request)),
+            ads=list_ads(
+                request, registry.category_name(slug, lang_of(request)), items, settings.default_country, slug
+            ),
         )
 
     @app.get("/pais/{iso}", response_class=HTMLResponse)
@@ -453,6 +502,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             page=page,
             regions=regions,
             heading=registry.country_name(iso, lang_of(request)),
+            ads=list_ads(request, registry.country_name(iso, lang_of(request)), items, iso),
         )
 
     @app.get("/region/{code}", response_class=HTMLResponse)
@@ -462,7 +512,15 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         if code not in registry.countries().get(iso, {}).get("regions", {}):
             raise HTTPException(404)
         items = queries.latest(session, region=code, page=page)
-        return render(request, "list.html", items=items, page=page, heading=registry.region_name(code))
+        heading = registry.region_name(code)
+        return render(
+            request,
+            "list.html",
+            items=items,
+            page=page,
+            heading=heading,
+            ads=list_ads(request, heading, items, iso),
+        )
 
     @app.get("/medios", response_class=HTMLResponse)
     def outlets(request: Request, session: SessionDep, pais: str | None = None):
@@ -485,6 +543,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             outlet=o,
             record=record,
             profile=profile,
+            ads=list_ads(request, o.name, items, o.country),
         )
 
     @app.get("/noticia/{ref}", response_class=HTMLResponse)
@@ -518,6 +577,10 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             claims=queries.article_claims(session, a.id),
             archive_url=citations.archive_url(a),
         )
+
+    @app.get("/publicidad", response_class=HTMLResponse)
+    def advertising(request: Request):
+        return render(request, "advertising.html")
 
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):
