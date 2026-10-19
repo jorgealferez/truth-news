@@ -7,6 +7,7 @@ import httpx
 from sqlalchemy import func, select
 
 from truthnews.config import Settings
+from truthnews.crawler import ingest
 from truthnews.crawler.http import PoliteClient
 from truthnews.crawler.ingest import MAX_FEED_ERRORS, backfill_texts, crawl, sync_registry
 from truthnews.models import Article, ArticleRevision, Feed, Outlet
@@ -160,7 +161,11 @@ def test_text_fetch_cap_prefers_newest(session):
     assert with_text == ["https://medio.test/politica/decreto"]  # la mas reciente
 
 
-def test_backfill_fills_recent_verifiable_articles_without_text(session):
+def test_backfill_fills_recent_verifiable_articles_without_text(session, monkeypatch):
+    # El feed de prueba tiene fecha fija (18/10/2026); la ventana se mide desde esa fecha y no desde el
+    # reloj, para que el test no caduque 24 h despues (fallo medido el 19/10/2026 a las 08:00 UTC).
+    fixture_now = datetime(2026, 10, 18, 12, tzinfo=UTC)
+    monkeypatch.setattr(ingest, "BACKFILL_WINDOW", ingest.BACKFILL_WINDOW + (datetime.now(UTC) - fixture_now))
     sync_registry(session, SPECS[:1])
     server = Server()
     run = asyncio.run(
