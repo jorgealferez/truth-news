@@ -1,0 +1,847 @@
+{
+ "status": {
+  "code": "200",
+  "text": "ok"
+ },
+ "data": {
+  "sumario": {
+   "metadatos": {
+    "publicacion": "BOE",
+    "fecha_publicacion": "20261016"
+   },
+   "diario": [
+    {
+     "numero": "257",
+     "sumario_diario": {
+      "identificador": "BOE-S-2026-257",
+      "url_pdf": {
+       "szBytes": "423821",
+       "szKBytes": "414",
+       "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-S-2026-257.pdf"
+      }
+     },
+     "seccion": [
+      {
+       "codigo": "5A",
+       "nombre": "V. Anuncios. - A. Contratación del Sector Público",
+       "departamento": [
+        {
+         "codigo": "9585",
+         "nombre": "MINISTERIO DE LA PRESIDENCIA, JUSTICIA Y RELACIONES CON LAS CORTES",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33552",
+           "titulo": "Anuncio de licitación de: Dirección del Centro de Estudios Jurídicos, O.A. Objeto: Servicio de apoyo en la gestión, tramitación y seguimiento de la actividad desarrollada en la Jefatura de Estudios del CEJ. Expediente: 2026/CT005JE.",
+           "url_pdf": {
+            "szBytes": "220110",
+            "szKBytes": "215",
+            "pagina_inicial": "54559",
+            "pagina_final": "54561",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33552.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33552",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33552"
+          },
+          {
+           "identificador": "BOE-B-2026-33553",
+           "titulo": "Anuncio de licitación de: Dirección del Centro de Estudios Jurídicos, O.A. Objeto: Mantenimiento de jardinería para el edificio sede del Centro de Estudios Jurídicos, O.A. Expediente: 2026/CT011SG.",
+           "url_pdf": {
+            "szBytes": "219459",
+            "szKBytes": "214",
+            "pagina_inicial": "54562",
+            "pagina_final": "54564",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33553.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33553",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33553"
+          }
+         ]
+        },
+        {
+         "codigo": "6110",
+         "nombre": "MINISTERIO DE DEFENSA",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33554",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de la Sección Económico-Administrativa 26 - Base Aérea de Zaragoza (Agrupación BASE). Objeto: Suministro de herramientas aeronáuticas para el Ala 31 y Ala 15. Expediente: 2026/EA26/00000993E.",
+           "url_pdf": {
+            "szBytes": "224889",
+            "szKBytes": "220",
+            "pagina_inicial": "54565",
+            "pagina_final": "54567",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33554.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33554",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33554"
+          },
+          {
+           "identificador": "BOE-B-2026-33555",
+           "titulo": "Anuncio de formalización de contratos de: Dirección de Adquisiciones del Mando de Apoyo Logístico del Ejército del Aire y del Espacio. Objeto: 202646A1 Acuerdo Marco adquisición repuestos TACAN. Expediente: 2026/EA02/00000619E.",
+           "url_pdf": {
+            "szBytes": "216512",
+            "szKBytes": "211",
+            "pagina_inicial": "54568",
+            "pagina_final": "54569",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33555.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33555",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33555"
+          },
+          {
+           "identificador": "BOE-B-2026-33556",
+           "titulo": "Anuncio de formalización de contratos de: Dirección de Adquisiciones del Mando de Apoyo Logístico del Ejército del Aire y del Espacio. Objeto: 20265304 Revisión y reparación de instrumentos y equipos de aviónica de helicópteros. Expediente: 2026/EA02/00000353E.",
+           "url_pdf": {
+            "szBytes": "220268",
+            "szKBytes": "215",
+            "pagina_inicial": "54570",
+            "pagina_final": "54571",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33556.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33556",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33556"
+          },
+          {
+           "identificador": "BOE-B-2026-33557",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos de la Fuerza Terrestre. Objeto: Suministro de repuestos para el mantenimiento y reparación del material de buceo (compresores alta presión) de todas las unidades del E.T. Empleados en el adiestramiento de las unidades que despliegan en Z.O.REPEI 12. Expediente: 2026/ETSAE0206/00000968E.",
+           "url_pdf": {
+            "szBytes": "214409",
+            "szKBytes": "209",
+            "pagina_inicial": "54572",
+            "pagina_final": "54573",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33557.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33557",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33557"
+          },
+          {
+           "identificador": "BOE-B-2026-33558",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de la Sección Económico Administrativa 23 de la Base Aérea de Albacete. Objeto: Mantenimiento preventivo y correctivo de maquinaria y equipos de cocina en la Base Aérea de Albacete. Expediente: 2026/EA23/00001079E.",
+           "url_pdf": {
+            "szBytes": "213701",
+            "szKBytes": "209",
+            "pagina_inicial": "54574",
+            "pagina_final": "54575",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33558.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33558",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33558"
+          },
+          {
+           "identificador": "BOE-B-2026-33559",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del Mando de Apoyo Logístico. Objeto: Adquisición de repuestos y herramientas Fusil Accuracy. Expediente: 2026/ETSAE0906/00002413E.",
+           "url_pdf": {
+            "szBytes": "215863",
+            "szKBytes": "211",
+            "pagina_inicial": "54576",
+            "pagina_final": "54577",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33559.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33559",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33559"
+          },
+          {
+           "identificador": "BOE-B-2026-33560",
+           "titulo": "Anuncio de formalización de contratos de: Dirección General del INTA. Objeto: Estudio de algoritmos de procesado para PAZ-2. Expediente: 582026029600.",
+           "url_pdf": {
+            "szBytes": "217457",
+            "szKBytes": "212",
+            "pagina_inicial": "54578",
+            "pagina_final": "54579",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33560.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33560",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33560"
+          },
+          {
+           "identificador": "BOE-B-2026-33561",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del Estado Mayor de la Defensa. Objeto: Contrato Basado en AM Servicio de limpieza, lavandería y DDD en la Base Retamares. Expediente: 2026/SP02002001/00001061E.",
+           "url_pdf": {
+            "szBytes": "216827",
+            "szKBytes": "212",
+            "pagina_inicial": "54580",
+            "pagina_final": "54581",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33561.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33561",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33561"
+          },
+          {
+           "identificador": "BOE-B-2026-33562",
+           "titulo": "Anuncio de licitación de: Dirección de Asuntos Económicos del Ejército. Objeto: Acuerdo marco para la asistencia técnica de ingeniería en trabajos y estudios para la Oficina de Programa de los Sistemas de Guerra Electrónica Desplegables (SIGEDES). Expediente: 2026/ETSAE0921/00001111E.",
+           "url_pdf": {
+            "szBytes": "224368",
+            "szKBytes": "219",
+            "pagina_inicial": "54582",
+            "pagina_final": "54584",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33562.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33562",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33562"
+          },
+          {
+           "identificador": "BOE-B-2026-33563",
+           "titulo": "Anuncio de licitación de: Dirección de Asuntos Económicos del Ejército. Objeto: Exposición temporal Real y Militar Orden de San Fernando. Expediente: 2026/ETSAE0921/00001411E.",
+           "url_pdf": {
+            "szBytes": "205811",
+            "szKBytes": "201",
+            "pagina_inicial": "54585",
+            "pagina_final": "54585",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33563.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33563",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33563"
+          },
+          {
+           "identificador": "BOE-B-2026-33564",
+           "titulo": "Anuncio de formalización de contratos de: Dirección General del INTA. Objeto: Comparadores de masas. Expediente: 582026040600.",
+           "url_pdf": {
+            "szBytes": "216318",
+            "szKBytes": "211",
+            "pagina_inicial": "54586",
+            "pagina_final": "54587",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33564.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33564",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33564"
+          },
+          {
+           "identificador": "BOE-B-2026-33565",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del Mando de Apoyo Logístico. Objeto: Adquisición conjunto mesa/banco plegable. Expediente: 2025/ETSAE0906/00004374E.",
+           "url_pdf": {
+            "szBytes": "217435",
+            "szKBytes": "212",
+            "pagina_inicial": "54588",
+            "pagina_final": "54589",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33565.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33565",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33565"
+          },
+          {
+           "identificador": "BOE-B-2026-33566",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del Mando de Apoyo Logístico. Objeto: Adquisición de vestuario específico operaciones especiales (TRES LOTES). Expediente: 2026/ETSAE0906/00004086E.",
+           "url_pdf": {
+            "szBytes": "218317",
+            "szKBytes": "213",
+            "pagina_inicial": "54590",
+            "pagina_final": "54591",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33566.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33566",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33566"
+          },
+          {
+           "identificador": "BOE-B-2026-33567",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del Mando de Apoyo Logístico. Objeto: Adquisición de vestuario específico operaciones especiales (TRES LOTES). Expediente: 2026/ETSAE0906/00004086E.",
+           "url_pdf": {
+            "szBytes": "218409",
+            "szKBytes": "213",
+            "pagina_inicial": "54592",
+            "pagina_final": "54593",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33567.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33567",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33567"
+          },
+          {
+           "identificador": "BOE-B-2026-33568",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del CG de la Comandancia Gral. de Melilla. Objeto: BAD Teniente Flomesta. Obra de adecuación del porche de entada y vierteaguas del edificio E0019 del Alojamiento Militar de Tropa Taxdirt en el Acto. Primo de Rivera. Expediente: 2026/ETSAE0287/00000753E.",
+           "url_pdf": {
+            "szBytes": "215861",
+            "szKBytes": "211",
+            "pagina_inicial": "54594",
+            "pagina_final": "54595",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33568.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33568",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33568"
+          },
+          {
+           "identificador": "BOE-B-2026-33569",
+           "titulo": "Anuncio de licitación de: Sección de Asuntos Económicos de la Jefatura Sistemas de Información, Telecomunicaciones y Asistencia Técnica. Objeto: Adquisición cámara térmica con see pot. Expediente: 2026/ETSAE0904/00000717E.",
+           "url_pdf": {
+            "szBytes": "216665",
+            "szKBytes": "212",
+            "pagina_inicial": "54596",
+            "pagina_final": "54597",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33569.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33569",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33569"
+          },
+          {
+           "identificador": "BOE-B-2026-33570",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos del CG de la Comandancia Gral. de Melilla. Objeto: BAD Teniente Flomesta. Obra de reparación de la iluminación e independización de líneas eléctricas de los garajes del complejo Reyes Católicos. Expediente: 2026/ETSAE0287/00000756E.",
+           "url_pdf": {
+            "szBytes": "215576",
+            "szKBytes": "211",
+            "pagina_inicial": "54598",
+            "pagina_final": "54599",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33570.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33570",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33570"
+          },
+          {
+           "identificador": "BOE-B-2026-33571",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de la Sección Económico-Administrativa 41 - Base Aérea de San Javier. Objeto: Adquisición de equipamiento táctico STAR-PAN y accesorios para el EZAPAC. Expediente: 2026/EA41/00001833E.",
+           "url_pdf": {
+            "szBytes": "215725",
+            "szKBytes": "211",
+            "pagina_inicial": "54600",
+            "pagina_final": "54601",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33571.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33571",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33571"
+          },
+          {
+           "identificador": "BOE-B-2026-33572",
+           "titulo": "Anuncio de formalización de contratos de: Dirección de Gestión Económica de la Jefatura de Apoyo Logístico de la Armada. Objeto: Suministro de munición de 25 mm. Expediente: 2026/AR40U/00001860E.",
+           "url_pdf": {
+            "szBytes": "213161",
+            "szKBytes": "208",
+            "pagina_inicial": "54602",
+            "pagina_final": "54603",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33572.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33572",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33572"
+          },
+          {
+           "identificador": "BOE-B-2026-33573",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de la Sección Económico Administrativa 15 Agrupación del Cuartel General del Ejército del Aire. Objeto: Servicio de encuadernación de los calendarios del Ejército del Aire y del Espacio del año 2027. Expediente: 2026/EA15/00002248.",
+           "url_pdf": {
+            "szBytes": "214383",
+            "szKBytes": "209",
+            "pagina_inicial": "54604",
+            "pagina_final": "54605",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33573.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33573",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33573"
+          }
+         ]
+        },
+        {
+         "codigo": "5140",
+         "nombre": "MINISTERIO DE HACIENDA",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33574",
+           "titulo": "Anuncio de formalización de contratos de: Dirección General de la Agencia Estatal de Administración Tributaria. Objeto: Servicio de atención especializada en el soporte técnico relativo al uso de los servicios electrónicos de la Agencia Estatal de Administración Tributaria. Expediente: 26840048900.",
+           "url_pdf": {
+            "szBytes": "218116",
+            "szKBytes": "213",
+            "pagina_inicial": "54606",
+            "pagina_final": "54607",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33574.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33574",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33574"
+          },
+          {
+           "identificador": "BOE-B-2026-33575",
+           "titulo": "Anuncio de formalización de contratos de: Presidencia de la Autoridad Independiente de Responsabilidad Fiscal. Objeto: Servicio de administración y soporte TIC. Expediente: 2026/012PA.",
+           "url_pdf": {
+            "szBytes": "217896",
+            "szKBytes": "213",
+            "pagina_inicial": "54608",
+            "pagina_final": "54609",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33575.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33575",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33575"
+          },
+          {
+           "identificador": "BOE-B-2026-33576",
+           "titulo": "Anuncio de formalización de contratos de: Dirección del Servicio de Gestión Económica de la Agencia Estatal de la Administración Tributaria. Objeto: Servicio de Mantenimiento y Soporte Premier de los Distintos Sistemas Físicos y Lógicos Oracle instalados en el Departamento de Informática Tributaria de la AEAT. Expediente: 26840064100.",
+           "url_pdf": {
+            "szBytes": "218199",
+            "szKBytes": "213",
+            "pagina_inicial": "54610",
+            "pagina_final": "54611",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33576.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33576",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33576"
+          }
+         ]
+        },
+        {
+         "codigo": "7320",
+         "nombre": "MINISTERIO DEL INTERIOR",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33577",
+           "titulo": "Anuncio de formalización de contratos de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: La adquisición de prendas, calzado y complementos de uniformidad de las siguientes especialidades de la Guardia Civil: Agrupación de Reserva y Seguridad (ARS), Servicio Marítimo (SERMAR), UAR (Unidad de Acción Rural), Servicio de Desactivación de Explosivos (SEDEX) y la Unidad de Reconocimiento de Subsuelo (URS). Expediente: A/0070/A/25/2.",
+           "url_pdf": {
+            "szBytes": "266769",
+            "szKBytes": "261",
+            "pagina_inicial": "54612",
+            "pagina_final": "54617",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33577.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33577",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33577"
+          },
+          {
+           "identificador": "BOE-B-2026-33578",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: La adquisición de uniformes de campaña para dotar a los componentes de la Guardia Civil de la vestimenta técnica necesaria para el desempeño de sus funciones operativas. El suministro tiene como fin asegurar que el personal disponga del equipo reglamentario adecuado para las condiciones de servicio que requieren esta modalidad de uniformidad. Expediente: A/0052/A/26/2.",
+           "url_pdf": {
+            "szBytes": "226624",
+            "szKBytes": "221",
+            "pagina_inicial": "54618",
+            "pagina_final": "54620",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33578.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33578",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33578"
+          },
+          {
+           "identificador": "BOE-B-2026-33579",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: Contratación de un servicio de redacción del proyecto de ejecución para las obrasde demolición y construcción del acuartelamiento de la Guardia Civil de Vera (Almería), que incluirálevantamiento topográfico y taquimétrico, estudio geotécnico, estudio de seguridad y salud y estudio degestión de residuos. Expediente: C/0019/A/26/6.",
+           "url_pdf": {
+            "szBytes": "225936",
+            "szKBytes": "221",
+            "pagina_inicial": "54621",
+            "pagina_final": "54623",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33579.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33579",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33579"
+          },
+          {
+           "identificador": "BOE-B-2026-33580",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: La adquisición de uniformidad, material y equipos necesarios para dotar al personal especialista de la Agrupación de Reserva y Seguridad de la Guardia Civil (en adelante ARS). Expediente: A/0074/A/26/6.",
+           "url_pdf": {
+            "szBytes": "235997",
+            "szKBytes": "230",
+            "pagina_inicial": "54624",
+            "pagina_final": "54627",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33580.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33580",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33580"
+          },
+          {
+           "identificador": "BOE-B-2026-33581",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: La adquisición de uniformidad, material y equipos necesarios para dotar al personal de la especialidad de Fiscal y Fronteras de la Guardia Civil. Expediente: A/0096/A/26/2.",
+           "url_pdf": {
+            "szBytes": "233608",
+            "szKBytes": "228",
+            "pagina_inicial": "54628",
+            "pagina_final": "54631",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33581.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33581",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33581"
+          },
+          {
+           "identificador": "BOE-B-2026-33582",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: Adquisición de material no fungible y de reposición esencial para la vida y transporte de perros del Servicio Cinológico y Remonta de la Guardia Civil necesario para cubrir las necesidades previstas para las anualidades de 2027 y 2028. Expediente: V/0031/A/26/6.",
+           "url_pdf": {
+            "szBytes": "229109",
+            "szKBytes": "224",
+            "pagina_inicial": "54632",
+            "pagina_final": "54634",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33582.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33582",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33582"
+          },
+          {
+           "identificador": "BOE-B-2026-33583",
+           "titulo": "Anuncio de licitación de: Jefatura de Asuntos Económicos de la Guardia Civil. Objeto: Contratación de un suministro de material de oficina no inventariable (elementos de escritura y corrección, elementos generales de oficina, sellos y accesorios, carpetas, sistemas de archivo y manipulados de papel, elementos de encuadernación, elementos de transporte y embalaje de documentos) con destino en las distintas unidades de la Guardia Civil. Expediente: A/0038/A/26/2.",
+           "url_pdf": {
+            "szBytes": "224509",
+            "szKBytes": "219",
+            "pagina_inicial": "54635",
+            "pagina_final": "54637",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33583.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33583",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33583"
+          }
+         ]
+        },
+        {
+         "codigo": "9586",
+         "nombre": "MINISTERIO DE TRANSPORTES Y MOVILIDAD SOSTENIBLE",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33584",
+           "titulo": "Anuncio de formalización de contratos de: Centro de Estudios y Experimentación de Obras Públicas (CEDEX). Objeto: Servicios de conservación y mantenimiento integral de los edificios e instalaciones integrantes del Centro de Estudios y Experimentación de Obras Públicas. Expediente: 2024Z7Z00166.",
+           "url_pdf": {
+            "szBytes": "233944",
+            "szKBytes": "228",
+            "pagina_inicial": "54638",
+            "pagina_final": "54641",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33584.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33584",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33584"
+          },
+          {
+           "identificador": "BOE-B-2026-33585",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Ejecución de las obras de los proyectos de reposición y ejecución de cerramientos en los términos municipales de Valdemoro y Aranjuez (Madrid), y en los términos municipales de Seseña y Ontígola (Toledo). Líneas 300 y 310. Expediente: 3.26/27507.0261.",
+           "url_pdf": {
+            "szBytes": "224659",
+            "szKBytes": "219",
+            "pagina_inicial": "54642",
+            "pagina_final": "54644",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33585.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33585",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33585"
+          },
+          {
+           "identificador": "BOE-B-2026-33586",
+           "titulo": "Anuncio de licitación de: ADIF Alta Velocidad - Presidencia. Objeto: Servicio de laboratorio de ensayos de contrsate para el control de calidad de materiales en obras de construcción de Adif-Alta Velocidad en Madrid, en régimen de pedido abierto. Expediente: 3.26/20830.0178.",
+           "url_pdf": {
+            "szBytes": "225707",
+            "szKBytes": "220",
+            "pagina_inicial": "54645",
+            "pagina_final": "54647",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33586.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33586",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33586"
+          },
+          {
+           "identificador": "BOE-B-2026-33587",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Suministro e instalación del sistema dense wavelength division multiplexing (DWDM) para interconexión de centro de procesamiento de datos (CDPS) Delicias-Atocha-Villaverde. Expediente: 4.26/27520.0047.",
+           "url_pdf": {
+            "szBytes": "225416",
+            "szKBytes": "220",
+            "pagina_inicial": "54648",
+            "pagina_final": "54650",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33587.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33587",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33587"
+          },
+          {
+           "identificador": "BOE-B-2026-33588",
+           "titulo": "Anuncio de formalización de contratos de: Dirección General de Carreteras. Objeto: 39-SE-5240;54.477/25 Actuaciones para el desarrollo del plan de acción contra el ruido de la fase II en la Autovía A-49, P.K. 0+000 A 3+000. Provincia de Sevilla. Expediente: C54254152400.",
+           "url_pdf": {
+            "szBytes": "219962",
+            "szKBytes": "215",
+            "pagina_inicial": "54651",
+            "pagina_final": "54652",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33588.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33588",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33588"
+          },
+          {
+           "identificador": "BOE-B-2026-33589",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Servicios de retirada vegetal mediante talas y desbroces y tratamiento de taludes y trincheras en el ámbito de la red de infraestructuras ferroviarias de la subdirección de operaciones Red Convencional Este. Expediente: 3.26/27520.0061.",
+           "url_pdf": {
+            "szBytes": "225981",
+            "szKBytes": "221",
+            "pagina_inicial": "54653",
+            "pagina_final": "54655",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33589.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33589",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33589"
+          },
+          {
+           "identificador": "BOE-B-2026-33590",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Suministro de cables de fibra óptica para las necesidades de Adif. Expediente: 6.26/28510.0066.",
+           "url_pdf": {
+            "szBytes": "223129",
+            "szKBytes": "218",
+            "pagina_inicial": "54656",
+            "pagina_final": "54658",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33590.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33590",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33590"
+          },
+          {
+           "identificador": "BOE-B-2026-33591",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Acuerdo Marco de servicios de control de plagas: desinfección, desinsectación y desratización en oficinas, locales y espacios abiertos de Adif y Adif-AV. Expediente: 2.26/03110.0213.",
+           "url_pdf": {
+            "szBytes": "227072",
+            "szKBytes": "222",
+            "pagina_inicial": "54659",
+            "pagina_final": "54661",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33591.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33591",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33591"
+          },
+          {
+           "identificador": "BOE-B-2026-33592",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Consultoría y asistencia para el control de la ejecución de las obras del Proyecto de construcción del soterramiento de la línea de ancho métrico en Torrelavega (Cantabria) y del Proyecto de construcción de las actuaciones complementarias al soterramiento de la línea de ancho métrico en Torrelavega (Cantabria). Expediente: 3.26/06110.0205.",
+           "url_pdf": {
+            "szBytes": "224692",
+            "szKBytes": "219",
+            "pagina_inicial": "54662",
+            "pagina_final": "54664",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33592.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33592",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33592"
+          },
+          {
+           "identificador": "BOE-B-2026-33593",
+           "titulo": "Anuncio de formalización de contratos de: ADIF - Presidencia. Objeto: Redacción del proyecto constructivo y ejecución de las obras para la nueva instalación de los pasos a nivel situados en los puntos kilométricos 65/957, 68/878, 72/040, 73/507, 75/357, 77/138, 80/270, 84/040 y 94/986 de la Línea 516 Mérida -Los Rosales (Badajoz). Expediente: 3.25/27507.0075.",
+           "url_pdf": {
+            "szBytes": "218407",
+            "szKBytes": "213",
+            "pagina_inicial": "54665",
+            "pagina_final": "54666",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33593.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33593",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33593"
+          },
+          {
+           "identificador": "BOE-B-2026-33594",
+           "titulo": "Anuncio de formalización de contratos de: Junta de Contratación del Ministerio de Transportes y Movilidad Sostenible. Objeto: Adquisición y suministro de material de oficina no inventariable (confección de impresos) con destino a los servicios centrales y Periféricos del departamento (LOTE 1) y a los servicios centrales y periféricos de la Dirección General de la Marina Mercante (lote 2). Expediente: 26CIN3OM0126.",
+           "url_pdf": {
+            "szBytes": "226691",
+            "szKBytes": "221",
+            "pagina_inicial": "54667",
+            "pagina_final": "54669",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33594.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33594",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33594"
+          },
+          {
+           "identificador": "BOE-B-2026-33595",
+           "titulo": "Anuncio de licitación de: ADIF - Presidencia. Objeto: Servicios para la redacción del proyecto de construcción de la mejora de las condiciones de accesibilidad y otras actuaciones complementarias en la estación de El Escorial, en el municipio de El Escorial (Comunidad de Madrid). Expediente: 3.26/06110.0183.",
+           "url_pdf": {
+            "szBytes": "225975",
+            "szKBytes": "221",
+            "pagina_inicial": "54670",
+            "pagina_final": "54672",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33595.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33595",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33595"
+          },
+          {
+           "identificador": "BOE-B-2026-33596",
+           "titulo": "Anuncio de licitación de: ADIF Alta Velocidad - Presidencia. Objeto: Modernización del sistema GCADIF. Expediente: 4.26/20830.0026.",
+           "url_pdf": {
+            "szBytes": "224848",
+            "szKBytes": "220",
+            "pagina_inicial": "54673",
+            "pagina_final": "54675",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33596.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33596",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33596"
+          },
+          {
+           "identificador": "BOE-B-2026-33597",
+           "titulo": "Anuncio de licitación de: ADIF Alta Velocidad - Presidencia. Objeto: Suministro y puesta en servicio de equipamientos para Sistema de Información al viajero en estaciones dependientes de la Subdirección de Estaciones Sur. Expediente: 3.26/30820.0042.",
+           "url_pdf": {
+            "szBytes": "223617",
+            "szKBytes": "218",
+            "pagina_inicial": "54676",
+            "pagina_final": "54678",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33597.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33597",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33597"
+          }
+         ]
+        },
+        {
+         "codigo": "9587",
+         "nombre": "MINISTERIO DE VIVIENDA Y AGENDA URBANA",
+         "item": {
+          "identificador": "BOE-B-2026-33598",
+          "titulo": "Anuncio de formalización de contratos de: Ministerio de Vivienda y Agenda Urbana. Objeto: Servicio de impresión de las publicaciones incluidas en el programa editorial de 2026 del MIVAU, tituladas: Premios de La Casa de la Arquitectura 2026 y Catálogo nº 3 de La Casa de la Arquitectura. Expediente: 2601CTRRP008.",
+          "url_pdf": {
+           "szBytes": "221965",
+           "szKBytes": "217",
+           "pagina_inicial": "54679",
+           "pagina_final": "54680",
+           "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33598.pdf"
+          },
+          "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33598",
+          "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33598"
+         }
+        },
+        {
+         "codigo": "9589",
+         "nombre": "MINISTERIO DE ECONOMÍA, COMERCIO Y EMPRESA",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33599",
+           "titulo": "Anuncio de licitación de: Junta de Contratación del Ministerio de Economía, Comercio y Empresa. Objeto: Servicio de mantenimiento y conservación de las zonas ajardinadas del complejo ministerial Cuzco. Expediente: 202600000107.",
+           "url_pdf": {
+            "szBytes": "228413",
+            "szKBytes": "223",
+            "pagina_inicial": "54681",
+            "pagina_final": "54683",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33599.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33599",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33599"
+          },
+          {
+           "identificador": "BOE-B-2026-33600",
+           "titulo": "Anuncio de licitación de: Instituto Nacional de Estadística INE. Objeto: Recogida de datos de la Encuesta Cuatrienal de Estructura Salarial 2026. Expediente: 2026N0059005.",
+           "url_pdf": {
+            "szBytes": "223984",
+            "szKBytes": "219",
+            "pagina_inicial": "54684",
+            "pagina_final": "54686",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33600.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33600",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33600"
+          }
+         ]
+        },
+        {
+         "codigo": "4335",
+         "nombre": "MINISTERIO DE SANIDAD",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33601",
+           "titulo": "Anuncio de licitación de: Gerencia de Atención Sanitaria de Melilla - Instituto Nacional de Gestión Sanitaria. Objeto: Servicio de realización de pruebas diagnósticas de neurofisiología clínica a pacientes beneficiarios del INGESA en el Área Sanitaria de Melilla. Expediente: P.A. 2026-072-GME.",
+           "url_pdf": {
+            "szBytes": "206321",
+            "szKBytes": "201",
+            "pagina_inicial": "54687",
+            "pagina_final": "54687",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33601.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33601",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33601"
+          },
+          {
+           "identificador": "BOE-B-2026-33602",
+           "titulo": "Anuncio de formalización de contratos de: Junta de Contratación del Ministerio de Sanidad. Objeto: Servicio de creatividad, diseño y producción de una campaña de publicidad institucional sobre la salud pública, universalidad y equidad en salud - 2026. Expediente: 202607PAO008.",
+           "url_pdf": {
+            "szBytes": "218333",
+            "szKBytes": "213",
+            "pagina_inicial": "54688",
+            "pagina_final": "54689",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33602.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33602",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33602"
+          }
+         ]
+        },
+        {
+         "codigo": "9588",
+         "nombre": "MINISTERIO DE DERECHOS SOCIALES, CONSUMO Y AGENDA 2030",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33603",
+           "titulo": "Anuncio de formalización de contratos de: Subdirección General de Análisis Presupuestario y Gestión Financiera del Instituto de Mayores y Servicios Sociales . Objeto: Suministro de víveres con destino al Centro de Recuperación de Personas con Discapacidad Física de Salamanca. Expediente: 432/2026.",
+           "url_pdf": {
+            "szBytes": "232279",
+            "szKBytes": "227",
+            "pagina_inicial": "54690",
+            "pagina_final": "54692",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33603.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33603",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33603"
+          },
+          {
+           "identificador": "BOE-B-2026-33604",
+           "titulo": "Anuncio de formalización de contratos de: Dirección Ejecutiva de la Agencia Española de Seguridad Alimentaria y Nutrición. Objeto: Servicio de mantenimiento preventivo y correctivo de los cromatógrafos de líquidos, espectrómetros de masas y sus componentes de la firma WATERS CROMATOGRAFÍA S.A. instalados en diversos servicios del Centro Nacional de Alimentación (CNA), de la Agencia Española de Seguridad Alimentaria y Nutrición (AESAN OA). Expediente: 0100026SR023.",
+           "url_pdf": {
+            "szBytes": "219421",
+            "szKBytes": "214",
+            "pagina_inicial": "54693",
+            "pagina_final": "54694",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33604.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33604",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33604"
+          }
+         ]
+        },
+        {
+         "codigo": "9579",
+         "nombre": "MINISTERIO DE INCLUSIÓN, SEGURIDAD SOCIAL Y MIGRACIONES",
+         "item": [
+          {
+           "identificador": "BOE-B-2026-33605",
+           "titulo": "Anuncio de formalización de contratos de: TGSS-Dirección provincial de Huelva. Objeto: Limpieza de edificios, desratización, desinfección y desinsectación. Expediente: 2026/210009.",
+           "url_pdf": {
+            "szBytes": "220335",
+            "szKBytes": "215",
+            "pagina_inicial": "54695",
+            "pagina_final": "54696",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33605.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33605",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33605"
+          },
+          {
+           "identificador": "BOE-B-2026-33606",
+           "titulo": "Anuncio de formalización de contratos de: Gerencia de Informática de la Seguridad Social. Objeto: Servicio de mantenimiento de equipamiento de almacenamiento NETAPP. Expediente: 2026/7009.",
+           "url_pdf": {
+            "szBytes": "218664",
+            "szKBytes": "214",
+            "pagina_inicial": "54697",
+            "pagina_final": "54698",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33606.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33606",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33606"
+          },
+          {
+           "identificador": "BOE-B-2026-33607",
+           "titulo": "Anuncio de formalización de contratos de: TGSS-Dirección provincial de Madrid. Objeto: Realización de Auditoría Energética de la Dirección Provincial de la Tesorería General de la Seguridad Social de Madrid y los centros dependientes de esta. Expediente: 2026/280005.",
+           "url_pdf": {
+            "szBytes": "219039",
+            "szKBytes": "214",
+            "pagina_inicial": "54699",
+            "pagina_final": "54700",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33607.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33607",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33607"
+          },
+          {
+           "identificador": "BOE-B-2026-33608",
+           "titulo": "Anuncio de formalización de contratos de: INSS-Dirección provincial de Cantabria. Objeto: Contratación de un Servicio de Prevención Ajeno -en adelante SPA- acreditado por la autoridad laboral competente para la realización de reconocimientos médicos generales y específicos -oftalmológico, otorrinolaringológico, ginecológico y urológico- a los empleados públicos adscritos a la Dirección Provincial del Instituto Nacional de la Seguridad Social de Cantabria. Expediente: 39/VC-228/26.",
+           "url_pdf": {
+            "szBytes": "212188",
+            "szKBytes": "207",
+            "pagina_inicial": "54701",
+            "pagina_final": "54702",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33608.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33608",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33608"
+          },
+          {
+           "identificador": "BOE-B-2026-33609",
+           "titulo": "Anuncio de formalización de contratos de: TGSS-Dirección provincial de Cantabria. Objeto: Servicio de Prevención Ajeno (SPA) acreditado por la autoridad laboral competente para la realización de reconocimientos médicos generales y específicos - reconocimiento oftalmológico, otorrinolaringológico, ginecológico y urológico- a los empleados públicos adscritos a la Dirección Provincial de la Tesorería General de la Seguridad Social de Cantabria. Expediente: 2026/390071.",
+           "url_pdf": {
+            "szBytes": "210264",
+            "szKBytes": "205",
+            "pagina_inicial": "54703",
+            "pagina_final": "54703",
+            "texto": "https://www.boe.es/boe/dias/2026/10/16/pdfs/BOE-B-2026-33609.pdf"
+           },
+           "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-B-2026-33609",
+           "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-B-2026-33609"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

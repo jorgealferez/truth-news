@@ -422,6 +422,39 @@ es:
   no_appointments: Ese día el BOE no publicó nombramientos ni ceses (o aún no está disponible).
   previous_day: Día anterior
   next_day: Día siguiente
+  contracts: Contratos públicos
+  contracts_lead: >-
+    Qué contrata la Administración, quién gana los contratos y por cuánto: anuncios de contratación del BOE y
+    adjudicaciones de España publicadas en el Diario Oficial de la UE (TED), con enlace a cada anuncio y cruzadas
+    con las noticias que rastreamos.
+  contracts_boe: Anuncios del BOE
+  contracts_ted: Adjudicaciones en el Diario Oficial de la UE
+  contracts_ted_period: Publicadas entre el
+  contracts_and: y el
+  contracts_n_awards: adjudicaciones
+  contracts_amount: adjudicados (euros)
+  contracts_with_amount: con importe publicado
+  contracts_top_firms: Empresas que más suman
+  contracts_lots_note: Los avisos con varios adjudicatarios (lotes) no se suman a cada empresa para no inflar su total.
+  contracts_repeat: Empresas con varios contratos en el periodo
+  contracts_buyers: Quién contrata más
+  contracts_largest: Contratos de mayor importe
+  contracts_in_press: En los medios
+  contracts_press_note: Noticias que nombran a la empresa; la mención no implica relación con el contrato.
+  contracts_n_contracts: contratos
+  contracts_kind_licitacion: Licitación
+  contracts_kind_formalizacion: Formalización
+  contracts_kind_adjudicacion: Adjudicación
+  contracts_kind_anulacion: Anulación
+  contracts_kind_rectificacion: Rectificación
+  contracts_kind_otro: Anuncio
+  contracts_file: Expediente
+  contracts_no_boe: Ese día el BOE no publicó anuncios de contratación (o aún no está disponible).
+  contracts_no_ted: Las adjudicaciones de TED no están disponibles ahora mismo. Vuelve a intentarlo más tarde.
+  contracts_source: >-
+    Fuentes: sección V.A del Boletín Oficial del Estado (API de datos abiertos) y API de búsqueda de TED (Oficina
+    de Publicaciones de la UE). La Plataforma de Contratación del Sector Público excluye los rastreadores en su
+    robots.txt y no se rastrea.
   budget: Presupuestos del Estado
   budget_lead: >-
     Cuánto ha gastado e invertido cada ministerio de lo presupuestado, mes a mes, según el extracto oficial de
@@ -919,6 +952,38 @@ en:
   no_appointments: That day the BOE published no appointments or dismissals (or it is not available yet).
   previous_day: Previous day
   next_day: Next day
+  contracts: Public contracts
+  contracts_lead: >-
+    What the Spanish administration buys, who wins the contracts and for how much: procurement notices in the
+    Official Gazette (BOE) and Spanish contract awards published in the EU Official Journal (TED), linked to each
+    notice and cross-checked with the news we track.
+  contracts_boe: BOE notices
+  contracts_ted: Awards in the EU Official Journal
+  contracts_ted_period: Published between
+  contracts_and: and
+  contracts_n_awards: awards
+  contracts_amount: awarded (euros)
+  contracts_with_amount: with a published value
+  contracts_top_firms: Companies with the highest totals
+  contracts_lots_note: Notices with several winners (lots) are not added to each company, so as not to inflate its total.
+  contracts_repeat: Companies with several contracts in the period
+  contracts_buyers: Who buys the most
+  contracts_largest: Largest contracts
+  contracts_in_press: In the news
+  contracts_press_note: Stories that name the company; a mention does not imply a link to the contract.
+  contracts_n_contracts: contracts
+  contracts_kind_licitacion: Call for tenders
+  contracts_kind_formalizacion: Contract signed
+  contracts_kind_adjudicacion: Award
+  contracts_kind_anulacion: Cancellation
+  contracts_kind_rectificacion: Correction
+  contracts_kind_otro: Notice
+  contracts_file: File
+  contracts_no_boe: That day the BOE published no procurement notices (or it is not available yet).
+  contracts_no_ted: TED awards are not available right now. Please try again later.
+  contracts_source: >-
+    Sources: section V.A of the Spanish Official Gazette (open data API) and the TED search API (EU Publications
+    Office). The Spanish public procurement platform excludes crawlers in its robots.txt and is not crawled.
   budget: State budget
   budget_lead: >-
     How much of its budget each Spanish ministry has spent and invested, month by month, according to the

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'contracts') }} · {{ day.strftime('%d/%m/%Y') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'contracts_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/contratos?fecha={{ day.isoformat() }}">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'contracts') }}</h1>
+<p class="lead-text">{{ t(lang, 'contracts_lead') }}</p>
+
+<section class="block" id="ted"><h2>{{ t(lang, 'contracts_ted') }}</h2>
+{% if not ted %}<p class="empty">{{ t(lang, 'contracts_no_ted') }}</p>{% else %}
+<p class="meta">{{ t(lang, 'contracts_ted_period') }} {{ ted_since.strftime('%d/%m/%Y') }} {{ t(lang, 'contracts_and') }} {{ ted_until.strftime('%d/%m/%Y') }}</p>
+<ul class="kpis"><li><b>{{ ted.total|num }}</b><span>{{ t(lang, 'contracts_n_awards') }}</span></li><li><b>{{ ted.amount|num }}</b><span>{{ t(lang, 'contracts_amount') }}</span></li><li><b>{{ ted.with_amount|num }}</b><span>{{ t(lang, 'contracts_with_amount') }}</span></li></ul>
+<h3>{{ t(lang, 'contracts_top_firms') }}</h3>
+<ol class="compact">{% for f in ted.firms %}<li><strong>{{ f.nombre }}</strong>{% if f.nif %} <span class="meta">NIF {{ f.nif }}</span>{% endif %} — {{ f.importe|num }} € · {{ f.contratos|length }} {{ t(lang, 'contracts_n_contracts') }}
+  {% if press.get(f.nombre) %}<details class="who-more"><summary>{{ t(lang, 'contracts_in_press') }} ({{ press[f.nombre]|length }})</summary><ul class="who-omits">{% for a in press[f.nombre] %}
+    <li><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a> <span class="meta">{{ a.outlet.name }} · {{ a.published_at.strftime('%d/%m') }}</span></li>{% endfor %}</ul></details>{% endif %}
+  <ul class="compact">{% for a in f.contratos[:3] %}<li><a href="{{ a.url }}" rel="noopener" target="_blank">{{ a.objeto }}</a> <span class="meta">{{ a.comprador }} · {{ a.id }}</span></li>{% endfor %}</ul></li>{% endfor %}</ol>
+<p class="meta">{{ t(lang, 'contracts_lots_note') }} {{ t(lang, 'contracts_press_note') }}</p>
+{% if ted.repeat %}<details class="block fold"><summary><h3>{{ t(lang, 'contracts_repeat') }}</h3> <span class="meta">{{ ted.repeat|length }}</span></summary>
+  <ul class="compact">{% for f in ted.repeat %}<li><strong>{{ f.nombre }}</strong>{% if f.nif %} <span class="meta">NIF {{ f.nif }}</span>{% endif %} — {{ f.contratos|length }} {{ t(lang, 'contracts_n_contracts') }}: {% for a in f.contratos[:5] %}<a class="meta" href="{{ a.url }}" rel="noopener" target="_blank">{{ a.id }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</li>{% endfor %}</ul></details>{% endif %}
+<details class="block fold"><summary><h3>{{ t(lang, 'contracts_buyers') }}</h3></summary>
+  <ol class="compact">{% for b in ted.buyers %}<li>{{ b.nombre }} — {{ b.importe|num }} € · {{ b.n }} {{ t(lang, 'contracts_n_contracts') }}</li>{% endfor %}</ol></details>
+<details class="block fold"><summary><h3>{{ t(lang, 'contracts_largest') }}</h3></summary>
+  <ol class="compact">{% for a in ted.largest %}<li><strong>{{ a.importe|num }} €</strong> — <a href="{{ a.url }}" rel="noopener" target="_blank">{{ a.objeto }}</a> <span class="meta">{{ a.comprador }} → {% for name, nif in a.adjudicatarios %}{{ name }}{% if not loop.last %}; {% endif %}{% endfor %} · {{ a.fecha }}</span></li>{% endfor %}</ol></details>
+{% endif %}</section>
+
+<section class="block" id="boe"><h2>{{ t(lang, 'contracts_boe') }}</h2>
+<nav class="pager appt-days"><a href="/contratos?fecha={{ prev_day.isoformat() }}#boe">← {{ t(lang, 'previous_day') }}</a>
+  <strong>{{ day.strftime('%d/%m/%Y') }}</strong>
+  {% if next_day %}<a href="/contratos?fecha={{ next_day.isoformat() }}#boe">{{ t(lang, 'next_day') }} →</a>{% endif %}</nav>
+{% if not boe.total %}<p class="empty">{{ t(lang, 'contracts_no_boe') }}</p>{% else %}
+<ul class="kpis">{% for kind, n in boe.counts|dictsort %}<li><b>{{ n }}</b><span>{{ t(lang, 'contracts_kind_' ~ kind) }}</span></li>{% endfor %}</ul>
+{% for dep, items in boe.deps %}<details class="block fold appt"><summary><h3>{{ dep_name(dep) }}</h3> <span class="meta">{{ items|length }}</span></summary>
+  <ul class="compact">{% for i in items %}<li><span class="tag">{{ t(lang, 'contracts_kind_' ~ i.tipo) }}</span> {{ i.objeto or i.titulo }}
+    <span class="meta">{{ i.organo }}{% if i.expediente %} · {{ t(lang, 'contracts_file') }} {{ i.expediente }}{% endif %}</span>
+    <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></li>{% endfor %}</ul></details>{% endfor %}
+{% endif %}</section>
+<p class="meta">{{ t(lang, 'contracts_source') }} <a href="https://www.boe.es/datosabiertos/" rel="noopener" target="_blank">boe.es/datosabiertos</a> · <a href="https://ted.europa.eu/" rel="noopener" target="_blank">ted.europa.eu</a></p>
+{% endblock %}

@@ -46,6 +46,7 @@ from truthnews.web import (
     appointments,
     budget,
     citations,
+    contracts,
     legal,
     queries,
     seo,
@@ -147,12 +148,16 @@ def create_app(
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
     boe_index: appointments.BoeIndex | None = None,
+    boe_contracts: contracts.BoeContractDays | None = None,
+    ted_awards: contracts.TedAwards | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
     boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
+    boe_contracts = boe_contracts or contracts.BoeContractDays()
+    ted_awards = ted_awards or contracts.TedAwards()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -839,6 +844,39 @@ def create_app(
                 [i.persona for i in items if i.tipo in ("nombramiento", "cese") and i.persona],
                 datetime.combine(day, datetime.min.time(), UTC) + timedelta(days=1),
             ),
+            prev_day=day - timedelta(days=1),
+            next_day=day + timedelta(days=1) if day < today else None,
+        )
+
+    @app.get("/contratos", response_class=HTMLResponse)
+    def contracts_page(request: Request, session: SessionDep, fecha: str | None = None):
+        today = datetime.now(UTC).date()
+        if fecha:
+            try:
+                day = date.fromisoformat(fecha)
+            except ValueError:
+                raise HTTPException(404) from None
+            if day > today or day < date(2009, 1, 1):  # la API de datos abiertos empieza en 2009
+                raise HTTPException(404)
+            items = boe_contracts.day(day, today)
+        else:
+            day, items = boe_contracts.latest(today)
+        got = ted_awards.get(today)
+        ted = contracts.ted_view(got[2]) if got else None
+        return render(
+            request,
+            "contracts.html",
+            day=day,
+            boe=contracts.boe_view(items),
+            ted=ted,
+            ted_since=got[0] if got else None,
+            ted_until=got[1] if got else None,
+            press=contracts.mentions(
+                session,
+                [f["nombre"] for f in ted["firms"]] if ted else [],
+                datetime.combine(today, datetime.min.time(), UTC) + timedelta(days=1),
+            ),
+            dep_name=appointments.dept_name,
             prev_day=day - timedelta(days=1),
             next_day=day + timedelta(days=1) if day < today else None,
         )
