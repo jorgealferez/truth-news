@@ -1,0 +1,33 @@
+{
+  "fase": "verificaciones-1",
+  "titulo": "Verificaciones a escala (1): extraccion de afirmaciones con IA validada por el codigo",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18); produccion en Railway (logs del worker)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0,
+    "verificaciones_sin_evidencia": 0
+  },
+  "detalle": {
+    "antes_produccion": "Logs del worker en produccion, 18 ciclos entre 2026-10-18 22:54 y 2026-10-19 00:55 UTC (2 712 -> 2 924 articulos en ventana): 3 afirmaciones juzgadas en total, 0,17 por ciclo, todas por reglas",
+    "rastreo_real_local": "Rastreo real sobre base vacia (2026-10-19 01:14 UTC): 125/134 feeds, 2 782 articulos de 130 medios, 387 con texto completo (MAX_TEXT_FETCH_PER_RUN=400), 115,7 s; medido con tools/bench_claims.py",
+    "reglas": "2 afirmaciones en 2 782 articulos (0,0007 por articulo)",
+    "prefiltro_ia": "42 frases candidatas en 22 articulos (0,015 por articulo): con cifra con unidad y palabra de un indicador del catalogo; una llamada de 40 frases las cubre casi todas. Ejemplos que las reglas no ven y la validacion acepta si la IA las propone: 'El IPC del ultimo mes que se ha contabilizado se situo en el 4,3 %', 'Con un 10,5 % de paro...' (test)",
+    "cuello_de_botella": "472 frases con porcentaje en esos 2 782 articulos y solo 42 tocan los 6 indicadores del catalogo; las mas frecuentes fuera de el: vivienda/alquiler (30), encuestas/CIS/voto (46), precios/ventas (24), pobreza, deficit, tipos de interes, salarios y pensiones. Siguiente paso del carril: ampliar indicadores y fuentes (INE por comunidad, EPA, pobreza AROPE, deficit, Euribor/BCE)",
+    "coste_previsto": "Como maximo AI_CLAIMS_MAX_CALLS=3 llamadas de 40 frases por ciclo con esfuerzo medium y max_tokens 16 000; con el ritmo medido (unos 30 articulos nuevos por ciclo) casi todos los ciclos haran 0 o 1 llamada"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Afirmaciones juzgadas por ciclo con IA en produccion: NO VERIFICADO (la clave de Anthropic solo esta en el servicio worker de Railway); se mide tras el despliegue con el log 'afirmaciones con IA: {...}' (llamadas, propuestas, aceptadas, rechazos por motivo, juzgadas, uso de tokens)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Medir en produccion 'juzgadas' por ciclo y la tasa de aceptacion de las propuestas de la IA",
+    "Ampliar el catalogo de indicadores y fuentes oficiales (el multiplicador real segun la medida)"
+  ]
+}
