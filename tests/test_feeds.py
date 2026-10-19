@@ -57,3 +57,14 @@ def test_extract_text():
     )
     text = extract_text(html, "https://m.es/a")
     assert text and "contenido real" in text
+
+
+def test_parse_feed_caps_long_author_and_image():
+    long = "Autor " * 80
+    xml = (
+        '<rss version="2.0"><channel><title>x</title><item><title>Titular</title>'
+        f"<link>https://m.es/1</link><author>{long}</author>"
+        f'<enclosure url="https://img.es/{"a" * 1200}.jpg" type="image/jpeg"/></item></channel></rss>'
+    ).encode()
+    entries, _ = parse_feed(xml)
+    assert len(entries[0].author) <= 300 and len(entries[0].image_url or "") <= 1000

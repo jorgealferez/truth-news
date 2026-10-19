@@ -100,10 +100,11 @@ def parse_feed(content: bytes | str, limit: int = 30) -> tuple[list[FeedEntry], 
                 url=link.strip(),
                 title=title[:600],
                 summary=clean_text(entry.get("summary") or entry.get("description"), limit=1200),
-                author=(entry.get("author") or None),
+                # Las columnas tienen tope (author 300, image_url 1000): un valor largo tumbaria el rastreo.
+                author=(clean_text(entry.get("author"))[:300] or None),
                 published_at=_entry_date(entry),
                 tags=[t.get("term", "").strip() for t in entry.get("tags", []) if t.get("term")],
-                image_url=_entry_image(entry),
+                image_url=(_entry_image(entry) or "")[:1000] or None,
             )
         )
     return entries, is_feed
