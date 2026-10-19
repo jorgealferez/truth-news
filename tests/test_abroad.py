@@ -117,3 +117,23 @@ def test_link_uses_spanish_or_translation_and_replaces_each_cycle(engine, sessio
 
 def test_centroid_of_nothing_is_empty():
     assert abroad.centroid([]) == {}
+
+
+def test_serial_content_like_horoscopes_is_not_linked(session):
+    st = Story(
+        title="Horóscopo de Cáncer hoy, 20 de octubre",
+        category="sociedad",
+        country="ES",
+        first_seen=NOW,
+        last_seen=NOW,
+        n_outlets=2,
+    )
+    session.add(st)
+    session.flush()
+    es1, es2 = _outlet(session, "h1", "ES", "es"), _outlet(session, "h2", "ES", "es")
+    ar = _outlet(session, "h3", "AR", "es")
+    _art(session, es1, "Horóscopo de Cáncer hoy, 20 de octubre", st)
+    _art(session, es2, "Horóscopo de Cáncer para hoy, 20 de octubre", st)
+    _art(session, ar, "Horóscopo Cáncer de hoy, 19 de octubre")
+    session.commit()
+    assert abroad.link(session, "ES", "es")["links"] == 0

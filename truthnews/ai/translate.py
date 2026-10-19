@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, case, select
 from sqlalchemy.orm import Session
 
 from truthnews.ai.client import AIClient
@@ -58,7 +58,13 @@ def pending(session: Session, lang: str, limit: int, now: datetime | None = None
             and_(ArticleTranslation.article_id == Article.id, ArticleTranslation.lang == lang),
         )
         .where(Story.last_seen >= since, Article.language != lang, ArticleTranslation.id.is_(None))
-        .order_by(Story.priority.desc(), Story.n_outlets.desc(), Article.published_at.desc())
+        # Primero el titular de cabecera de cada historia: es el que se ve en tarjetas, titulo y h1.
+        .order_by(
+            case((Article.title == Story.title, 0), else_=1),
+            Story.priority.desc(),
+            Story.n_outlets.desc(),
+            Article.published_at.desc(),
+        )
         .limit(limit)
     )
     return list(session.scalars(q))
