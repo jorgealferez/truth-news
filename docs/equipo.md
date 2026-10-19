@@ -62,9 +62,10 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0017 + migracion 0009 | datos | en main | Global (traducciones) |
 | ADR 0018 + migracion 0008 | datos | en main | Redes (cola de publicaciones) |
 | ADR 0019 + migracion 0010 | datos | reservado | Verificaciones |
-| ADR 0020 + migracion 0011 | datos | reservado | Temas, SEO y sintesis (pieza por hilo) |
+| ADR 0020 + migracion 0011 | datos | PR #34 | Temas, SEO y sintesis (pieza por hilo) |
 | ADR 0021 + migracion 0012 | datos | reservado | Comparativas (fiabilidad por medio) |
-| ADR 0022 + migracion 0013 | datos | reservado | Global (fuentes politicas) |
+| ADR 0022 + migracion 0013 | datos | reservado | Global (cobertura exterior: misma historia en otros paises) |
+| ADR 0024 + migracion 0014 | datos | reservado | Global (fuentes politicas) |
 | ADR 0023 | diseno | reservado | Verificaciones (consulta puntual de interes publico) |
 | siguiente libre | — | — | pedir a la direccion |
 

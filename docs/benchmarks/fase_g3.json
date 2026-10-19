@@ -1,0 +1,51 @@
+{
+  "fase": "g3",
+  "titulo": "La misma historia contada en otros paises: enlaces precalculados con la cobertura de medios extranjeros",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "medida": "python tools/eval_abroad.py <umbral> sobre feeds en vivo el 2026-10-19: 663 articulos de medios espanoles, 15 historias de >= 3 medios, 519 articulos en espanol de medios de otros paises (MX, AR, CO, CL, PE, VE y servicios en espanol de BBC, DW, France 24, RFI, Euronews); cada enlace etiquetado a mano (mismo hecho o no)",
+    "precision_por_umbral": {
+      "0.30": {
+        "enlaces": 30,
+        "correctos": 25,
+        "precision": 0.83
+      },
+      "0.35": {
+        "enlaces": 23,
+        "correctos": 20,
+        "precision": 0.87
+      },
+      "0.40": {
+        "enlaces": 16,
+        "correctos": 15,
+        "precision": 0.94,
+        "historias_enlazadas": 5
+      }
+    },
+    "errores_tipicos": "misma palabra clave en otro hecho (cierre de estaciones de Metro en Santiago frente a Sol en Madrid; Real Madrid-Sevilla frente a la previa del Clasico)",
+    "umbral_elegido": 0.4,
+    "esquema": "ADR 0022 (Tipo: datos) y migracion 0013: tabla story_abroad con unicidad (story_id, article_id); <= 80 historias x 12 enlaces por ciclo, reemplazados en cada ciclo",
+    "vista": "Bloque 'Como lo cuentan en otros paises' agrupado por pais, titular original enlazado y traduccion IA marcada; una columna en movil y rejilla en escritorio; fuera del comparador de cifras"
+  },
+  "criterios_de_salida": {
+    "C10": "la historia muestra la cobertura de otros paises lado a lado, con titulares traducidos marcados"
+  },
+  "no_verificable": [
+    "Precision con titulares traducidos por IA (aleman, frances, arabe...): requiere las traducciones de produccion; se etiqueta una muestra tras los primeros ciclos"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Paginas en ingles (coordinado con la sesion Railway project)",
+    "Etiquetar en produccion una muestra de enlaces con titulares traducidos"
+  ]
+}

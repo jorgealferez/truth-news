@@ -15,6 +15,7 @@
 <article class="story wide">
   <p class="kicker">{{ category_name(st.category, lang) }} · {{ n_out }} {{ t(lang, 'n_outlets') }}</p>
   <h1>{{ st.title }}</h1>
+  {% if not plain.empty %}{% include "_plain.html" %}{% endif %}
 
   {% if spread %}<section class="origin" aria-label="{{ t(lang, 'origin') }}">
     <p class="origin-head"><span class="label">{{ t(lang, 'origin') }}</span> <a href="/medio/{{ spread.first.outlet.slug }}"><b>{{ spread.first.outlet.name }}</b></a> · {{ spread.first.published_at.strftime('%d/%m %H:%M') }} → {{ n_out }} {{ t(lang, 'n_outlets') }} {{ t(lang, 'in_hours')|replace('{h}', spread.hours|string) }}</p>
@@ -61,7 +62,7 @@
 
   <section class="block"><h2>{{ t(lang, 'how_each_tells_it') }}</h2>
     <div class="outlet-cards">{% for o in outlets_view %}{% if loop.index == 7 %}</div><details class="more"><summary>{{ t(lang, 'see_all') }} ({{ outlets_view|length }})</summary><div class="outlet-cards">{% endif %}
-      <div class="ocard" id="m-{{ o.outlet.slug }}">
+      <div class="ocard{{ ' target' if target == o.outlet.slug }}" id="m-{{ o.outlet.slug }}">
         <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}</p>
         <p class="headline"><a href="{{ o.article.url }}" rel="noopener nofollow" target="_blank">{{ o.article.title }}</a> <a class="meta" href="{{ url('noticia', o.article.id, o.article.title) }}?ficha=1">{{ t(lang, 'capture_record')|lower }}</a></p>
         {% if tr[o.article.id] and o.article.language != lang %}<p class="tr" lang="{{ lang }}">{{ tr[o.article.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ o.article.language }})</span></p>{% endif %}
@@ -75,12 +76,21 @@
   </section>
   {% with ad = (ads or {}).get('story-inline'), slot = 'story-inline' %}{% include "_ad.html" %}{% endwith %}
 
+  {% if abroad %}<section class="block" id="otros-paises"><h2>{{ t(lang, 'abroad_title') }}</h2>
+    <p class="meta">{{ t(lang, 'abroad_note') }}</p>
+    <div class="abroad">{% for iso, items in abroad|groupby('outlet.country') %}
+      <div class="abroad-c"><p class="card-k">{{ country_name(iso, lang) }}</p>
+        <ul>{% for a in items %}<li><a href="/medio/{{ a.outlet.slug }}"><b>{{ a.outlet.name }}</b></a> <a href="{{ a.url }}" rel="noopener nofollow" target="_blank" lang="{{ a.language }}">{{ a.title }}</a>{% if tr[a.id] and a.language != lang %}<span class="tr" lang="{{ lang }}">{{ tr[a.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ a.language }})</span></span>{% endif %}</li>{% endfor %}</ul>
+      </div>{% endfor %}
+    </div>
+  </section>{% endif %}
+
   {% if claims %}<details class="block fold" id="datos" open><summary><h2>{{ t(lang, 'data_check') }}</h2></summary>
     {% for c in claims %}{% set v = c.verification %}
       <div class="claim">
         <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <a href="/medio/{{ c.outlet.slug }}"><strong>{{ c.outlet.name }}</strong></a>: «{{ c.text }}»</p>
         <p>{{ v.explanation }}</p>
-        {% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+        {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> <span class="vs">{{ t(lang, 'vs_said') }} {{ c.value|dato(c.unit) }}</span> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
       </div>
     {% endfor %}</details>{% endif %}
 

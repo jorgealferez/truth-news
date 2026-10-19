@@ -155,6 +155,23 @@ class ArticleTranslation(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class StoryAbroad(Base):
+    """Articulo de un medio de otro pais que cuenta la misma historia; no entra en ella (ADR 0022)."""
+
+    __tablename__ = "story_abroad"
+    __table_args__ = (UniqueConstraint("story_id", "article_id", name="uq_story_abroad_story_article"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    story_id: Mapped[int] = mapped_column(
+        ForeignKey("story.id", ondelete="CASCADE", name="fk_story_abroad_story_id")
+    )
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey("article.id", ondelete="CASCADE", name="fk_story_abroad_article_id")
+    )
+    similarity: Mapped[float] = mapped_column(Float)
+    linked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class CrawlRun(Base):
     __tablename__ = "crawl_run"
 
@@ -204,12 +221,16 @@ class Story(Base):
     topic: Mapped[Topic | None] = relationship(back_populates="stories")
 
 
+CLAIM_EXTRACTORS = ("reglas", "ia")
+
+
 class Claim(Base):
     """Afirmacion comprobable extraida de un articulo."""
 
     __tablename__ = "claim"
     __table_args__ = (
         UniqueConstraint("article_id", "indicator", "value", name="uq_claim_article_indicator"),
+        CheckConstraint(f"extractor IN {CLAIM_EXTRACTORS!r}", name="ck_claim_extractor"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -224,6 +245,9 @@ class Claim(Base):
     value: Mapped[float] = mapped_column(Float)
     unit: Mapped[str] = mapped_column(String(16))
     direction: Mapped[str | None] = mapped_column(String(8), nullable=True)  # sube | baja
+    # Quien la propuso (ADR 0019): las reglas o la IA (validada por el codigo); el veredicto es del codigo.
+    extractor: Mapped[str] = mapped_column(String(8), default="reglas", server_default="reglas")
+    period: Mapped[str | None] = mapped_column(String(20), nullable=True)  # periodo citado en la frase
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     article: Mapped[Article] = relationship()

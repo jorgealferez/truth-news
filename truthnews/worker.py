@@ -9,10 +9,12 @@ from datetime import UTC, datetime, timedelta
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import select
 
+from truthnews.ai import claims as ai_claims
 from truthnews.ai import threads
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis.pipeline import run as analyze
+from truthnews.analysis.score import score_stories
 from truthnews.config import Settings, get_settings
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
@@ -41,6 +43,11 @@ def run_cycle(settings: Settings | None = None) -> dict:
         started = run.started_at
     with session_scope(engine) as session:
         summary["analysis"] = analyze(session, since=started)
+    if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
+        with session_scope(engine) as session:
+            ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
+            summary["ai_claims"] = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
+            summary["ai_claims"]["scores"] = score_stories(session, started)
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
         with session_scope(engine) as session:
             try:

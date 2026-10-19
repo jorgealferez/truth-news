@@ -17,7 +17,7 @@ from truthnews.models import (
     Verification,
 )
 from truthnews.web import seo
-from truthnews.web.app import _ago, create_app
+from truthnews.web.app import _ago, _dato, create_app
 from truthnews.web.citations import cited_figures, word_diff
 
 
@@ -83,6 +83,7 @@ def test_article_and_related(client, session):
     assert r.status_code == 200
     assert "Leer en el medio original" in r.text and 'href="https://m.es/1"' in r.text
     assert "Solo lo publica Medio Uno: sin contraste todavía" in r.text
+    assert "Titular 3" not in r.text  # sin titulares sueltos
 
 
 def test_article_of_a_multi_outlet_story_redirects_to_the_comparison(client, session):
@@ -97,7 +98,7 @@ def test_article_of_a_multi_outlet_story_redirects_to_the_comparison(client, ses
     session.commit()
     r = client.get(seo.path("noticia", a.id, a.title), follow_redirects=False)
     assert r.status_code == 302
-    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "#m-medio"
+    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "?medio=medio#m-medio"
     assert client.get(f"/noticia/{a.id}?ficha=1").status_code == 200
 
 
@@ -138,6 +139,11 @@ def test_article_cites_figures_tracks_changes_and_outlet_profile(client, session
     session.query(ArticleRevision).delete()
     session.commit()
     assert "Aún no hemos detectado cambios" in client.get("/medio/medio").text
+
+
+def test_dato_formats_official_figures():
+    assert _dato(10.0, "pct") == "10,0 %" and _dato(1234.5, "abs") == "1.234,5"
+    assert _dato(2400.0) == "2.400" and _dato(None) == "—"
 
 
 def test_citation_helpers():
@@ -284,6 +290,11 @@ def test_comparator_pages(client, session):
         'class="meter"',
         'class="bars"',
         "Portada</a> › ",
+        "En claro",
+        "La verdad según los datos",
+        "<b>10,0 %</b>",
+        "Otro Medio (12,0 %, falso)",
+        "Detenidos: los medios dan de 2.000 a 2.400.",
     ]:
         assert needle in page, needle
     # Cada cifra en disputa despliega que medios la dan, con enlace a su noticia.
@@ -296,6 +307,18 @@ def test_comparator_pages(client, session):
     assert "Verdadero" in client.get("/metodologia").text
     assert "Falso 1" in client.get("/medio/otro").text
     assert "2 medios" in client.get(f"/noticia/{a2.id}").text
+    # Contraste primero: la noticia de una historia comparada lleva a la historia con su medio destacado.
+    r = client.get(seo.path("noticia", a2.id, a2.title), follow_redirects=False)
+    assert r.status_code == 302
+    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "?medio=otro#m-otro"
+    target = client.get(r.headers["location"]).text
+    first_card = target.split('class="ocard', 1)[1][:60]
+    assert first_card.startswith(' target" id="m-otro"')
+    # La evidencia muestra el dato oficial, no solo el enlace.
+    assert "Dato oficial</span> <b>10,0 %</b>" in target and "frente a 12,0 %" in target
+    ficha = client.get(seo.path("noticia", a2.id, a2.title) + "?ficha=1").text
+    assert "Esta noticia se compara en 2 medios" in ficha and "Lo que comprobamos" in ficha
+    assert "Ficha de captura" in ficha and f'href="{seo.path("noticia", a2.id, a2.title)}?ficha=1"' in target
 
 
 def test_analysis_topic_and_verifications_pages(client, session):

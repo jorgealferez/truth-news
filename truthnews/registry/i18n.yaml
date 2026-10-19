@@ -11,6 +11,16 @@ es:
   jump_to: Ir a
   more_contrasts_in: Más contrastes en
   what_differs: Lo que difiere
+  in_plain: En claro
+  plain_truth: "La verdad según los datos"
+  plain_truth_ok: "lo cuentan bien:"
+  plain_truth_wrong: "dan otra cifra:"
+  plain_differ: "{noun}: los medios dan de {low} a {high}."
+  plain_mode: "La cifra que más repiten: {v} ({n} medios)."
+  plain_latest: "La última publicada: {v} ({o}, {h})."
+  plain_agree: "{noun}: {v}, la misma cifra en {n} medios."
+  plain_blame: No coinciden en a quién señalan.
+  plain_note: Calculado con el mismo método para todos los medios. Una cifra distinta puede ser un balance actualizado; un veredicto exige un dato oficial.
   nothing_differs: Nada que marcar
   nothing_differs_text: "Los {n} medios cuentan lo mismo en cifras y protagonistas, y no hay afirmaciones con datos oficiales que comprobar. Cuando algo cambie, la historia volverá a portada."
   does_not_mention: no menciona
@@ -18,6 +28,11 @@ es:
   shared_names_note: "Personas, lugares e instituciones que citan la mayoría de los {n} medios (cuántos lo citan):"
   see_all: Ver todos
   which_outlets: ver qué medios
+  official_figure: Dato oficial
+  vs_said: frente a
+  compared_in: "Esta noticia se compara en {n} medios: ver la comparativa"
+  what_we_checked: Lo que comprobamos
+  pending_check: Pendiente de comprobar
   cited_data: Datos citados
   cited_data_note: Fragmentos breves del medio con una cifra o una afirmación comprobable, citados con enlace a la fuente. No reproducimos el texto completo.
   changes_detected: Cambios detectados
@@ -30,6 +45,8 @@ es:
   after: Después
   capture_record: Ficha de captura
   machine_translation: traducción automática con IA del original
+  abroad_title: Cómo lo cuentan en otros países
+  abroad_note: Medios de otros países que publican la misma historia, enlazados por su titular. No entran en la comparación de cifras.
   source: Fuente
   captured_at: Capturada
   fingerprint: Huella del texto
@@ -189,7 +206,10 @@ es:
     artículo cuenta la del titular, y dos cifras que se diferencian en más de tres veces son hechos distintos
     salvo que ambas se atribuyan a una fuente («según…»). 4) Extraemos solo afirmaciones numéricas
     explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, vivienda, población) y las comparamos
-    con la última serie publicada por Eurostat, el INE o el Banco Mundial. 5) Veredictos: Verdadero (diferencia
+    con la serie publicada por Eurostat, el INE o el Banco Mundial para el periodo que cita la frase. Para
+    encontrar más, una IA lee las frases con cifras y propone indicador, territorio y periodo; nuestras reglas
+    comprueban que la frase y la cifra están en el texto y que territorio y periodo cuadran, y si no, no se
+    juzga. El veredicto lo da siempre el código con el dato oficial, nunca la IA. 5) Veredictos: Verdadero (diferencia
     de hasta 0,2 puntos o 3 %), Impreciso (hasta 0,6 puntos o 10 %), Falso (más), Engañoso (la tendencia
     afirmada contradice el dato) y Sin datos suficientes (no hay serie fresca o la afirmación no es
     comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
@@ -248,6 +268,16 @@ en:
   jump_to: Jump to
   more_contrasts_in: More contrasts in
   what_differs: What differs
+  in_plain: In plain words
+  plain_truth: "What the data say"
+  plain_truth_ok: "got it right:"
+  plain_truth_wrong: "gave another figure:"
+  plain_differ: "{noun}: outlets give from {low} to {high}."
+  plain_mode: "Most repeated figure: {v} ({n} outlets)."
+  plain_latest: "Latest published: {v} ({o}, {h})."
+  plain_agree: "{noun}: {v}, the same figure in {n} outlets."
+  plain_blame: They disagree on whom they point at.
+  plain_note: Same method for every outlet. A different figure may be an updated toll; a verdict needs an official figure.
   nothing_differs: Nothing to flag
   nothing_differs_text: "All {n} outlets report the same figures and names, and there are no claims to check against official data. If that changes, the story comes back to the front page."
   does_not_mention: does not mention
@@ -255,6 +285,11 @@ en:
   shared_names_note: "People, places and institutions named by most of the {n} outlets (how many name each):"
   see_all: See all
   which_outlets: see which outlets
+  official_figure: Official figure
+  vs_said: versus
+  compared_in: "This story is compared across {n} outlets: see the comparison"
+  what_we_checked: What we checked
+  pending_check: Pending check
   cited_data: Cited data
   cited_data_note: Short excerpts from the outlet with a figure or a verifiable claim, quoted with a link to the source. We never reproduce the full text.
   changes_detected: Changes detected
@@ -267,6 +302,8 @@ en:
   after: After
   capture_record: Capture record
   machine_translation: AI machine translation of the original
+  abroad_title: How other countries tell it
+  abroad_note: Outlets from other countries covering the same story, linked by their headline. They are not part of the figure comparison.
   source: Source
   captured_at: Captured
   fingerprint: Text fingerprint
@@ -424,7 +461,10 @@ en:
     and the loaded words each outlet uses. We only compare figures about the same fact: the headline figure
     counts, and two figures more than three times apart are different facts unless both are attributed
     ("according to…"). 4) We extract only explicit numeric claims about official indicators
-    and compare them with the latest Eurostat, INE or World Bank series. 5) Verdicts: True (up to 0.2 points or
+    and compare them with the Eurostat, INE or World Bank series for the period the sentence cites. To find
+    more, an AI reads sentences with figures and proposes indicator, territory and period; our rules check that
+    the sentence and figure are in the text and that territory and period fit, or it is not judged. The verdict
+    is always given by code against the official data, never by the AI. 5) Verdicts: True (up to 0.2 points or
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules
     for every outlet.

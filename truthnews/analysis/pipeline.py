@@ -9,7 +9,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.analysis.claims import extract
+from truthnews.analysis.claims import ClaimCandidate, check_proposal, extract
 from truthnews.analysis.cluster import (
     DEFAULT_THRESHOLD,
     Doc,
@@ -149,6 +149,51 @@ def _store(ver: Verification, result: Result) -> None:
         )
 
 
+def save_claim(
+    session: Session, a: Article, cand: ClaimCandidate, verifier: Verifier, extractor: str = "reglas"
+) -> str | None:
+    """Guarda y juzga una afirmacion nueva del articulo; None si ya estaba (misma cifra e indicador)."""
+    exists = session.scalars(
+        select(Claim).where(
+            Claim.article_id == a.id, Claim.indicator == cand.indicator, Claim.value == cand.value
+        )
+    ).first()
+    if exists:
+        return None
+    claim = Claim(
+        article_id=a.id,
+        story_id=a.story_id,
+        outlet_id=a.outlet_id,
+        text=cand.text,
+        indicator=cand.indicator,
+        geo=cand.geo,
+        value=cand.value,
+        unit=cand.unit,
+        direction=cand.direction,
+        extractor=extractor,
+        period=cand.period,
+    )
+    session.add(claim)
+    session.flush()
+    result = verifier.judge(cand)
+    ver = Verification(claim_id=claim.id)
+    _store(ver, result)
+    session.add(ver)
+    # Datos nuevos sobre una historia antigua: vuelve a portada (ADR 0012).
+    story = session.get(Story, a.story_id) if a.story_id else None
+    if (
+        story is not None
+        and result.verdict != "sin-datos"
+        and _aware(story.first_seen) < utcnow() - RELAUNCH_AGE
+    ):
+        story.relaunched_at = utcnow()
+    return result.verdict
+
+
+def article_text(a: Article) -> str:
+    return f"{a.title}. {a.summary or ''}\n{a.content_text or ''}"
+
+
 def verify_claims(session: Session, since: datetime, verifier: Verifier | None = None) -> dict:
     """Extrae y verifica afirmaciones de los articulos ingeridos desde `since`."""
     verifier = verifier or Verifier()
@@ -156,43 +201,13 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     n_claims = 0
     verdicts: Counter = Counter()
     for a in arts:
-        text = f"{a.title}. {a.summary or ''}\n{a.content_text or ''}"
         pub = _aware(a.published_at)
-        for cand in extract(text, a.language, a.country, pub.year, pub.month):
-            exists = session.scalars(
-                select(Claim).where(
-                    Claim.article_id == a.id, Claim.indicator == cand.indicator, Claim.value == cand.value
-                )
-            ).first()
-            if exists:
+        for cand in extract(article_text(a), a.language, a.country, pub.year, pub.month):
+            verdict = save_claim(session, a, cand, verifier)
+            if verdict is None:
                 continue
-            claim = Claim(
-                article_id=a.id,
-                story_id=a.story_id,
-                outlet_id=a.outlet_id,
-                text=cand.text,
-                indicator=cand.indicator,
-                geo=cand.geo,
-                value=cand.value,
-                unit=cand.unit,
-                direction=cand.direction,
-            )
-            session.add(claim)
-            session.flush()
-            result = verifier.judge(cand)
-            ver = Verification(claim_id=claim.id)
-            _store(ver, result)
-            session.add(ver)
-            # Datos nuevos sobre una historia antigua: vuelve a portada (ADR 0012).
-            story = session.get(Story, a.story_id) if a.story_id else None
-            if (
-                story is not None
-                and result.verdict != "sin-datos"
-                and _aware(story.first_seen) < utcnow() - RELAUNCH_AGE
-            ):
-                story.relaunched_at = utcnow()
             n_claims += 1
-            verdicts[result.verdict] += 1
+            verdicts[verdict] += 1
     session.flush()
     return {"claims": n_claims, "verdicts": dict(verdicts)}
 
@@ -215,11 +230,27 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
         a = c.article
         pub = _aware(a.published_at)
         before = ver.verdict
-        current = [
-            k
-            for k in extract(c.text, a.language, a.country, pub.year, pub.month)
-            if k.indicator == c.indicator and k.value == c.value
-        ]
+        if c.extractor == "ia":
+            # Sin volver a llamar a la IA: los campos guardados pasan otra vez por las reglas vigentes.
+            k = check_proposal(
+                c.text,
+                article_text(a),
+                c.indicator,
+                c.geo,
+                c.value,
+                c.period,
+                c.direction,
+                a.country,
+                pub.year,
+                pub.month,
+            )
+            current = [k] if isinstance(k, ClaimCandidate) else []
+        else:
+            current = [
+                k
+                for k in extract(c.text, a.language, a.country, pub.year, pub.month)
+                if k.indicator == c.indicator and k.value == c.value
+            ]
         if not current:
             _store(
                 ver,
@@ -232,7 +263,7 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
                 ),
             )
         else:
-            c.geo = current[0].geo
+            c.geo, c.period = current[0].geo, current[0].period
             _store(ver, verifier.judge(current[0]))
         if before != ver.verdict:
             # Transparencia: la correccion queda escrita en el propio veredicto publicado.
