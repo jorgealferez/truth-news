@@ -255,3 +255,128 @@ def extract(
 def indicator_name(key: str, lang: str = "es") -> str:
     ind = indicators().get(key, {})
     return ind.get("name", {}).get(lang) or ind.get("name", {}).get("es", key)
+
+
+# --- Propuestas de la IA (ADR 0019): la IA propone, estas reglas deciden si es atribuible -------------
+_FORECAST = re.compile(
+    r"\b(previsto|prevision|previsiones|preve|preven|avanzara|crecera|subira|bajara|se situara|estima"
+    r"|estimacion|proyecta|podria|podra|objetivo de|forecast|expected|will|projected|previsao)\b"
+)
+_ANY_NUM = re.compile(r"\d+(?:[.,]\d+)*")
+_PERIOD = re.compile(r"^(\d{4})(?:-(0[1-9]|1[0-2])|-Q([1-4]))?$")
+
+
+def indicator_keys() -> list[str]:
+    return [k for k in indicators() if k not in ("geo_names", "eu_geos", "foreign_markers")]
+
+
+def _number_positions(sn: str, unit: str, value: float) -> list[int]:
+    """Posiciones en la frase normalizada donde aparece la cifra propuesta con su unidad."""
+    out = []
+    if unit == "pct":
+        for m in re.finditer(_PCT, sn):
+            if abs(_number(m.group("num")) - value) < 1e-9:
+                out.append(m.start())
+        return out
+    for m in _ABS.finditer(sn):
+        if abs(_number(m.group(1)) * 1_000_000 - value) < 0.5:
+            out.append(m.start())
+    for m in _ANY_NUM.finditer(sn):  # cifra completa: "48.619.695 habitantes"
+        raw = m.group(0)
+        if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", raw) and abs(float(re.sub(r"[.,]", "", raw)) - value) < 0.5:
+            out.append(m.start())
+    return out
+
+
+def _named_positions(sn: str) -> dict[str, list[int]]:
+    found: dict[str, list[int]] = {}
+    for iso, names in indicators()["geo_names"].items():
+        for n in names:
+            for m in re.finditer(r"(?<!\w)" + re.escape(normalize(n)) + r"(?!\w)", sn):
+                found.setdefault(iso, []).append(m.start())
+    return found
+
+
+def check_proposal(
+    sentence: str,
+    article_text: str,
+    indicator: str,
+    geo: str,
+    value: float,
+    period: str | None,
+    direction: str | None,
+    default_geo: str,
+    published_year: int,
+    published_month: int = 12,
+) -> ClaimCandidate | str:
+    """Valida una afirmacion propuesta por la IA. Devuelve el candidato o el motivo del rechazo.
+
+    Mejor callar que acusar: se rechaza todo lo que no se pueda atribuir con reglas deterministas.
+    """
+    sentence = sentence.strip()
+    if sentence not in sentences(article_text):
+        return "la frase no esta literalmente en el articulo"
+    if indicator not in indicator_keys():
+        return "indicador desconocido"
+    ind = indicators()[indicator]
+    sn = normalize(sentence)
+    pats = {normalize(p) for ps in ind["patterns"].values() for p in ps}
+    if not any(_word_in(p, sn) for p in pats):
+        return "la frase no nombra el indicador"
+    requires = ind.get("requires", [])
+    if requires and not any(_word_in(normalize(r), sn) for r in requires):
+        return "falta el contexto que exige el indicador"
+    if _SUBGROUP.search(sn):
+        return "dato de un colectivo: no hay serie general con la que compararlo"
+    if _CHANGE.search(sn):
+        return "variacion en puntos: no es un nivel"
+    if _FORECAST.search(sn):
+        return "prevision o condicional"
+    if any(_word_in(r, sn) for r in _region_names()):
+        return "dato regional: no hay serie nacional con la que compararlo"
+    positions = _number_positions(sn, ind["unit"], value)
+    if not positions:
+        return "la cifra no aparece en la frase con su unidad"
+    # Periodo: el que fijan las reglas manda; un ano suelto solo si esta escrito en la frase.
+    ruled = period_of(sn, published_year, published_month)
+    if period in ("", None):
+        period = None
+    elif not _PERIOD.match(period):
+        return "periodo con formato invalido"
+    if ruled and period not in (None, ruled):
+        return "el periodo no cuadra con la frase"
+    period = ruled or period
+    if not ruled and period and (len(period) != 4 or period not in sn):
+        return "periodo no escrito en la frase"
+    years = {int(y) for y in _YEAR.findall(sn)}
+    if not period and (any(y < published_year - 1 for y in years) or _NOT_CURRENT.search(sn)):
+        return "habla del pasado sin periodo comprobable"
+    # Territorio: nombrado en la frase (el mas cercano a la cifra si hay varios) o el del medio.
+    named = _named_positions(sn)
+    others = {
+        iso
+        for iso, names in world_countries().items()
+        if iso not in named and any(_word_in(n, sn) for n in names)
+    }
+    if others:
+        return "nombra un territorio sin serie oficial registrada"
+    if geo not in indicators()["geo_names"]:
+        return "territorio desconocido"
+    if len(named) > 1:
+        dist = {iso: min(abs(p - q) for p in ps for q in positions) for iso, ps in named.items()}
+        best = sorted(dist.items(), key=lambda kv: kv[1])
+        if geo != best[0][0] or best[0][1] == best[1][1]:
+            return "varios territorios: la cifra no es inequivocamente del propuesto"
+    elif named:
+        if geo not in named:
+            return "el territorio no es el nombrado en la frase"
+    else:
+        if ind.get("requires_explicit_geo") or geo != default_geo:
+            return "territorio no nombrado en la frase"
+        if any(_word_in(normalize(m), sn) for m in indicators()["foreign_markers"]):
+            return "habla de otro pais sin nombrarlo"
+    if not ind.get("directional", True) or direction not in ("sube", "baja"):
+        direction = None
+    elif not (_UP if direction == "sube" else _DOWN).search(sn):
+        direction = None  # el sentido solo cuenta si la frase lo dice con un verbo reconocible
+    return ClaimCandidate(sentence[:600], indicator, geo, value, ind["unit"], direction, period)
