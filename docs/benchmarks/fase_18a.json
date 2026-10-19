@@ -19,12 +19,13 @@
     "comando": "python tools/measure_elecciones.py 75 (2026-10-19 06:10 UTC)",
     "barrido": "65 sumarios del BOE leidos (75 dias sin domingos), 1 convocatoria: Real Decreto 806/2026 (BOE-A-2026-20742), generales el 29/11/2026, campana 13-27/11, sesion constitutiva 23/12; coincide con el texto del decreto",
     "convocatorias_conocidas": "1 en el periodo (la del RD 806/2026, comprobada a mano en el sumario del 06/10/2026); detectada",
-    "tests": "tests/test_elections.py: 11 tests con el sumario y el decreto reales como fixtures"
+    "tests": "tests/test_elections.py: 11 tests con el sumario y el decreto reales como fixtures",
+    "produccion": "2026-10-19 08:42 UTC, https://nosmienten.com: /elecciones 200 (0,66 s) con 10 elecciones (generales de Espana primero; Bulgaria, Brasil, Serbia, Israel, EE. UU., Nueva Zelanda, Suiza y Haiti x2 desde IFES); /elecciones/es-generales-2026-11-29 200 (0,77 s) con la cita BOE-A-2026-20742, 'faltan 41 dias' y 'Que dicen los partidos'; la cabecera de la portada enlaza 'Elecciones 29/11'"
   },
   "criterios_de_salida": {
     "C15": "en curso: 18a hecho (calendario oficial y seccion temporal); faltan programas, promesas, cumplimiento y contradicciones (18b-18e)"
   },
   "no_verificable": [
-    "Deteccion por medios en produccion: se mide tras el despliegue con la base real"
+    "Deteccion por medios y JEC en produccion (la JEC se lee entre las 20:00 y las 06:59 UTC); primer ciclo del paso 'programas' del worker; candidaturas del 29-N (BOE desde el 28/10/2026)"
   ]
 }
