@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable
-from datetime import datetime
+from datetime import UTC, datetime
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select
 from sqlalchemy.orm import Session
 
 from truthnews.entities.extract import Found, extract, known, speaker_of
@@ -18,6 +18,9 @@ from truthnews.models import Article, Claim, Entity, Mention, utcnow
 
 log = logging.getLogger(__name__)
 BATCH = 2000
+# Cuando cambian las reglas del extractor se sube esta fecha: lo extraido antes se vuelve a procesar
+# por tandas, de lo mas reciente a lo mas antiguo, sin migracion (ADR 0028).
+EXTRACTOR_SINCE = datetime(2026, 10, 19, 3, 20, tzinfo=UTC)
 _CHUNK = 500
 
 
@@ -71,7 +74,10 @@ def process(session: Session, limit: int = BATCH, now: datetime | None = None) -
     now = now or utcnow()
     arts = list(
         session.scalars(
-            select(Article).where(Article.entities_at.is_(None)).order_by(Article.id.desc()).limit(limit)
+            select(Article)
+            .where(or_(Article.entities_at.is_(None), Article.entities_at < EXTRACTOR_SINCE))
+            .order_by(Article.id.desc())
+            .limit(limit)
         )
     )
     if not arts:
@@ -81,8 +87,11 @@ def process(session: Session, limit: int = BATCH, now: datetime | None = None) -
     extracted = {a.id: extract(a.title, f"{a.summary or ''}\n{a.content_text or ''}") for a in arts}
     entities = _entities_for(session, (f for fs in extracted.values() for f in fs), now)
     ids = [a.id for a in arts]
+    stale: set[int] = set()  # entidades que pierden menciones al reprocesar: sus cifras se recalculan
     for i in range(0, len(ids), _CHUNK):
-        session.execute(delete(Mention).where(Mention.article_id.in_(ids[i : i + _CHUNK])))
+        chunk = ids[i : i + _CHUNK]
+        stale.update(session.scalars(select(Mention.entity_id).where(Mention.article_id.in_(chunk))))
+        session.execute(delete(Mention).where(Mention.article_id.in_(chunk)))
     n_mentions = 0
     for a in arts:
         for f in extracted[a.id]:
@@ -102,7 +111,7 @@ def process(session: Session, limit: int = BATCH, now: datetime | None = None) -
         a.entities_at = now
     session.flush()
     speakers = attribute_claims(session, ids, entities)
-    refresh_counts(session, [e.id for e in entities.values()], now)
+    refresh_counts(session, sorted({e.id for e in entities.values()} | stale), now)
     out = {
         "articles": len(arts),
         "mentions": n_mentions,
