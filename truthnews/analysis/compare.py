@@ -281,8 +281,13 @@ def figures(text: str) -> list[tuple[str, float, str, str]]:
         frag = tn[max(0, m.start() - 30) : m.end() + 10].strip()
         noun = _COUNTABLE[m.group(4)]
         if noun == "personas":
-            around = f"{tn[max(0, m.start() - 20) : m.start()]} | {tn[m.end() : m.end() + 25]}"
-            noun = next((n for n, rx in _PERSONAS_CONTEXT if rx.search(around)), None)
+            # Solo la frase de la cifra, y primero lo que la sigue: en "cuatro muertos. Otras 39 personas
+            # resultaron heridas" los 39 son heridos, no muertos.
+            before = re.split(r"[.;:!?]\s", tn[max(0, m.start() - 20) : m.start()])[-1]
+            after = re.split(r"[.;:!?](?:\s|$)", tn[m.end() : m.end() + 25])[0]
+            noun = next(
+                (n for part in (after, before) for n, rx in _PERSONAS_CONTEXT if rx.search(part)), None
+            )
             if noun is None:
                 continue
         out.append((noun, value, (m.group(1) or "").strip(), frag))

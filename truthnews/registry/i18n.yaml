@@ -21,6 +21,16 @@ es:
   plain_agree: "{noun}: {v}, la misma cifra en {n} medios."
   plain_blame: No coinciden en a quién señalan.
   plain_note: Calculado con el mismo método para todos los medios. Una cifra distinta puede ser un balance actualizado; un veredicto exige un dato oficial.
+  fc_title: Quién cambió su cifra
+  fc_announced: avisado
+  fc_silent: en silencio
+  fc_field_title: titular
+  fc_field_summary: extracto
+  fc_see: ver antes y después
+  fc_before: Antes
+  fc_after: Después
+  fc_note: "Cambios de una cifra entre dos capturas del mismo artículo. «Avisado» si el texto nuevo lo dice (actualiza, eleva a, rectifica…); «en silencio» si no. Actualizar un balance no es un error; no avisarlo dificulta saber qué cifra era cierta y cuándo. Los directos no cuentan."
+  fc_rank: "cifras cambiadas en silencio: {s} de {n}"
   rank_title: Quién acierta con los datos
   rank_note: "Proporción de afirmaciones de cada medio que resultan verdaderas al compararlas con el dato oficial. Ordenado por el límite inferior del intervalo de confianza del 95 %: pocas comprobaciones no bastan para encabezar. Mínimo {n} comprobaciones para entrar."
   rank_empty: "Aún ningún medio tiene {n} afirmaciones comprobadas: el ranking se llenará a medida que verifiquemos."
@@ -465,6 +475,16 @@ en:
   plain_agree: "{noun}: {v}, the same figure in {n} outlets."
   plain_blame: They disagree on whom they point at.
   plain_note: Same method for every outlet. A different figure may be an updated toll; a verdict needs an official figure.
+  fc_title: Who changed their figure
+  fc_announced: announced
+  fc_silent: silently
+  fc_field_title: headline
+  fc_field_summary: excerpt
+  fc_see: see before and after
+  fc_before: Before
+  fc_after: After
+  fc_note: "A figure changed between two captures of the same article. «Announced» if the new text says so (updates, raises to, corrects…); «silently» if not. Updating a toll is not an error; not saying so makes it hard to know which figure was right and when. Live coverage does not count."
+  fc_rank: "figures changed silently: {s} of {n}"
   rank_title: Who gets the data right
   rank_note: "Share of each outlet's claims found true against the official figure. Sorted by the lower bound of the 95% confidence interval: a handful of checks is not enough to top the list. At least {n} checks to enter."
   rank_empty: "No outlet has {n} checked claims yet: the ranking fills up as we verify."

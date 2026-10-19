@@ -15,6 +15,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - Un item se marca `[x]` solo con su pull request mergeado (o su entregable verificado).
 - `
 - [ ] Quien cambio su cifra (encargo de la direccion 2026-10-19): cruzar las revisiones de titular y extracto (ADR 0015) con las cifras (ADR 0016): que medio corrige un balance, cuando, y si lo avisa en el texto o lo cambia en silencio; mostrarlo en la historia, en la ficha del medio y junto al ranking con muestra minima. Carril: Comparativas — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19)
+  - [ ] Modulo `figure_changes` (ADR 0032): cambios de cifra entre capturas, avisados o en silencio, directos fuera; historia, ficha del medio y senal junto al ranking; arreglo de lectura ('39 personas resultaron heridas' ya no son muertos). Produccion: 49 revisiones, 1 cambio real (BBC Mundo 1.800 -> 2.400 detenidos, en silencio), 0 falsos
 - [ ] Afirmaciones que se repiten (encargo de la direccion 2026-10-19, como Full Fact): la misma cifra o frase en varios medios y dias, enlazada con su veredicto cuando lo haya. Carril: Comparativas
 
 ## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el

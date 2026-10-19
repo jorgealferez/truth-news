@@ -76,7 +76,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0029 | diseno | en main | Comparativas / Verificaciones (consulta puntual de interes publico) |
 | ADR 0030 | diseno | en main | Entidades (archivo desde los ficheros GKG de GDELT) |
 | ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
-| ADR 0032 + migracion 0017 | datos | reservado | Comparativas (quien cambio su cifra, solo si necesita esquema) |
+| ADR 0032 | diseno | PR (este) | Comparativas (quien cambio su cifra; sin migracion: la 0017 pasa a Redes) |
 | ADR 0033 + migracion 0018 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | siguiente libre | — | — | ADR 0034 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
 

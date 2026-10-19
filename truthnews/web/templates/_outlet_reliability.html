@@ -9,6 +9,7 @@
   {% else %}<p class="meta">{{ t(lang, 'rel_none') }}</p>{% endif %}
   {% if checks %}<details class="who-more"><summary>{{ t(lang, 'rel_history') }} ({{ checks|length }})</summary>
     <ul class="who-omits">{% for c in checks %}{% set v = c.verification %}<li><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> «{{ c.text }}» <span class="meta">{{ v.checked_at.strftime('%d/%m/%Y') }}{% for e in v.evidence[:1] %} · <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} {{ e.period or '' }}</a>{% endfor %}</span></li>{% endfor %}</ul></details>{% endif %}
+  {% if fig_changes %}{% include "_figure_changes.html" %}{% endif %}
   {% if blind and blind.big %}<div class="blind">
     <p class="card-k">{{ t(lang, 'blind_title') }}</p>
     <p>{{ t(lang, 'blind_share')|replace('{p}', blind.covered_share|string)|replace('{n}', blind.big|string) }}</p>
