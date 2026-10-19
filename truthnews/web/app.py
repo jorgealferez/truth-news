@@ -22,6 +22,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from truthnews import registry
+from truthnews.ai import translate
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
@@ -387,6 +388,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
             spread=spread(arts),
+            tr=translate.titles(session, [a.id for a in arts], lang_of(request)),
         )
 
     @app.get("/hilo/{ref}", response_class=HTMLResponse)

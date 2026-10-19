@@ -29,6 +29,7 @@ es:
   before: Antes
   after: Después
   capture_record: Ficha de captura
+  machine_translation: traducción automática con IA del original
   source: Fuente
   captured_at: Capturada
   fingerprint: Huella del texto
@@ -223,6 +224,7 @@ en:
   before: Before
   after: After
   capture_record: Capture record
+  machine_translation: AI machine translation of the original
   source: Source
   captured_at: Captured
   fingerprint: Text fingerprint

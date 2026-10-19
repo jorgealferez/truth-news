@@ -139,6 +139,22 @@ class ArticleRevision(Base):
     article: Mapped[Article] = relationship(back_populates="revisions")
 
 
+class ArticleTranslation(Base):
+    """Titular traducido con IA a un idioma de la interfaz; el original no se toca (ADR 0017)."""
+
+    __tablename__ = "article_translation"
+    __table_args__ = (UniqueConstraint("article_id", "lang", name="uq_article_translation_article_lang"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey("article.id", ondelete="CASCADE", name="fk_article_translation_article_id")
+    )
+    lang: Mapped[str] = mapped_column(String(8))
+    title: Mapped[str] = mapped_column(String(600))
+    model: Mapped[str] = mapped_column(String(80))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class CrawlRun(Base):
     __tablename__ = "crawl_run"
 
