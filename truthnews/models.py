@@ -556,3 +556,42 @@ class Mention(Base):
 
     entity: Mapped[Entity] = relationship()
     article: Mapped[Article] = relationship()
+
+
+class StatementCheck(Base):
+    """Afirmacion comprobable de una declaracion de partido, juzgada con el juez de siempre (ADR 0030)."""
+
+    __tablename__ = "statement_check"
+    __table_args__ = (
+        CheckConstraint(f"verdict IN {VERDICTS!r}", name="ck_statement_check_verdict"),
+        UniqueConstraint("statement_id", "indicator", "geo", "value", name="uq_statement_check_claim"),
+        Index("ix_statement_check_speaker", "speaker_entity_id"),
+        Index("ix_statement_check_method", "method"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    statement_id: Mapped[int] = mapped_column(
+        ForeignKey("political_statement.id", ondelete="CASCADE", name="fk_statement_check_statement_id")
+    )
+    speaker_entity_id: Mapped[int | None] = mapped_column(
+        ForeignKey("entity.id", ondelete="SET NULL", name="fk_statement_check_speaker_entity_id"),
+        nullable=True,
+    )
+    text: Mapped[str] = mapped_column(Text)
+    indicator: Mapped[str] = mapped_column(String(60))
+    geo: Mapped[str] = mapped_column(String(8))
+    value: Mapped[float] = mapped_column(Float)
+    unit: Mapped[str] = mapped_column(String(16))
+    direction: Mapped[str | None] = mapped_column(String(8), nullable=True)
+    period: Mapped[str | None] = mapped_column(String(20), nullable=True)
+    extractor: Mapped[str] = mapped_column(String(8), default="reglas", server_default="reglas")
+    verdict: Mapped[str] = mapped_column(String(16))
+    confidence: Mapped[float] = mapped_column(Float)
+    explanation: Mapped[str] = mapped_column(Text)
+    method: Mapped[str] = mapped_column(String(40))
+    evidence: Mapped[list] = mapped_column(JSON, default=list)  # [{source, label, url, period, value}]
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    statement: Mapped[PoliticalStatement] = relationship()
+    speaker: Mapped[Entity | None] = relationship()
+

@@ -15,6 +15,7 @@ from truthnews.ai import claims as ai_claims
 from truthnews.ai import threads
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.pipeline import run as ai_step
+from truthnews.analysis import statement_checks
 from truthnews.analysis.pipeline import run as analyze
 from truthnews.analysis.score import score_stories
 from truthnews.config import Settings, get_settings
@@ -99,6 +100,8 @@ def _run_cycle(settings: Settings) -> dict:
             log.exception("declaraciones politicas: el paso fallo")
             session.rollback()
             summary["political"] = {"error": str(exc)[:300]}
+    # Lo que dicen los partidos en sus canales, juzgado con el mismo juez que las noticias (ADR 0030).
+    summary["statement_checks"] = _guarded(engine, "declaraciones juzgadas", statement_checks.run)
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
         with session_scope(engine) as session:
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)

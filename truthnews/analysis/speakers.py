@@ -3,8 +3,9 @@
 Mismo metodo que la fiabilidad por medio (ADR 0023, `truthnews.analysis.reliability`): exactitud =
 afirmaciones verdaderas sobre comprobadas, orden por el limite inferior de Wilson al 95 % y minimo de
 MIN_CHECKS comprobaciones para entrar. Cuentan las afirmaciones que el texto atribuye a quien habla
-(`claim.speaker_entity_id`, ADR 0028) y que el juez de siempre (`verify.py`) ha comprobado. No se deduce
-la afiliacion de nadie: un partido suma solo lo que se atribuye al partido.
+(`claim.speaker_entity_id`, ADR 0028) y que el juez de siempre (`verify.py`) ha comprobado, mas las
+afirmaciones de sus propias declaraciones en canales oficiales verificados (`statement_check`, ADR 0030).
+No se deduce la afiliacion de nadie: un partido suma solo lo que se atribuye al partido.
 """
 
 from __future__ import annotations
@@ -16,7 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
 from truthnews.analysis.reliability import Record
-from truthnews.models import Claim, Entity, Verification
+from truthnews.models import Claim, Entity, StatementCheck, Verification
 
 KINDS = ("partido", "persona")
 
@@ -27,22 +28,33 @@ class SpeakerRecord(Record):
 
     entity: Entity | None = None
     counts: Counter = field(default_factory=Counter)
+    own: int = 0  # de ellas, las que salen de sus propias declaraciones (ADR 0030)
 
 
 def records(session: Session, kind: str | None = None, entity_id: int | None = None) -> list[SpeakerRecord]:
-    """Un registro por partido o persona con al menos una afirmacion suya verificada."""
-    q = (
+    """Un registro por partido o persona con al menos una afirmacion suya verificada (noticias + canales)."""
+    kinds = [kind] if kind else list(KINDS)
+    news = (
         select(Entity, Verification.verdict, func.count())
         .join(Claim, Claim.speaker_entity_id == Entity.id)
         .join(Verification, Verification.claim_id == Claim.id)
-        .where(Entity.kind.in_([kind] if kind else KINDS))
+        .where(Entity.kind.in_(kinds))
         .group_by(Entity.id, Verification.verdict)
     )
+    own = (
+        select(Entity, StatementCheck.verdict, func.count())
+        .join(StatementCheck, StatementCheck.speaker_entity_id == Entity.id)
+        .where(Entity.kind.in_(kinds))
+        .group_by(Entity.id, StatementCheck.verdict)
+    )
     if entity_id is not None:
-        q = q.where(Entity.id == entity_id)
+        news, own = news.where(Entity.id == entity_id), own.where(Entity.id == entity_id)
     out: dict[int, SpeakerRecord] = {}
-    for ent, verdict, n in session.execute(q):
-        out.setdefault(ent.id, SpeakerRecord(outlet=None, entity=ent)).counts[verdict] += n
+    for q, from_channel in ((news, False), (own, True)):
+        for ent, verdict, n in session.execute(q):
+            rec = out.setdefault(ent.id, SpeakerRecord(outlet=None, entity=ent))
+            rec.counts[verdict] += n
+            rec.own += n if from_channel else 0
     return list(out.values())
 
 
