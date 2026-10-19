@@ -15,7 +15,7 @@ from truthnews.investigate import (
     seed_defaults,
 )
 from truthnews.models import Article, Investigation, Outlet, Story
-from truthnews.web.admin import csrf_token
+from truthnews.web.admin import csrf_token, text_coverage
 from truthnews.web.app import create_app
 
 
@@ -233,3 +233,15 @@ def test_public_investigation_pages(admin_client, session):
     assert page.status_code == 200 and "Disturbios en Francia" in page.text
     assert admin_client.get(f"/investigacion/{pending.id}").status_code == 404
     assert admin_client.get("/investigacion/9999").status_code == 404
+
+
+def test_admin_text_coverage_by_section_last_24h(admin_client, session):
+    _story(session, "Cumbre del clima en Belem", days_ago=0)
+    _story(session, "Huelga de transportes de la semana pasada", days_ago=3)  # fuera de las 24 h
+    recent = session.query(Article).filter(Article.title == "Cumbre del clima en Belem").all()
+    for i, a in enumerate(recent):
+        a.content_text = "Texto completo." if i == 0 else None
+    session.commit()
+    assert text_coverage(session) == [{"category": "internacional", "total": 3, "with_text": 1, "pct": 33.3}]
+    page = admin_client.get("/admin", auth=("admin", "secreto")).text
+    assert "Artículos con texto completo (últimas 24 h)" in page and "33.3" in page
