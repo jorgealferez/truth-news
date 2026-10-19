@@ -132,7 +132,9 @@ def oldest(session: Session, now: datetime, stride: timedelta = timedelta(hours=
     """Desde donde seguir: el tramo mas antiguo de la serie contigua de archivo que baja desde la primera
     noticia rastreada. Lo suelto mas atras (importado por otra via, o un salto) no cuenta: si contara, el
     recorrido saltaria años y dejaria el hueco sin importar (medido en produccion el 2026-10-19)."""
-    first = session.scalar(select(func.min(Article.published_at)).where(Article.origin == "rss"))
+    # El ancla es cuando empezamos a rastrear (fetched_at), no la fecha que dan los medios: un feed con
+    # entradas viejas o una fecha rota llevaba el ancla antes de 2015 y el archivo se paraba (2026-10-19).
+    first = session.scalar(select(func.min(Article.fetched_at)).where(Article.origin == "rss"))
     cur = floor_slot(min(_aware(first), now) if first else now)
     gap = max(3 * stride, timedelta(days=2))  # unos pocos tramos vacios seguidos no cortan la serie
     for (when,) in session.execute(
@@ -218,6 +220,10 @@ def run(
             log.warning("archivo: tramo %s fallo: %s", f"{slot:%Y-%m-%d %H:%M}", exc)
             break
         slot -= stride
+    if not done and not hosts:
+        log.info("archivo: no hay medios activos de %s", ",".join(countries or []))
+    elif not done and slot < FLOOR:
+        log.info("archivo: llegado al primer fichero GKG (%s)", f"{FLOOR:%Y-%m-%d}")
     out = {"slots": len(done), "new": sum(d["new"] for d in done), "detail": done}
     log.info("archivo: %s tramos, %s noticias nuevas", out["slots"], out["new"])
     return out

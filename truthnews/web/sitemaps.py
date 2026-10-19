@@ -51,6 +51,7 @@ FIXED = (
     ("/medios", "daily", 0.7),
     ("/investigaciones", "daily", 0.6),
     ("/nombramientos", "daily", 0.6),
+    ("/consejo-de-ministros", "daily", 0.6),
     ("/presupuestos", "monthly", 0.4),
     ("/metodologia", "monthly", 0.4),
     ("/acerca", "yearly", 0.3),

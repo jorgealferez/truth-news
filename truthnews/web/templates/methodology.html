@@ -2,7 +2,7 @@
 {% block title %}{{ t(lang, 'methodology') }} — {{ site.site_name }}{% endblock %}
 {% block content %}
 <article class="story"><h1>{{ t(lang, 'methodology') }}</h1><p>{{ t(lang, 'methodology_text') }}</p>
-<p>{% for k in ['verdadero', 'impreciso', 'falso', 'enganoso', 'sin-datos'] %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }}</span> {% endfor %}</p><p>{{ t(lang, 'methodology_ads') }} <a href="/publicidad">{{ t(lang, 'advertising_title') }}</a>.</p>
+<p>{% for k in ['verdadero', 'impreciso', 'falso', 'enganoso', 'sin-datos'] %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }}</span> {% endfor %}</p><p>{{ t(lang, 'methodology_rating') }}</p><p>{{ t(lang, 'methodology_ads') }} <a href="/publicidad">{{ t(lang, 'advertising_title') }}</a>.</p>
 <h2><a href="/discrepancias">{{ t(lang, 'nc_title') }}</a></h2><p>{{ t(lang, 'nc_falsehoods_note') }} {{ t(lang, 'nc_contradictions_note') }}</p>
 <h2><a href="/entidades">{{ t(lang, 'ent_title') }}</a></h2><p>{{ t(lang, 'ent_method') }}</p>
 <h2 id="elecciones"><a href="/elecciones">{{ t(lang, 'el_title') }}</a></h2><p>{{ t(lang, 'el_how') }} {{ t(lang, 'el_method_more') }}</p></article>

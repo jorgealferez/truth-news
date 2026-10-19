@@ -1,0 +1,5 @@
+{# Miga de pan visible y su BreadcrumbList (ADR 0038). items: (nombre, ruta); la ultima sin ruta es esta pagina. #}
+{% macro breadcrumbs(items) -%}
+<p class="crumbs">{% for name, path in items %}{% if not loop.first %} › {% endif %}{% if path and not loop.last %}<a href="{{ path }}">{{ name }}</a>{% elif path %}<a href="{{ path }}">{{ name }}</a>{% else %}{{ name }}{% endif %}{% endfor %}</p>
+{{ jsonld(ld.breadcrumbs(site, items, request.url.path)) }}
+{%- endmacro %}
