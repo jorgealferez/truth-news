@@ -286,6 +286,20 @@
       "unidad": "paginas",
       "direccion": "max",
       "objetivo": 0
+    },
+    {
+      "id": "paginas_ttfb_p50_mayor_600ms",
+      "descripcion": "Paginas medidas (contratos, hoy, historia con graficos, entidad, verificacion, portada) con TTFB p50 > 600 ms en produccion (20 peticiones con conexion reutilizada)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "paginas_lcp_movil_mayor_2500ms",
+      "descripcion": "Paginas medidas con LCP movil > 2,5 s (Chromium tactil, CPU 4x, 4G lenta, mediana de 3)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
     }
   ]
 }
