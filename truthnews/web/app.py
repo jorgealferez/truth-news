@@ -543,6 +543,7 @@ def create_app(
             spread=spread(arts),
             abroad=sorted(outside, key=lambda a: a.outlet.country),
             parties=statements.for_story(session, st),
+            people=entity_views.for_story(session, st.id),
             tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
             boe=boe_index.confirmations(
                 [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()

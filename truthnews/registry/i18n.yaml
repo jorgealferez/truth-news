@@ -266,6 +266,7 @@ es:
   nc_bad: Falsas o engañosas
   nc_checked: Comprobadas
   ent_title: Personas y entidades
+  ent_in_story: Quién aparece
   ent_lead: Quién aparece en las noticias, en cuántas y en qué medios; en cada ficha, su línea temporal (con noticias antiguas del archivo), con quién aparece, qué dice y qué afirmaciones suyas hemos comprobado.
   ent_filter: Filtrar por tipo
   ent_period: Periodo
@@ -665,6 +666,7 @@ en:
   nc_bad: False or misleading
   nc_checked: Checked
   ent_title: People and entities
+  ent_in_story: Who appears
   ent_lead: Who appears in the news, in how many stories and in which outlets; each profile has its timeline (with older stories from the archive), who they appear with, what they say and which of their claims we checked.
   ent_filter: Filter by type
   ent_period: Period

@@ -21,8 +21,8 @@
         <span class="nc-bar data" style="width:{{ (100 * f.official / hi) if hi else 0 }}%">{{ fig(f.official, f.unit) }}</span>
       </div>{% endif %}
       <blockquote class="quote-cite">«{{ f.text }}»</blockquote>
-      <p class="meta">{% if f.speakers %}{{ t(lang, 'nc_said_by') }}: {% for id, name in f.speakers %}<a href="/entidad/{{ id }}">{{ name }}</a>{% if not loop.last %}, {% endif %}{% endfor %} · {% endif %}{{ t(lang, 'nc_published_by') }} {{ f.outlets|length }} {{ t(lang, 'outlets')|lower }}: {{ f.outlets|join(', ') }}</p>
-      <p class="meta">{% if f.source_url %}{{ t(lang, 'evidence') }}: <a href="{{ f.source_url }}" rel="nofollow noopener" target="_blank">{{ f.source }}{% if f.period %} · {{ f.period }}{% endif %}</a> · {% endif %}{% if f.article_id %}<a href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }}</a> · {% endif %}{{ t(lang, 'nc_weight') }} {{ '%.1f'|format(f.score) }}</p>
+      <p class="meta">{% if f.speakers %}{{ t(lang, 'nc_said_by') }}: {% for id, name in f.speakers %}<a href="/entidad/{{ id }}">{{ name }}</a>{% if not loop.last %}, {% endif %}{% endfor %} · {% endif %}{{ t(lang, 'nc_published_by') }}: {{ f.outlets|join(', ') }}</p>
+      <p class="meta">{% if f.source_url %}{{ t(lang, 'evidence') }}: <a href="{{ f.source_url }}" rel="nofollow noopener" target="_blank">{{ f.source }}{% if f.period %} · {{ f.period }}{% endif %}</a> · {% endif %}{% if f.article_id %}<a href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }}</a> · {% endif %}{{ t(lang, 'nc_weight') }} {{ ('%.1f'|format(f.score))|replace('.', ',') }}</p>
     </li>
   {% endfor %}
   </ol>
