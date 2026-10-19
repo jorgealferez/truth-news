@@ -20,6 +20,7 @@ from truthnews.models import (
     Topic,
     Verification,
 )
+from truthnews.web.citations import is_live
 
 PAGE_SIZE = 30
 
@@ -335,33 +336,25 @@ def outlet_profile(session: Session, outlet_id: int, recent: int = 8) -> dict:
         )
         or 0
     )
-    n_rev = (
-        session.scalar(select(func.count(ArticleRevision.id)).where(ArticleRevision.outlet_id == outlet_id))
-        or 0
-    )
-    n_rev_articles = (
-        session.scalar(
-            select(func.count(func.distinct(ArticleRevision.article_id))).where(
-                ArticleRevision.outlet_id == outlet_id
-            )
-        )
-        or 0
-    )
-    changes = list(
+    # Cambios de los ultimos 30 dias, separando los directos (rotan el titular y no son rectificaciones).
+    revs = list(
         session.scalars(
             select(ArticleRevision)
             .options(joinedload(ArticleRevision.article))
-            .where(ArticleRevision.outlet_id == outlet_id)
+            .where(ArticleRevision.outlet_id == outlet_id, ArticleRevision.detected_at >= since)
             .order_by(ArticleRevision.detected_at.desc(), ArticleRevision.id.desc())
-            .limit(recent)
         )
     )
+    live_ids = {r.article_id for r in revs if is_live(r.before, r.after, r.article.title)}
+    edits = [r for r in revs if r.article_id not in live_ids]
     return {
         "articles": n_total,
         "articles_30d": n_30d,
-        "revisions": n_rev,
-        "revised_articles": n_rev_articles,
-        "changes": changes,
+        "revisions": len(edits),
+        "revised_articles": len({r.article_id for r in edits}),
+        "live_revisions": len(revs) - len(edits),
+        "live_articles": len(live_ids),
+        "changes": edits[:recent],
     }
 
 

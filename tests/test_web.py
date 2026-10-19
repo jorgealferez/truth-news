@@ -19,7 +19,7 @@ from truthnews.models import (
 )
 from truthnews.web import seo
 from truthnews.web.app import _ago, _dato, create_app
-from truthnews.web.citations import cited_figures, word_diff
+from truthnews.web.citations import cited_figures, is_live, word_diff
 
 
 @pytest.fixture()
@@ -149,7 +149,41 @@ def test_dato_formats_official_figures():
     assert _dato(2400.0) == "2.400" and _dato(None) == "—"
 
 
+def test_live_coverage_changes_are_counted_apart(client, session):
+    """Los directos rotan el titular: se cuentan aparte de las rectificaciones (hallazgo 2026-10-19)."""
+    a = session.query(Article).filter_by(url="https://m.es/5").one()
+    a.title = "Lula y Bolsonaro protagonizan un cara a cara hostil"
+    b = session.query(Article).filter_by(url="https://m.es/6").one()
+    for art, before, after in [
+        (a, "Debate presidencial en Brasil, en vivo | Lula y Bolsonaro se miden", a.title),
+        (b, "Los comerciantes galos, tras las protestas", "Los comerciantes franceses, tras las protestas"),
+    ]:
+        session.add(
+            ArticleRevision(
+                article_id=art.id,
+                outlet_id=art.outlet_id,
+                field="title",
+                before=before,
+                after=after,
+                before_hash="d" * 64,
+                after_hash="e" * 64,
+            )
+        )
+    session.commit()
+    outlet = client.get("/medio/medio").text
+    assert "en 1 noticias" in outlet  # solo la rectificacion
+    assert "Aparte, 1 cambios de titular en 1 coberturas en directo" in outlet
+    changed = seo.path("noticia", b.id, b.title) + "#cambios"
+    assert changed in outlet and seo.path("noticia", a.id, a.title) + "#cambios" not in outlet
+    live = client.get(seo.path("noticia", a.id, a.title)).text
+    assert "Es una cobertura en directo" in live
+
+
 def test_citation_helpers():
+    assert is_live("DIRECTO | Última hora de la dana") and is_live(None, "Debate en Brasil, en vivo | X")
+    assert is_live("Guerra en Ucrania: última hora, en directo") and not is_live(
+        "Acceso directo a la vivienda"
+    )
     assert word_diff("detiene a 2 personas", "detiene a 22 personas") == [
         ("=", "detiene a"),
         ("-", "2"),

@@ -59,3 +59,16 @@ def word_diff(before: str, after: str) -> list[tuple[str, str]]:
 def archive_url(article) -> str:
     """Copia de archivo publica mas cercana a la fecha de captura (Wayback Machine)."""
     return f"https://web.archive.org/web/{article.fetched_at:%Y%m%d%H%M%S}/{article.url}"
+
+
+# Coberturas en directo: cambian el titular varias veces por hora y no son rectificaciones.
+_LIVE = re.compile(
+    r"(?:\ben (?:vivo|directo)\b|^\s*(?:directo|última hora|ultima hora|live)\s*[|:]|"
+    r"[|:]\s*(?:directo|en directo|en vivo|live)\s*$|\bminuto a minuto\b|\blive (?:updates|blog)\b)",
+    re.IGNORECASE,
+)
+
+
+def is_live(*texts: str | None) -> bool:
+    """Si alguno de los textos (titular actual o versiones anteriores) es de una cobertura en directo."""
+    return any(t and _LIVE.search(t) for t in texts)

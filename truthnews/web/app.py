@@ -746,6 +746,7 @@ def create_app(
             cites=citations.cited_figures(a),
             claims=queries.article_claims(session, a.id),
             archive_url=citations.archive_url(a),
+            live=citations.is_live(a.title, *(x for r in a.revisions for x in (r.before, r.after))),
             boe=boe_index.confirmations([a.title, a.summary or ""], datetime.now(UTC).date()),
         )
 
