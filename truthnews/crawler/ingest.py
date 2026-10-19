@@ -287,6 +287,7 @@ async def recheck_texts(
         select(Article)
         .where(
             Article.origin == "rss",
+            Article.language == "es",  # el lector de cifras es de castellano: en portugues «dos votos» es 2
             Article.content_text.is_not(None),
             Article.category.in_(VERIFIABLE),
             Article.published_at >= now - RECHECK_WINDOW,

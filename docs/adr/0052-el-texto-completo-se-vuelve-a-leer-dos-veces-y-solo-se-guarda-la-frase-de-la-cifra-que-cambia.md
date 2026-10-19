@@ -130,6 +130,10 @@ asi que un texto rellenado tarde aun puede releerse dos veces en ciclos seguidos
 de mas en 0–10 textos por rastreo (lo que rellena hoy `backfill_texts`) y no da revisiones falsas, porque
 solo cuenta la misma frase con otra cifra. Queda para otro PR, si la medida en produccion lo pide.
 
+Solo se releen noticias en castellano (`language == "es"`). El lector de cifras (ADR 0016) es de
+castellano, y en portugues «dos votos» se lee como 2, como midio Comparativas en el fixture de disputas
+(#215).
+
 Tres limites, de la revision de Global y de la direccion (2026-10-19):
 - Los directos no se releen: su texto cambia a cada minuto y no es una correccion (#87).
 - El paso no empieza ninguna peticion pasado un minuto (`RECHECK_MAX_SECONDS`). Su duracion se publica en

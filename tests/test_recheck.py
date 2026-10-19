@@ -44,7 +44,7 @@ def _article(session, o, n, text, published, **kw) -> Article:
         title=f"Lluvias {n}",
         published_at=published,
         fetched_at=kw.pop("fetched_at", published),
-        language="es",
+        language=kw.pop("language", "es"),
         country="ES",
         category=kw.pop("category", "politica"),
         content_text=text,
@@ -136,10 +136,11 @@ def test_recheck_picks_only_what_is_due_and_stops_after_two_reads(session):
     sport = _article(session, o, 6, OLD, NOW - timedelta(hours=5), category="deportes")
     archived = _article(session, o, 7, OLD, NOW - timedelta(hours=5), origin="archivo")
     no_text = _article(session, o, 8, None, NOW - timedelta(hours=5))
+    portuguese = _article(session, o, 9, OLD, NOW - timedelta(hours=5), language="pt")
     _, hits = _run(session, {"/politica/2": OLD, "/politica/3": OLD})
     assert sorted(hits) == ["/politica/2", "/politica/3"]
     assert (first.content_checks, second.content_checks, done.content_checks) == (1, 2, 2)
-    assert all(a.content_checks == 0 for a in (fresh, old, sport, archived, no_text))
+    assert all(a.content_checks == 0 for a in (fresh, old, sport, archived, no_text, portuguese))
     _, again = _run(session, {"/politica/2": OLD, "/politica/3": OLD}, now=NOW + timedelta(hours=1))
     assert again == []  # first espera a las 24 h de publicarse; second ya tiene sus dos lecturas
     _, later = _run(session, {"/politica/1": OLD, "/politica/2": OLD}, now=NOW + timedelta(hours=21))
