@@ -452,8 +452,46 @@ es:
   speakers_no_channel: >-
     También juzgamos lo que cada partido publica en sus canales oficiales verificados. Sin canal verificado
     todavía (sus declaraciones directas no se pueden juzgar aún; sí lo que la prensa les atribuye): {names}.
+  legal_h: Legal
+  legal_notice: Aviso legal
+  legal_notice_lead: Quién presta el servicio, cómo citamos a los medios y cómo pedir una rectificación.
+  privacy: Privacidad
+  privacy_lead: Qué datos tratamos (casi ninguno), para qué y cómo ejercer tus derechos.
+  cookies: Cookies
+  cookies_lead: "Todo lo que guardamos en tu navegador: una cookie de idioma y una marca de última visita. Nada de terceros."
+  transparency: Transparencia
+  transparency_lead: Quién es el titular, quién lo financia, cómo usamos la IA y cómo corregimos.
+  legal_pending: Pendiente de que el titular lo complete
+  legal_pending_note: >-
+    Faltan datos del titular que exige la ley. Están marcados como pendientes y no los inventamos: los
+    completará el titular.
+  legal_owner: Titular
+  legal_tax_id: NIF
+  legal_address: Domicilio
+  legal_email: Correo de contacto
+  legal_registry: Inscripción registral
+  legal_site: Sitio web
 
 en:
+  legal_h: Legal
+  legal_notice: Legal notice
+  legal_notice_lead: Who provides the service, how we quote outlets and how to request a correction.
+  privacy: Privacy
+  privacy_lead: What data we process (almost none), why, and how to exercise your rights.
+  cookies: Cookies
+  cookies_lead: "Everything we store in your browser: a language cookie and a last-visit mark. Nothing from third parties."
+  transparency: Transparency
+  transparency_lead: Who owns it, who funds it, how we use AI and how we correct.
+  legal_pending: Pending, to be completed by the owner
+  legal_pending_note: >-
+    Some owner details required by law are missing. They are marked as pending and we do not make them up:
+    the owner will complete them.
+  legal_owner: Owner
+  legal_tax_id: Tax ID
+  legal_address: Address
+  legal_email: Contact email
+  legal_registry: Registry entry
+  legal_site: Website
   tagline: We compare what the media report with what the data say
   motto: No sides. Just data.
   home: Home

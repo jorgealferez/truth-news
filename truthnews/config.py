@@ -109,6 +109,15 @@ class Settings:
     admin_user: str = field(default_factory=lambda: os.environ.get("ADMIN_USER", "admin"))
     admin_password: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD", ""))
     role: str = field(default_factory=lambda: os.environ.get("TRUTHNEWS_ROLE", "web"))
+    # Datos del titular para /aviso-legal (LSSI art. 10), /privacidad (RGPD art. 13) y /transparencia
+    # (Reglamento 2024/1083 art. 6). Los aporta el titular; sin ellos las paginas lo dicen, no se inventan.
+    legal_owner: str = field(default_factory=lambda: os.environ.get("LEGAL_OWNER", ""))
+    legal_tax_id: str = field(default_factory=lambda: os.environ.get("LEGAL_TAX_ID", ""))
+    legal_address: str = field(default_factory=lambda: os.environ.get("LEGAL_ADDRESS", ""))
+    legal_email: str = field(default_factory=lambda: os.environ.get("LEGAL_EMAIL", ""))
+    legal_registry: str = field(default_factory=lambda: os.environ.get("LEGAL_REGISTRY", ""))
+    legal_ownership: str = field(default_factory=lambda: os.environ.get("LEGAL_OWNERSHIP", ""))
+    legal_state_ads: str = field(default_factory=lambda: os.environ.get("LEGAL_STATE_ADS", ""))
 
 
 def get_settings() -> Settings:

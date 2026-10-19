@@ -1,0 +1,21 @@
+<p><em>This is a translation. The Spanish version is the legally binding one.</em></p>
+<h2>Data controller</h2>
+{% include "legal/_owner.html" %}
+<p>This policy follows articles 13 and 14 of Regulation (EU) 2016/679 (GDPR) and Spanish Organic Law 3/2018 (LOPDGDD). Reading the site requires no data from you: there is no registration, newsletter, comments or visitor analytics.</p>
+<h2>What data we process, why and on what basis</h2>
+<table class="legal-table">
+  <thead><tr><th>Data</th><th>Purpose</th><th>Legal basis</th><th>Retention</th></tr></thead>
+  <tbody>
+    <tr><td>IP address, date, page requested and browser (technical server logs)</td><td>Serving pages, security and error diagnosis. Never used to profile you.</td><td>Legitimate interest in service security (art. 6(1)(f) GDPR)</td><td>The hosting provider's log retention period</td></tr>
+    <tr><td>An opaque identifier that changes every day, computed in memory from the IP and browser</td><td>Counting each ad view once and preventing fraud, without cookies or profiles. Stored nowhere.</td><td>Legitimate interest (art. 6(1)(f) GDPR)</td><td>Discarded at the end of the day</td></tr>
+    <tr><td>What you send us by email (name, address, message)</td><td>Replying and handling corrections or rights requests</td><td>Your request and, for corrections, a legal obligation (art. 6(1)(b) and (c))</td><td>As long as needed and the legal claim periods</td></tr>
+    <tr><td>Names and statements of public officials and people appearing in news already published by the media</td><td>Informing: checking published claims against public data</td><td>Freedom of information and public interest (art. 85 GDPR, art. 6(1)(e)/(f))</td><td>While the information is of public interest; you may ask for an update</td></tr>
+    <tr><td>Username and password of the internal panel</td><td>Team access to administration</td><td>Legitimate interest in security</td><td>While access lasts</td></tr>
+  </tbody>
+</table>
+<p>We make no automated decisions about you. Automated verdicts concern published claims, not readers. We do not knowingly collect data from minors.</p>
+<h2>Who else sees the data</h2>
+<p>Processors working for us under contract: the site's hosting provider (Railway, whose servers may be outside the European Economic Area, with the safeguards of Chapter V GDPR offered by the provider) and the group's own advertising service, which only receives the page topic and the daily identifier above. AI services only receive texts of public news, never reader data. We do not sell or share data.</p>
+<h2>Your rights</h2>
+<p>You may request access, rectification, erasure, objection, restriction and portability {% if site.legal_email %}by writing to <a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}at the owner's contact address{% endif %}. If you appear in a story you may also ask us to update it (art. 86 LOPDGDD) or to correct it (<a href="/aviso-legal#rectificacion">right of correction</a>). You may complain to the Spanish Data Protection Agency (<a href="https://www.aepd.es" rel="noopener">www.aepd.es</a>).</p>
+<p>What is stored in your browser is listed in the <a href="/cookies">cookie policy</a>.</p>

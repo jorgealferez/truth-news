@@ -1,0 +1,20 @@
+<h2>Responsable del tratamiento</h2>
+{% include "legal/_owner.html" %}
+<p>Esta política cumple los artículos 13 y 14 del Reglamento (UE) 2016/679 (RGPD) y la Ley Orgánica 3/2018 de protección de datos (LOPDGDD). Leer el sitio no exige darnos ningún dato: no hay registro, ni boletín, ni comentarios, ni analítica de visitas.</p>
+<h2>Qué datos tratamos, para qué y con qué base</h2>
+<table class="legal-table">
+  <thead><tr><th>Datos</th><th>Finalidad</th><th>Base jurídica</th><th>Conservación</th></tr></thead>
+  <tbody>
+    <tr><td>Dirección IP, fecha, página pedida y navegador (registros técnicos del servidor)</td><td>Servir las páginas, seguridad y diagnóstico de errores. No se usan para perfilarte.</td><td>Interés legítimo en la seguridad del servicio (art. 6.1.f RGPD)</td><td>El plazo de retención de registros del proveedor de alojamiento</td></tr>
+    <tr><td>Un identificador opaco que cambia cada día, calculado en memoria a partir de la IP y el navegador</td><td>Contar una sola vez cada anuncio visto y evitar fraude, sin cookies ni perfiles. No se guarda en ningún sitio.</td><td>Interés legítimo (art. 6.1.f RGPD)</td><td>Se descarta al terminar el día</td></tr>
+    <tr><td>Lo que nos envíes por correo (nombre, dirección, mensaje)</td><td>Responderte y atender rectificaciones o derechos</td><td>Tu solicitud y, en rectificaciones, la obligación legal (art. 6.1.b y c RGPD)</td><td>Lo necesario para atenderte y los plazos legales de reclamación</td></tr>
+    <tr><td>Nombres y declaraciones de cargos públicos y personas que aparecen en noticias ya publicadas por los medios</td><td>Informar: contrastar lo publicado con datos públicos</td><td>Libertad de información e interés público (art. 85 RGPD y art. 6.1.e/f)</td><td>Mientras la información sea de interés público; puedes pedir su actualización</td></tr>
+    <tr><td>Usuario y contraseña del panel interno</td><td>Acceso del equipo a la administración</td><td>Interés legítimo en la seguridad</td><td>Mientras dure el acceso</td></tr>
+  </tbody>
+</table>
+<p>No tomamos decisiones automatizadas sobre ti. Los veredictos que se calculan de forma automática se refieren a afirmaciones publicadas, no a los lectores. No recogemos a sabiendas datos de menores.</p>
+<h2>Quién más ve los datos</h2>
+<p>Los encargados del tratamiento que nos prestan servicio con contrato: el proveedor de alojamiento del sitio (Railway, con servidores que pueden estar fuera del Espacio Económico Europeo, con las garantías del capítulo V del RGPD que ofrece el proveedor) y el servicio de publicidad del propio grupo, que solo recibe el tema de la página y el identificador diario anterior. Los servicios de inteligencia artificial solo reciben textos de noticias públicas, nunca datos de los lectores. No vendemos ni cedemos datos.</p>
+<h2>Tus derechos</h2>
+<p>Puedes pedir acceso, rectificación, supresión, oposición, limitación y portabilidad de tus datos {% if site.legal_email %}escribiendo a <a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}a la dirección de contacto del titular{% endif %}. Si apareces en una noticia, también puedes pedir que la actualicemos (art. 86 LOPDGDD) o que se rectifique (<a href="/aviso-legal#rectificacion">derecho de rectificación</a>). Si crees que no te hemos atendido bien, puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es" rel="noopener">www.aepd.es</a>).</p>
+<p>Lo que se guarda en tu navegador está en la <a href="/cookies">política de cookies</a>.</p>

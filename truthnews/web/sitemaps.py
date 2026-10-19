@@ -54,6 +54,10 @@ FIXED = (
     ("/metodologia", "monthly", 0.4),
     ("/acerca", "yearly", 0.3),
     ("/publicidad", "yearly", 0.2),
+    ("/aviso-legal", "yearly", 0.1),
+    ("/privacidad", "yearly", 0.1),
+    ("/cookies", "yearly", 0.1),
+    ("/transparencia", "yearly", 0.2),
 )
 LISTINGS = {"/", "/contrastes", "/verificaciones", "/analisis", "/discrepancias"}
 
