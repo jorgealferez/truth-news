@@ -57,7 +57,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
     - [x] La Informacion ('eleva su expectativa de inflacion al 3,7 % en 2026') corregido y publicado con nota — #107
     - [x] Inflacion de otros paises con el IPCA: la franja que puede explicar el IPC nacional no se juzga (La Gaceta de Salamanca, Francia 3,1 % frente a 3,4 %) — metodo v8, #111, publicado con nota
     - [ ] ABC 'la tasa AROPE alcanza el 38,7 % en este colectivo' (personas con discapacidad) juzgado contra la tasa general: subgrupos fuera — metodo v9, #135 (mergeado 06:07 UTC), pendiente de comprobar la nota en produccion
-    - [ ] Deuda publica fuera de la UE contra el Banco Mundial GC.DOD.TOTL.GD.ZS (gobierno central, no administraciones publicas: diferencia de decenas de puntos en algunos paises): quitar esa fuente y re-juzgar lo publicado — metodo v10, EN CURSO (session_01JFjThAepJmvn9ndTW2bdeH, 2026-10-19)
+    - [ ] Deuda publica fuera de la UE contra el Banco Mundial GC.DOD.TOTL.GD.ZS (gobierno central, no administraciones publicas: diferencia de decenas de puntos en algunos paises): quitar esa fuente y re-juzgar lo publicado — metodo v10, PR en curso (merge en la ventana de 08:00 UTC, #143) — EN CURSO (session_01JFjThAepJmvn9ndTW2bdeH, 2026-10-19)
   - [ ] Ampliar indicadores y fuentes (medido: 472 frases con % en 2 782 articulos, solo 42 tocan el catalogo): pobreza, deficit, vivienda/alquiler, tipos, INE por comunidad y EPA
     - [x] Deficit, riesgo de pobreza y AROPE (Eurostat) — #44
     - [x] Una variacion no se juzga como nivel (metodo v4) — #57
