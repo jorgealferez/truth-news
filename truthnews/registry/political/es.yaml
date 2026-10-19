@@ -2,7 +2,8 @@
 # orden alfabetico por slug y con el mismo formato para todos (peticion del usuario 2026-10-19, ADR 0024).
 # Cada canal dice como se verifico que es oficial: `dominio` (handle de Bluesky sobre el dominio del propio
 # partido, verificado por DNS), `web` (enlazado desde la portada de su web oficial) o `wikidata` (cuenta en la
-# entidad de Wikidata cuya web oficial P856 es la del registro; el worker la consulta y la deja en su log). Medido en vivo el
+# entidad de Wikidata cuya web oficial P856 es la del registro). Medido en produccion 2026-10-19: robots.txt
+# de wikidata.org prohibe su API a este User-Agent; no se elude, asi que el worker no la consulta. Medido en vivo el
 # 2026-10-19 con el User-Agent del rastreador; una web que responde 403 es un bloqueo tecnico y no se elude.
 # Canales: web (RSS de su web), bluesky (API publica oficial), mastodon (RSS del perfil), telegram (vista
 # publica t.me/s/). YouTube queda fuera: su robots.txt prohibe /feeds/videos.xml a este User-Agent.
