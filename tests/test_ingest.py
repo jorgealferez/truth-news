@@ -1,6 +1,7 @@
 import asyncio
 from dataclasses import replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from email.utils import format_datetime
 from pathlib import Path
 
 import httpx
@@ -12,7 +13,15 @@ from truthnews.crawler.ingest import MAX_FEED_ERRORS, backfill_texts, crawl, syn
 from truthnews.models import Article, ArticleRevision, Feed, Outlet
 from truthnews.registry import FeedSpec, OutletSpec
 
-FEED = (Path(__file__).parent / "fixtures" / "feed.xml").read_bytes()
+_NOW = datetime.now(UTC)
+# Fechas del fixture relativas a ahora: el relleno de texto mira las ultimas 24 h y unas fechas fijas
+# caducaban (rojo desde el 2026-10-19 08:00 UTC). La del decreto sigue siendo la mas reciente.
+FEED = (
+    (Path(__file__).parent / "fixtures" / "feed.xml")
+    .read_bytes()
+    .replace(b"Sun, 18 Oct 2026 10:00:00 +0200", format_datetime(_NOW - timedelta(hours=2)).encode())
+    .replace(b"Sun, 18 Oct 2026 09:00:00 +0200", format_datetime(_NOW - timedelta(hours=3)).encode())
+)
 ARTICLE_HTML = (
     "<html><body><article>"
     + "<p>Texto del articulo con datos y cifras reales. </p>" * 30
