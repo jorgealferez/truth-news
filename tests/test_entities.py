@@ -11,7 +11,7 @@ from truthnews.analysis import ranking
 from truthnews.config import Settings
 from truthnews.entities import views
 from truthnews.entities.extract import entity_key, extract, fold, speaker_of
-from truthnews.entities.store import process, refresh_counts, sync_curated
+from truthnews.entities.store import process, refresh_counts
 from truthnews.models import Article, Claim, Entity, Evidence, Mention, Outlet, Story, Verification
 from truthnews.web.app import create_app
 
@@ -350,68 +350,116 @@ def test_discrepancies_use_disputed_figures(session):
     assert ranking.discrepancies(session, country="PT", now=NOW) == []
 
 
-def test_archive_imports_registered_outlets_and_moves_the_cursor(session, corpus):
+def gkg_zip(rows: list[list[str]]) -> bytes:
+    """Un fichero GKG 2.1 de prueba: 27 columnas separadas por tabuladores, dentro de un zip."""
+    import io
+    import zipfile
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        z.writestr("x.gkg.csv", "\n".join("\t".join(r) for r in rows))
+    return buf.getvalue()
+
+
+def gkg_row(when: str, domain: str, url: str, title: str | None, lang: str = "spa", collection: str = "1"):
+    row = [""] * 27
+    row[1], row[2], row[3], row[4] = when, collection, domain, url
+    row[25] = f"srclc:{lang};eng:GT-SPA 1.0" if lang else ""
+    row[26] = f"<PAGE_TITLE>{title}</PAGE_TITLE>" if title is not None else ""
+    return row
+
+
+def test_archive_imports_gkg_slots_backwards(session, corpus):
     outs, arts, st, claim = corpus
-    process(session)
-    sync_curated(session)
     calls = []
 
-    def fake(query, start, end, max_records=75, strict=False):
-        assert strict  # un fallo de GDELT no puede pasar por 'sin resultados'
-        calls.append((query, start, end))
-        return [
-            {
-                "date": end - timedelta(days=3),
-                "title": "Elena Martínez, en 2019",
-                "domain": "medio0.es",
-                "language": "Spanish",
-                "url": "https://medio0.es/2019/elena",
-            },
-            {
-                "date": end - timedelta(days=4),
-                "title": "Fuera del registro",
-                "domain": "otro.com",
-                "language": "Spanish",
-                "url": "https://otro.com/x",
-            },
-            {"date": end - timedelta(days=5), "title": "", "domain": "medio1.es", "language": "", "url": "u"},
-        ]
+    def fake(url):
+        calls.append(url)
+        stamp = url.rsplit("/", 1)[1][:14]
+        return gkg_zip(
+            [
+                gkg_row(
+                    stamp, "medio0.es", f"https://www.medio0.es/{stamp}/elena", "Elena Mart&#xED;nez, en 2019"
+                ),
+                gkg_row(stamp, "otro.com", "https://otro.com/x", "Fuera del registro"),
+                gkg_row(stamp, "medio1.es", "https://medio1.es/sin", None),
+                gkg_row(stamp, "medio2.es", "https://medio2.es/cat", "Titular en catal\u00e0", lang="cat"),
+                gkg_row(stamp, "medio2.es", "https://medio2.es/x", "No es web", collection="2"),
+                gkg_row("roto", "medio2.es", "https://medio2.es/y", "Fecha rota"),
+            ]
+        )
 
-    elena = session.scalars(select(Entity).where(Entity.key == "persona:elena martinez")).one()
-    elena.n_outlets = 3
     ticks = iter(range(1000))
-    out = archive.run(session, budget=2, now=NOW, fetch=fake, clock=lambda: next(ticks))
-    assert out["queries"] == 2 and out["new"] == 1  # el mismo enlace no se importa dos veces
-    imported = session.scalars(select(Article).where(Article.origin == "archivo")).all()
-    assert len(imported) == 1 and imported[0].outlet_id == outs[0].id and imported[0].entities_at is None
-    first_query, start, end = calls[0]
-    assert first_query == '"Elena Martínez" sourcecountry:spain' and end - start == archive.WINDOW
-    assert elena.archived_until == start
-    # La siguiente vuelta sigue hacia atras desde donde se quedo.
-    archive.import_entity(session, elena, archive.outlet_hosts(session), NOW, fake)
-    assert calls[-1][2] == start
+    out = archive.run(
+        session, slots=2, stride=timedelta(hours=6), now=NOW, fetch=fake, clock=lambda: next(ticks)
+    )
+    assert out["slots"] == 2 and out["new"] == 3  # la catalana tiene el mismo enlace en los dos tramos
+    first = archive.floor_slot(min(a.published_at for a in arts)) - timedelta(hours=6)
+    assert calls == [
+        f"{archive.BASE}/{first:%Y%m%d%H%M%S}.translation.gkg.csv.zip",
+        f"{archive.BASE}/{first - timedelta(hours=6):%Y%m%d%H%M%S}.translation.gkg.csv.zip",
+    ]
+    imported = session.scalars(select(Article).where(Article.origin == "archivo").order_by(Article.id)).all()
+    assert imported[0].title == "Elena Martínez, en 2019" and imported[0].url.startswith(
+        "https://www.medio0.es/"
+    )
+    assert {a.language for a in imported} == {"es", "ca"} and all(a.entities_at is None for a in imported)
+    # La siguiente vuelta sigue hacia atras desde lo mas antiguo importado; lo repetido no se duplica.
+    archive.run(session, slots=1, stride=timedelta(hours=6), now=NOW, fetch=fake)
+    assert calls[-1].endswith(f"{first - timedelta(hours=12):%Y%m%d%H%M%S}.translation.gkg.csv.zip")
     # Lo importado se extrae en el ciclo siguiente y entra en la linea temporal como archivo.
     process(session)
-    p = views.profile(session, elena.id)
-    assert p.archive_articles == 1
-    # Una consulta fallida no tumba el paso ni mueve el cursor.
-    before = elena.archived_until
+    elena = session.scalars(select(Entity).where(Entity.key == "persona:elena martinez")).one()
+    assert views.profile(session, elena.id).archive_articles == 3
+    # Un tramo que falla no tumba el paso ni deshace lo anterior; un tramo que no existe se salta.
+    total = session.scalar(select(func.count(Article.id)).where(Article.origin == "archivo"))
+    assert total == 4
 
-    def boom(*a, **k):
+    def boom(url):
         raise RuntimeError("gdelt caido")
 
-    assert archive.run(session, budget=1, now=NOW, fetch=boom)["queries"] == 0
-    assert session.get(Entity, elena.id).archived_until == before
+    assert archive.run(session, slots=1, now=NOW, fetch=boom)["slots"] == 0
+    missing = archive.run(session, slots=1, now=NOW, fetch=lambda url: None)
+    assert (missing["slots"], missing["new"]) == (1, 0)
+    assert session.scalar(select(func.count(Article.id)).where(Article.origin == "archivo")) == total
 
 
-def test_archive_helpers_and_floor(session):
+def test_archive_helpers(session, corpus):
+    outs, *_ = corpus
     assert archive.host("https://www.elpais.com/x") == "elpais.com" and archive.host("abc.es") == "abc.es"
-    e = Entity(key="persona:a b", kind="persona", name="A B", country="FR", aliases=[])
-    assert archive.query_for(e) == '"A B"'
-    e.archived_until = archive.FLOOR
-    session.add(e)
-    session.flush()
-    assert e not in archive.candidates(session, 10)  # llegado a 2017, no se pide mas
+    t = datetime(2025, 3, 5, 12, 44, 59, tzinfo=UTC)
+    assert archive.floor_slot(t) == datetime(2025, 3, 5, 12, 30, tzinfo=UTC)
+    hosts = archive.outlet_hosts(session, ["ES"])
+    assert (
+        set(hosts) == {"medio0.es", "medio1.es", "medio2.es"} and archive.outlet_hosts(session, ["PT"]) == {}
+    )
+    assert len(archive.file_urls(t, hosts)) == 1  # sin medios en ingles no se baja el fichero ingles
+    outs[0].language = "en"
+    assert archive.file_urls(t, hosts)[1].endswith("20250305124459.gkg.csv.zip")
+    assert archive.parse(["x"] * 3, hosts) is None
+    # Sin medios de esos paises no se pide nada; por debajo de 2015 tampoco.
+    assert archive.run(session, countries=["PT"], fetch=lambda u: 1 / 0)["slots"] == 0
+    assert archive.run(session, now=archive.FLOOR, fetch=lambda u: 1 / 0)["slots"] == 0
+
+
+def test_archive_download_handles_missing_slots():
+    import httpx
+
+    from truthnews import data
+
+    seen = []
+
+    def handler(request):
+        seen.append(str(request.url))
+        return httpx.Response(404 if "missing" in str(request.url) else 200, content=b"zip")
+
+    real = data.client
+    try:
+        archive.client = lambda: real(httpx.MockTransport(handler))
+        assert archive.download("https://data.gdeltproject.org/gdeltv2/missing.zip") is None
+        assert archive.download("https://data.gdeltproject.org/gdeltv2/ok.zip") == b"zip"
+    finally:
+        archive.client = real
 
 
 def test_archived_articles_are_not_verified_against_todays_data(session, corpus):
@@ -445,8 +493,8 @@ def test_cli_entities_and_archive(monkeypatch, db_url, capsys):
     from truthnews import cli
 
     monkeypatch.setenv("DATABASE_URL", db_url)
-    monkeypatch.setattr(archive.gdelt, "articles", lambda *a, **k: [])
+    monkeypatch.setattr(archive, "download", lambda url: None)
     assert cli.main(["entities", "--limit", "10"]) == 0
     assert '"articles": 0' in capsys.readouterr().out
-    assert cli.main(["archive", "--queries", "1"]) == 0
-    assert '"queries"' in capsys.readouterr().out
+    assert cli.main(["archive", "--slots", "1", "--countries", ""]) == 0
+    assert '"slots"' in capsys.readouterr().out
