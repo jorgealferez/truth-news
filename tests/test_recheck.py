@@ -56,7 +56,7 @@ def _article(session, o, n, text, published, **kw) -> Article:
     return a
 
 
-def _run(session, bodies: dict[str, str], now=NOW, limit=10, status=200):
+def _run(session, bodies: dict[str, str], now=NOW, limit=10, status=200, max_seconds=60.0):
     hits = []
 
     def handler(request):
@@ -70,7 +70,7 @@ def _run(session, bodies: dict[str, str], now=NOW, limit=10, status=200):
 
     async def go():
         async with PoliteClient("ua", 0, transport=httpx.MockTransport(handler)) as client:
-            return await recheck_texts(session, client, limit, now=now, run_id=None)
+            return await recheck_texts(session, client, limit, now=now, run_id=None, max_seconds=max_seconds)
 
     return asyncio.run(go()), [h for h in hits if h != "/robots.txt"]
 
@@ -102,7 +102,13 @@ def test_recheck_stores_a_content_revision_when_a_figure_changes(session):
             "/politica/3": OLD,
         },
     )
-    assert out == {"rechecked": 3, "changed": 2, "revisions": 1}
+    assert {k: out[k] for k in ("rechecked", "changed", "revisions", "refused")} == {
+        "rechecked": 3,
+        "changed": 2,
+        "revisions": 1,
+        "refused": {},
+    }
+    assert out["seconds"] < 60
     rev = session.scalars(select(ArticleRevision)).one()
     assert rev.article_id == changed.id and rev.field == "content"
     assert "12 los muertos" in rev.before and "15 los muertos" in rev.after
@@ -137,6 +143,18 @@ def test_recheck_picks_only_what_is_due_and_stops_after_two_reads(session):
 def test_recheck_gives_up_on_a_failing_domain_and_counts_the_attempt(session):
     o = _outlet(session)
     arts = [_article(session, o, n, OLD, NOW - timedelta(hours=5)) for n in range(1, 5)]
-    out, hits = _run(session, {f"/politica/{n}": NEW for n in range(1, 5)}, status=503)
-    assert out == {"rechecked": 0, "changed": 0, "revisions": 0} and len(hits) == 2
+    out, hits = _run(session, {f"/politica/{n}": NEW for n in range(1, 5)}, status=403)
+    assert (out["rechecked"], out["revisions"], len(hits)) == (0, 0, 2)
+    assert out["refused"] == {"m.test 403": 2}  # se mide lo que el medio frena, sin rodearlo
     assert sum(a.content_checks for a in arts) == 2 and all(a.content_hash == sha256(OLD) for a in arts)
+
+
+def test_recheck_skips_live_coverage_and_stops_at_the_time_limit(session):
+    o = _outlet(session)
+    live = _article(session, o, 1, OLD, NOW - timedelta(hours=5))
+    live.title = "Lluvias en Valencia, en directo: ultima hora"
+    normal = _article(session, o, 2, OLD, NOW - timedelta(hours=5))
+    _, hits = _run(session, {"/politica/1": NEW, "/politica/2": OLD}, max_seconds=-1)
+    assert hits == [] and normal.content_checks == 0  # sin tiempo no se empieza nada
+    _, hits = _run(session, {"/politica/1": NEW, "/politica/2": OLD})
+    assert hits == ["/politica/2"] and live.content_checks == 0 and live.content_hash == sha256(OLD)

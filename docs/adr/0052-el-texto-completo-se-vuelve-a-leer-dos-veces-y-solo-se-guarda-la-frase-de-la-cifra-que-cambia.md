@@ -114,6 +114,13 @@ por dominio. Cuando cambia una cifra se guarda una revision `content` con la fra
 despues; cuando no, solo se actualiza el texto y su hash. Las revisiones de cuerpo entran en «Quien
 cambio su cifra» con las mismas reglas de ADR 0032.
 
+Tres limites, de la revision de Global y de la direccion (2026-10-19):
+- Los directos no se releen: su texto cambia a cada minuto y no es una correccion (#87).
+- El paso no empieza ninguna peticion pasado un minuto (`RECHECK_MAX_SECONDS`). Su duracion se publica en
+  `run.stats["recheck_seconds"]`.
+- Los 403 y 429 se cuentan por medio en `run.stats["recheck_refused"]` y no se rodean. Un medio que
+  frena se deja hasta el ciclo siguiente.
+
 ## Verificacion
 - La migracion se aplica y se revierte en una base SQLite limpia (test).
 - Tests de la relectura:
