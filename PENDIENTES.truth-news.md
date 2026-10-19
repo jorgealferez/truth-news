@@ -13,14 +13,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   repositorio, con referencia cruzada. Nunca se crea un `PENDIENTES.md` sin nombre ni un ledger global.
 - `## Activo` esta en **orden de ejecucion**. Se toma siempre el primero sin reservar.
 - Un item se marca `[x]` solo con su pull request mergeado (o su entregable verificado).
-- `
-- [ ] Migracion al holding (peticion del usuario 2026-10-19: "todo esto deberia acabar migrandose ... sin perjuicio del servicio y sin que caiga absolutamente nada ni se pierda informacion ... que todo el servicio unicamente nuestro sea un frontend con nuestra logica de negocio, pero que utilice su BFF, su microservicio, su base de datos y todo"): arranca cuando cierren los items de arriba, sin pararlos; plan en ADR 0025 y `docs/migracion-holding.md` (fases 11 a 17, dominios D1 a D7, doble escritura, backfill, conciliacion, sombra, corte por bandera). Parte del holding con referencia cruzada en PENDIENTES.microservices-ecosystem.md ("[squad:nosmienten] propuesta"). Carril: Migracion al holding (docs/equipo.md) — EN CURSO (session_01DgF9WootYzqTr7jwzkbDSj, 2026-10-19)
-  - [x] Fase 11 — plan, ADR 0025, alcance de la carta e items cruzados — #47 (squash b1eccb6)
-  - [x] Coordinacion: propuesta enviada al orquestador del holding (session_01JEomBbrRwabYbNac8Wvkr6) y a la direccion (session_012mRsejPRjvr7vC2Aq3edZ4), 2026-10-19; propuesta escrita en PENDIENTES.microservices-ecosystem.md (rama claude/nosmienten-propuesta), esperando el turno del orquestador; despertador send_later 2026-10-19 02:30Z
-  - [ ] Credenciales: clave de aplicacion `nosmienten` (tipo bff) y `HOLDING_PLATFORM_API_KEY` (missing): las crea una persona
-  - [ ] Fases 12 a 17 en orden, cuando terminen los items en curso
-
-## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
+- `## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
   agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
   mueve: se sigue trabajando.
 - `## Bloqueado`: solo con `BLOQUEADO: <motivo>` y solo si el motivo es una de las causas de la seccion
@@ -60,6 +53,11 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] "En claro" arriba de la historia: la verdad segun los datos (dato oficial, quien lo cuenta bien y quien no, con medidor), en que difieren (rango, cifra mas repetida, ultima publicada) y en que coinciden — #30
 - [x] Reposicionar el producto en "quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos": ficha de fiabilidad por medio con historial de veredictos, ranking de medios por exactitud comprobada, portada que lo destaca (peticion del usuario 2026-10-18) — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19), carril Comparativas: datos y componentes; plantillas outlets.html/list.html de la sesion "Railway project"
   - [x] Ranking por exactitud con muestra minima (Wilson 95 %, >= 5 comprobaciones), ficha de fiabilidad con historial de veredictos, quien no lo cuenta (historia y medio) y portada (ADR 0023) — #46. Ranking con medios reales NO VERIFICADO: en produccion hay 3 verificaciones (2 con dato); se llena cuando haya >= 5 por medio (carril Verificaciones)
+- [ ] Migracion al holding (peticion del usuario 2026-10-19: "todo esto deberia acabar migrandose ... sin perjuicio del servicio y sin que caiga absolutamente nada ni se pierda informacion ... que todo el servicio unicamente nuestro sea un frontend con nuestra logica de negocio, pero que utilice su BFF, su microservicio, su base de datos y todo"): arranca cuando cierren los items de arriba, sin pararlos; plan en ADR 0025 y `docs/migracion-holding.md` (fases 11 a 17, dominios D1 a D7, doble escritura, backfill, conciliacion, sombra, corte por bandera). Parte del holding con referencia cruzada en PENDIENTES.microservices-ecosystem.md (squad `nosmienten`, Fases 136-139 alli, ADR 0720-0749). Carril: Migracion al holding (docs/equipo.md) — EN CURSO (session_01DgF9WootYzqTr7jwzkbDSj, 2026-10-19)
+  - [x] Fase 11 — plan, ADR 0025, alcance de la carta e items cruzados — #47 (squash b1eccb6)
+  - [x] Coordinacion: propuesta enviada al orquestador del holding (session_01JEomBbrRwabYbNac8Wvkr6) y a la direccion (session_012mRsejPRjvr7vC2Aq3edZ4), 2026-10-19; el orquestador asigno al squad `nosmienten` las Fases 136-139, los ADR 0720-0749 y los criterios C67-C69; la Fase 136 (encuadre) esta en PR en el holding
+  - [ ] Credenciales: clave de aplicacion `nosmienten` (tipo bff) y `HOLDING_PLATFORM_API_KEY` (missing): las crea una persona
+  - [ ] Fases 12 a 17 en orden, cuando terminen los items en curso
 
 ## Esperando
 
