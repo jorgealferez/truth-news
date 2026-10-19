@@ -1,0 +1,18 @@
+<h2>Quién está detrás</h2>
+<p>Lo exige el artículo 6 del Reglamento (UE) 2024/1083, Reglamento Europeo sobre la Libertad de los Medios de Comunicación, a quien ofrece noticias y actualidad.</p>
+{% include "legal/_owner.html" %}
+{% set p = t(lang, 'legal_pending') %}
+<dl class="legal-owner">
+  <dt>Propietarios directos e indirectos</dt><dd>{{ site.legal_ownership or p }}</dd>
+  <dt>Publicidad institucional y fondos públicos recibidos (último año)</dt><dd>{{ site.legal_state_ads or p }}</dd>
+</dl>
+<h2>Independencia editorial</h2>
+<p>Ningún medio, partido, administración ni anunciante paga por aparecer, por su puntuación ni por un veredicto. La publicidad nunca influye en lo que publicamos (<a href="/publicidad">publicidad</a>) y el método está abierto (<a href="/metodologia">metodología</a>).</p>
+<h2>Contenido elaborado con inteligencia artificial</h2>
+<p>Parte de los textos (síntesis, análisis y traducciones) se generan con inteligencia artificial a partir de la evidencia citada. Siempre se marcan como elaborados con IA, como exige el artículo 50 del Reglamento (UE) 2024/1689 de inteligencia artificial, y enlazan sus fuentes. Si ves un error, pide su <a href="/aviso-legal#rectificacion">rectificación</a>.</p>
+<h2>Correcciones</h2>
+<p>Corregimos los errores en la propia página y lo decimos. Las rectificaciones y las actualizaciones de noticias antiguas siguen el procedimiento del <a href="/aviso-legal#rectificacion">aviso legal</a>.</p>
+<h2>Accesibilidad</h2>
+<p>Trabajamos para cumplir las pautas WCAG 2.1 de nivel AA (norma EN 301 549): navegación por teclado, enlace para saltar al contenido, contraste suficiente, textos alternativos y funcionamiento sin JavaScript. Si encuentras una barrera, avísanos {% if site.legal_email %}en <a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}en la dirección de contacto del titular{% endif %} y la corregiremos.</p>
+<h2>Contenido de terceros</h2>
+<p>No alojamos contenido de usuarios: no hay comentarios ni subidas. Para avisarnos de un contenido que consideres ilícito, usa la misma dirección de contacto.</p>

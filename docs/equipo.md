@@ -76,15 +76,32 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0029 | diseno | en main | Comparativas / Verificaciones (consulta puntual de interes publico) |
 | ADR 0030 | diseno | en main | Entidades (archivo desde los ficheros GKG de GDELT) |
 | ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
-| ADR 0032 + migracion 0017 | datos | reservado | Comparativas (quien cambio su cifra, solo si necesita esquema) |
-| ADR 0033 + migracion 0018 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
-| siguiente libre | — | — | ADR 0034 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
+| ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
+| ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
+| ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
+| ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
+| ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
+| ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
+| ADR 0038 | diseno | reservado | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList) |
+| ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
+| ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno frente al BOE; sin migracion) |
+| ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
+| ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
+| ADR 0043 | diseno | reservado | Redes (equilibrio de lo que se publica, solo si cambia la regla) |
+| ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
+| siguiente libre | — | — | ADR 0045 + migracion 0020; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 
 - Reservar el item del ledger antes de empezar (`EN CURSO (<sesion>, <fecha>)`).
-- Un PR pequeno por mejora, gauntlet `full` en VERDE, squash merge. Cada merge redespliega web y
-  worker: como maximo un merge cada ~15 minutos por agente; agrupar cambios menores.
+- Un PR pequeno por mejora, gauntlet `full` en VERDE, squash merge. Como maximo un merge cada ~15
+  minutos por agente; agrupar cambios menores.
+- **Ventana de merges de codigo del worker.** El worker solo se redespliega si cambia `truthnews/**`
+  (salvo plantillas y estaticos), `alembic/**`, `pyproject.toml`, `Dockerfile` o `railway.json` (watch
+  paths en Railway). Un ciclo completo dura ~25 min y un redespliegue lo corta. Por eso esos merges se
+  hacen **solo en las horas pares, entre HH:00 y HH:10 UTC** (00:00, 02:00, 04:00…; el despliegue tarda ~10 min mas): asi
+  caben ciclos completos cada 30 min en las dos horas entre ventanas (criterio C11); documentacion, ledger, plantillas y estaticos, a cualquier hora.
+  Urgencias de produccion (un fallo que tumba el ciclo), fuera de ventana avisando a la direccion.
 - Cambio de esquema: ADR `Tipo: datos` en el mismo PR (puerta `datos`).
 - Credenciales: nunca en el chat ni en el repositorio; se piden al usuario para que las ponga en Railway.
 - Al terminar un item, el siguiente de tu carril; si tu carril se vacia, avisar a la direccion.

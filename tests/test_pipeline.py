@@ -89,7 +89,7 @@ def test_reverify_outdated_methods_and_note_corrections(session, world):
     pipeline.assign_stories(session)
     pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(10.0))
     ver = session.scalars(select(Verification)).one()
-    assert ver.verdict == "falso" and ver.method.endswith("/v8")
+    assert ver.verdict == "falso" and ver.method.endswith("/v9")
     assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {}  # ya en la version vigente
     ver.method = "nivel"  # veredicto de la version anterior del metodo
     session.flush()

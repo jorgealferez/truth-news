@@ -23,6 +23,7 @@ FRESH = timedelta(hours=3)  # cada declaracion se evalua en los ciclos de sus pr
 STORY_WINDOW = timedelta(hours=48)
 MAX_STATEMENTS = 60
 MAX_STORIES = 40
+MAX_POLITICS = 60  # medido 2026-10-19: 0 de 43 enlazadas solo con las 40 de mas prioridad (internacionales)
 
 LINK_SYSTEM = """\
 Recibes historias de actualidad (id y titular) y declaraciones publicadas por partidos politicos en sus
@@ -69,14 +70,19 @@ def run(session: Session, ai: AIClient, country: str, now: datetime | None = Non
             .limit(MAX_STATEMENTS)
         )
     )
-    stories = list(
-        session.scalars(
-            select(Story)
-            .where(Story.country == country, Story.last_seen >= now - STORY_WINDOW, Story.n_outlets >= 2)
-            .order_by(Story.priority.desc(), Story.n_outlets.desc())
-            .limit(MAX_STORIES)
-        )
+    active = select(Story).where(
+        Story.country == country, Story.last_seen >= now - STORY_WINDOW, Story.n_outlets >= 2
     )
+    # Los partidos hablan sobre todo de politica nacional: primero esas historias, luego las de cabecera.
+    politics = session.scalars(
+        active.where(Story.category == "politica")
+        .order_by(Story.n_outlets.desc(), Story.priority.desc())
+        .limit(MAX_POLITICS)
+    ).all()
+    top = session.scalars(
+        active.order_by(Story.priority.desc(), Story.n_outlets.desc()).limit(MAX_STORIES)
+    ).all()
+    stories = list({s.id: s for s in [*politics, *top]}.values())
     if not statements or not stories:
         return {"statements": len(statements), "linked": 0}
     st_ids = {s.id for s in stories}
@@ -92,7 +98,7 @@ def run(session: Session, ai: AIClient, country: str, now: datetime | None = Non
         stmt.story_id = story
         linked += 1
     session.commit()
-    out = {"statements": len(statements), "linked": linked}
+    out = {"statements": len(statements), "stories": len(stories), "linked": linked}
     log.info("declaraciones enlazadas: %s", out)
     return out
 

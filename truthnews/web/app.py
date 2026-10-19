@@ -24,22 +24,41 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad, ranking, reliability, speakers, statement_checks
+from truthnews.analysis import (
+    abroad,
+    figure_changes,
+    ranking,
+    reliability,
+    repeated,
+    speakers,
+    statement_checks,
+)
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.entities import views as entity_views
-from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
+from truthnews.models import Article, Investigation, Outlet, Story, Thread
 from truthnews.social import images
 from truthnews.social import select as select_social
-from truthnews.web import admin, appointments, budget, citations, council, queries, seo, social, topicview
+from truthnews.web import (
+    admin,
+    appointments,
+    budget,
+    citations,
+    council,
+    legal,
+    queries,
+    seo,
+    sitemaps,
+    social,
+    topicview,
+)
 from truthnews.web import verdicts as vview
 from truthnews.web.langprefix import LangPrefix, localize
 
 _dato = vview.dato  # nombre historico: lo usan plantillas y tests
 HERE = Path(__file__).resolve().parent
-SITEMAP_DAYS = 90
 RSS_DAYS = 14
 RSS_MAX_ITEMS = 100
 
@@ -288,73 +307,69 @@ def create_app(
                 f"Sitemap: {settings.site_url}/sitemap{s}.xml\n"
                 for s in ["", *(f"-{p}" for p in indexed_prefixed)]
             )
+            + f"Sitemap: {settings.site_url}/sitemaps/news.xml\n"
         )
+
+    def sitemap_response(body: str, lastmod: datetime | None, max_age: int) -> Response:
+        # Los sitemaps no son resultados de busqueda; la cache corta evita rehacer la consulta a cada robot.
+        headers = {"Cache-Control": f"public, max-age={max_age}", "X-Robots-Tag": "noindex"}
+        if lastmod:
+            headers["Last-Modified"] = lastmod.astimezone(UTC).strftime("%a, %d %b %Y %H:%M:%S GMT")
+        return Response(body, media_type="application/xml", headers=headers)
+
+    def sitemap_index(session: Session, lang: str | None) -> Response:
+        now = datetime.now(UTC)
+        folder = f"{settings.site_url}/sitemaps/" + (f"{lang}/" if lang else "")
+        files = [(f"{folder}{name}.xml", mod) for name, mod in sitemaps.index_files(session, now)]
+        if not lang:  # Google News: solo el idioma por omision, que es el del contenido
+            news = sitemaps.news_entries(session, now)
+            files.insert(0, (f"{folder}news.xml", news[0].published if news else None))
+        mods = [m for _, m in files if m]
+        return sitemap_response(sitemaps.index_xml(files), max(mods) if mods else None, 300)
+
+    def sitemap_file(session: Session, name: str, lang: str | None) -> Response:
+        now = datetime.now(UTC)
+        kind, _, n = name.rpartition("-")
+        if kind not in sitemaps.ORDER or not n.isdigit() or int(n) < 1:
+            raise HTTPException(404)
+        rows = sitemaps.entries(session, kind, now, page=int(n))
+        if not rows:
+            raise HTTPException(404)
+        alternates = {settings.default_language: "", **{p: f"/{p}" for p in indexed_prefixed}}
+        body = sitemaps.urlset_xml(
+            rows,
+            settings.site_url,
+            localize=(lambda path: localize(path, lang)) if lang else (lambda path: path),
+            alternates=alternates if len(alternates) > 1 else None,
+        )
+        mods = [e.lastmod for e in rows if e.lastmod]
+        return sitemap_response(body, max(mods) if mods else None, 900)
+
+    @app.get("/sitemap.xml", include_in_schema=False)
+    def sitemap(session: SessionDep):
+        return sitemap_index(session, None)
 
     @app.get("/sitemap-{lang}.xml", include_in_schema=False)
     def sitemap_lang(lang: str, session: SessionDep):
         if lang not in indexed_prefixed:
             raise HTTPException(404)
-        return sitemap(session, lang)
+        return sitemap_index(session, lang)
 
-    @app.get("/sitemap.xml", include_in_schema=False)
-    def sitemap(session: SessionDep, lang: str | None = None):
-        base = settings.site_url
-        since = datetime.now(UTC) - timedelta(days=SITEMAP_DAYS)
-        urls: list[tuple[str, datetime | None]] = [
-            (f"{base}{p}", None)
-            for p in (
-                "/",
-                "/contrastes",
-                "/analisis",
-                "/verificaciones",
-                "/medios",
-                "/investigaciones",
-                "/metodologia",
-                "/nombramientos",
-                "/consejo-de-ministros",
-                "/quien-dice-la-verdad",
-                "/presupuestos",
-                "/publicidad",
-                "/acerca",
-            )
-        ]
-        urls += [(f"{base}/seccion/{c}", None) for c in registry.categories()]
-        urls += [(f"{base}/pais/{c}", None) for c in registry.countries()]
-        urls += [(f"{base}/medio/{slug}", None) for slug in session.scalars(select(Outlet.slug))]
-        urls += [
-            (base + seo.path("historia", sid, title), last)
-            for sid, title, last in session.execute(
-                select(Story.id, Story.title, Story.last_seen)
-                .where(Story.n_outlets >= 2, Story.last_seen >= since)
-                .order_by(Story.last_seen.desc())
-                .limit(40_000)
-            )
-        ]
-        topic_titles = queries.topic_titles(session)
-        urls += [
-            (base + seo.path("tema", tid, topic_titles.get(tid, title)), up)
-            for tid, title, up in session.execute(select(Topic.id, Topic.title, Topic.updated_at))
-        ]
-        urls += [
-            (base + seo.path("hilo", hid, title), up)
-            for hid, title, up in session.execute(
-                select(Thread.id, Thread.title, Thread.updated_at).where(Thread.status == "publicado")
-            )
-        ]
-        urls += [
-            (base + seo.path("investigacion", inv.id, investigation_title(inv)), inv.updated_at)
-            for inv in session.scalars(select(Investigation).where(Investigation.status == "publicada"))
-        ]
-        alternates = {settings.default_language: "", **{p: f"/{p}" for p in indexed_prefixed}}
-        if len(alternates) < 2:
-            alternates = {}
-        if lang:  # el sitemap de otro idioma lista sus URLs con prefijo (los ficheros compartidos no)
-            n = len(base)
-            urls = [(base + localize(loc[n:] or "/", lang), mod) for loc, mod in urls]
-        return Response(
-            social.sitemap_xml(urls, base=base, alternates=alternates, default=settings.default_language),
-            media_type="application/xml",
-        )
+    @app.get("/sitemaps/news.xml", include_in_schema=False)
+    def sitemap_news(session: SessionDep):
+        rows = sitemaps.news_entries(session, datetime.now(UTC))
+        body = sitemaps.news_xml(rows, settings.site_url, settings.site_name, settings.default_language)
+        return sitemap_response(body, rows[0].published if rows else None, 300)
+
+    @app.get("/sitemaps/{name}.xml", include_in_schema=False)
+    def sitemap_part(name: str, session: SessionDep):
+        return sitemap_file(session, name, None)
+
+    @app.get("/sitemaps/{lang}/{name}.xml", include_in_schema=False)
+    def sitemap_part_lang(lang: str, name: str, session: SessionDep):
+        if lang not in indexed_prefixed:
+            raise HTTPException(404)
+        return sitemap_file(session, name, lang)
 
     @app.get("/rss.xml", include_in_schema=False)
     def rss(session: SessionDep):
@@ -533,6 +548,10 @@ def create_app(
     def verifications(request: Request, session: SessionDep):
         return render(request, "verifications.html", claims=queries.all_verifications(session))
 
+    @app.get("/repetidas", response_class=HTMLResponse)
+    def repeated_claims(request: Request, session: SessionDep):
+        return render(request, "repeated.html", groups=repeated.repeated(session))
+
     @app.get("/discrepancias", response_class=HTMLResponse)
     def discrepancies(request: Request, session: SessionDep):
         # Lo que no cuadra (ADR 0027): la noticia grande es donde los datos y lo publicado no coinciden.
@@ -607,6 +626,8 @@ def create_app(
             outlets_view=outlets_view,
             plain=in_plain_words(comp, claims),
             missing=reliability.missing_outlets(session, st),
+            fig_changes=figure_changes.for_story(session, st.id),
+            repeats=repeated.repeated_for_story(session, st.id),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -732,6 +753,7 @@ def create_app(
             rows=queries.outlets(session, country),
             ranked=ranked,
             few=few,
+            fig_records=figure_changes.by_outlet(session),
             min_checks=reliability.MIN_CHECKS,
         )
 
@@ -756,6 +778,7 @@ def create_app(
             rel=next(iter(reliability.records(session, outlet_id=o.id)), None),
             checks=reliability.history(session, o.id),
             blind=reliability.blind_spots(session, o),
+            fig_changes=figure_changes.for_outlet(session, o.id),
             min_checks=reliability.MIN_CHECKS,
         )
 
@@ -846,6 +869,22 @@ def create_app(
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):
         return render(request, "about.html")
+
+    def legal_page(slug: str):
+        def page(request: Request):
+            return render(
+                request,
+                "legal.html",
+                slug=slug,
+                body=f"legal/{slug}.{legal.content_lang(lang_of(request))}.html",
+                storage=legal.STORAGE,
+                missing=legal.missing_owner_data(settings),
+            )
+
+        return page
+
+    for slug in legal.PAGES:
+        app.add_api_route(f"/{slug}", legal_page(slug), response_class=HTMLResponse, methods=["GET"])
 
     @app.get("/idioma/{lang}")
     def set_lang(lang: str, request: Request, to: str | None = None):

@@ -456,6 +456,8 @@ class Thread(Base):
 
 
 SOCIAL_NETWORKS = ("x", "bluesky", "mastodon", "telegram")
+# Cuentas en ingles (cuentas distintas, misma red): solo historias con titular traducido (ADR 0017).
+SOCIAL_NETWORKS_EN = ("x_en", "bluesky_en", "mastodon_en", "telegram_en")
 SOCIAL_KINDS = ("historia", "hilo", "verificacion")
 SOCIAL_STATUSES = ("prueba", "enviado", "error")
 
@@ -467,7 +469,9 @@ class SocialPost(Base):
 
     __tablename__ = "social_post"
     __table_args__ = (
-        CheckConstraint(f"network IN {SOCIAL_NETWORKS!r}", name="ck_social_post_network"),
+        CheckConstraint(
+            f"network IN {SOCIAL_NETWORKS + SOCIAL_NETWORKS_EN!r}", name="ck_social_post_network"
+        ),
         CheckConstraint(f"kind IN {SOCIAL_KINDS!r}", name="ck_social_post_kind"),
         CheckConstraint(f"status IN {SOCIAL_STATUSES!r}", name="ck_social_post_status"),
         UniqueConstraint("network", "kind", "ref_id", name="uq_social_post_network_ref"),

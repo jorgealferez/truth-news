@@ -112,12 +112,18 @@ def test_sitemaps_robots_and_language_switch(client):
     robots = c.get("/robots.txt").text
     assert f"Sitemap: {SITE}/sitemap.xml" in robots and f"Sitemap: {SITE}/sitemap-en.xml" in robots
     want = seo.path("historia", st.id, st.title)
-    es = c.get("/sitemap.xml").text
+    index = c.get("/sitemap.xml").text
+    assert f"<loc>{SITE}/sitemaps/historias-1.xml</loc>" in index and "/sitemaps/en/" not in index
+    es = c.get("/sitemaps/historias-1.xml").text
     assert f"<loc>{SITE}{want}</loc>" in es and f'hreflang="en" href="{SITE}/en{want}"' in es
-    en = c.get("/sitemap-en.xml").text
+    en_index = c.get("/sitemap-en.xml").text
+    assert f"<loc>{SITE}/sitemaps/en/historias-1.xml</loc>" in en_index and "news.xml" not in en_index
+    en = c.get("/sitemaps/en/historias-1.xml").text
     assert f"<loc>{SITE}/en{want}</loc>" in en and f'hreflang="es" href="{SITE}{want}"' in en
-    assert f"<loc>{SITE}/en</loc>" in en and 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' in en
+    pages = c.get("/sitemaps/en/paginas-1.xml").text
+    assert f"<loc>{SITE}/en</loc>" in pages and 'xmlns:xhtml="http://www.w3.org/1999/xhtml"' in pages
     assert c.get("/sitemap-xx.xml").status_code == 404
+    assert c.get("/sitemaps/xx/historias-1.xml").status_code == 404
     r = c.get("/idioma/es?to=/medios", follow_redirects=False)
     assert (
         r.status_code == 303 and r.headers["location"] == "/medios" and "lang=es" in r.headers["set-cookie"]
@@ -151,5 +157,6 @@ def test_untranslated_languages_are_served_but_not_offered_to_search_engines(noi
     robots = c.get("/robots.txt").text
     assert f"Sitemap: {SITE}/sitemap.xml" in robots and "sitemap-en" not in robots
     assert c.get("/sitemap-en.xml").status_code == 404
-    sm = c.get("/sitemap.xml").text
+    assert c.get("/sitemaps/en/historias-1.xml").status_code == 404
+    sm = c.get("/sitemaps/historias-1.xml").text + c.get("/sitemaps/paginas-1.xml").text
     assert "/en" not in sm and "xhtml:link" not in sm

@@ -21,6 +21,25 @@ es:
   plain_agree: "{noun}: {v}, la misma cifra en {n} medios."
   plain_blame: No coinciden en a quién señalan.
   plain_note: Calculado con el mismo método para todos los medios. Una cifra distinta puede ser un balance actualizado; un veredicto exige un dato oficial.
+  fc_title: Quién cambió su cifra
+  fc_announced: avisado
+  fc_silent: en silencio
+  fc_field_title: titular
+  fc_field_summary: extracto
+  fc_see: ver antes y después
+  fc_before: Antes
+  fc_after: Después
+  fc_note: "Cambios de una cifra entre dos capturas del mismo artículo. «Avisado» si el texto nuevo lo dice (actualiza, eleva a, rectifica…); «en silencio» si no. Actualizar un balance no es un error; no avisarlo dificulta saber qué cifra era cierta y cuándo. Los directos no cuentan."
+  fc_rank: "cifras cambiadas en silencio: {s} de {n}"
+  rep_title: Afirmaciones que se repiten
+  rep_lead: "La misma cifra sobre el mismo indicador, territorio y periodo en varios artículos. El veredicto es el de la comprobación con el dato oficial; aquí solo se cuenta quién la repite y cuándo."
+  rep_in: "en {n} medios · {d} días"
+  rep_since: desde
+  rep_until: hasta
+  rep_no_verdict: Sin comprobar todavía
+  rep_none: Aún no hay afirmaciones repetidas en dos o más artículos.
+  rep_story: "Esta afirmación se repite en otros medios"
+  rep_see_all: Ver todas las afirmaciones repetidas
   rank_title: Quién acierta con los datos
   rank_note: "Proporción de afirmaciones de cada medio que resultan verdaderas al compararlas con el dato oficial. Ordenado por el límite inferior del intervalo de confianza del 95 %: pocas comprobaciones no bastan para encabezar. Mínimo {n} comprobaciones para entrar."
   rank_empty: "Aún ningún medio tiene {n} afirmaciones comprobadas: el ranking se llenará a medida que verifiquemos."
@@ -456,8 +475,46 @@ es:
   speakers_no_channel: >-
     También juzgamos lo que cada partido publica en sus canales oficiales verificados. Sin canal verificado
     todavía (sus declaraciones directas no se pueden juzgar aún; sí lo que la prensa les atribuye): {names}.
+  legal_h: Legal
+  legal_notice: Aviso legal
+  legal_notice_lead: Quién presta el servicio, cómo citamos a los medios y cómo pedir una rectificación.
+  privacy: Privacidad
+  privacy_lead: Qué datos tratamos (casi ninguno), para qué y cómo ejercer tus derechos.
+  cookies: Cookies
+  cookies_lead: "Todo lo que guardamos en tu navegador: una cookie de idioma y una marca de última visita. Nada de terceros."
+  transparency: Transparencia
+  transparency_lead: Quién es el titular, quién lo financia, cómo usamos la IA y cómo corregimos.
+  legal_pending: Pendiente de que el titular lo complete
+  legal_pending_note: >-
+    Faltan datos del titular que exige la ley. Están marcados como pendientes y no los inventamos: los
+    completará el titular.
+  legal_owner: Titular
+  legal_tax_id: NIF
+  legal_address: Domicilio
+  legal_email: Correo de contacto
+  legal_registry: Inscripción registral
+  legal_site: Sitio web
 
 en:
+  legal_h: Legal
+  legal_notice: Legal notice
+  legal_notice_lead: Who provides the service, how we quote outlets and how to request a correction.
+  privacy: Privacy
+  privacy_lead: What data we process (almost none), why, and how to exercise your rights.
+  cookies: Cookies
+  cookies_lead: "Everything we store in your browser: a language cookie and a last-visit mark. Nothing from third parties."
+  transparency: Transparency
+  transparency_lead: Who owns it, who funds it, how we use AI and how we correct.
+  legal_pending: Pending, to be completed by the owner
+  legal_pending_note: >-
+    Some owner details required by law are missing. They are marked as pending and we do not make them up:
+    the owner will complete them.
+  legal_owner: Owner
+  legal_tax_id: Tax ID
+  legal_address: Address
+  legal_email: Contact email
+  legal_registry: Registry entry
+  legal_site: Website
   tagline: We compare what the media report with what the data say
   motto: No sides. Just data.
   home: Home
@@ -479,6 +536,25 @@ en:
   plain_agree: "{noun}: {v}, the same figure in {n} outlets."
   plain_blame: They disagree on whom they point at.
   plain_note: Same method for every outlet. A different figure may be an updated toll; a verdict needs an official figure.
+  fc_title: Who changed their figure
+  fc_announced: announced
+  fc_silent: silently
+  fc_field_title: headline
+  fc_field_summary: excerpt
+  fc_see: see before and after
+  fc_before: Before
+  fc_after: After
+  fc_note: "A figure changed between two captures of the same article. «Announced» if the new text says so (updates, raises to, corrects…); «silently» if not. Updating a toll is not an error; not saying so makes it hard to know which figure was right and when. Live coverage does not count."
+  fc_rank: "figures changed silently: {s} of {n}"
+  rep_title: Repeated claims
+  rep_lead: "The same figure on the same indicator, territory and period across several articles. The verdict is the one from the check against the official figure; here we only count who repeats it and when."
+  rep_in: "in {n} outlets · {d} days"
+  rep_since: since
+  rep_until: until
+  rep_no_verdict: Not checked yet
+  rep_none: No claims repeated in two or more articles yet.
+  rep_story: "This claim is repeated by other outlets"
+  rep_see_all: See all repeated claims
   rank_title: Who gets the data right
   rank_note: "Share of each outlet's claims found true against the official figure. Sorted by the lower bound of the 95% confidence interval: a handful of checks is not enough to top the list. At least {n} checks to enter."
   rank_empty: "No outlet has {n} checked claims yet: the ranking fills up as we verify."

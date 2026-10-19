@@ -1,0 +1,26 @@
+{
+  "fase": "2e",
+  "titulo": "Quien cambio su cifra: revisiones que cambian una cifra, avisadas o en silencio",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "produccion": "Fichas de los 21 medios con revisiones en nosmienten.com (19/10 ~02:00 UTC): 49 revisiones de titular o extracto; 1 cambia una cifra (BBC Mundo, titular, 1.800 -> 2.400 detenidos, en silencio), revisada a mano: correcta. Antes del arreglo de lectura habria salido ademas un falso 4 -> 39 muertos (France 24: '39 personas resultaron heridas' leidas como muertos): 1 falso de 2 (precision 0,50); despues 0 falsos (1,00) sobre esta muestra",
+    "lectura_de_cifras": "El contexto de 'personas' se limita a la frase de la cifra y mira primero lo que la sigue; fixture de disputas sin cambios: precision 1,00, exhaustividad 1,00",
+    "metodo": "ADR 0032: primera cifra del mismo sustantivo distinta antes y despues; avisado si el texto nuevo lo dice; directos fuera; senal junto al ranking, no en la exactitud; proporcion en silencio solo con >= 5 cambios"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Proporcion de cambios en silencio por medio: NO VERIFICADO hasta que algun medio acumule 5 cambios de cifra en produccion"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

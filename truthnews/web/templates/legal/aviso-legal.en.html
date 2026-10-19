@@ -1,0 +1,16 @@
+<p><em>This is a translation. The Spanish version is the legally binding one.</em></p>
+<h2>Site owner</h2>
+<p>Under article 10 of Spanish Law 34/2002 on information society services (LSSI), these are the details of the service provider:</p>
+{% include "legal/_owner.html" %}
+<h2>What this site is</h2>
+<p>{{ site.site_domain }} is a digital news medium that compares what the media publish with what public data say (INE, Eurostat, World Bank, BOE and other official sources). It is free and needs no registration.</p>
+<h2>Intellectual property and quotations</h2>
+<p>The analysis, our own texts and the design belong to {{ site.site_domain }}. Headlines and excerpts from other outlets are briefly quoted, linked to the original, for analysis and criticism (article 32 of the Spanish Intellectual Property Law). We respect outlets' text and data mining opt-outs (article 4 of Directive (EU) 2019/790): we do not download pages that forbid it in their robots.txt. Official data are reused under Law 37/2007 and each source's licence, cited next to each figure. The source code is public under CC0 1.0.</p>
+<h2>Links to other sites</h2>
+<p>We link to sources so you can check them. We are not responsible for third-party pages; if a link leads to unlawful content and you tell us, we remove it (article 17 LSSI).</p>
+<h2>Advertising</h2>
+<p>Advertising is always labelled as such (article 20 LSSI). How it is chosen: <a href="/publicidad">advertising on {{ site.site_domain }}</a>.</p>
+<h2 id="rectificacion">Right of reply and correction</h2>
+<p>If information published here concerns you and you consider it inaccurate, you may request a correction (Spanish Organic Law 2/1984). Write {% if site.legal_email %}to <a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}to the owner's contact address{% endif %} within seven calendar days of publication, with your identity, the information to be corrected and the facts that correct it, at a similar length. We will publish it in full, with the same prominence and linked to the original, within three days of receipt. You may also ask us to update an old story that no longer reflects reality (article 86 of Organic Law 3/2018).</p>
+<h2>Applicable law</h2>
+<p>This site is governed by Spanish law. Consumers may go to the courts of their place of residence.</p>

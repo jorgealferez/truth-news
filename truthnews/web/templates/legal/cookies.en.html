@@ -1,0 +1,16 @@
+<p><em>This is a translation. The Spanish version is the legally binding one.</em></p>
+<h2>What we store in your browser</h2>
+<p>This is the complete list. A code test prevents adding anything without declaring it here.</p>
+<table class="legal-table">
+  <thead><tr><th>Name</th><th>Type</th><th>Purpose</th><th>Duration</th><th>Why we do not ask for consent</th></tr></thead>
+  <tbody>{% for s in storage %}
+    <tr><td><code>{{ s.name }}</code></td><td>{{ 'First-party cookie' if s.kind == 'cookie' else 'Local storage' }}</td><td>{{ s.purpose.en }}</td><td>{{ s.duration.en }}</td><td>{{ s.exempt.en }}</td></tr>{% endfor %}
+  </tbody>
+</table>
+<h2>Why there is no cookie banner</h2>
+<p>Article 22(2) LSSI and Directive 2002/58/EC only require your consent to store or read information on your device when it is not strictly necessary for a service you asked for. Everything in the table is of that kind (Spanish Data Protection Agency cookie guide, 2023). We use no analytics, advertising, social media or third-party cookies, and ads are chosen by the page topic, without profiles. If we ever add something that needs consent, we will ask first, making it as easy to refuse as to accept.</p>
+<p>Ads with an image load it from the advertiser's domain, without telling it which page you are on.</p>
+<h2>How to delete it</h2>
+<p><button type="button" class="btn" data-legal-clear>Delete what {{ site.site_domain }} stored in this browser</button> <span data-legal-cleared hidden>Done.</span></p>
+<p>You can also delete or block it in your browser settings. Without the language cookie the site shows the default language; without the last-visit mark you will not see the “New” tag.</p>
+<script src="/static/legal.js" defer></script>

@@ -1,0 +1,19 @@
+<p><em>This is a translation. The Spanish version is the legally binding one.</em></p>
+<h2>Who is behind it</h2>
+<p>Required by article 6 of Regulation (EU) 2024/1083, the European Media Freedom Act, for providers of news and current affairs content.</p>
+{% include "legal/_owner.html" %}
+{% set p = t(lang, 'legal_pending') %}
+<dl class="legal-owner">
+  <dt>Direct and indirect owners</dt><dd>{{ site.legal_ownership or p }}</dd>
+  <dt>State advertising and public funds received (last year)</dt><dd>{{ site.legal_state_ads or p }}</dd>
+</dl>
+<h2>Editorial independence</h2>
+<p>No outlet, party, administration or advertiser pays to appear, for its score or for a verdict. Advertising never influences what we publish (<a href="/publicidad">advertising</a>) and the method is open (<a href="/metodologia">methodology</a>).</p>
+<h2>AI-generated content</h2>
+<p>Some texts (summaries, analysis and translations) are generated with artificial intelligence from the cited evidence. They are always marked as AI-generated, as article 50 of Regulation (EU) 2024/1689 (AI Act) requires, and link their sources. If you spot an error, ask for a <a href="/aviso-legal#rectificacion">correction</a>.</p>
+<h2>Corrections</h2>
+<p>We fix errors on the page itself and say so. Corrections and updates of old stories follow the procedure in the <a href="/aviso-legal#rectificacion">legal notice</a>.</p>
+<h2>Accessibility</h2>
+<p>We work to meet WCAG 2.1 level AA (EN 301 549): keyboard navigation, skip-to-content link, sufficient contrast, text alternatives and working without JavaScript. If you find a barrier, tell us {% if site.legal_email %}at <a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}at the owner's contact address{% endif %} and we will fix it.</p>
+<h2>Third-party content</h2>
+<p>We host no user content: there are no comments or uploads. To report content you consider unlawful, use the same contact address.</p>
