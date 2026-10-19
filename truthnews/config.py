@@ -76,6 +76,8 @@ class Settings:
     # Extraccion de afirmaciones con IA (ADR 0019): llamadas de 40 frases por ciclo y esfuerzo propio.
     ai_claims_max_calls: int = field(default_factory=lambda: int(os.environ.get("AI_CLAIMS_MAX_CALLS", "3")))
     ai_claims_effort: str = field(default_factory=lambda: os.environ.get("AI_CLAIMS_EFFORT", "medium"))
+    # Dias de BOE (nombramientos y ceses) que la web guarda en memoria para confirmar noticias; 0 = nada.
+    boe_index_days: int = field(default_factory=lambda: int(os.environ.get("BOE_INDEX_DAYS", "30")))
     admin_user: str = field(default_factory=lambda: os.environ.get("ADMIN_USER", "admin"))
     admin_password: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD", ""))
     role: str = field(default_factory=lambda: os.environ.get("TRUTHNEWS_ROLE", "web"))

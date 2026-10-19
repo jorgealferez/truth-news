@@ -1,0 +1,6 @@
+{# Confirmacion oficial: nombramientos y ceses del BOE reciente de personas citadas en la noticia. Solo
+   confirma; que algo no este en el BOE no se muestra (se publica dias despues del anuncio). Variable: boe. #}
+{% if boe %}<aside class="block boe-confirm" aria-label="{{ t(lang, 'boe_confirm') }}"><h2>{{ t(lang, 'boe_confirm') }}</h2>
+  <ul class="compact">{% for i in boe %}<li><span class="tag">{{ t(lang, 'appt_kind_' ~ i.tipo) }}</span> <strong>{{ i.persona }}</strong>{% if i.cargo %} — {{ i.cargo }}{% endif %}
+    <span class="meta">{{ t(lang, 'boe_of') }} {{ i.fecha[8:10] }}/{{ i.fecha[5:7] }}/{{ i.fecha[:4] }} · <a href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></span></li>{% endfor %}</ul>
+  <p class="meta">{{ t(lang, 'boe_confirm_note') }} <a href="/nombramientos">{{ t(lang, 'appointments') }}</a></p></aside>{% endif %}

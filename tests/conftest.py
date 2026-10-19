@@ -6,6 +6,12 @@ from truthnews.db import make_engine, session_scope
 from truthnews.migrate import upgrade
 
 
+@pytest.fixture(autouse=True)
+def _no_boe_index(monkeypatch):
+    """Sin descargas del BOE en segundo plano en los tests (se prueba aparte con un transporte falso)."""
+    monkeypatch.setenv("BOE_INDEX_DAYS", "0")
+
+
 @pytest.fixture()
 def db_url(tmp_path):
     url = f"sqlite:///{tmp_path / 'test.db'}"

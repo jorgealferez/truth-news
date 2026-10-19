@@ -131,10 +131,12 @@ def create_app(
     ads_client: adsmod.AdsClient | None = None,
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
+    boe_index: appointments.BoeIndex | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
+    boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
@@ -488,6 +490,9 @@ def create_app(
             abroad=sorted(outside, key=lambda a: a.outlet.country),
             parties=statements.for_story(session, st),
             tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
+            boe=boe_index.confirmations(
+                [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()
+            ),
             ads=ads_for(
                 request,
                 ("story-inline", "footer-strip"),
@@ -661,6 +666,7 @@ def create_app(
             cites=citations.cited_figures(a),
             claims=queries.article_claims(session, a.id),
             archive_url=citations.archive_url(a),
+            boe=boe_index.confirmations([a.title, a.summary or ""], datetime.now(UTC).date()),
         )
 
     @app.get("/nombramientos", response_class=HTMLResponse)
