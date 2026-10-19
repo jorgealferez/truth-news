@@ -275,3 +275,6 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .exec { display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font:13px system-ui, sans-serif; }
 .exec-bar { display:inline-block; width:90px; height:8px; border-radius:4px; background:var(--line); overflow:hidden; }
 .exec-bar i { display:block; height:100%; background:var(--ink); }
+/* Que dicen los partidos (ADR 0024): mismo formato para todos, texto citado y canal */
+.parties { list-style:none; margin:0; padding:0; display:grid; gap:8px; } @media (min-width:720px) { .parties { grid-template-columns:repeat(2, 1fr); } }
+.parties li { border:1px solid var(--line); border-radius:6px; padding:8px 12px; background:#fff; } .parties .who { margin:0 0 4px; } .parties .said { margin:4px 0; font-size:15px; line-height:1.4; }

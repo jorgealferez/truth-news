@@ -23,7 +23,7 @@ from sqlalchemy.orm import Session
 
 from truthnews import ads as adsmod
 from truthnews import registry
-from truthnews.ai import translate
+from truthnews.ai import statements, translate
 from truthnews.analysis import abroad
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
@@ -483,6 +483,7 @@ def create_app(
             ),
             spread=spread(arts),
             abroad=sorted(outside, key=lambda a: a.outlet.country),
+            parties=statements.for_story(session, st),
             tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
             ads=ads_for(
                 request,

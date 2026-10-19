@@ -7,7 +7,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from truthnews.ai import translate
+from truthnews.ai import statements, translate
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.topics import build_topics
 from truthnews.ai.writer import write_pieces
@@ -42,6 +42,11 @@ def run(
     # La misma historia en otros paises, con los titulares ya traducidos (ADR 0022).
     out["abroad"] = abroad.link(session, settings.default_country, settings.default_language)
     session.commit()
+    try:  # que dicen los partidos: la IA propone la historia y el codigo valida los ids (ADR 0024)
+        out["statements"] = statements.run(session, translator, settings.default_country)
+    except AIError as exc:
+        session.rollback()
+        log.warning("declaraciones no enlazadas: %s", exc)
     try:
         out["topics"] = build_topics(session, ai, settings.default_country)
         session.commit()
