@@ -1,0 +1,57 @@
+{
+  "fase": "cr1",
+  "titulo": "Auditoria de ClaimReview y enlazado interno historia-verificacion-entidad (#214, ADR 0038)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13",
+      "httpx": "auditor propio que parsea el JSON-LD de cada /verificacion de /verificaciones"
+    },
+    "objetivo": "https://nosmienten.com"
+  },
+  "medidas": {
+    "claimreview_incompletos": 0,
+    "claimreview_sin_datos_con_rating": 0,
+    "verificacion_enlace_historia_generico": 0,
+    "historias_sin_enlace_a_sus_verificaciones": 0
+  },
+  "detalle": {
+    "antes_2026-10-19T12:55Z": {
+      "verificaciones": 31,
+      "con_veredicto": 20,
+      "sin_datos": 11,
+      "claimreview_validos": 0,
+      "sin_datos_con_rating": 0,
+      "problemas": {
+        "falta_enlace_cifra_oficial": 20,
+        "enlace_a_la_historia_generico_o_sin_slug": 30
+      },
+      "verificaciones_con_enlace_a_entidad": 0,
+      "historias": 26,
+      "historias_que_enlazan_todas_sus_verificaciones": 25,
+      "enlaces_historia_a_verificacion": "19 de 20"
+    },
+    "despues_2026-10-19T13:15Z": {
+      "verificaciones": 34,
+      "con_veredicto": 23,
+      "sin_datos": 11,
+      "claimreview_validos": 23,
+      "sin_datos_con_rating": 0,
+      "problemas": {},
+      "verificaciones_con_enlace_a_entidad": 31,
+      "historias": 28,
+      "historias_que_enlazan_todas_sus_verificaciones": 28,
+      "enlaces_historia_a_verificacion": "23 de 23"
+    },
+    "arreglo": "citation (Dataset con fuente, indicador, periodo y URL) en ClaimReview; titular de la historia como ancla con URL canonica; 'Quien aparece' (hablante y entidades de la historia) en la verificacion; frase del veredicto como ancla en la historia",
+    "historia_1912": "daba 500 (KeyError en timeliness.py, de #159); arreglada por su carril en #213 entre las dos medidas",
+    "sin_entidad": "3 de 34 verificaciones sin enlace a entidad: su historia no tiene entidades publicas (o es 'sin datos' sin historia); no se inventan"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Validacion de Google (Prueba de resultados enriquecidos, Fact Check Explorer): sin acceso desde este entorno"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

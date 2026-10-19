@@ -251,6 +251,34 @@
       "unidad": "cls",
       "direccion": "max",
       "objetivo": 0.1
+    },
+    {
+      "id": "claimreview_incompletos",
+      "descripcion": "Verificaciones con veredicto cuyo ClaimReview falta o esta incompleto (claimReviewed, rating con el veredicto, medio y noticia, fecha, cifra oficial citada), medido en produccion",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "claimreview_sin_datos_con_rating",
+      "descripcion": "Verificaciones 'sin datos' que llevan valoracion en ClaimReview (no se inventa)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "verificacion_enlace_historia_generico",
+      "descripcion": "Verificaciones cuyo enlace a la historia es generico o sin URL canonica",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "historias_sin_enlace_a_sus_verificaciones",
+      "descripcion": "Historias enlazadas desde una verificacion que no enlazan todas sus verificaciones",
+      "unidad": "historias",
+      "direccion": "max",
+      "objetivo": 0
     }
   ]
 }
