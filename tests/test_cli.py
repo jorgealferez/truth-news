@@ -48,6 +48,37 @@ def test_db_upgrade_sync_and_crawl(tmp_path, monkeypatch, capsys):
     get_engine.cache_clear()
 
 
+def test_ai_without_credit_does_not_cut_the_cycle(tmp_path, monkeypatch):
+    """Sin credito en la API (produccion 2026-10-19): la IA falla, pero redes y la marca del ciclo siguen."""
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun, utcnow
+
+    url = f"sqlite:///{tmp_path / 'nocredit.db'}"
+    upgrade(url)
+    monkeypatch.setenv("DATABASE_URL", url)
+    get_engine.cache_clear()
+
+    async def fake_crawl(session, settings):
+        run = CrawlRun(finished_at=utcnow(), stats={})
+        session.add(run)
+        session.flush()
+        return run
+
+    def no_credit(*args, **kwargs):
+        raise RuntimeError("Your credit balance is too low to access the Anthropic API.")
+
+    monkeypatch.setattr(worker, "crawl", fake_crawl)
+    monkeypatch.setattr(worker.political, "run", lambda session, settings, **kw: {"channels": 0})
+    monkeypatch.setattr(worker, "ai_step", no_credit)
+    monkeypatch.setattr(worker, "process_pending", no_credit)
+    summary = worker.run_cycle()
+    assert "credit balance" in summary["ai"]["error"]
+    assert "credit balance" in summary["investigations"]["error"]
+    assert "social" in summary and "entities" in summary
+    assert worker.last_full_cycle(worker.get_settings()) is not None
+    get_engine.cache_clear()
+
+
 def test_database_url_normalization(monkeypatch):
     from truthnews.config import get_settings
 
