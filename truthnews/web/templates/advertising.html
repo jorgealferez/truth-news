@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ t(lang, 'advertising_title') }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ t(lang, 'advertising_lead') }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/publicidad">{% endblock %}
+{% block canonical %}{{ site.site_url }}/publicidad{% endblock %}
+
 {% block content %}
 <article class="story"><h1>{{ t(lang, 'advertising_title') }}</h1>
 <p class="lead-text">{{ t(lang, 'advertising_lead') }}</p>

@@ -19,6 +19,7 @@ from truthnews.crawler.extract import canonical_url, extract_text, sha256, word_
 from truthnews.crawler.feeds import FeedEntry, discover_feed_urls, parse_feed
 from truthnews.crawler.http import PoliteClient
 from truthnews.models import REVISION_MAX_CHARS, Article, ArticleRevision, CrawlRun, Feed, Outlet, utcnow
+from truthnews.promo import is_promotional
 from truthnews.registry import OutletSpec, load_outlets
 
 log = logging.getLogger(__name__)
@@ -298,6 +299,10 @@ async def crawl(
                 existing.add(known_art.url_hash)
                 n_revisions += track_revisions(session, known_art, candidates[known_art.url_hash][1], run.id)
         new_items = [(h, feed, entry) for h, (feed, entry) in candidates.items() if h not in existing]
+        # Guias de compra, ofertas y contenido patrocinado de los medios no son noticias: no se guardan.
+        n_promo = len(new_items)
+        new_items = [it for it in new_items if not is_promotional(it[2].title, it[2].summary, it[2].url)]
+        n_promo -= len(new_items)
         texts: list[str | None] = [None] * len(new_items)
         cats = [
             classify(e.title, e.summary, e.url, e.tags, outlet_by_id[f.outlet_id].language, f.category_hint)
@@ -355,6 +360,7 @@ async def crawl(
             "outlets_with_new": len({by_id[f.id].outlet_id for _, f, _ in new_items}),
             "revisions": n_revisions,
             "texts_backfilled": backfilled,
+            "promotional_skipped": n_promo,
         }
     run.finished_at = utcnow()
     session.flush()
