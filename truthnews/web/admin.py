@@ -31,6 +31,7 @@ from truthnews.models import (
     Verification,
     utcnow,
 )
+from truthnews.social import queue as social_queue
 
 security = HTTPBasic(auto_error=False)
 
@@ -104,7 +105,13 @@ def make_router(settings: Settings, get_session, templates, render) -> APIRouter
 
     @router.get("", response_class=HTMLResponse)
     def dashboard(request: Request, _: Admin, session: SessionDep):
-        return render(request, "admin.html", b=balance(session), csrf=csrf_token(settings))
+        return render(
+            request,
+            "admin.html",
+            b=balance(session),
+            social=social_queue.status(session),
+            csrf=csrf_token(settings),
+        )
 
     @router.post("/investigaciones")
     def create_investigation(

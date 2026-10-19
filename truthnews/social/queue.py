@@ -136,3 +136,27 @@ def run(
         if own_client:
             client.close()
     return summary
+
+
+def status(session: Session, settings: SocialSettings | None = None, now: datetime | None = None) -> dict:
+    """Resumen para el panel: modo por red (sin mostrar credenciales), cupo de hoy y ultimas piezas."""
+    settings = settings or SocialSettings()
+    day = (now or utcnow()).replace(hour=0, minute=0, second=0, microsecond=0)
+    today = dict(
+        session.execute(
+            select(SocialPost.network, func.count())
+            .where(SocialPost.created_at >= day)
+            .group_by(SocialPost.network)
+        ).all()
+    )
+    networks = [
+        {
+            "network": n,
+            "mode": "envio" if settings.credentials(n) else "prueba",
+            "today": today.get(n, 0),
+            "quota": settings.quota.get(n, 0),
+        }
+        for n in SOCIAL_NETWORKS
+    ]
+    recent = list(session.scalars(select(SocialPost).order_by(SocialPost.id.desc()).limit(40)))
+    return {"enabled": settings.enabled, "networks": networks, "recent": recent}

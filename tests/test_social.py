@@ -317,3 +317,22 @@ def test_adapter_errors_and_telegram_text_only():
         tg.send("hola", SITE, None, "t")
     with pytest.raises(adapters.SendError, match="no JSON"):
         adapters.Mastodon(ALL_CREDS, client).send("hola", SITE, None, "t")
+
+
+def test_admin_shows_social_queue_without_secrets(engine, session, content, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.social.queue import status
+    from truthnews.web.app import create_app
+
+    run(session, SITE, settings(), now=NOW)
+    session.commit()
+    info = status(session, settings(env={"TELEGRAM_BOT_TOKEN": "x", "TELEGRAM_CHAT_ID": "@c"}), now=NOW)
+    modes = {n["network"]: (n["mode"], n["today"]) for n in info["networks"]}
+    assert modes["telegram"] == ("envio", 2) and modes["x"] == ("prueba", 2)
+    monkeypatch.setenv("TELEGRAM_BOT_TOKEN", "secreto-del-bot")
+    client = TestClient(create_app(Settings(database_url="sqlite://", admin_password="clave"), engine=engine))
+    page = client.get("/admin", auth=("admin", "clave")).text
+    assert "<h2>Redes</h2>" in page and "modo prueba (sin credenciales)" in page
+    assert "Verificación: Falso" in page and "secreto-del-bot" not in page
