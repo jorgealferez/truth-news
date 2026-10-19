@@ -251,6 +251,55 @@
       "unidad": "cls",
       "direccion": "max",
       "objetivo": 0.1
+    },
+    {
+      "id": "claimreview_incompletos",
+      "descripcion": "Verificaciones con veredicto cuyo ClaimReview falta o esta incompleto (claimReviewed, rating con el veredicto, medio y noticia, fecha, cifra oficial citada), medido en produccion",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "claimreview_sin_datos_con_rating",
+      "descripcion": "Verificaciones 'sin datos' que llevan valoracion en ClaimReview (no se inventa)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "verificacion_enlace_historia_generico",
+      "descripcion": "Verificaciones cuyo enlace a la historia es generico o sin URL canonica",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "historias_sin_enlace_a_sus_verificaciones",
+      "descripcion": "Historias enlazadas desde una verificacion que no enlazan todas sus verificaciones",
+      "unidad": "historias",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "idiomas_problemas_seo",
+      "descripcion": "Paginas es/en medidas en produccion con lang, canonical, robots o hreflang incoherentes (hreflang no reciproco, ingles sin traducir indexable, hreflang hacia una pagina noindex)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "paginas_ttfb_p50_mayor_600ms",
+      "descripcion": "Paginas medidas (contratos, hoy, historia con graficos, entidad, verificacion, portada) con TTFB p50 > 600 ms en produccion (20 peticiones con conexion reutilizada)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "paginas_lcp_movil_mayor_2500ms",
+      "descripcion": "Paginas medidas con LCP movil > 2,5 s (Chromium tactil, CPU 4x, 4G lenta, mediana de 3)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
     }
   ]
 }

@@ -23,12 +23,14 @@
   <section class="block">
     <h2>{{ t(lang, 'said_by') }}</h2>
     <blockquote class="vquote">«{{ c.text }}» <cite>— <a href="/medio/{{ c.outlet.slug }}">{{ c.outlet.name }}</a>{% if c.article %}, <a href="{{ c.article.url }}" rel="nofollow noopener" target="_blank">{{ c.article.published_at.strftime('%d/%m/%Y') }}</a> · <a href="/noticia/{{ c.article_id }}">{{ t(lang, 'cited_data') }}</a>{% endif %}</cite></blockquote>
+  {% if story %}<p class="meta">{{ t(lang, 'see_story') }}: <a href="{{ url('historia', story.id, story.title) }}">{{ story.title }}</a></p>{% endif %}
+    {% include "_people.html" %}
   </section>
   <details class="block fold" open><summary><h2>{{ t(lang, 'method') }}</h2></summary>
     <p>{{ v.explanation }}</p>
     {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit, lang) }}</b> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
     {% if c.extractor == 'ia' %}<p class="meta">{{ t(lang, 'claim_extracted_ai') }}</p>{% endif %}
-    <p class="meta">{{ v.method }} · {{ v.checked_at.strftime('%d/%m/%Y %H:%M') }} UTC · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>{% if c.story_id %} · <a href="/historia/{{ c.story_id }}">{{ t(lang, 'see_story') }}</a>{% endif %}</p>
+    <p class="meta">{{ v.method }} · {{ v.checked_at.strftime('%d/%m/%Y %H:%M') }} UTC · <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
   </details>
   <div class="share" aria-label="{{ t(lang, 'share') }}">
     <button type="button" class="share-native" hidden data-title="{{ line }}" data-url="{{ share_url }}">↗ {{ t(lang, 'share') }}</button>

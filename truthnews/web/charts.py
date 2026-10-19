@@ -91,6 +91,53 @@ class Said:
     href: str
 
 
+TOUCH = 44  # lado de la zona de toque en movil (ADR 0050)
+TOUCH_MIN = 24.0  # minimo de WCAG 2.5.8: separacion minima entre puntos de un carril
+
+
+def _hit_boxes(centers: list[tuple[float, float]]) -> list[tuple[float, float, float, float]]:
+    """Zona de toque (x, y, ancho, alto) de cada punto: TOUCH x TOUCH centrada en el, recortada a medio
+    camino de cada punto vecino que caeria dentro, por el eje en que mas se separan. Asi ninguna zona tapa
+    el marcador de otro punto y cada toque abre el enlace del punto mas cercano."""
+    half = TOUCH / 2
+    out = []
+    for i, (x, y) in enumerate(centers):
+        left, right, top, bottom = x - half, x + half, y - half, y + half
+        for j, (xj, yj) in enumerate(centers):
+            dx, dy = xj - x, yj - y
+            if j == i or abs(dx) >= half or abs(dy) >= half or (dx == 0 and dy == 0):
+                continue
+            if abs(dx) >= abs(dy):
+                left, right = (left, min(right, x + dx / 2)) if dx > 0 else (max(left, x + dx / 2), right)
+            else:
+                top, bottom = (top, min(bottom, y + dy / 2)) if dy > 0 else (max(top, y + dy / 2), bottom)
+        out.append((left, top, right - left, bottom - top))
+    return out
+
+
+def _hit(box: tuple[float, float, float, float]) -> str:
+    """El rect transparente va dentro del <a>: la caja del enlace es la zona de toque (fill="transparent"
+    recibe toques; fill="none" no)."""
+    x, y, w, h = box
+    return f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="transparent"/>'
+
+
+def _spread(xs: list[float], lo: float, hi: float, gap: float = 24.0) -> list[float]:
+    """Posiciones en un carril separadas al menos `gap` (zona de toque minima de WCAG 2.5.8), en el mismo
+    orden y lo mas cerca posible de su fecha. Si no caben, se reparten por igual entre lo y hi."""
+    if len(xs) > 1 and (hi - lo) / (len(xs) - 1) < gap:
+        step = (hi - lo) / (len(xs) - 1)
+        return [lo + step * k for k in range(len(xs))]
+    out = list(xs)
+    for k in range(1, len(out)):
+        out[k] = max(out[k], out[k - 1] + gap)
+    if out and out[-1] > hi:
+        out[-1] = hi
+        for k in range(len(out) - 2, -1, -1):
+            out[k] = min(out[k], out[k + 1] - gap)
+    return out
+
+
 def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Markup:
     """Lo que dijo y cuando: un carril por veredicto. `labels` traduce los veredictos (y 'sin-datos')."""
     if not points:
@@ -99,10 +146,31 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
     lanes = [(key, members) for key, members in LANES if any(p.verdict in members for p in points)]
     h = top + lane_h * len(lanes) + axis_h
     x0, x1 = PAD_L + label_w, W - PAD_R
+    fit = int((x1 - x0 - 12) // TOUCH_MIN) + 1  # puntos por carril que caben a TOUCH_MIN uno de otro
+    total = len(points)
+    points = [
+        p
+        for _, members in lanes
+        for p in sorted((q for q in points if q.verdict in members), key=lambda q: q.when)[-fit:]
+    ]  # en cada carril, los mas recientes que caben
     xs, lo, hi = _time_scale([_aware(p.when) for p in points], x0 + 6, x1 - 6)
     span = (hi - lo).total_seconds() / 86400
     out = []
     counts = []
+    rows = [(i, p) for i, (_, members) in enumerate(lanes) for p in points if p.verdict in members]
+    px: dict[int, float] = {}  # x de cada punto: su fecha, separada 24 de su vecino de carril
+    for i, _ in enumerate(lanes):
+        lane = sorted((p for j, p in rows if j == i), key=lambda p: p.when)
+        px.update(
+            zip(map(id, lane), _spread([xs(p.when) for p in lane], x0 + 6, x1 - 6, TOUCH_MIN), strict=True)
+        )
+    boxes = dict(
+        zip(
+            map(id, (p for _, p in rows)),
+            _hit_boxes([(px[id(p)], top + lane_h * i + lane_h / 2) for i, p in rows]),
+            strict=True,
+        )
+    )
     for i, (key, members) in enumerate(lanes):
         y = top + lane_h * i + lane_h / 2
         mine = [p for p in points if p.verdict in members]
@@ -117,9 +185,8 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
             color = VERDICT_COLOR.get(kind, VERDICT_COLOR["sin-datos"])
             tip = f"{_aware(p.when):%d/%m/%Y} · {labels.get(kind, kind)}: {p.text[:160]}"
             out.append(
-                f'<a href="{escape(p.href)}"><title>{escape(tip)}</title>'
-                f'<rect x="{xs(p.when) - 9:.1f}" y="{y - 11:.1f}" width="18" height="22" fill="transparent"/>'
-                f"{_marker(kind, xs(p.when), y, color)}</a>"
+                f'<a href="{escape(p.href)}"><title>{escape(tip)}</title>{_hit(boxes[id(p)])}'
+                f"{_marker(kind, px[id(p)], y, color)}</a>"
             )
     ya = top + lane_h * len(lanes) + 14
     out.append(f'<text x="{x0}" y="{ya}" font-size="10" fill="{MUTED}">{_date_label(lo, span)}</text>')
@@ -129,6 +196,8 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
             f"{_date_label(hi, span)}</text>"
         )
     desc = f"{len(points)} afirmaciones entre {lo:%d/%m/%Y} y {hi:%d/%m/%Y}. " + "; ".join(counts) + "."
+    if total > len(points):
+        desc += f" Se muestran las {len(points)} mas recientes de {total}."
     return Markup(
         f'<svg class="chart said" viewBox="0 0 {W} {h}" role="img" aria-labelledby="st-t st-d" '
         f'xmlns="http://www.w3.org/2000/svg"><title id="st-t">{escape(title)}</title>'
@@ -189,7 +258,10 @@ def figure_chart(
     span = (hi - lo).total_seconds() / 86400
     ext = {min(points, key=lambda p: p.value).value, max(points, key=lambda p: p.value).value}
     labelled: set[float] = set()
-    for p in sorted(points, key=lambda p: p.when):
+    ordered = sorted(points, key=lambda p: p.when)
+    linked = [p for p in ordered if p.href]
+    boxes = dict(zip(map(id, linked), _hit_boxes([(xs(p.when), ys(p.value)) for p in linked]), strict=True))
+    for p in ordered:
         x, y = xs(p.when), ys(p.value)
         tip = f"{p.who} · {_aware(p.when):%d/%m %H:%M} · {_fmt(p.value, unit)}"
         mark = f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="{INK}" stroke="#fbfaf6" stroke-width="2"/>'
@@ -203,7 +275,9 @@ def figure_chart(
                 f'stroke="{MUTED}" stroke-width="2"/>{mark}'
             )
         body = f"<title>{escape(tip)}</title>{mark}"
-        out.append(f'<a href="{escape(p.href)}">{body}</a>' if p.href else f"<g>{body}</g>")
+        out.append(
+            f'<a href="{escape(p.href)}">{_hit(boxes[id(p)])}{body}</a>' if p.href else f"<g>{body}</g>"
+        )
         if p.value in ext and p.value not in labelled:  # etiquetas solo en los extremos, sin pisar
             labelled.add(p.value)
             anchor = "end" if x > (x0 + x1) / 2 else "start"

@@ -291,7 +291,7 @@ def test_ai_pipeline(session, topic_world):
     _, stories = topic_world
     ids = [stories[0].id, stories[1].id]
     assert "desactivada" in ai_pipeline.run(session, Settings())["ai"]
-    settings = Settings()
+    settings = Settings(ai_piece_refresh_minutes=0)  # la cadencia minima se prueba aparte
     out = ai_pipeline.run(
         session,
         settings,
@@ -345,3 +345,88 @@ def test_ai_pipeline_writes_pieces_in_parallel(session, monkeypatch):
     written, revision, failed = ai_pipeline.write_batch(session, None, topics, None, 3, 3)
     assert peak[0] == 3 and stored == [0, 2]  # el tope de piezas (3) se respeta: el tema 3 no entra
     assert (written, revision, failed) == (2, 2, 1)
+
+
+# --- Coste (ADR 0054) ---------------------------------------------------------------------------------
+def test_call_cost_uses_model_prices_and_charges_unknown_at_the_top():
+    from truthnews.ai import cost
+
+    usage = {"input_tokens": 1_000_000, "output_tokens": 100_000, "cache_read_input_tokens": 0}
+    assert cost.call_cost("claude-opus-5-5", usage) == pytest.approx(4.0 + 2.0)
+    assert cost.call_cost("claude-opus-5", usage) == pytest.approx(5.0 + 2.5)  # no se confunde con 5-5
+    assert cost.call_cost("claude-haiku-5-5", usage) == pytest.approx(0.1 + 0.05)
+    assert cost.call_cost("modelo-nuevo", usage) == pytest.approx(5.0 + 2.5)
+
+
+def test_client_charges_every_call_and_stops_at_the_daily_budget(monkeypatch):
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=0.0, daily_budget=0.0001)
+    monkeypatch.setattr(cost, "METER", meter)
+    with pytest.raises(AIError, match="rechazo"):  # un rechazo tambien se paga
+        AIClient(client=fake_sdk(message(stop="refusal"), [])).structured("s", "u", {})
+    assert meter.calls == 1 and meter.spent > 0
+    calls = []
+    meter.spent_before = 1.0
+    with pytest.raises(AIError, match="presupuesto diario"):
+        AIClient(client=fake_sdk(message(), calls)).structured("s", "u", {})
+    assert calls == []  # pasado el tope no se llama
+    summary = meter.summary()
+    assert summary["llamadas"] == 1 and summary["por_modelo"]["claude-opus-5-5"] > 0
+
+
+def test_unlimited_budget_never_blocks():
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=1e6, daily_budget=0)
+    meter.check()
+
+
+def test_topic_with_recent_piece_gives_its_slot_to_the_next(session, monkeypatch):
+    from datetime import timedelta
+
+    from truthnews.models import utcnow
+
+    old, fresh, empty = (
+        Topic(title=t, category="internacional", country="ES", first_seen=NOW, last_seen=NOW)
+        for t in ("a", "b", "c")
+    )
+    session.add_all([old, fresh, empty])
+    session.flush()
+    for tp, age in ((old, timedelta(hours=5)), (fresh, timedelta(minutes=10))):
+        session.add(
+            Piece(
+                topic_id=tp.id,
+                kind="analisis",
+                status="publicada",
+                title="t",
+                dek="d",
+                model="m",
+                input_hash="x",
+                created_at=utcnow() - age,
+            )
+        )
+    session.flush()
+    refresh = timedelta(minutes=120)
+    assert not ai_pipeline.recent_piece(session, old, refresh)
+    assert ai_pipeline.recent_piece(session, fresh, refresh)
+    assert not ai_pipeline.recent_piece(session, empty, refresh)
+    asked = []
+    monkeypatch.setattr(ai_pipeline, "prepare_piece", lambda s, t, v: asked.append(t.id) or None)
+    ai_pipeline.write_batch(session, None, [old, fresh, empty], None, 6, 1, refresh)
+    assert asked == [old.id, empty.id]
+
+
+def test_worker_sums_todays_ai_cost(session):
+    from truthnews.models import CrawlRun
+    from truthnews.worker import spent_today
+
+    session.add_all(
+        [
+            CrawlRun(started_at=NOW, stats={"ai_cost": {"usd": 1.5}}),
+            CrawlRun(started_at=NOW, stats={"seconds": {}}),
+            CrawlRun(started_at=NOW - timedelta(days=2), stats={"ai_cost": {"usd": 9}}),
+        ]
+    )
+    session.flush()
+    assert spent_today(session, NOW) == pytest.approx(1.5)

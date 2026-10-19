@@ -102,7 +102,7 @@
     {% for c in claims %}{% set v = c.verification %}
       <div class="claim">
         <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <a href="/medio/{{ c.outlet.slug }}"><strong>{{ c.outlet.name }}</strong></a>: «{{ c.text }}»</p>
-        <p><strong>{{ verdict_line(c, lang) }}</strong> <a class="meta" href="/verificacion/{{ c.id }}">{{ t(lang, 'see_verification') }} →</a></p>
+        <p><a href="/verificacion/{{ c.id }}"><strong>{{ verdict_line(c, lang) }}</strong></a> <a class="meta" href="/verificacion/{{ c.id }}">{{ t(lang, 'see_verification') }} →</a></p>
         <p>{{ v.explanation }}</p>
         {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> <span class="vs">{{ t(lang, 'vs_said') }} {{ c.value|dato(c.unit) }}</span> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
       </div>

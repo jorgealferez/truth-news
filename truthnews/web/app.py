@@ -229,6 +229,19 @@ def create_app(
             totals_cache.update(at=now, value=queries.totals(session))
         return totals_cache["value"]
 
+    view_cache: dict = {}
+
+    def cached(key: tuple, seconds: float, build):
+        # Vistas caras que solo cambian con el ciclo del worker (/hoy, prensa de /contratos): se
+        # recalculan como mucho cada `seconds`; la primera visita tras caducar paga el calculo.
+        now = time.monotonic()
+        hit = view_cache.get(key)
+        if hit is None or now - hit[0] > seconds:
+            if len(view_cache) > 200:
+                view_cache.clear()
+            hit = view_cache[key] = (now, build())
+        return hit[1]
+
     nocuadra_cache: dict = {}
 
     def nocuadra_cached(session: Session) -> list:
@@ -450,7 +463,8 @@ def create_app(
 
     def today_view(session: Session, lang: str) -> tuple[list, str]:
         now = datetime.now(UTC)
-        return today.keys(session, now, lang), now.strftime("%d/%m/%Y")
+        items = cached(("hoy", lang, now.date()), 300, lambda: today.keys(session, now, lang))
+        return items, now.strftime("%d/%m/%Y")
 
     @app.get("/hoy", response_class=HTMLResponse)
     def today_page(request: Request, session: SessionDep):
@@ -636,11 +650,19 @@ def create_app(
         lang = lang_of(request)
         line = vview.sentence(c, lang)
         url = f"{settings.site_url}/verificacion/{c.id}"
+        # Enlazado interno (ADR 0038): la historia con su titular y quien aparece, hablante primero.
+        story = session.get(Story, c.story_id) if c.story_id else None
+        people = [(c.speaker, 1)] if c.speaker else []
+        if c.story_id:
+            found = entity_views.for_story(session, c.story_id, limit=4)
+            people += [(e, n) for e, n in found if e != c.speaker]
         return render(
             request,
             "verification.html",
             c=c,
             v=c.verification,
+            story=story,
+            people=people[:4],
             line=line,
             chart=vview.chart(c, lang),
             series=vview.series_of(c),
@@ -1007,10 +1029,14 @@ def create_app(
             ted=ted,
             ted_since=got[0] if got else None,
             ted_until=got[1] if got else None,
-            press=contracts.mentions(
-                session,
-                [f["nombre"] for f in ted["firms"]] if ted else [],
-                datetime.combine(today, datetime.min.time(), UTC) + timedelta(days=1),
+            press=cached(
+                ("prensa", tuple(f["nombre"] for f in ted["firms"]) if ted else (), today),
+                600,
+                lambda: contracts.mentions(
+                    session,
+                    [f["nombre"] for f in ted["firms"]] if ted else [],
+                    datetime.combine(today, datetime.min.time(), UTC) + timedelta(days=1),
+                ),
             ),
             dep_name=appointments.dept_name,
             prev_day=day - timedelta(days=1),
@@ -1153,6 +1179,9 @@ def create_app(
             return redirect
         return render(request, "investigation.html", inv=inv, r=inv.report)
 
-    app.include_router(admin.make_router(settings, get_session, templates, render))
+    # Retirar o restituir un veredicto vacia las vistas en cache: /hoy no lo sigue mostrando.
+    app.include_router(
+        admin.make_router(settings, get_session, templates, render, on_change=view_cache.clear)
+    )
 
     return app
