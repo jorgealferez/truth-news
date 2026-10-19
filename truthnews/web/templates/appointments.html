@@ -12,7 +12,9 @@
 <ul class="kpis"><li><b>{{ v.counts.nombramiento }}</b><span>{{ t(lang, 'appt_n_nombramiento') }}</span></li><li><b>{{ v.counts.cese }}</b><span>{{ t(lang, 'appt_n_cese') }}</span></li><li><b>{{ v.counts.total }}</b><span>{{ t(lang, 'appt_total') }}</span></li></ul>
 {% for dep, items in v.named %}<section class="block appt"><h2>{{ dep }}</h2>
   <ul class="compact">{% for i in items %}<li><span class="tag">{{ t(lang, 'appt_kind_' ~ i.tipo) }}</span> <strong>{{ i.persona }}</strong>{% if i.cargo %} — {{ i.cargo }}{% endif %}
-    <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></li>{% endfor %}</ul></section>{% endfor %}
+    <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a>
+    {% if press.get(i.persona) %}<details class="who-more"><summary>{{ t(lang, 'appt_in_press') }} ({{ press[i.persona]|length }})</summary><ul class="who-omits">{% for a in press[i.persona] %}
+      <li><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a> <span class="meta">{{ a.outlet.name }} · {{ a.published_at.strftime('%d/%m') }}</span></li>{% endfor %}</ul></details>{% endif %}</li>{% endfor %}</ul></section>{% endfor %}
 {% if v.rest %}<details class="block fold"><summary><h2>{{ t(lang, 'appt_other') }}</h2> <span class="meta">{{ v.rest|length }}</span></summary>
   <ul class="compact">{% for i in v.rest %}<li><span class="meta">{{ i.epigrafe or t(lang, 'appt_kind_' ~ i.tipo) }} · {{ i.departamento|capitalize }}</span><br>{{ i.titulo }} <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></li>{% endfor %}</ul></details>{% endif %}
 {% endif %}

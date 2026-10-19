@@ -6,18 +6,25 @@ cambia y se guarda mientras viva el proceso; hoy o una respuesta vacia se vuelve
 
 from __future__ import annotations
 
+import re
 import threading
 import time
 from datetime import date, timedelta
 
 import httpx
+from sqlalchemy import or_, select
+from sqlalchemy.orm import Session, joinedload
 
+from truthnews.classify import normalize
 from truthnews.data import nombramientos as nb
+from truthnews.models import Article
 
 _PARTICLES = frozenset(["de", "del", "la", "las", "los", "el", "y", "e", "para", "con", "en", "a"])
 RETRY_SECONDS = 600
 MAX_DAYS_CACHED = 120
 LOOKBACK_DAYS = 4
+MENTION_DAYS = 60
+MENTIONS_PER_PERSON = 3
 
 
 class BoeDays:
@@ -73,3 +80,48 @@ def view(items: list[nb.Disposicion]) -> dict:
         "total": len(items),
     }
     return {"named": sorted(named.items(), key=lambda kv: -len(kv[1])), "rest": rest, "counts": counts}
+
+
+def _name_keys(persona: str) -> tuple[str, str] | None:
+    """Nombre de pila y primer apellido ('María Dolores Rial de la Calle' -> ('María', 'Rial'))."""
+    words = [w for w in persona.split() if w.lower() not in _PARTICLES]
+    if len(words) < 2:
+        return None
+    surname = words[-2] if len(words) >= 3 else words[-1]
+    return words[0], surname
+
+
+def _word(needle: str, text: str) -> bool:
+    return re.search(rf"(?<!\w){re.escape(needle)}(?!\w)", text) is not None
+
+
+def mentions(session: Session, people: list[str], until) -> dict[str, list[Article]]:
+    """Noticias rastreadas de los ultimos 60 dias que nombran a cada persona (nombre y primer apellido)."""
+    out: dict[str, list[Article]] = {}
+    since = until - timedelta(days=MENTION_DAYS)
+    for persona in dict.fromkeys(people):
+        keys = _name_keys(persona)
+        if not keys:
+            continue
+        first, surname = keys
+        rows = session.scalars(
+            select(Article)
+            .options(joinedload(Article.outlet))
+            .where(
+                Article.published_at >= since,
+                or_(Article.title.ilike(f"%{surname}%"), Article.summary.ilike(f"%{surname}%")),
+            )
+            .order_by(Article.published_at.desc())
+            .limit(50)
+        )
+        nf, ns = normalize(first), normalize(surname)
+        hits = []
+        for a in rows:
+            text = normalize(f"{a.title} {a.summary or ''}")
+            if _word(ns, text) and _word(nf, text):
+                hits.append(a)
+            if len(hits) == MENTIONS_PER_PERSON:
+                break
+        if hits:
+            out[persona] = hits
+    return out
