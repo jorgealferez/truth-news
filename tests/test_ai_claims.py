@@ -40,8 +40,18 @@ def test_accepts_what_rules_miss():
             "ES",
             15.2,
             None,
+            "comunidad",
+        ),
+        ("La tasa de paro en Madrid es del 9,1 % según el sindicato.", "paro", "ES-MD", 9.1, None, "dudoso"),
+        (
+            "La inflación en Andalucía es del 3,1 % según el instituto.",
+            "inflacion",
+            "ES-AN",
+            3.1,
+            None,
             "regional",
         ),
+        ("El paro en Galicia es del 8 % y en España del 10 % hoy.", "paro", "ES-GA", 8.0, None, "a la vez"),
         ("La tasa de paro baja 0,4 puntos hasta el 10,5 % en total.", "paro", "ES", 10.5, None, "puntos"),
         ("La inflación se situará en el 2,1 % el próximo año.", "inflacion", "ES", 2.1, None, "prevision"),
         ("La tasa de paro es del 10,5 % según la encuesta oficial.", "paro", "ES", 11.0, None, "cifra"),
@@ -222,7 +232,7 @@ def test_run_validates_judges_and_stores(session, article):
     assert claims["paro"].extractor == "ia" and claims["paro"].verification.verdict == "verdadero"
     assert claims["inflacion"].geo == "DE" and claims["inflacion"].period == f"{Y}-09"
     assert claims["inflacion"].verification.verdict == "verdadero"
-    assert "Francia" in ai.users[0] and "pais_del_medio" in ai.users[0]
+    assert "Francia" in ai.users[0] and "pais_por_defecto" in ai.users[0]
     # Segunda pasada: las frases ya guardadas no se vuelven a enviar.
     again = ai_claims.run(session, FakeAI([{"afirmaciones": []}]), NOW - timedelta(hours=2), verifier())
     assert again["frases_candidatas"] == 1
@@ -277,4 +287,15 @@ def test_variations_are_not_levels():
     assert isinstance(
         check("El PIB crece un 0,6 % en el segundo trimestre, según el INE.", "pib_trimestral", "ES", 0.6),
         ClaimCandidate,
+    )
+
+
+def test_regional_unemployment():
+    c = check("La tasa de paro en Andalucía se sitúa en el 14,6 % según la EPA.", "paro", "ES-AN", 14.6)
+    assert isinstance(c, ClaimCandidate) and c.geo == "ES-AN"
+    two = "El paro en Cataluña es del 8,1 % y en Extremadura del 15,9 % según la EPA."
+    assert check(two, "paro", "ES-EX", 15.9).geo == "ES-EX"
+    assert "inequivocamente" in check(two, "paro", "ES-CT", 15.9)
+    assert isinstance(
+        check("El paro en la Comunidad de Madrid es del 9 % hoy.", "paro", "ES-MD", 9.0), ClaimCandidate
     )

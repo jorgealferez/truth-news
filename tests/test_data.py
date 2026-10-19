@@ -146,3 +146,19 @@ def test_gdelt_respects_rate_limit():
     text = httpx.Response(200, text="Please limit requests", headers={"content-type": "text/html"})
     assert gdelt.timeline("x", transport=transport({"timelinevol": text}), sleep=lambda s: None) == []
     assert json.dumps(waits)
+
+
+def test_ine_level_reads_quarters():
+    # Formato real de la EPA (tabla 65334): FK_Periodo 19-22 son los trimestres.
+    data = {
+        "Nombre": "Tasa de paro de la población. Ambos sexos. Andalucía. Total. ",
+        "Data": [
+            {"Anyo": 2025, "FK_Periodo": 22, "Valor": 14.66, "Secreto": False},
+            {"Anyo": 2026, "FK_Periodo": 19, "Valor": 14.66, "Secreto": False},
+            {"Anyo": 2026, "FK_Periodo": 20, "Valor": 14.56, "Secreto": False},
+        ],
+    }
+    o = ine.level("EPA452440", transport=transport({"EPA452440": httpx.Response(200, json=data)}))
+    assert (o.period, o.value, o.previous.period) == ("2026-Q2", 14.56, "2026-Q1")
+    assert list(o.history) == ["2025-Q4", "2026-Q1", "2026-Q2"] and o.extra["serie"] == "EPA452440"
+    assert ine.level("X", transport=transport({})) is None

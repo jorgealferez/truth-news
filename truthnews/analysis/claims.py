@@ -16,6 +16,7 @@ import yaml
 from truthnews.classify import normalize
 from truthnews.registry import REGISTRY_DIR, countries
 
+META_KEYS = ("geo_names", "eu_geos", "foreign_markers", "region_names")
 _SENTENCE = re.compile(r"(?<=[.!?;])\s+|\n+")
 _PCT = r"(?P<num>\d{1,3}(?:[.,]\d{1,2})?)\s*(?:%|por ciento|percent|por cento)"
 _ABS = re.compile(r"(\d{1,3}(?:[.,]\d{1,3})?)\s*(millones|million|milhoes|milhões)")
@@ -46,6 +47,8 @@ _VARIATION = re.compile(
 def is_variation(before: str) -> bool:
     """Si el texto normalizado justo antes de la cifra la presenta como una variacion ("baja un")."""
     return _VARIATION.search(before[-60:]) is not None
+
+
 # Pasado, previsiones y condicionales: no se comparan con el ultimo dato publicado.
 _NOT_CURRENT = re.compile(
     r"\b(pasado ano|ano pasado|el pasado ejercicio|ano anterior|previsto|prevision|previsiones|preve|preven"
@@ -81,6 +84,28 @@ def _region_names() -> list[str]:
         names += [normalize(n) for n in c.get("regions", {}).values()]
     names += ["andalucia", "cataluna", "catalunya", "euskadi", "galicia", "madrid", "valencia"]
     return sorted(set(names), key=len, reverse=True)
+
+
+@lru_cache(maxsize=1)
+def _territory_gap() -> str:
+    """Territorio entre indicador y verbo: "el paro en Andalucia se situa en el 14 %"."""
+    names = [normalize(n) for ns in indicators()["geo_names"].values() for n in ns]
+    names += [normalize(n) for ns in indicators().get("region_names", {}).values() for n in ns]
+    alt = "|".join(re.escape(n) for n in sorted(set(names), key=len, reverse=True))
+    return rf"(?:(?:en|de)\s+(?:la\s+|el\s+)?(?:{alt})\s+)?"
+
+
+def regions_in(sn: str) -> tuple[dict[str, list[int]], bool]:
+    """Comunidades nombradas sin ambiguedad (codigo -> posiciones) y si queda otro nombre regional dudoso."""
+    found: dict[str, list[int]] = {}
+    masked = sn
+    for code, names in indicators().get("region_names", {}).items():
+        for n in names:
+            for m in re.finditer(r"(?<!\w)" + re.escape(normalize(n)) + r"(?!\w)", sn):
+                found.setdefault(code, []).append(m.start())
+                masked = masked[: m.start()] + " " * (m.end() - m.start()) + masked[m.end() :]
+    leftover = any(_word_in(r, masked) for r in _region_names())
+    return found, leftover
 
 
 _MONTHS = {
@@ -220,10 +245,11 @@ def extract(
         years = {int(y) for y in _YEAR.findall(sn)}
         if any(y < published_year - 1 for y in years):
             continue  # habla de un ano pasado: no se compara con el ultimo dato
-        if any(re.search(r"(?<!\w)" + re.escape(r) + r"(?!\w)", sn) for r in _region_names()):
-            continue  # dato regional: no hay serie nacional con la que compararlo
+        regions, leftover = regions_in(sn)
+        if leftover or len(regions) > 1:
+            continue  # nombre regional dudoso (ciudad o comunidad) o varias comunidades: no se atribuye
         for key, ind in indicators().items():
-            if key in ("geo_names", "eu_geos", "foreign_markers"):
+            if key in META_KEYS:
                 continue
             requires = ind.get("requires", [])
             if requires and not any(_word_in(normalize(r), sn) for r in requires):
@@ -240,7 +266,7 @@ def extract(
                     gap = (
                         rf"(?:(?:de|en|del mes de|in)\s+(?:{'|'.join(_MONTHS)})(?:\s+(?:de\s+)?\d{{4}})?\s+)?"
                     )
-                    rx = rf"(?<!\w){pn}(?!\w)\s+{gap}{link}{_PCT}"
+                    rx = rf"(?<!\w){pn}(?!\w)\s+{_territory_gap()}{gap}{link}{_PCT}"
                     m = re.search(rx, sn)
                     if m and not ind.get("change_is_level") and is_variation(sn[: m.start("num")]):
                         m = None  # "baja un 2 %": variacion, no nivel
@@ -255,7 +281,12 @@ def extract(
                     break
             if value is None:
                 continue
-            geo = _geo(sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False))
+            if regions:
+                if not ind.get("regional") or _geo(sn, "", explicit_only=True) or _named_positions(sn):
+                    continue  # sin serie regional, o la frase nombra tambien un pais
+                geo = next(iter(regions))
+            else:
+                geo = _geo(sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False))
             if geo is None:
                 continue
             direction = "sube" if _UP.search(verb) else "baja" if _DOWN.search(verb) else None
@@ -285,7 +316,7 @@ _PERIOD = re.compile(r"^(\d{4})(?:-(0[1-9]|1[0-2])|-Q([1-4]))?$")
 
 
 def indicator_keys() -> list[str]:
-    return [k for k in indicators() if k not in ("geo_names", "eu_geos", "foreign_markers")]
+    return [k for k in indicators() if k not in META_KEYS]
 
 
 def _number_positions(sn: str, unit: str, value: float) -> list[int]:
@@ -352,8 +383,11 @@ def check_proposal(
         return "variacion en puntos: no es un nivel"
     if _FORECAST.search(sn):
         return "prevision o condicional"
-    if any(_word_in(r, sn) for r in _region_names()):
-        return "dato regional: no hay serie nacional con la que compararlo"
+    regions, leftover = regions_in(sn)
+    if leftover:
+        return "nombre regional dudoso (ciudad o comunidad): no se atribuye"
+    if regions and not ind.get("regional"):
+        return "dato regional: no hay serie regional con la que compararlo"
     positions = _number_positions(sn, ind["unit"], value)
     if ind["unit"] == "pct" and not ind.get("change_is_level"):
         positions = [p for p in positions if not is_variation(sn[:p])]
@@ -379,6 +413,17 @@ def check_proposal(
         return "habla del pasado sin periodo comprobable"
     # Territorio: nombrado en la frase (el mas cercano a la cifra si hay varios) o el del medio.
     named = _named_positions(sn)
+    if regions:
+        if named:
+            return "nombra a la vez una comunidad y un pais: no se atribuye"
+        if geo not in regions:
+            return "el territorio no es la comunidad nombrada"
+        if len(regions) > 1:
+            dist = sorted(min(abs(p - q) for p in ps for q in positions) for ps in regions.values())
+            mine = min(abs(p - q) for p in regions[geo] for q in positions)
+            if mine != dist[0] or dist[0] == dist[1]:
+                return "varias comunidades: la cifra no es inequivocamente de la propuesta"
+        return _finish(sentence, indicator, ind, geo, value, period, direction, sn)
     others = {
         iso
         for iso, names in world_countries().items()
@@ -401,6 +446,10 @@ def check_proposal(
             return "territorio no nombrado en la frase"
         if any(_word_in(normalize(m), sn) for m in indicators()["foreign_markers"]):
             return "habla de otro pais sin nombrarlo"
+    return _finish(sentence, indicator, ind, geo, value, period, direction, sn)
+
+
+def _finish(sentence, indicator, ind, geo, value, period, direction, sn) -> ClaimCandidate:
     if not ind.get("directional", True) or direction not in ("sube", "baja"):
         direction = None
     elif not (_UP if direction == "sube" else _DOWN).search(sn):

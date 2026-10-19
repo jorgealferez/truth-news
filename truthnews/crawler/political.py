@@ -187,4 +187,3 @@ def run(session: Session, settings: Settings, actors: list[ActorSpec] | None = N
     session.commit()
     log.info("declaraciones politicas: %s", out)
     return out
-

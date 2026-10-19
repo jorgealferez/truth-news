@@ -12,7 +12,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v2: compara con el periodo citado en la frase (mes o trimestre), no con el ultimo dato.
 # v3: atribucion de territorio con nomenclator mundial; la poblacion exige pais explicito (ADR 0009).
 # v4: una variacion ("el paro baja un 2 %") no se lee como el nivel del indicador.
-METHOD_VERSION = "v4"
+# v5: el pais del medio solo se supone si la noticia no es de otro pais; paro EPA por comunidad.
+METHOD_VERSION = "v5"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -57,11 +58,15 @@ def default_fetch(source: dict, geo: str, label: str) -> Observation | None:
         return worldbank.latest(source["indicator"], geo, label)
     if conn == "ine_yoy":
         return ine.annual_change(source["serie"])
+    if conn == "ine_level":
+        return ine.level(source["series_by_geo"][geo])
     raise ValueError(f"conector desconocido: {conn}")
 
 
 def applicable(source: dict, geo: str) -> bool:
     geos = source.get("geos")
+    if "-" in geo and not isinstance(geos, list):
+        return False  # una comunidad solo con una serie regional explicita, nunca con la del pais
     if geos is None:
         return geo != "EU" or source["connector"] == "worldbank"
     if geos == "EU":

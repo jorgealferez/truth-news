@@ -11,6 +11,14 @@ paro:
   sources:
     - {connector: eurostat, dataset: une_rt_m, params: {s_adj: SA, age: TOTAL, sex: T, unit: PC_ACT}, geos: EU}
     - {connector: worldbank, indicator: SL.UEM.TOTL.ZS}
+    # EPA (INE, tabla 65334): tasa de paro trimestral por comunidad autonoma, ambos sexos, total.
+    - connector: ine_level
+      geos: [ES-AN, ES-AR, ES-AS, ES-IB, ES-CN, ES-CB, ES-CL, ES-CM, ES-CT, ES-VC, ES-EX, ES-GA, ES-MD, ES-MC, ES-NC, ES-PV, ES-RI, ES-CE, ES-ML]
+      series_by_geo: {ES-AN: EPA452440, ES-AR: EPA452448, ES-AS: EPA452456, ES-IB: EPA452464, ES-CN: EPA452472,
+        ES-CB: EPA452480, ES-CL: EPA452488, ES-CM: EPA452496, ES-CT: EPA452504, ES-VC: EPA452512, ES-EX: EPA452520,
+        ES-GA: EPA452528, ES-MD: EPA452536, ES-MC: EPA452544, ES-NC: EPA452552, ES-PV: EPA452560, ES-RI: EPA452568,
+        ES-CE: EPA452576, ES-ML: EPA452584}
+  regional: true  # admite comunidades autonomas nombradas sin ambiguedad (region_names)
 inflacion:
   name: {es: Inflación interanual, en: Annual inflation}
   unit: pct
@@ -135,3 +143,25 @@ foreign_markers: [ruso, rusa, frances, francesa, aleman, alemana, italiano, ital
   portuguesa, griego, griega, europeo, europea, argentino, mexicano, venezolano, turco, iraní, irani,
   macron, trump, putin, zelenski, netanyahu, meloni, merz, starmer, xi jinping, lula, milei, bruselas,
   otan]
+# Comunidades autonomas por su nombre inequivoco. "Madrid", "Valencia" o "Murcia" a secas pueden ser la
+# ciudad: no se atribuyen (la frase se descarta si los nombra sin "Comunidad de", "Region de"...).
+region_names:
+  ES-AN: [andalucía]
+  ES-AR: [aragón]
+  ES-AS: [asturias, principado de asturias]
+  ES-IB: [illes balears, islas baleares, baleares]
+  ES-CN: [canarias]
+  ES-CB: [cantabria]
+  ES-CL: [castilla y león]
+  ES-CM: [castilla-la mancha, castilla la mancha]
+  ES-CT: [cataluña, catalunya]
+  ES-VC: [comunitat valenciana, comunidad valenciana]
+  ES-EX: [extremadura]
+  ES-GA: [galicia]
+  ES-MD: [comunidad de madrid]
+  ES-MC: [región de murcia]
+  ES-NC: [navarra]
+  ES-PV: [país vasco, euskadi]
+  ES-RI: [la rioja]
+  ES-CE: [ceuta]
+  ES-ML: [melilla]
