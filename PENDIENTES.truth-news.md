@@ -26,6 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+- [ ] Tarjetas de la historia con los medios a la vista (peticion del usuario 2026-10-19: "Mejora esto que pone medios pero no hay forma de clicar para ver cuáles son los que dicen cada. Adáptalo a móvil y desktop sin romper el formato"): cifras en disputa, omisiones y a quien se senala, desplegables con el nombre de cada medio y enlace a su noticia; rutas: `truthnews/web/templates/story.html`, `truthnews/web/static/site.css`, `truthnews/registry/i18n.yaml`, tests — EN CURSO (session_01QgjZUG9uLXjCTW4Q236ykL, 2026-10-19, rama ui/medios-desplegables)
 - [ ] Hilo y consecuencias: archivo historico (GDELT, hemerotecas y sitemaps de los medios, anos atras) cruzado con la actualidad; linea temporal por tema (que se decia, que paso, que hubo por el camino, quien dijo que, que vino despues); conexiones entre hechos aparentemente sueltos con su evidencia (p. ej. Ceuta, presion diplomatica de Marruecos, EEUU/OTAN y Espana); analisis profundo con IA sin dar nada por sentado; en portada lo que ocurre ahora con su porque y su antes/despues (peticion del usuario 2026-10-19) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19)
   - [x] ADR 0013 y migracion 0006 (tabla thread); conectores de hemeroteca GDELT (artlist por periodo) y Wikipedia
   - [x] Constructor de hilos: plan con hipotesis, corpus citado (S/G/W), cronologia, quien dijo que, conexiones con solidez, control de fundamento
