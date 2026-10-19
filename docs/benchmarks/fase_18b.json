@@ -18,7 +18,7 @@
   "detalle": {
     "comando": "python tools/measure_programas.py generales 2023 (2026-10-19 06:3x UTC)",
     "descubrimiento": "45 programas enlazados en 3 de 12 partidos (BNG 34, Coalicion Canaria 10, Sumar 1); ilegibles para el rastreador: ERC, Podemos y Vox (403) y PSOE (pagina de comprobacion de ~900 bytes), sin eludir nada; EH Bildu, Junts, PNV, PP y UPN no enlazan programas en portada ni en las paginas conocidas",
-    "importacion_generales_2023": "Sumar 'Un programa para ti' 182 paginas, 706 promesas (391 con tema); BNG programa xerais 68 paginas, 21 promesas (el gallego del BNG usa sobre todo infinitivos: limite conocido del extractor por reglas); decalogo BNG 4 paginas, 0",
+    "importacion_generales_2023": "Sumar 'Un programa para ti' 182 paginas, 687 promesas (sin las cabeceras de lista que acaban en ':'; 706 antes de quitarlas); BNG programa xerais 68 paginas, 21 promesas (el gallego del BNG usa sobre todo infinitivos: limite conocido del extractor por reglas); decalogo BNG 4 paginas, 0",
     "precision": "muestra aleatoria de 20 promesas de Sumar 2023: 20/20 son compromisos; 3/20 cortadas por un salto de pagina o de columna",
     "tiempos": "descubrimiento 21.5 s, importacion 10.8 s",
     "postgres": "migracion 0018 aplicada, alembic check sin diferencias, downgrade a 0017 (0 tablas) y upgrade de nuevo en PostgreSQL 16",

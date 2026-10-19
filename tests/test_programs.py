@@ -99,6 +99,7 @@ def test_promises_are_commitments_quoted_with_their_page():
         "Reordenaremos el tiempo de trabajo, incluyendo la reducción de la jornada laboral sin reducción "
         "de salario. Para ello hace falta una mayoría amplia en las Cortes Generales del país.",
         "O BNG defenderá a transferencia da AP-9 e o seu traspaso á Xunta de Galiza sen custo.",
+        "Para ello, en esta legislatura llevaremos a cabo las siguientes medidas concretas:",
         "Reordenaremos el tiempo de trabajo, incluyendo la reducción de la jornada laboral sin reducción "
         "de salario.",
     ]

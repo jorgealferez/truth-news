@@ -236,7 +236,7 @@ def promises_in(
         for raw in _SENTENCE.split(flat):
             s = re.sub(r"\s+", " ", raw).strip(" -·*")
             s = re.sub(r"^\d{1,3}\s+(?=[a-záéíóúñ])", "", s)  # numero de pagina pegado a la frase
-            if not 50 <= len(s) <= 500 or not is_commitment(s, names):
+            if not 50 <= len(s) <= 500 or s.endswith(":") or not is_commitment(s, names):
                 continue
             key = normalize(s)
             if key in seen:
