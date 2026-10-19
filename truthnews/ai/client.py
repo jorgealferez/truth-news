@@ -29,6 +29,7 @@ class AIClient:
         effort: str = "high",
         client: Any = None,
         max_tokens: int = 64000,
+        pool: str = "general",
     ):
         if client is None:  # pragma: no cover - requiere ANTHROPIC_API_KEY
             import anthropic
@@ -38,6 +39,7 @@ class AIClient:
         self.model = model
         self.effort = effort
         self.max_tokens = max_tokens
+        self.pool = pool  # bolsa del tope diario a la que se cargan sus llamadas (ADR 0054)
 
     def structured(self, system: str, user: str, schema: dict) -> AIResult:
         """Una llamada con salida JSON validada por esquema. El prompt de sistema es estable y se cachea.
@@ -45,7 +47,7 @@ class AIClient:
         Antes de llamar mira el tope diario y, con la respuesta, apunta su coste aunque luego no se pueda usar
         (rechazo, truncada): esos tokens tambien se pagan (ADR 0054)."""
         try:
-            cost.METER.check()
+            cost.METER.check(getattr(self, "pool", "general"))
         except cost.BudgetExceeded as exc:
             raise AIError(str(exc)) from exc
         with self._client.beta.messages.stream(
@@ -70,7 +72,7 @@ class AIClient:
             )
         }
         model = getattr(msg, "model", self.model)
-        cost.METER.charge(model, usage)
+        cost.METER.charge(model, usage, getattr(self, "pool", "general"))
         if msg.stop_reason == "refusal":
             raise AIError(f"rechazo del modelo ({getattr(msg.stop_details, 'category', None)})")
         if msg.stop_reason == "max_tokens":

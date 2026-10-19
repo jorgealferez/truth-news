@@ -20,7 +20,7 @@ from truthnews.models import SOCIAL_NETWORKS, SOCIAL_NETWORKS_EN, SocialPost, ut
 from truthnews.social import adapters, balance
 from truthnews.social.compose import fit
 from truthnews.social.config import SocialSettings, base_network, madrid_hour
-from truthnews.social.images import image_for
+from truthnews.social.images import image_for, today_png
 from truthnews.social.select import Candidate, candidates, stories_en
 
 log = logging.getLogger(__name__)
@@ -74,6 +74,12 @@ def run(
     pictures: dict[tuple, tuple[bytes, str]] = {}
 
     def picture(c: Candidate) -> tuple[bytes, str]:
+        if c.kind == "hoy":  # la imagen vertical de las claves del dia (ADR 0047)
+            key = ("hoy", c.ref_id)
+            if key not in pictures:
+                png = today_png(session, c.language, "vertical", site_url.split("//")[-1].rstrip("/"), now)[0]
+                pictures[key] = (png, f"{site_url.rstrip('/')}/og/hoy-vertical.png")
+            return pictures[key]
         title = c.draft.headline if c.language == "en" else None
         key = (c.image_story_id, c.language, title)
         if key not in pictures:

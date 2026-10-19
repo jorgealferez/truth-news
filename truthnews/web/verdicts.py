@@ -20,6 +20,7 @@ SOURCE_NAMES = {
     "ine": "INE",
     "eurostat": "Eurostat",
     "worldbank": {"es": "Banco Mundial", "en": "World Bank"},
+    "ecb": {"es": "BCE", "en": "ECB"},
 }
 INK, CLAIM, GRID = "#14161b", "#8a5a00", "#e3e0d8"
 
