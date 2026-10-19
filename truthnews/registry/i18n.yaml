@@ -329,6 +329,17 @@ es:
   nc_bad: Falsas o engañosas
   nc_checked: Comprobadas
   ent_title: Personas y entidades
+  chart_said_title: Lo que dijo y cuándo
+  chart_said_note: "Cada punto es una afirmación o una frase suya, en su fecha. La forma y el carril dicen el veredicto: cuadrado, falso o engañoso; triángulo, impreciso; círculo, verdadero; anillo, sin dato o sin comprobar. Toca un punto para ver la verificación o la noticia."
+  chart_lane_falso: Falso o engañoso
+  chart_lane_impreciso: Impreciso
+  chart_lane_verdadero: Verdadero
+  chart_lane_sin-datos: Sin comprobar
+  chart_figure_title: La cifra en el tiempo
+  chart_figure_note: "Qué cifra dio cada medio y cuándo. La línea discontinua es el dato oficial cuando lo hay; un anillo unido a un punto es una cifra que el medio cambió después de publicarla."
+  chart_official: Dato oficial
+  chart_by_outlet: cifra de cada medio
+  chart_changed: cifra cambiada
   ent_in_story: Quién aparece
   ent_lead: Quién aparece en las noticias, en cuántas y en qué medios; en cada ficha, su línea temporal (con noticias antiguas del archivo), con quién aparece, qué dice y qué afirmaciones suyas hemos comprobado.
   ent_filter: Filtrar por tipo
@@ -989,6 +1000,17 @@ en:
   nc_bad: False or misleading
   nc_checked: Checked
   ent_title: People and entities
+  chart_said_title: What they said and when
+  chart_said_note: "Each point is a claim or a quote, on its date. Shape and lane give the verdict: square, false or misleading; triangle, inaccurate; circle, true; ring, no data or not checked. Tap a point to open the check or the article."
+  chart_lane_falso: False or misleading
+  chart_lane_impreciso: Inaccurate
+  chart_lane_verdadero: "True"
+  chart_lane_sin-datos: Not checked
+  chart_figure_title: The figure over time
+  chart_figure_note: "Which figure each outlet gave and when. The dashed line is the official figure when there is one; a ring joined to a point is a figure the outlet changed after publishing."
+  chart_official: Official figure
+  chart_by_outlet: figure by outlet
+  chart_changed: changed figure
   ent_in_story: Who appears
   ent_lead: Who appears in the news, in how many stories and in which outlets; each profile has its timeline (with older stories from the archive), who they appear with, what they say and which of their claims we checked.
   ent_filter: Filter by type

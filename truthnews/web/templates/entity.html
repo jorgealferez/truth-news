@@ -12,6 +12,14 @@
   <li class="{{ 'bad' if p.bad else '' }}"><b>{{ p.bad }} / {{ p.checked }}</b><span>{{ t(lang, 'ent_bad_checked') }}</span></li>
 </ul>
 
+{% if said %}
+<section class="section-block">
+  <h2>{{ t(lang, 'chart_said_title') }}</h2>
+  <p class="meta">{{ t(lang, 'chart_said_note') }}</p>
+  {{ said }}
+</section>
+{% endif %}
+
 {% if p.months %}
 <section class="section-block">
   <h2>{{ t(lang, 'ent_timeline') }}</h2>

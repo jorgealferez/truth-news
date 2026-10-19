@@ -41,13 +41,14 @@ from truthnews.db import get_engine, session_factory
 from truthnews.elections import calendar as el_calendar
 from truthnews.elections import views as el_views
 from truthnews.entities import views as entity_views
-from truthnews.models import Article, Investigation, Outlet, Story, Thread
+from truthnews.models import Article, ArticleRevision, Investigation, Outlet, Story, Thread
 from truthnews.social import images, today
 from truthnews.social import select as select_social
 from truthnews.web import (
     admin,
     appointments,
     budget,
+    charts,
     citations,
     contracts,
     council,
@@ -693,7 +694,12 @@ def create_app(
             raise HTTPException(404)
         if redirect := canonical(request, "entidad", p.entity.id, p.entity.name):
             return redirect
-        return render(request, "entity.html", p=p, e=p.entity)
+        lang = lang_of(request)
+        lanes = {k: registry.t(lang, f"chart_lane_{k}") for k in charts.LANE_KEYS}
+        said = charts.said_timeline(
+            charts.said_points(p.claims, p.quotes), lanes, registry.t(lang, "chart_said_title")
+        )
+        return render(request, "entity.html", p=p, e=p.entity, said=said)
 
     @app.get("/historia/{ref}", response_class=HTMLResponse)
     def story(request: Request, ref: str, session: SessionDep, medio: str | None = None):
@@ -723,6 +729,17 @@ def create_app(
             arts=arts,
             comp=comp,
             claims=claims,
+            figure_charts=charts.story_figure_charts(
+                arts,
+                comp,
+                claims,
+                {k: registry.t(lang_of(request), f"chart_{k}") for k in ("official", "by_outlet", "changed")},
+                revisions=list(
+                    session.scalars(
+                        select(ArticleRevision).where(ArticleRevision.article_id.in_([a.id for a in arts]))
+                    )
+                ),
+            ),
             related=related,
             thread=queries.thread_for_story(session, st.id),
             outlets_view=outlets_view,

@@ -366,3 +366,6 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .timely { margin-top:14px; } .timely h3 { font-size:17px; margin:0 0 4px; } .tl-table td, .tl-table th { font-size:14px; }
 .nocuadra .nc-cite { margin:6px 0; font-size:15px; }
 @media (max-width: 640px) { .nocuadra .nc-list { gap:8px; } .nocuadra .nc-item { padding:8px 10px; } .nocuadra .nc-one { font-size:16px; } .nocuadra .nc-vs { display:none; } .nocuadra .nc-cite { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; } }
+/* Graficos SVG del servidor (ADR 0050): ancho completo en movil, tope en escritorio */
+.chart { display:block; width:100%; max-width:640px; height:auto; margin:8px 0 14px; font-family:system-ui, sans-serif; }
+.chart a:focus-visible { outline:2px solid var(--ink); }
