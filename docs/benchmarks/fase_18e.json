@@ -26,5 +26,17 @@
   "no_verificable": [
     "Candidaturas del 29-N: el BOE las publica a partir del 28/10/2026; se mide entonces en produccion",
     "Autonomicas y locales de otros paises: fuera del calendario de ElectionGuide (solo nacionales); se cubren por los medios (>= 2 medios, 'anunciada')"
-  ]
+  ],
+  "produccion": {
+    "jec_2026_10_19": {
+      "hora_utc": "20:41",
+      "pagina": "https://nosmienten.com/elecciones/es-generales-2026-11-29",
+      "estado_http": 200,
+      "fuente_jec_citada": true,
+      "enlace": "https://www.juntaelectoralcentral.es/cs/jec/eleccionesEnCurso/Elecciones_generales_2026?p=1379061494823",
+      "texto": "Junta Electoral Central: Elecciones Generales, 29 de noviembre de 2026",
+      "elecciones_en_curso_jec": 1,
+      "nota": "primera lectura dentro de la franja del robots.txt de la JEC (20:00-06:59 UTC); la JEC lista hoy solo las generales, que se fusionan con la convocatoria del BOE (BOE primero, JEC como segunda fuente). La lectura no deja log: se mide en la pagina."
+    }
+  }
 }
