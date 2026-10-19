@@ -32,6 +32,20 @@ _SUBGROUP = re.compile(
     r"\b(juvenil|jovenes|menores de|mujeres|hombres|parados de larga|youth|women|men|jovens)\b"
 )
 _CHANGE = re.compile(r"\b(puntos|points|pontos|decimas)\b")
+# "El paro baja un 2 %": es una variacion del indicador, no su nivel. Solo vale como nivel en los
+# indicadores que ya son una tasa de variacion (crecimiento del PIB, variacion del precio de la vivienda).
+_VARIATION = re.compile(
+    r"\b(sube|subio|subido|baja|bajo|bajado|cae|cayo|caido|crece|crecio|crecido|aumenta|aumento|aumentado"
+    r"|desciende|descendio|descendido|se reduce|se redujo|reducido|repunta|repunto|se dispara|se disparo"
+    r"|retrocede|retrocedio|mejora|mejoro|empeora|empeoro|avanza|avanzo|subida|bajada|caida|descenso"
+    r"|incremento|reduccion|rises|rose|falls|fell|increases|decreases|grew|sobe|subiu|desce|caiu)"
+    r"\s+(?:(?:de|en|del|hasta)\s+)?(?:un|una|um|uma|by)\s*$"
+)
+
+
+def is_variation(before: str) -> bool:
+    """Si el texto normalizado justo antes de la cifra la presenta como una variacion ("baja un")."""
+    return _VARIATION.search(before[-60:]) is not None
 # Pasado, previsiones y condicionales: no se comparan con el ultimo dato publicado.
 _NOT_CURRENT = re.compile(
     r"\b(pasado ano|ano pasado|el pasado ejercicio|ano anterior|previsto|prevision|previsiones|preve|preven"
@@ -228,6 +242,8 @@ def extract(
                     )
                     rx = rf"(?<!\w){pn}(?!\w)\s+{gap}{link}{_PCT}"
                     m = re.search(rx, sn)
+                    if m and not ind.get("change_is_level") and is_variation(sn[: m.start("num")]):
+                        m = None  # "baja un 2 %": variacion, no nivel
                     if m and (ind.get("of_gdp") or "del pib" not in sn[m.end() : m.end() + 8]):
                         value = _number(m.group("num"))
                         verb = m.group("verb") or ""
@@ -339,6 +355,10 @@ def check_proposal(
     if any(_word_in(r, sn) for r in _region_names()):
         return "dato regional: no hay serie nacional con la que compararlo"
     positions = _number_positions(sn, ind["unit"], value)
+    if ind["unit"] == "pct" and not ind.get("change_is_level"):
+        positions = [p for p in positions if not is_variation(sn[:p])]
+        if not positions:
+            return "la cifra es una variacion del indicador, no su nivel"
     if ind["unit"] == "pct" and not ind.get("of_gdp"):
         positions = [p for p in positions if "del pib" not in sn[p : p + 20]]  # "% del PIB" es otro dato
     if not positions:
