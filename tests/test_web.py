@@ -76,6 +76,8 @@ def test_pages_render(client):
     home = client.get("/").text
     assert "35 noticias" in home and "Contrastes de hoy" in home and "Verificado" in home
     assert 'href="/noticia/' not in home  # sin titulares sueltos en portada (peticion 2026-10-19)
+    medios = client.get("/medios").text
+    assert "<th>País</th><th>Ámbito</th><th>Comunidad</th>" in medios and "<td>España</td>" in medios
 
 
 def test_article_and_related(client, session):

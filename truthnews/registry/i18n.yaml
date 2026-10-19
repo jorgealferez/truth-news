@@ -126,6 +126,9 @@ es:
   latest: Última hora
   sections: Secciones
   countries: Países
+  country_col: País
+  scope_col: Ámbito
+  region_col: Comunidad
   regions: Comunidades
   outlets: Medios
   outlet: Medio
@@ -522,6 +525,9 @@ en:
   latest: Latest
   sections: Sections
   countries: Countries
+  country_col: Country
+  scope_col: Scope
+  region_col: Region
   regions: Regions
   outlets: Outlets
   outlet: Outlet
