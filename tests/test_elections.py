@@ -261,6 +261,7 @@ def test_no_section_without_elections(engine):
     assert "el-nav" not in client.get("/").text
     r = client.get("/elecciones")
     assert r.status_code == 200 and "no hay elecciones convocadas" in r.text
+    assert 'id="elecciones"' in client.get("/metodologia").text
 
 
 def test_regional_election_filters_by_territory(session):

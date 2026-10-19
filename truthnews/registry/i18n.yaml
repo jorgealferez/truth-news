@@ -568,6 +568,7 @@ es:
   el_phase_proxima: Próxima
   el_dates_other: Calendario
   el_context: lo dijo a propósito de
+  el_method_more: "La sección aparece desde la convocatoria y se retira 30 días después de votar. Los partidos salen en orden alfabético y con el mismo formato. Las promesas se citan literalmente con su página y su fuente; un programa solo se descarga si el robots.txt del partido lo permite. Entre dos programas del mismo partido se señalan las promesas repetidas, nuevas y que desaparecen, y en sus declaraciones las cifras que cambia para el mismo dato y periodo. Que una promesa se cumpliera no se decide automáticamente mientras no haya un método fiable con datos oficiales."
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1132,3 +1133,4 @@ en:
   el_phase_proxima: Upcoming
   el_dates_other: Calendar
   el_context: said in connection with
+  el_method_more: "The section appears from the call and is withdrawn 30 days after polling day. Parties are listed alphabetically and in the same format. Promises are quoted verbatim with their page and source; a manifesto is downloaded only if the party's robots.txt allows it. Between two manifestos of the same party we flag repeated, new and dropped promises, and in its statements the figures it changes for the same indicator and period. Whether a promise was kept is not decided automatically until there is a reliable method based on official data."
