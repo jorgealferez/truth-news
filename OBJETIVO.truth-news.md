@@ -88,7 +88,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [x] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18) (#11)
 - [ ] Fase 9 — Quien miente, quien informa, quien dice la verdad: fiabilidad por medio con historial de veredictos, ranking por exactitud comprobada, comparativas lado a lado y "la verdad segun los datos" cuando la hay (peticion del usuario 2026-10-18; acerca C6, C12)
 - [ ] Fase 10 — Hilo y consecuencias: archivo historico cruzado con la actualidad, linea temporal por tema, conexiones entre hechos con evidencia y analisis profundo con IA; portada con el porque y el antes/despues de lo que ocurre (peticion del usuario 2026-10-19; acerca C12, C13)
-- [ ] Fase 11 — Migracion al holding (plan): ADR 0025, `docs/migracion-holding.md`, items cruzados en ambos ledgers, alcance de la carta (peticion del usuario 2026-10-19; acerca C14)
+- [x] Fase 11 — Migracion al holding (plan): ADR 0025, `docs/migracion-holding.md`, items cruzados en ambos ledgers, alcance de la carta (peticion del usuario 2026-10-19; acerca C14) (#47)
 - [ ] Fase 12 — Puertos de datos: `truthnews/ports/` con adaptador SQL identico y cliente del BFF del holding, banderas `DATA_BACKEND_*` a `local` (acerca C14)
 - [ ] Fase 13 — Registro e ingesta en el holding: doble escritura, outbox, backfill idempotente, conciliacion, sombra y corte de D1 y D2 (acerca C14)
 - [ ] Fase 14 — Contraste en el holding: D3 con la invariante C6 medida en `newsroom-service` (acerca C6, C14)
