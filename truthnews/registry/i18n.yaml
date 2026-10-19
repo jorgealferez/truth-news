@@ -256,6 +256,25 @@ es:
   methodology_ads: >-
     La publicidad no interviene en el método: no cambia veredictos, afirmaciones comprobadas ni el orden de
     las noticias, y se elige solo por el contenido de la página, sin cookies ni perfiles.
+  appointments: Nombramientos y ceses
+  appointments_lead: >-
+    Quién entra y quién sale de cada cargo público según el BOE de cada día, con el enlace a la disposición.
+    Persona y cargo se leen del título oficial; si no se reconocen, no se inventan.
+  appt_kind_nombramiento: Nombramiento
+  appt_kind_cese: Cese
+  appt_kind_destino: Destino
+  appt_kind_ascenso: Ascenso
+  appt_kind_situacion: Situación
+  appt_kind_otro: Otro
+  appt_total: disposiciones de personal
+  appt_n_nombramiento: nombramientos
+  appt_n_cese: ceses
+  appt_other: Destinos, ascensos y nombramientos colectivos
+  appt_source: Fuente, sección II.A del Boletín Oficial del Estado (API de datos abiertos)
+  no_appointments: Ese día el BOE no publicó nombramientos ni ceses (o aún no está disponible).
+  previous_day: Día anterior
+  next_day: Día siguiente
+
 en:
   tagline: We compare what the media report with what the data say
   motto: No sides. Just data.
@@ -508,3 +527,22 @@ en:
   methodology_ads: >-
     Advertising plays no part in the method: it does not change verdicts, checked claims or the order of
     the news, and it is chosen only from the page content, with no cookies or profiles.
+  appointments: Appointments and dismissals
+  appointments_lead: >-
+    Who takes and who leaves each public post according to each day's Spanish Official Gazette (BOE), with a
+    link to the provision. Person and post are read from the official title; if not recognised, nothing is
+    invented.
+  appt_kind_nombramiento: Appointment
+  appt_kind_cese: Dismissal
+  appt_kind_destino: Posting
+  appt_kind_ascenso: Promotion
+  appt_kind_situacion: Status
+  appt_kind_otro: Other
+  appt_total: staff provisions
+  appt_n_nombramiento: appointments
+  appt_n_cese: dismissals
+  appt_other: Postings, promotions and collective appointments
+  appt_source: Source, section II.A of the Spanish Official Gazette (open data API)
+  no_appointments: That day the BOE published no appointments or dismissals (or it is not available yet).
+  previous_day: Previous day
+  next_day: Next day
