@@ -342,10 +342,12 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
             )
             current = [k] if isinstance(k, ClaimCandidate) else []
         else:
+            # Con el texto completo: el contexto de la frase (v11) y el de la noticia (v12) cuentan.
+            text = article_text(a) or c.text
             current = [
                 k
-                for k in extract(c.text, a.language, default_geo_of(a), pub.year, pub.month)
-                if k.indicator == c.indicator and k.value == c.value
+                for k in extract(text, a.language, default_geo_of(a), pub.year, pub.month)
+                if k.indicator == c.indicator and k.value == c.value and k.text == c.text
             ]
         if not current:
             _store(
