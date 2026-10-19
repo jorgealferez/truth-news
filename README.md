@@ -44,6 +44,10 @@ registra en `social_post`, pero no se envía. Las claves solo van en las variabl
 | Telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (`@canal`, con el bot como administrador) |
 | X | `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (OAuth 1.0a, lectura y escritura; la imagen se sube con `POST /2/media/upload` y, si falla, la pone la tarjeta del enlace) |
 
+Cuentas en inglés (ADR 0033): las mismas variables con `_EN_` tras el nombre de la red (`X_EN_API_KEY`,
+`BLUESKY_EN_HANDLE`, `MASTODON_EN_TOKEN`, `TELEGRAM_EN_CHAT_ID`...). Solo publican historias con titular
+traducido por IA, marcado como traducción automática; cupo por defecto `x_en:2,bluesky_en:3,mastodon_en:3,telegram_en:4`.
+
 Ajustes: `SOCIAL_ENABLED` (1), `SOCIAL_DRY_RUN` (0; 1 fuerza el modo prueba), `SOCIAL_DAILY_QUOTA`
 (`x:4,bluesky:6,mastodon:6,telegram:8`), `SOCIAL_PER_CYCLE` (2), `SOCIAL_MIN_SCORE` (2),
 `SOCIAL_WINDOW_HOURS` (72).
