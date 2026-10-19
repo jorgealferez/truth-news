@@ -12,7 +12,7 @@ cifras que no cuadran, con URL, fecha y cifra oficial cuando exista, y mejorar e
 (sin IA). Condición añadida: medir también **fuera de muestra**, con historias que no se miraron al diseñar
 las reglas; si ahí la precisión baja de 0,8, decirlo y ajustar antes del merge.
 
-Se añadieron 13 historias de producción del 18-19/10 (197 artículos) a `tests/fixtures/disputes.json`, cada
+Se añadieron 13 historias de producción del 18-19/10 (197 artículos) en `tests/fixtures/disputes_produccion.json`, cada
 cifra etiquetada a mano con el hecho del que habla. Con las reglas del ADR 0016, en esas 13 salían 13
 disputas y 7 eran falsas (precisión 0,462; por pares 0,138):
 
@@ -51,8 +51,8 @@ disputas y 7 eran falsas (precisión 0,462; por pares 0,138):
 8. **Medidas.** Además de la precisión y la exhaustividad de las disputas, la **agrupación**
    (`grouping_quality`): por cada par de medios con el mismo sustantivo, si el comparador los pone en el
    mismo hecho como dice la etiqueta. Entra en el presupuesto (`disputas_agrupacion` ≥ 0,95).
-9. **Diseño y validación separados.** `tests/fixtures/disputes.json` es el conjunto con el que se diseñan
-   las reglas y la puerta exige ≥ 0,95. `tests/fixtures/disputes_validacion.json` guarda las muestras fuera
+9. **Diseño y validación separados.** `tests/fixtures/disputes.json` y `tests/fixtures/disputes_produccion.json`
+   (base fijada en main en #235) son el conjunto con el que se diseñan las reglas y la puerta exige ≥ 0,95. `tests/fixtures/disputes_validacion.json` guarda las muestras fuera
    de muestra con su selección automática y sus ids: se miden y se publican, no se ajustan para que pasen, y
    cada muestra dice si después se usó para ajustar. El merge exige ≥ 0,8 de precisión en una muestra limpia
    sin bajar la exhaustividad (condición de la dirección).

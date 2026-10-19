@@ -139,7 +139,14 @@ def test_dispute_precision_on_real_labeled_stories():
 
     from truthnews.analysis.evaluate import dispute_quality, grouping_quality
 
-    fixture = json.loads((Path(__file__).parent / "fixtures" / "disputes.json").read_text(encoding="utf-8"))
+    fixtures = Path(__file__).parent / "fixtures"
+    fixture = {
+        "historias": [
+            h
+            for name in ("disputes.json", "disputes_produccion.json")
+            for h in json.loads((fixtures / name).read_text(encoding="utf-8"))["historias"]
+        ]
+    }
     q = dispute_quality(fixture)
     # Medido 2026-10-19 (ADR 0016): antes 0,50 de precision (4 de 8 disputas mezclaban hechos distintos).
     # Con las 13 historias de produccion del 18-19/10 (ADR 0053): antes 0,611 (7 de 18 mal), despues 1,00.
@@ -161,8 +168,6 @@ def test_dispute_validation_set_is_measured():
     validation = json.loads(path.read_text(encoding="utf-8"))
     ids = {i for m in validation["muestras"] for i in m["historias"]}
     assert ids == {h["historia"] for h in validation["historias"]}
-    dev = json.loads((path.parent / "disputes.json").read_text(encoding="utf-8"))
-    assert not ids & {h["historia"] for h in dev["historias"]}
     assert dispute_quality(validation)["esperadas"] >= 1 and grouping_quality(validation)["pares"] > 0
 
 

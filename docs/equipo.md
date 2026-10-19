@@ -97,7 +97,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
 | ADR 0050 | diseno | PR (este) | Entidades (graficos SVG de entidad e historia; asignado por la direccion) |
 | ADR 0053 | diseno | PR #215 | Comparativas (dos cifras solo se comparan si cuentan lo mismo, del mismo territorio y partido; el dinero no abre disputa; sin migracion) |
-| siguiente libre | — | — | ADR 0054 + migracion 0024; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
+| ADR 0054 | diseno | PR #218 | Coste de la IA (medido, tope diario y cadencia minima de piezas; peticion del usuario; sin migracion) |
+| siguiente libre | — | — | ADR 0055 + migracion 0024 (0052 y 0023 son de Entidades, 0053 de Comparativas); pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 
