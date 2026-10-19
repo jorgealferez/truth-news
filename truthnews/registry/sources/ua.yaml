@@ -1,0 +1,7 @@
+country: UA
+default_language: en
+outlets:
+  - {slug: kyiv-independent, name: The Kyiv Independent, homepage: "https://kyivindependent.com", scope: national, feeds: [{url: "https://kyivindependent.com/news-archive/rss/"}]}
+  - {slug: ukrinform, name: Ukrinform, homepage: "https://www.ukrinform.net", scope: national, kind: agency, owner: Ukrinform (pública), feeds: [{url: "https://www.ukrinform.net/rss/block-lastnews"}]}
+  - {slug: ukrainska-pravda, name: Українська правда, homepage: "https://www.pravda.com.ua", scope: national, language: uk, feeds: [{url: "https://www.pravda.com.ua/rss/view_news/"}]}
+  - {slug: kyiv-post, name: Kyiv Post, homepage: "https://www.kyivpost.com", scope: national, feeds: [{url: "https://www.kyivpost.com/feed"}]}

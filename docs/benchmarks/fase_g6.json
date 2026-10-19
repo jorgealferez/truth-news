@@ -1,0 +1,192 @@
+{
+  "fase": "g6",
+  "titulo": "Cobertura global, segundo lote: 17 paises mas solo con datos del registro",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "rastreo_descargas_prohibidas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "medida": "python tools/check_feeds.py IE NL BE PL UA TR IL IN JP AU CA ZA NG UY EC CR DO",
+    "primera_pasada": {
+      "feeds_candidatos": 63,
+      "feeds_validos": 47,
+      "fuera": 16,
+      "motivos": "403, 404, timeouts, robots.txt que lo prohibe (2 URLs, no se descargaron) o contenido que no es feed; medios retirados anotados con su motivo en su sources/<iso>.yaml"
+    },
+    "segunda_pasada": {
+      "paises": 17,
+      "medios": 45,
+      "feeds_validos": "47/47",
+      "entradas": 1095
+    },
+    "por_pais": {
+      "AU": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 65,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "BE": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 50,
+        "lenguas": [
+          "fr",
+          "nl"
+        ]
+      },
+      "CA": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 56,
+        "lenguas": [
+          "en",
+          "fr"
+        ]
+      },
+      "CR": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 51,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "DO": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 50,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "EC": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 20,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "IE": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 80,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "IL": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 30,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "IN": {
+        "medios": 5,
+        "feeds_validos": "6/6",
+        "entradas": 170,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "JP": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 37,
+        "lenguas": [
+          "en",
+          "ja"
+        ]
+      },
+      "NG": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 65,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "NL": {
+        "medios": 4,
+        "feeds_validos": "5/5",
+        "entradas": 130,
+        "lenguas": [
+          "nl"
+        ]
+      },
+      "PL": {
+        "medios": 4,
+        "feeds_validos": "4/4",
+        "entradas": 78,
+        "lenguas": [
+          "en",
+          "pl"
+        ]
+      },
+      "TR": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "UA": {
+        "medios": 4,
+        "feeds_validos": "4/4",
+        "entradas": 95,
+        "lenguas": [
+          "en",
+          "uk"
+        ]
+      },
+      "UY": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 58,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "ZA": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "en"
+        ]
+      }
+    },
+    "registro_total": {
+      "paises": 38,
+      "medios": 250
+    },
+    "lenguas_nuevas": [
+      "nl",
+      "pl",
+      "uk",
+      "ja"
+    ]
+  },
+  "criterios_de_salida": {
+    "C10": "38 paises en el registro, anadidos solo con YAML"
+  },
+  "no_verificable": [
+    "Articulos ingeridos por pais en produccion: se mide en el siguiente ciclo del worker tras el despliegue"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

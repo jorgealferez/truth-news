@@ -1,0 +1,6 @@
+country: UY
+default_language: es
+outlets:
+  - {slug: el-pais-uy, name: El País Uruguay, homepage: "https://www.elpais.com.uy", scope: national, feeds: [{url: "https://www.elpais.com.uy/rss/"}]}
+  - {slug: la-diaria, name: la diaria, homepage: "https://ladiaria.com.uy", scope: national, feeds: [{url: "https://ladiaria.com.uy/feeds/articulos/"}]}
+  - {slug: montevideo-portal, name: Montevideo Portal, homepage: "https://www.montevideo.com.uy", scope: national, feeds: [{url: "https://www.montevideo.com.uy/anxml.aspx?59"}]}

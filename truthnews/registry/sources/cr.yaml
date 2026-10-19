@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): crhoy (HTTP 404).
+country: CR
+default_language: es
+outlets:
+  - {slug: la-nacion-cr, name: La Nación, homepage: "https://www.nacion.com", scope: national, feeds: [{url: "https://www.nacion.com/arc/outboundfeeds/rss/?outputType=xml"}]}
+  - {slug: delfino, name: Delfino.cr, homepage: "https://delfino.cr", scope: national, feeds: [{url: "https://delfino.cr/feed"}]}

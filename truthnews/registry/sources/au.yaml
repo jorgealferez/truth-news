@@ -1,0 +1,6 @@
+country: AU
+default_language: en
+outlets:
+  - {slug: abc-australia, name: ABC News Australia, homepage: "https://www.abc.net.au/news", scope: national, kind: tv, owner: ABC (pública), feeds: [{url: "https://www.abc.net.au/news/feed/51120/rss.xml"}]}
+  - {slug: sydney-morning-herald, name: The Sydney Morning Herald, homepage: "https://www.smh.com.au", scope: national, feeds: [{url: "https://www.smh.com.au/rss/feed.xml"}]}
+  - {slug: guardian-australia, name: Guardian Australia, homepage: "https://www.theguardian.com/au", scope: national, feeds: [{url: "https://www.theguardian.com/australia-news/rss"}]}

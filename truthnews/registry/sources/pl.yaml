@@ -1,0 +1,7 @@
+country: PL
+default_language: pl
+outlets:
+  - {slug: tvn24, name: TVN24, homepage: "https://tvn24.pl", scope: national, kind: tv, feeds: [{url: "https://tvn24.pl/najnowsze.xml"}]}
+  - {slug: rzeczpospolita, name: Rzeczpospolita, homepage: "https://www.rp.pl", scope: national, feeds: [{url: "https://www.rp.pl/rss_main"}]}
+  - {slug: polsat-news, name: Polsat News, homepage: "https://www.polsatnews.pl", scope: national, kind: tv, feeds: [{url: "https://www.polsatnews.pl/rss/wszystkie.xml"}]}
+  - {slug: notes-from-poland, name: Notes from Poland, homepage: "https://notesfrompoland.com", scope: national, language: en, feeds: [{url: "https://notesfrompoland.com/feed/"}]}

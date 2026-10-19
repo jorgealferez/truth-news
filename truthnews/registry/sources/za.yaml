@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): mail-guardian (HTTP 404), news24 (HTTP 403).
+country: ZA
+default_language: en
+outlets:
+  - {slug: daily-maverick, name: Daily Maverick, homepage: "https://www.dailymaverick.co.za", scope: national, feeds: [{url: "https://www.dailymaverick.co.za/dmrss/"}]}
