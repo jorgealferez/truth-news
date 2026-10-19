@@ -1,0 +1,53 @@
+{
+  "fase": "hl1",
+  "titulo": "Idiomas: hreflang, canonical, lang y sitemaps en es y en, medidos en produccion",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    },
+    "objetivo": "https://nosmienten.com",
+    "paginas": [
+      "/",
+      "/en",
+      "/contrastes",
+      "/en/contrastes",
+      "/verificaciones",
+      "/en/verificaciones",
+      "/medios",
+      "/en/medios",
+      "/hoy",
+      "/en/hoy",
+      "/historia/24-entra-en-vigor-el-prefijo-400-recibire-llamadas-comerciales-con-otro",
+      "/en/historia/24-entra-en-vigor-el-prefijo-400-recibire-llamadas-comerciales-con-otro",
+      "/verificacion/1",
+      "/en/verificacion/1",
+      "/metodologia",
+      "/en/metodologia"
+    ]
+  },
+  "medidas": {
+    "idiomas_problemas_seo": 0
+  },
+  "detalle": {
+    "medida_2026-10-19T13:25Z": {
+      "paginas": 16,
+      "en_noindex": 8,
+      "con_hreflang": 0,
+      "sitemap_en_en_robots": false,
+      "sitemap_en": 404,
+      "xhtml_link_en_sitemap": false,
+      "problemas": 0
+    },
+    "estado": "INDEXED_LANGUAGES=es (decision del usuario 2026-10-19, #118): las 8 paginas en ingles llevan noindex, follow y canonical propio; ninguna pagina declara hreflang; no hay sitemap-en ni xhtml:link. Es lo que pide la guia de Google para contenido sin traducir: no ofrecer la version como alternativa ni dejarla indexar como duplicado",
+    "sin_cambios": "No hace falta tocar codigo: el antes y el despues coinciden. Los dos modos estan cubiertos por tests: tests/test_langprefix.py::test_untranslated_languages_are_served_but_not_offered_to_search_engines (actual) y test_sitemaps_robots_and_language_switch / test_english_pages_under_prefix (con INDEXED_LANGUAGES=es,en: hreflang es, en y x-default reciprocos, sitemap-en con xhtml:link)",
+    "riesgo": "Al activar INDEXED_LANGUAGES=es,en el interruptor es global: toda pagina /en pasa a indexable aunque su texto principal siga en espanol. Activarlo solo cuando piezas, sintesis y titulares esten traducidos, o antes hacer el noindex por pagina segun haya traduccion"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Informe de segmentacion internacional de Search Console: sin acceso desde este entorno"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

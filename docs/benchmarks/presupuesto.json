@@ -279,6 +279,13 @@
       "unidad": "historias",
       "direccion": "max",
       "objetivo": 0
+    },
+    {
+      "id": "idiomas_problemas_seo",
+      "descripcion": "Paginas es/en medidas en produccion con lang, canonical, robots o hreflang incoherentes (hreflang no reciproco, ingles sin traducir indexable, hreflang hacia una pagina noindex)",
+      "unidad": "paginas",
+      "direccion": "max",
+      "objetivo": 0
     }
   ]
 }
