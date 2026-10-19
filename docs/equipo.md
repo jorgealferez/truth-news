@@ -83,8 +83,13 @@ ida y vuelta y `alembic check` antes del PR).
 ## Como se trabaja
 
 - Reservar el item del ledger antes de empezar (`EN CURSO (<sesion>, <fecha>)`).
-- Un PR pequeno por mejora, gauntlet `full` en VERDE, squash merge. Cada merge redespliega web y
-  worker: como maximo un merge cada ~15 minutos por agente; agrupar cambios menores.
+- Un PR pequeno por mejora, gauntlet `full` en VERDE, squash merge. Como maximo un merge cada ~15
+  minutos por agente; agrupar cambios menores.
+- **Ventana de merges de codigo del worker.** El worker solo se redespliega si cambia `truthnews/**`
+  (salvo plantillas y estaticos), `alembic/**`, `pyproject.toml`, `Dockerfile` o `railway.json` (watch
+  paths en Railway). Un ciclo completo dura ~25 min y un redespliegue lo corta. Por eso esos merges se
+  hacen **solo entre HH:00 y HH:10 UTC**; documentacion, ledger, plantillas y estaticos, a cualquier hora.
+  Urgencias de produccion (un fallo que tumba el ciclo), fuera de ventana avisando a la direccion.
 - Cambio de esquema: ADR `Tipo: datos` en el mismo PR (puerta `datos`).
 - Credenciales: nunca en el chat ni en el repositorio; se piden al usuario para que las ponga en Railway.
 - Al terminar un item, el siguiente de tu carril; si tu carril se vacia, avisar a la direccion.
