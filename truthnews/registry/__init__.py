@@ -165,7 +165,7 @@ def stats(outlets: list[OutletSpec] | None = None) -> dict:
 
 # --- Fuentes politicas (ADR 0024): partidos y sus canales oficiales verificados ---------------------------
 POLITICAL_CHANNELS = ("web", "bluesky", "mastodon", "telegram")
-VERIFIED_BY = ("dominio", "web")
+VERIFIED_BY = ("dominio", "web", "wikidata")
 
 
 @dataclass(frozen=True)

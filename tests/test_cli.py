@@ -36,7 +36,7 @@ def test_db_upgrade_sync_and_crawl(tmp_path, monkeypatch, capsys):
         lambda s, st: fake_crawl(s, st.__class__(fetch_full_text=False), outlet_slugs=["el-pais"]),
     )
     monkeypatch.setattr(worker, "process_pending", lambda session, ai=None: {"processed": 0, "failed": 0})
-    monkeypatch.setattr(worker.political, "run", lambda session, settings: {"channels": 0})
+    monkeypatch.setattr(worker.political, "run", lambda session, settings, **kw: {"channels": 0})
     summary = worker.run_cycle()
     assert summary["political"] == {"channels": 0}
     assert summary["articles_new"] == 0

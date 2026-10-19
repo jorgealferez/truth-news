@@ -94,7 +94,7 @@ def _run_cycle(settings: Settings) -> dict:
         summary["analysis"] = analyze(session, since=started)
     with session_scope(engine) as session:  # partidos en sus canales oficiales verificados (ADR 0024)
         try:
-            summary["political"] = political.run(session, settings)
+            summary["political"] = political.run(session, settings, wikidata=True)
         except Exception as exc:  # un canal o un partido caido no tumba el ciclo
             log.exception("declaraciones politicas: el paso fallo")
             session.rollback()
