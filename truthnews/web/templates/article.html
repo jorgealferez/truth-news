@@ -2,7 +2,7 @@
 {% block title %}{{ a.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ (a.summary or a.title)[:200] }}{% endblock %}
 {% block head %}
-<link rel="canonical" href="{{ site.site_url }}/noticia/{{ a.id }}">
+<link rel="canonical" href="{{ site.site_url }}{{ url('noticia', a.id, a.title) }}">
 <meta property="og:title" content="{{ a.title }}">
 <meta property="og:type" content="article">
 {% if a.image_url %}<meta property="og:image" content="{{ a.image_url }}">{% endif %}
@@ -13,7 +13,7 @@
   <h1>{{ a.title }}</h1>
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
   {% if a.summary %}<blockquote class="excerpt">{{ a.summary[:600] }}</blockquote>{% endif %}
-  {% if a.story and a.story.n_outlets > 1 %}<p class="callout"><a href="/historia/{{ a.story_id }}">{{ a.story.n_outlets }} {{ t(lang, 'n_outlets') }} — {{ t(lang, 'compare_cta') }} →</a></p>{% endif %}
+  {% if a.story and a.story.n_outlets > 1 %}<p class="callout"><a href="{{ url('historia', a.story_id, a.story.title) }}">{{ a.story.n_outlets }} {{ t(lang, 'n_outlets') }} — {{ t(lang, 'compare_cta') }} →</a></p>{% endif %}
   <p><a class="button" href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'read_original') }} ↗</a></p>
   {% if a.topics %}<nav class="chips">{% for tp in a.topics %}<span>{{ tp }}</span>{% endfor %}</nav>{% endif %}
 </article>

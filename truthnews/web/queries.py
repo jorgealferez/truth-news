@@ -172,6 +172,28 @@ def topic_view(session: Session, topic_id: int) -> tuple[Topic | None, dict[str,
     return topic, pieces, stories
 
 
+def topic_titles(session: Session) -> dict[int, str]:
+    """Titular publicado vigente de cada tema (el de su ultimo analisis): da el slug de su URL."""
+    rows = session.execute(
+        select(Piece.topic_id, Piece.title)
+        .where(Piece.kind == "analisis", Piece.status == "publicada")
+        .order_by(Piece.created_at)
+    )
+    return dict(rows.all())
+
+
+def topic_articles(session: Session, topic_id: int) -> list[Article]:
+    return list(
+        session.scalars(
+            select(Article)
+            .options(joinedload(Article.outlet))
+            .join(Story, Story.id == Article.story_id)
+            .where(Story.topic_id == topic_id)
+            .order_by(Article.published_at)
+        )
+    )
+
+
 def outlets_by_slug(session: Session, slugs: list[str]) -> dict[str, Outlet]:
     if not slugs:
         return {}

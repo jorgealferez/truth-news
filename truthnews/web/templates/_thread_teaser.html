@@ -1,4 +1,4 @@
-<a class="thread-teaser" href="/hilo/{{ th.id }}">
+<a class="thread-teaser" href="{{ url('hilo', th.id, th.title) }}">
   <p class="label">{{ t(lang, 'thread') }}</p>
   <h3>{{ th.title }}</h3>
   <p class="why">{{ th.content.por_que_ahora or th.content.resumen }}</p>

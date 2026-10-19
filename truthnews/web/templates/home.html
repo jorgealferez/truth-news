@@ -24,7 +24,7 @@
   </div>
   <aside class="wire">
     <h2>{{ t(lang, 'latest_wire') }}</h2>
-    {% for a in wire %}<p><span class="meta">{{ a.published_at|ago(lang) }} · {{ a.outlet.name }}</span><br><a href="/noticia/{{ a.id }}">{{ a.title }}</a></p>{% endfor %}
+    {% for a in wire %}<p><span class="meta">{{ a.published_at|ago(lang) }} · {{ a.outlet.name }}</span><br><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a></p>{% endfor %}
   </aside>
 </div>
 {% endblock %}

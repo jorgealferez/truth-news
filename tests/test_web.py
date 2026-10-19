@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
 from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Piece, Story, Topic, Verification
+from truthnews.web import seo
 from truthnews.web.app import _ago, create_app
 
 
@@ -206,7 +207,7 @@ def test_comparator_pages(client, session):
         assert needle in page, needle
     # Cada cifra en disputa despliega que medios la dan, con enlace a su noticia.
     who = " ".join(part.split("</p>", 1)[0] for part in page.split('class="who-list"')[1:])
-    assert f'href="/noticia/{a2.id}">Otro Medio</a>' in who and ">Medio Uno</a>" in who
+    assert f'href="{seo.path("noticia", a2.id, a2.title)}">Otro Medio</a>' in who and ">Medio Uno</a>" in who
     assert "<details><summary" in page and "ver qué medios" in page
     assert client.get("/historia/99999").status_code == 404
     assert "Historia comparada" in client.get("/contrastes?seccion=politica").text
@@ -453,7 +454,10 @@ def test_distribution_robots_sitemap_rss_and_share(client, session):
     assert "Disallow: /admin" in robots and "Sitemap: http://localhost:8000/sitemap.xml" in robots
     sm = client.get("/sitemap.xml")
     assert sm.headers["content-type"].startswith("application/xml")
-    assert f"<loc>http://localhost:8000/historia/{st.id}</loc>" in sm.text and "/medio/medio</loc>" in sm.text
+    assert (
+        f"<loc>http://localhost:8000{seo.path('historia', st.id, st.title)}</loc>" in sm.text
+        and "/medio/medio</loc>" in sm.text
+    )
     rss = client.get("/rss.xml")
     assert rss.headers["content-type"].startswith("application/rss+xml")
     assert "Disturbios con cifras distintas" in rss.text and "cifras en disputa: detenidos" in rss.text

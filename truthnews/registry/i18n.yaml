@@ -114,6 +114,25 @@ es:
   opinion: Opinión
   analysis_lead: Piezas propias sobre cada tema, a partir de lo que publican los medios y de los datos oficiales. Cada afirmación está en nuestras fuentes; lo que no sabemos, lo decimos.
   what_each_says: Qué dice cada medio
+  essentials: Lo esencial
+  key_origin: De dónde sale
+  key_fails: Qué falla
+  key_missing: Qué falta
+  key_verdict: Nuestra valoración
+  first_published: Lo publicó primero
+  same_text_n: "{n} medios publicaron el mismo texto"
+  own_text: Texto propio
+  same_text: Mismo texto
+  coverage_by_scope: Quién lo cuenta
+  flag_one_source: "{n} de {total} medios repiten una misma fuente"
+  flag_no_official_data: Sin datos oficiales de contexto
+  flag_no_verified_claims: Ninguna afirmación verificada aún con datos oficiales
+  no_fails: Sin contradicciones entre medios
+  read_full_analysis: Leer el análisis completo
+  what_adds: Lo que añade cada uno
+  also_runs_common: además publica el texto común
+  differences_n: diferencias
+  verified_n: verificaciones
   focus: Enfoque
   data: Datos
   assessment: Valoración
@@ -261,6 +280,25 @@ en:
   opinion: Opinion
   analysis_lead: Our own pieces on each topic, built from what outlets publish and official data. Every claim is in our sources; what we do not know, we say.
   what_each_says: What each outlet says
+  essentials: The essentials
+  key_origin: Where it comes from
+  key_fails: What does not add up
+  key_missing: What is missing
+  key_verdict: Our assessment
+  first_published: First published by
+  same_text_n: "{n} outlets ran the same text"
+  own_text: Own reporting
+  same_text: Same text
+  coverage_by_scope: Who covers it
+  flag_one_source: "{n} of {total} outlets repeat a single source"
+  flag_no_official_data: No official data for context
+  flag_no_verified_claims: No claim verified against official data yet
+  no_fails: No contradictions between outlets
+  read_full_analysis: Read the full analysis
+  what_adds: What each one adds
+  also_runs_common: also runs the common text
+  differences_n: differences
+  verified_n: verifications
   focus: Angle
   data: Data
   assessment: Assessment
