@@ -486,7 +486,7 @@ es:
   el_lead: Las elecciones convocadas o anunciadas en cualquier país y ámbito, con lo que dicen y prometen los partidos y lo que cuentan los medios. La sección aparece sola mientras hay comicios en curso y se retira un mes después de votar.
   el_page_lead: Fechas oficiales, lo que dice cada partido en sus canales oficiales, sus programas y la cobertura de los medios, con cada dato citado.
   el_none: Ahora mismo no hay elecciones convocadas ni anunciadas en los países que seguimos.
-  el_how: El calendario se rellena solo con los decretos de convocatoria del BOE, las elecciones en curso de la Junta Electoral Central, el registro de elecciones comprobadas y las que al menos dos medios distintos sitúan en el mismo país y la misma fecha.
+  el_how: El calendario se rellena solo con los decretos de convocatoria del BOE, las elecciones en curso de la Junta Electoral Central, el calendario mundial de IFES ElectionGuide (fechas declaradas), el registro de elecciones comprobadas y las que al menos dos medios distintos sitúan en el mismo país y la misma fecha.
   el_no_ads: Las páginas de elecciones no llevan publicidad.
   el_status_convocada: Convocada
   el_status_anunciada: Anunciada en medios
@@ -562,6 +562,7 @@ es:
   el_changes_method: Dos promesas se cuentan como la misma si comparten la mayor parte de sus palabras de contenido (criterio conservador). Repetir una promesa no dice si se cumplió; que desaparezca, tampoco.
   el_figure_changes: Cifras que ha cambiado
   el_figure_change_line: "Mismo dato y mismo periodo ({period}), dos cifras"
+  el_world: Elecciones en el mundo
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1044,7 +1045,7 @@ en:
   el_lead: Elections called or announced in any country and at any level, with what parties say and promise and what the media report. The section appears on its own while elections are under way and is withdrawn a month after polling day.
   el_page_lead: Official dates, what each party says on its official channels, its manifesto and media coverage, with every fact cited.
   el_none: There are no elections called or announced right now in the countries we follow.
-  el_how: The calendar fills itself from the calling decrees in the Spanish Official Gazette (BOE), the ongoing elections listed by the Central Electoral Board, the register of checked elections and those that at least two different outlets place in the same country on the same date.
+  el_how: The calendar fills itself from the calling decrees in the Spanish Official Gazette (BOE), the ongoing elections listed by the Central Electoral Board, the IFES ElectionGuide world calendar (declared dates), the register of checked elections and those that at least two different outlets place in the same country on the same date.
   el_no_ads: Election pages carry no advertising.
   el_status_convocada: Called
   el_status_anunciada: Announced in the media
@@ -1120,3 +1121,4 @@ en:
   el_changes_method: Two promises count as the same if they share most of their content words (a conservative criterion). Repeating a promise does not say whether it was kept; dropping it does not either.
   el_figure_changes: Figures it has changed
   el_figure_change_line: "Same indicator and period ({period}), two figures"
+  el_world: Elections worldwide

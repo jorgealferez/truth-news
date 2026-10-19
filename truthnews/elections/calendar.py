@@ -42,6 +42,12 @@ SUMARIO = "https://www.boe.es/datosabiertos/api/boe/sumario/{:%Y%m%d}"
 JEC = "https://www.juntaelectoralcentral.es/cs/jec/elecciones/actuales"
 JEC_HOURS = (20, 7)
 JEC_EVERY = 12 * 3600
+# IFES ElectionGuide: calendario mundial de elecciones nacionales (robots.txt permite esta pagina). Solo
+# cuentan las de fecha declarada "(d)"; las tentativas "(t)" no abren seccion.
+WORLD = "https://www.electionguide.org/elections/type/upcoming/"
+WORLD_EVERY = 12 * 3600
+_EN_MONTH_NAMES = ("jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec")
+_EN_MONTHS = {m: i for i, m in enumerate(_EN_MONTH_NAMES, 1)}
 TEXT = "https://www.boe.es/diario_boe/txt.php?id={}"
 POST_DAYS = 30
 PRESS_DAYS = 21
@@ -334,6 +340,79 @@ def from_jec(markup: str) -> list[Election]:
     return out
 
 
+_WORLD_ROW = re.compile(
+    r"<strong>\s*([A-Za-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(\d{4})\s*</strong>\s*<small>\s*\((d|t)\)\s*</small>"
+    r".*?<a href=\"(/elections/id/\d+/)\">([^<]+)</a>.*?<a href=\"/countries/id/\d+/\">([^<]+)</a>",
+    re.S,
+)
+_WORLD_KIND = (
+    ("referendum", re.compile(r"referend|plebiscit")),
+    ("presidenciales", re.compile(r"presiden")),
+    ("locales", re.compile(r"municipal|local|mayor|city council")),
+    (
+        "legislativas",
+        re.compile(
+            r"parliament|assembly|house|senate|congress|chamber|knesset|duma|diet|legislat|bundestag|"
+            r"sejm|storting|riksdag|folketing|cortes|majlis|council of"
+        ),
+    ),
+)
+
+
+@lru_cache(maxsize=1)
+def _world_names() -> dict[str, str]:
+    """Nombre normalizado -> ISO, del registro de paises y del nomenclator mundial."""
+    out = dict(_country_names())
+    raw = registry._load_yaml(registry.REGISTRY_DIR / "world.yaml") or {}
+    for iso, names in raw.items():
+        if isinstance(names, list):
+            for n in names:
+                out.setdefault(normalize(str(n)), iso)
+    return out
+
+
+def iso_of(country: str) -> str | None:
+    n = normalize(country).strip()
+    names = _world_names()
+    if n in names:
+        return names[n]
+    # "United States of America" -> "united states": el nombre conocido mas largo contenido al principio.
+    hits = [k for k in names if len(k) > 4 and (n.startswith(k + " ") or n.startswith(k + ","))]
+    return names[max(hits, key=len)] if hits else None
+
+
+def from_world(markup: str) -> tuple[list[Election], list[str]]:
+    """Elecciones con fecha declarada del calendario mundial; y los paises que no se reconocen."""
+    out, unknown = [], []
+    for mon, day, year, flag, href, body, country in _WORLD_ROW.findall(markup):
+        if flag != "d" or mon.lower() not in _EN_MONTHS:
+            continue
+        iso = iso_of(html.unescape(country))
+        if not iso:
+            unknown.append(country)
+            continue
+        kind = next((k for k, rx in _WORLD_KIND if rx.search(normalize(body))), None)
+        if not kind:
+            continue
+        try:
+            when = date(int(year), _EN_MONTHS[mon.lower()], int(day))
+        except ValueError:
+            continue
+        out.append(
+            Election(
+                country=iso,
+                kind=kind,
+                date=when,
+                name=default_name(kind, None, None, iso),
+                status="convocada",
+                sources=(
+                    Source(f"IFES ElectionGuide: {html.unescape(body).strip()}", urljoin(WORLD, href)),
+                ),
+            )
+        )
+    return out, unknown
+
+
 def default_name(kind: str, region: str | None, place: str | None, country: str) -> str:
     base = {
         "generales": "Elecciones generales",
@@ -346,8 +425,17 @@ def default_name(kind: str, region: str | None, place: str | None, country: str)
     }.get(kind, "Elecciones")
     where = place or (registry.region_name(region) if region else None)
     if not where and country != "ES":  # Espana es el pais por omision del sitio
-        where = registry.country_name(country, "es")
+        where = country_label(country)
     return f"{base} · {where}" if where else base
+
+
+def country_label(iso: str) -> str:
+    """Nombre en castellano del registro de paises o, si no esta, el primero del nomenclator mundial."""
+    if iso in registry.countries():
+        return registry.country_name(iso, "es")
+    raw = registry._load_yaml(registry.REGISTRY_DIR / "world.yaml") or {}
+    names = raw.get(iso) or []
+    return str(names[0]).title() if names else iso
 
 
 def _as_date(value) -> date | None:
@@ -459,15 +547,15 @@ def press_articles(session: Session, now: datetime) -> list:
 def merge(*sources: list[Election]) -> list[Election]:
     """Una eleccion por (pais, tipo, territorio, fecha); gana la primera fuente (oficial antes que medios).
 
-    Lo anunciado en medios se descarta si ya hay una eleccion oficial del mismo pais el mismo dia.
+    Una fuente posterior no anade otra eleccion del mismo pais el mismo dia con otro nombre de tipo (el
+    calendario mundial llama "legislativas" a unas generales del BOE; un titular, a cualquiera).
     """
     out: dict[tuple, Election] = {}
     for group in sources:
+        before = {(o.country, o.date) for o in out.values()}
         for e in group:
-            if e.status == "anunciada" and any(
-                o.country == e.country and o.date == e.date and o.status == "convocada" for o in out.values()
-            ):
-                continue
+            if (e.key not in out or e.status == "anunciada") and (e.country, e.date) in before:
+                continue  # los titulares no se mezclan con una fuente oficial: ceden
             prev = out.get(e.key)
             if prev is None:
                 out[e.key] = e
@@ -505,6 +593,7 @@ class Calendar:
         self._candidacies: dict[str, dict] = {}
         self._press: tuple[float, list[Election]] = (-1e18, [])
         self._jec: tuple[float, list[Election]] = (-1e18, [])
+        self._world: tuple[float, list[Election]] = (-1e18, [])
         self._warmed_at = -1e18
         self._running = False
         self._lock = threading.Lock()
@@ -585,8 +674,21 @@ class Calendar:
         with self._lock:  # si falla, se conserva lo ultimo bueno y se reintenta en la siguiente franja
             self._jec = (self._clock(), found if found is not None else self._jec[1])
 
+    def _read_world(self) -> None:
+        if self._clock() - self._world[0] < WORLD_EVERY:
+            return
+        try:
+            with client(self._transport) as c:
+                resp = c.get(WORLD)
+            found = from_world(resp.text)[0] if resp.status_code == 200 else None
+        except httpx.HTTPError:
+            found = None
+        with self._lock:
+            self._world = (self._clock(), found if found is not None else self._world[1])
+
     def warm(self, today: date, pause: float = 0.3, hour: int | None = None) -> None:
         self._read_jec(datetime.now(UTC).hour if hour is None else hour)
+        self._read_world()
         for back in range(self.lookback + 1):
             d = today - timedelta(days=back)
             if d.weekday() == 6:  # los domingos no hay BOE
@@ -636,7 +738,7 @@ class Calendar:
     def all(self, session: Session | None = None, now: datetime | None = None) -> list[Election]:
         now = now or datetime.now(UTC)
         self.ensure_warm(now.date())
-        return merge(self.boe(), self._jec[1], self._registry, self.press(session, now))
+        return merge(self.boe(), self._jec[1], self._registry, self._world[1], self.press(session, now))
 
     def active(self, session: Session | None = None, now: datetime | None = None) -> list[Election]:
         now = now or datetime.now(UTC)

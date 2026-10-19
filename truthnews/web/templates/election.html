@@ -5,7 +5,7 @@
 {% block head %}<link rel="canonical" href="{{ site.site_url }}/elecciones/{{ e.slug }}">{% endblock %}
 {% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/elecciones">{{ t(lang, 'el_title') }}</a> › {{ e.name }}</p>{% endblock %}
 {% block content %}
-<h1 class="page-title">{{ e.name }}{% if e.country != 'ES' %} · {{ country_name(e.country, lang) }}{% endif %}</h1>
+<h1 class="page-title">{{ e.name }}</h1>
 <p class="lead-text">{{ e.date.strftime('%d/%m/%Y') }} · {{ t(lang, 'el_phase_' ~ v.phase) }}{% if v.days_left > 0 %} · {{ t(lang, 'el_days_left')|replace('{n}', v.days_left|string) }}{% endif %}</p>
 <p class="meta"><span class="tag">{{ t(lang, 'el_status_' ~ e.status) }}</span> {{ t(lang, 'el_status_note_' ~ e.status) }}</p>
 

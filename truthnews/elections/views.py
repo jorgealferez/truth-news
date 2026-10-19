@@ -14,10 +14,11 @@ from sqlalchemy.orm import Session
 
 from truthnews.classify import normalize
 from truthnews.elections import changes
-from truthnews.elections.calendar import Election, _aliases
+from truthnews.elections.calendar import Election, _aliases, _world_names
 from truthnews.models import VERDICTS, PoliticalStatement, Program, Promise, StatementCheck, Story
 from truthnews.registry import load_political
 
+HOME = "ES"  # pais por omision del sitio: su cobertura se busca por el pais de la historia
 STATEMENTS_PER_PARTY = 3
 PROMISES_PER_PARTY = 4
 PROMISES_PAGE = 300
@@ -243,19 +244,27 @@ def figure_changes(session: Session, e: Election, slugs: list[str], now: datetim
 
 
 def coverage(session: Session, e: Election, now: datetime) -> list[Story]:
-    """Historias del pais desde que se abrio la ventana que hablan de elecciones o campana."""
-    rows = session.scalars(
-        select(Story)
-        .where(
-            Story.country == e.country,
-            Story.last_seen >= _since(e),
-            Story.last_seen <= now + timedelta(days=1),
-            or_(*(Story.title.ilike(w) for w in _STORY_WORDS)),
-        )
-        .order_by(Story.priority.desc(), Story.last_seen.desc())
-        .limit(COVERAGE * 4)
-    ).all()
+    """Historias desde que se abrio la ventana que hablan de elecciones o campana: del pais si es Espana;
+    de cualquier medio si es otro pais, siempre que el titular lo nombre."""
+    q = select(Story).where(
+        Story.last_seen >= _since(e),
+        Story.last_seen <= now + timedelta(days=1),
+        or_(*(Story.title.ilike(w) for w in _STORY_WORDS)),
+    )
+    names = _country_words(e.country) if e.country != HOME else ()
+    if names:
+        q = q.where(or_(*(Story.title.ilike(f"%{n}%") for n in names)))
+    else:
+        q = q.where(Story.country == e.country)
+    q = q.order_by(Story.priority.desc(), Story.last_seen.desc()).limit(COVERAGE * 4)
+    rows = session.scalars(q).all()
+    if names:
+        rows = [s for s in rows if any(re.search(rf"\b{re.escape(n)}\b", normalize(s.title)) for n in names)]
     return [s for s in rows if _regional(e, s.title)][:COVERAGE]
+
+
+def _country_words(iso: str) -> tuple[str, ...]:
+    return tuple(n for n, code in _world_names().items() if code == iso and len(n) > 3)
 
 
 def candidacy_rows(data: dict | None, e: Election) -> dict | None:

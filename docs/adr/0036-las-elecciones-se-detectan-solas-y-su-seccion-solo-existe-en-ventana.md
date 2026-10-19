@@ -26,7 +26,10 @@ autoridad: (1) los decretos de convocatoria del **BOE**, leidos de cada sumario 
 autonomicas van a su boletin: la gallega de 2024 no esta en el BOE, medido), la pagina "Elecciones en
 curso" de la **Junta Electoral Central**, leida una vez cada 12 h dentro de la franja que pide su
 robots.txt (Visit-time 20:00-06:59); con el BOE llegan tambien las **candidaturas** presentadas y
-proclamadas de cada convocatoria (todas las formaciones, circunscripciones y cabezas de lista), (2) el registro `registry/elections.yaml`, con lo
+proclamadas de cada convocatoria (todas las formaciones, circunscripciones y cabezas de lista); fuera
+de Espana, el calendario mundial de **IFES ElectionGuide** (solo fechas declaradas, una lectura cada 12 h,
+paises por el nomenclator `world.yaml`; una eleccion de un pais que ya tiene fuente oficial ese dia no se
+duplica), (2) el registro `registry/elections.yaml`, con lo
 comprobado a mano y los enlaces a los programas, y (3) los **medios rastreados**, solo cuando al menos dos
 medios distintos situan unas elecciones en el mismo pais y la misma fecha; estas se marcan "anunciada en
 medios" con sus titulares citados y ceden ante una convocatoria oficial del mismo dia.

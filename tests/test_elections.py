@@ -429,3 +429,70 @@ def test_jec_ongoing_elections_respect_visit_time():
     assert [e.slug for e in merged] == ["es-generales-2026-11-29"]
     c.warm(date(2026, 10, 19), pause=0, hour=23)  # una vez cada 12 h
     assert calls.count("www.juntaelectoralcentral.es") == 1
+
+
+def test_world_calendar_declared_dates_only_and_spain_first(engine, session):
+    markup = (FIX / "electionguide_upcoming_20261019.html").read_text()
+    found, unknown = cal.from_world(markup)
+    assert {(e.country, e.kind, e.date) for e in found} == {
+        ("BG", "presidenciales", date(2026, 10, 25)),
+        ("BR", "presidenciales", date(2026, 10, 25)),
+        ("IL", "legislativas", date(2026, 10, 27)),
+        ("US", "legislativas", date(2026, 11, 3)),
+    }
+    assert unknown == [] and not any(e.country == "GW" for e in found)  # "(t)": tentativa, no cuenta
+    merged = cal.merge(cal.load_registry(), found)
+    us = next(e for e in merged if e.country == "US")
+    assert len(us.sources) == 2 and us.name == "Elecciones legislativas · Estados Unidos"
+    assert next(e for e in merged if e.country == "BG").name == "Elecciones presidenciales · Bulgaria"
+    # Las generales de Espana en el calendario mundial no duplican las del BOE.
+    spain = cal.Election("ES", "legislativas", date(2026, 11, 29), "x", "convocada", (cal.Source("w", "w"),))
+    assert [e.kind for e in cal.merge(cal.load_registry(), [spain])] == ["generales"]
+    assert cal.iso_of("United States of America") == "US" and cal.iso_of("Narnia") is None
+
+    calls = []
+
+    def handler(request):
+        calls.append(request.url.host)
+        if request.url.host == "www.electionguide.org":
+            return httpx.Response(200, text=markup)
+        return httpx.Response(404)
+
+    c = cal.Calendar(1, transport=httpx.MockTransport(handler), background=False)
+    now = datetime(2026, 10, 19, 12, tzinfo=UTC)
+    c.warm(now.date(), pause=0, hour=12)
+    c.warm(now.date(), pause=0, hour=12)
+    assert calls.count("www.electionguide.org") == 1
+    session.add(
+        Story(title="Elecciones en Brasil: Lula y el segundo turno", category="internacional", country="ES",
+              first_seen=now, last_seen=now)
+    )
+    session.add(
+        Story(title="Elecciones generales: arranca la precampaña", category="politica", country="ES",
+              first_seen=now, last_seen=now)
+    )
+    session.commit()
+    br = c.get("br-presidenciales-2026-10-25", None, now)
+    titles = [s.title for s in views.coverage(session, br, now)]
+    assert titles == ["Elecciones en Brasil: Lula y el segundo turno"]
+
+
+def test_nav_prefers_spain_and_links_the_world(engine):
+    today = datetime.now(UTC).date()
+    poll = today + timedelta(days=20)
+    reg = {"elections": [{"country": "ES", "kind": "generales", "date": str(poll),
+                          "convened": str(today - timedelta(days=5)),
+                          "source": {"label": "Decreto", "url": "https://www.boe.es/x"}}]}
+    elections = cal.Calendar(0, registry_raw=reg)
+    src = (cal.Source("IFES", "https://www.electionguide.org/elections/id/1/"),)
+    name = "Elecciones presidenciales · Brasil"
+    other = cal.Election("BR", "presidenciales", today + timedelta(days=6), name, "convocada", src)
+    elections._world = (0.0, [other])
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, elections=elections))
+    home = client.get("/").text
+    assert f'href="/elecciones/es-generales-{poll.isoformat()}"' in home and "Elecciones en el mundo" in home
+    index = client.get("/elecciones").text
+    main = index[index.index("<main"):]
+    assert main.index("Elecciones generales") < main.index("presidenciales · Brasil")  # Espana primero
+    page = client.get(f"/elecciones/br-presidenciales-{(today + timedelta(days=6)).isoformat()}").text
+    assert "IFES" in page and "Qué dicen los partidos" not in page  # sin registro de partidos de Brasil

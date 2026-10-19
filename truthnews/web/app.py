@@ -857,7 +857,8 @@ def create_app(
     @app.get("/elecciones", response_class=HTMLResponse)
     def elections_page(request: Request, session: SessionDep):
         now = datetime.now(UTC)
-        return render(request, "elections.html", active=elections.active(session, now), today=now.date())
+        active = sorted(elections.active(session, now), key=lambda e: (e.country != "ES", e.date))
+        return render(request, "elections.html", active=active, today=now.date())
 
     @app.get("/elecciones/{slug}", response_class=HTMLResponse)
     def election_page(request: Request, slug: str, session: SessionDep):
