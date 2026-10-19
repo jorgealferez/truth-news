@@ -38,7 +38,7 @@
     </div>
     <div class="ess verdict"><p class="ess-k">④ {{ t(lang, 'key_verdict') }}</p>
       {% set lv = {'baja': 1, 'media': 2, 'alta': 3}.get(view.confidence, 0) %}
-      <p class="meter" role="img" aria-label="{{ t(lang, 'confidence') }}: {{ view.confidence }}">{% for i in range(3) %}<span class="{{ 'on' if i < lv }}"></span>{% endfor %} <b>{{ t(lang, 'confidence') }} {{ view.confidence }}</b></p>
+      <p class="conf-meter" role="img" aria-label="{{ t(lang, 'confidence') }}: {{ view.confidence }}">{% for i in range(3) %}<span class="{{ 'on' if i < lv }}"></span>{% endfor %} <b>{{ t(lang, 'confidence') }} {{ view.confidence }}</b></p>
       <p>{{ view.conclusion }}</p>
     </div>
   </section>
