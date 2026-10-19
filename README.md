@@ -51,6 +51,8 @@ traducido por IA, marcado como traducción automática; cupo por defecto `x_en:2
 Ajustes: `SOCIAL_ENABLED` (1), `SOCIAL_DRY_RUN` (0; 1 fuerza el modo prueba), `SOCIAL_DAILY_QUOTA`
 (`x:4,bluesky:6,mastodon:6,telegram:8`), `SOCIAL_PER_CYCLE` (2), `SOCIAL_MIN_SCORE` (2),
 `SOCIAL_WINDOW_HOURS` (72).
+Reparto en el día: `SOCIAL_ACTIVE_HOURS` (`8-23`, hora de Madrid; de noche no se publica) y una pieza por red
+cada (horas activas / cupo), como mucho una por ciclo; `SOCIAL_SPREAD=0` lo desactiva.
 
 Prueba a mano: `python -m truthnews social preview` muestra las piezas que saldrían ahora en cada
 red sin escribir nada; `python -m truthnews social run --dry` ejecuta el paso en modo prueba. La cola se
