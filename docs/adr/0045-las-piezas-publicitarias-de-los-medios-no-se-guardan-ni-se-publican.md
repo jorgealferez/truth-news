@@ -1,4 +1,4 @@
-# ADR 0041 — Las piezas publicitarias de los medios no se guardan ni se publican
+# ADR 0045 — Las piezas publicitarias de los medios no se guardan ni se publican
 
 - **Estado:** aceptado
 - **Fecha:** 2026-10-19

@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ t(lang, 'budget') }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ t(lang, 'budget_lead') }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/presupuestos">{% endblock %}
+{% block canonical %}{{ site.site_url }}/presupuestos{% endblock %}
+
 {% macro bar(p) %}{% if p and p.ejecucion is not none %}<span class="exec"><span class="exec-bar"><i style="width:{{ [p.ejecucion, 100]|min }}%"></i></span> <b>{{ p.ejecucion|pct }} %</b></span>{% else %}<span class="meta">—</span>{% endif %}{% endmacro %}
 {% block content %}
 <h1 class="page-title">{{ t(lang, 'budget') }}</h1>
