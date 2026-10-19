@@ -35,9 +35,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
     - [x] Deficit, riesgo de pobreza y AROPE (Eurostat) — #44
     - [x] Una variacion no se juzga como nivel (metodo v4) — #57
     - [x] Paro EPA por comunidad; noticias de otro pais sin pais por defecto (metodo v5) — #67
-    - [ ] Portales y tasadoras fuera del indice de vivienda; inflacion subyacente propia — #73
+    - [x] Portales y tasadoras fuera del indice de vivienda; inflacion subyacente propia — #73
     - [ ] Crecimiento anual del PIB con el ano citado — #86
-  - [ ] Veredicto en una frase con grafico de la serie oficial y la cifra del medio marcada; pagina de verificacion para compartir — #53
+  - [x] Veredicto en una frase con grafico de la serie oficial y la cifra del medio marcada; pagina de verificacion para compartir — #53
 - [x] Tarjetas de la historia con los medios a la vista (peticion del usuario 2026-10-19: "Mejora esto que pone medios pero no hay forma de clicar para ver cuáles son los que dicen cada. Adáptalo a móvil y desktop sin romper el formato"): cifras en disputa, omisiones y a quien se senala, desplegables con el nombre de cada medio y enlace a su noticia; rutas: `truthnews/web/templates/story.html`, `truthnews/web/static/site.css`, `truthnews/registry/i18n.yaml`, tests — hecho en #16 (squash d681371, 2026-10-19)
 - [ ] Hilo y consecuencias: archivo historico (GDELT, hemerotecas y sitemaps de los medios, anos atras) cruzado con la actualidad; linea temporal por tema (que se decia, que paso, que hubo por el camino, quien dijo que, que vino despues); conexiones entre hechos aparentemente sueltos con su evidencia (p. ej. Ceuta, presion diplomatica de Marruecos, EEUU/OTAN y Espana); analisis profundo con IA sin dar nada por sentado; en portada lo que ocurre ahora con su porque y su antes/despues (peticion del usuario 2026-10-19) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19) — Ampliado por el usuario 2026-10-19: asociar automaticamente noticias de distintas epocas, datos y articulos propios generados (cada hilo puede producir su pieza propia enlazada)
   - [x] ADR 0013 y migracion 0006 (tabla thread); conectores de hemeroteca GDELT (artlist por periodo) y Wikipedia

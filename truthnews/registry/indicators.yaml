@@ -56,6 +56,22 @@ pib_trimestral:
   sources:
     - {connector: eurostat, dataset: namq_10_gdp, params: {unit: CLV_PCH_PRE, s_adj: SCA, na_item: B1GQ}, geos: EU}
     - {connector: worldbank, indicator: NY.GDP.MKTP.KD.ZG}
+pib_anual:
+  name: {es: Crecimiento anual del PIB, en: Annual GDP growth}
+  unit: pct
+  change_is_level: true  # "la economia crecio un 2,6 % en 2025" es el valor del indicador
+  directional: false
+  annual: true  # el ano escrito en la frase es el periodo citado
+  patterns:
+    es: ["pib", "producto interior bruto", "la economía"]
+    en: ["gdp", "the economy"]
+    pt: ["pib", "a economia"]
+  requires: ["anual", "en el conjunto del año", "annual"]
+  requires_year_ok: true  # tambien vale un ano escrito ("en 2025")
+  excludes: [trimestre, trimestral, quarter, "este año", "este ejercicio", "próximo año", "this year", "per cápita"]
+  sources:
+    - {connector: eurostat, dataset: nama_10_gdp, params: {unit: CLV_PCH_PRE, na_item: B1GQ}, geos: EU}
+    - {connector: worldbank, indicator: NY.GDP.MKTP.KD.ZG}
 deuda_publica:
   name: {es: Deuda pública (% del PIB), en: Government debt (% of GDP)}
   unit: pct
@@ -79,6 +95,33 @@ deficit_publico:
   sources:
     # Eurostat publica la capacidad (+) o necesidad (-) de financiacion (B9): el deficit es su opuesto.
     - {connector: eurostat, dataset: gov_10dd_edpt1, params: {unit: PC_GDP, sector: S13, na_item: B9}, geos: EU, negate: true}
+gasto_publico:
+  name: {es: Gasto público (% del PIB), en: Government expenditure (% of GDP)}
+  unit: pct
+  of_gdp: true
+  directional: false
+  patterns:
+    es: ["gasto público", "gasto de las administraciones públicas"]
+    en: ["government expenditure", "public spending", "government spending"]
+    pt: ["despesa pública"]
+  requires: ["pib", "producto interior bruto", "gdp"]  # el total sobre el PIB, no una partida
+  excludes: [sanitario, sanidad, educativo, educación, defensa, militar, pensiones, "per cápita", presupuesto]
+  sources:
+    # Propuesto y comprobado por la sesion Datos politicos (2026-10-19): ES 2025 = 45,3 %.
+    - {connector: eurostat, dataset: gov_10a_main, params: {unit: PC_GDP, sector: S13, na_item: TE}, geos: EU}
+ingresos_publicos:
+  name: {es: Ingresos públicos (% del PIB), en: Government revenue (% of GDP)}
+  unit: pct
+  of_gdp: true
+  directional: false
+  patterns:
+    es: ["ingresos públicos", "ingresos de las administraciones públicas"]
+    en: ["government revenue", "public revenue"]
+    pt: ["receita pública"]
+  requires: ["pib", "producto interior bruto", "gdp"]
+  excludes: ["per cápita", presupuesto]
+  sources:
+    - {connector: eurostat, dataset: gov_10a_main, params: {unit: PC_GDP, sector: S13, na_item: TR}, geos: EU}
 riesgo_pobreza:
   name: {es: Tasa de riesgo de pobreza, en: At-risk-of-poverty rate}
   unit: pct
