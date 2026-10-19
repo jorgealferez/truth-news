@@ -134,3 +134,15 @@ def test_said_points_mix_checked_claims_and_quotes():
     ]
     pts = charts.said_points([claim, unchecked], quotes)
     assert [(p.verdict, p.href) for p in pts] == [("impreciso", "/verificacion/3"), (None, "/noticia/2")]
+
+
+def test_said_lanes_keep_points_24_apart_and_say_what_is_left_out():
+    assert charts._spread([100, 104, 106, 300], 0, 340) == [100, 124, 148, 300]
+    assert charts._spread([330, 335, 338], 0, 340) == [292, 316, 340]  # al borde: se empujan hacia atras
+    assert charts._spread([10, 11, 12], 0, 30) == [0, 15, 30]  # no caben a 24: reparto por igual
+    pts = [charts.Said(T0 + timedelta(minutes=3 * k), None, "x", f"/noticia/{k}") for k in range(14)]
+    svg = str(charts.said_timeline(pts, LANES, "Lo que dijo y cuando"))
+    xs = sorted(float(x) for x in re.findall(r'<circle cx="([\d.]+)"', svg))
+    assert len(xs) == 10 and min(b - a for a, b in zip(xs, xs[1:], strict=False)) >= 24 - 0.01
+    assert "Se muestran las 10 mas recientes de 14." in svg
+    _links_have_hit_areas(svg, 10)

@@ -1,0 +1,160 @@
+{
+  "fase": "2h",
+  "titulo": "Comparativas: base de medida de las disputas (datos etiquetados de produccion y validacion fuera de muestra)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "disputas_precision": 1.0,
+    "disputas_exhaustividad": 1.0
+  },
+  "detalle": {
+    "datos": {
+      "tests/fixtures/disputes.json": "15 historias del 17-18/10 (sin cambios; puerta del ADR 0016)",
+      "tests/fixtures/disputes_produccion.json": "13 historias del 18-19/10 (197 articulos) donde los medios dan cifras distintas, con URL, fecha, frases citadas y cifra oficial cuando los textos la citan",
+      "tests/fixtures/disputes_validacion.json": {
+        "fuera_de_muestra_1": {
+          "tomada": "2026-10-19 13:20 UTC",
+          "historias": [
+            14095,
+            14089,
+            14068,
+            14053,
+            13575,
+            12557,
+            11138,
+            11037,
+            10586,
+            10017,
+            9640,
+            8990,
+            8961,
+            8537,
+            8502
+          ],
+          "seleccion": "Las 400 historias mas recientes no abiertas antes, con al menos 3 medios y con cifras del mismo sustantivo en al menos dos medios; seleccion automatica",
+          "uso": "medida limpia con las reglas 1-3 del ADR 0053 (territorio, partido, dinero; precision 0,333); despues se uso para ajustar las reglas 4 (lo que les paso) y 5 (solo castellano), asi que ya no es fuera de muestra para ellas"
+        },
+        "fuera_de_muestra_2": {
+          "tomada": "2026-10-19 14:15 UTC",
+          "historias": [
+            8022,
+            7624,
+            6990,
+            6641,
+            5034,
+            4917,
+            14737,
+            4588,
+            2109,
+            1655,
+            1138,
+            951,
+            278
+          ],
+          "seleccion": "Todas las historias de los sitemaps historias-1..4 de nosmienten.com no abiertas antes (ni en el diseno ni en la muestra 1), con al menos 3 medios y con cifras del mismo sustantivo en al menos dos medios; seleccion automatica fijada antes de medir. Idioma por dominio (.pt = portugues)",
+          "uso": "medida limpia con las reglas 1-5 del ADR 0053 (precision 0,667, exhaustividad 0,667); despues se uso para ajustar la regla 6 (a quien le paso), asi que ya no es fuera de muestra para ella"
+        }
+      }
+    },
+    "base_codigo_de_main": {
+      "nota": "compare.py y evaluate.py de main: el evaluador de main solo lee titular y resumen (no 'texto' ni 'idioma')",
+      "disputes.json (15, 17-18/10)": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores": []
+      },
+      "disputes_produccion.json (13, 18-19/10)": {
+        "disputas": 9,
+        "precision": 0.444,
+        "precision_pares": 0.14,
+        "exhaustividad": 0.667,
+        "esperadas": 6,
+        "errores": [
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos",
+          "12084:escanos"
+        ]
+      },
+      "disputes_validacion.json fuera_de_muestra_1 (15)": {
+        "disputas": 1,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores": []
+      },
+      "disputes_validacion.json fuera_de_muestra_2 (13)": {
+        "disputas": 0,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 0.0,
+        "esperadas": 3,
+        "errores": []
+      }
+    },
+    "medidas_limpias_reglas_propuestas_pr_215": {
+      "nota": "PR #215 (ADR 0053, no mergeado): evaluador leyendo las frases del texto. Limpia = medida antes de usar la muestra para ajustar",
+      "fuera_de_muestra_1_reglas_1_3": {
+        "disputas": 3,
+        "precision": 0.333,
+        "precision_pares": 0.5,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores": [
+          "9640:muertos",
+          "9640:migrantes"
+        ]
+      },
+      "fuera_de_muestra_2_reglas_1_5": {
+        "disputas": 3,
+        "precision": 0.667,
+        "precision_pares": 0.5,
+        "exhaustividad": 0.667,
+        "esperadas": 3,
+        "errores": [
+          "2109:heridos"
+        ]
+      },
+      "fuera_de_muestra_1_codigo_de_main_con_texto": {
+        "disputas": 5,
+        "precision": 0.2,
+        "precision_pares": 0.438,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores": [
+          "11138:euros ·2",
+          "9640:muertos",
+          "9640:migrantes",
+          "8537:euros"
+        ]
+      },
+      "fuera_de_muestra_2_codigo_de_main_con_texto": {
+        "disputas": 3,
+        "precision": 0.667,
+        "precision_pares": 0.5,
+        "exhaustividad": 0.667,
+        "esperadas": 3,
+        "errores": [
+          "2109:heridos"
+        ]
+      }
+    },
+    "comando": "python -c \"import json; from truthnews.analysis.evaluate import dispute_quality; [print(f, dispute_quality(json.load(open(f)))) for f in ('tests/fixtures/disputes.json', 'tests/fixtures/disputes_produccion.json', 'tests/fixtures/disputes_validacion.json')]\""
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Reglas del ADR 0053 (#215): solo entran si una muestra limpia llega a >= 0,8 de precision sin bajar la exhaustividad"
+  ]
+}
