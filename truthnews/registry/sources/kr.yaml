@@ -1,0 +1,6 @@
+country: KR
+default_language: en
+outlets:
+  - {slug: yonhap-en, name: Yonhap News Agency, homepage: "https://en.yna.co.kr", scope: national, kind: agency, feeds: [{url: "https://en.yna.co.kr/RSS/news.xml"}]}
+  - {slug: korea-herald, name: The Korea Herald, homepage: "https://www.koreaherald.com", scope: national, feeds: [{url: "https://www.koreaherald.com/rss/newsAll"}]}
+  - {slug: hankyoreh-en, name: The Hankyoreh, homepage: "https://english.hani.co.kr", scope: national, feeds: [{url: "https://english.hani.co.kr/rss/"}]}

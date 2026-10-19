@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): swissinfo-es (HTTP 410).
+country: CH
+default_language: de
+outlets:
+  - {slug: srf, name: SRF News, homepage: "https://www.srf.ch/news", scope: national, kind: tv, owner: SRG SSR (pública), feeds: [{url: "https://www.srf.ch/news/bnf/rss/1646"}]}
+  - {slug: nzz, name: Neue Zürcher Zeitung, homepage: "https://www.nzz.ch", scope: national, feeds: [{url: "https://www.nzz.ch/recent.rss"}]}
+  - {slug: rts-info, name: RTS Info, homepage: "https://www.rts.ch/info/", scope: national, kind: tv, language: fr, owner: SRG SSR (pública), feeds: [{url: "https://www.rts.ch/info/?format=rss/news"}]}

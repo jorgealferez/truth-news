@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): ultima-hora-py (HTTP 404).
+country: PY
+default_language: es
+outlets:
+  - {slug: abc-color, name: ABC Color, homepage: "https://www.abc.com.py", scope: national, feeds: [{url: "https://www.abc.com.py/arc/outboundfeeds/rss/?outputType=xml"}]}

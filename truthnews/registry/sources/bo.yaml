@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): el-deber (no es un feed o esta vacio), la-razon-bo (HTTP 403).
+country: BO
+default_language: es
+outlets:
+  - {slug: opinion-bo, name: Opinión Bolivia, homepage: "https://www.opinion.com.bo", scope: national, feeds: [{url: "https://www.opinion.com.bo/rss/"}]}

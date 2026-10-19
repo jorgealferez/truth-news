@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): inquirer (HTTP 403).
+country: PH
+default_language: en
+outlets:
+  - {slug: rappler, name: Rappler, homepage: "https://www.rappler.com", scope: national, feeds: [{url: "https://www.rappler.com/feed/"}]}

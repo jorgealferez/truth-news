@@ -1,0 +1,6 @@
+country: "NO"
+default_language: nb
+outlets:
+  - {slug: nrk, name: NRK, homepage: "https://www.nrk.no", scope: national, kind: tv, owner: NRK (pública), feeds: [{url: "https://www.nrk.no/toppsaker.rss"}]}
+  - {slug: aftenposten, name: Aftenposten, homepage: "https://www.aftenposten.no", scope: national, feeds: [{url: "https://www.aftenposten.no/rss"}]}
+  - {slug: vg, name: VG, homepage: "https://www.vg.no", scope: national, feeds: [{url: "https://www.vg.no/rss/feed/"}]}

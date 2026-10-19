@@ -1,0 +1,5 @@
+country: TN
+default_language: fr
+outlets:
+  - {slug: kapitalis, name: Kapitalis, homepage: "https://kapitalis.com", scope: national, feeds: [{url: "https://kapitalis.com/tunisie/feed/"}]}
+  - {slug: la-presse-tn, name: La Presse de Tunisie, homepage: "https://lapresse.tn", scope: national, feeds: [{url: "https://lapresse.tn/feed/"}]}

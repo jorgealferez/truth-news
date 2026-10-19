@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): plaza-publica (HTTP 404).
+country: GT
+default_language: es
+outlets:
+  - {slug: prensa-libre, name: Prensa Libre, homepage: "https://www.prensalibre.com", scope: national, feeds: [{url: "https://www.prensalibre.com/feed/"}]}
