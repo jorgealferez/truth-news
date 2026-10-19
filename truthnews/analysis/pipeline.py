@@ -3,13 +3,14 @@
 from __future__ import annotations
 
 import logging
+import re
 from collections import Counter
 from datetime import UTC, datetime, timedelta
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.analysis.claims import ClaimCandidate, check_proposal, extract
+from truthnews.analysis.claims import ClaimCandidate, check_proposal, extract, indicators, world_countries
 from truthnews.analysis.cluster import (
     DEFAULT_THRESHOLD,
     Doc,
@@ -21,6 +22,7 @@ from truthnews.analysis.cluster import (
 )
 from truthnews.analysis.score import score_stories
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
+from truthnews.classify import normalize
 from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
 
 log = logging.getLogger(__name__)
@@ -190,6 +192,24 @@ def save_claim(
     return result.verdict
 
 
+def default_geo_of(a: Article) -> str:
+    """Pais que se supone cuando la frase no nombra ninguno: el del medio, salvo en una noticia de otro pais.
+
+    Caso real (ABC, 19/10/2026, Internacional sobre Pakistan): "En septiembre, la inflacion se situo en el
+    10,3 % interanual" se atribuia a Espana. Una noticia de Internacional, o que nombra otro pais en el
+    titular o la entradilla, exige que la frase diga el territorio ("XX": sin pais por defecto).
+    """
+    if a.category == "internacional":
+        return "XX"
+    head = normalize(f"{a.title}. {a.summary or ''}")
+    for iso, names in {**world_countries(), **indicators()["geo_names"]}.items():
+        if iso in (a.country, "EU", "EA"):
+            continue
+        if any(re.search(r"(?<!\w)" + re.escape(normalize(n)) + r"(?!\w)", head) for n in names):
+            return "XX"
+    return a.country
+
+
 def article_text(a: Article) -> str:
     return f"{a.title}. {a.summary or ''}\n{a.content_text or ''}"
 
@@ -205,7 +225,7 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     verdicts: Counter = Counter()
     for a in arts:
         pub = _aware(a.published_at)
-        for cand in extract(article_text(a), a.language, a.country, pub.year, pub.month):
+        for cand in extract(article_text(a), a.language, default_geo_of(a), pub.year, pub.month):
             verdict = save_claim(session, a, cand, verifier)
             if verdict is None:
                 continue
@@ -243,7 +263,7 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
                 c.value,
                 c.period,
                 c.direction,
-                a.country,
+                default_geo_of(a),
                 pub.year,
                 pub.month,
             )
@@ -251,7 +271,7 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
         else:
             current = [
                 k
-                for k in extract(c.text, a.language, a.country, pub.year, pub.month)
+                for k in extract(c.text, a.language, default_geo_of(a), pub.year, pub.month)
                 if k.indicator == c.indicator and k.value == c.value
             ]
         if not current:
