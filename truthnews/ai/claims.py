@@ -11,8 +11,10 @@ import json
 import logging
 import re
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
+from typing import Any
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
@@ -126,6 +128,89 @@ def _has_series(indicator: str, geo: str) -> bool:
     return any(applicable(s, geo) for s in indicators()[indicator]["sources"])
 
 
+@dataclass(frozen=True)
+class Item:
+    """Una frase que se propone a la IA, con el texto del que sale (para comprobar que esta literal)."""
+
+    sentence: str
+    text: str
+    default_geo: str  # "XX" si no se puede suponer el pais
+    published: datetime
+    ref: Any = None  # lo que el llamador necesite para guardar (un Article, una declaracion...)
+
+
+def propose_batch(ai: AIClient, batch: list[Item], stats: Counter, rejected: Counter, usage: Counter):
+    """Una llamada: propuestas de la IA ya validadas por las reglas. None si la IA no esta disponible."""
+    payload = [
+        {
+            "id": i,
+            "pais_por_defecto": it.default_geo,
+            "fecha": f"{_aware(it.published):%Y-%m-%d}",
+            "frase": it.sentence,
+        }
+        for i, it in enumerate(batch)
+    ]
+    user = (
+        "Series oficiales disponibles:\n"
+        + _catalog()
+        + "\n\nFrases:\n"
+        + json.dumps(payload, ensure_ascii=False)
+    )
+    try:
+        res = ai.structured(SYSTEM, user, claims_schema())
+    except AIError as exc:
+        log.warning("extraccion con IA no disponible: %s", exc)
+        stats["errores"] += 1
+        return None
+    stats["llamadas"] += 1
+    stats["frases_enviadas"] += len(batch)
+    for k, v in (res.usage or {}).items():
+        usage[k] += v or 0
+    accepted: list[tuple[Item, ClaimCandidate]] = []
+    for p in res.data.get("afirmaciones", []):
+        i = p.get("id")
+        if not isinstance(i, int) or not 0 <= i < len(batch) or not p.get("comprobable"):
+            continue
+        stats["propuestas"] += 1
+        it = batch[i]
+        pub = _aware(it.published)
+        cand = check_proposal(
+            it.sentence,
+            it.text,
+            p.get("indicador", ""),
+            p.get("territorio", ""),
+            float(p.get("valor", 0)),
+            p.get("periodo") or None,
+            p.get("sentido"),
+            it.default_geo,
+            pub.year,
+            pub.month,
+        )
+        if isinstance(cand, ClaimCandidate) and not _has_series(cand.indicator, cand.geo):
+            cand = "sin serie oficial para ese territorio"
+        if not isinstance(cand, ClaimCandidate):
+            rejected[cand] += 1
+            continue
+        accepted.append((it, cand))
+    return accepted
+
+
+def propose(
+    ai: AIClient, items: list[Item], max_calls: int = 3
+) -> tuple[list[tuple[Item, ClaimCandidate]], dict]:
+    """Punto de entrada sin base de datos: candidatos validados (el veredicto lo da verify.py)."""
+    stats: Counter = Counter(frases_candidatas=len(items))
+    rejected: Counter = Counter()
+    usage: Counter = Counter()
+    out: list[tuple[Item, ClaimCandidate]] = []
+    for start in range(0, min(len(items), BATCH * max_calls), BATCH):
+        got = propose_batch(ai, items[start : start + BATCH], stats, rejected, usage)
+        if got is None:
+            break
+        out += got
+    return out, {**stats, "rechazos": dict(rejected), "uso": dict(usage)}
+
+
 def run(
     session: Session,
     ai: AIClient,
@@ -149,67 +234,22 @@ def run(
             select(Claim.article_id, Claim.text).where(Claim.article_id.in_([a.id for a in arts] or [-1]))
         )
     }
-    items: list[tuple[Article, str]] = []
+    items: list[Item] = []
     for a in arts:
-        for s in candidate_sentences(article_text(a)):
+        text = article_text(a)
+        for s in candidate_sentences(text):
             if (a.id, s[:600]) not in known:
-                items.append((a, s))
+                items.append(Item(s, text, default_geo_of(a), a.published_at, a))
     stats: Counter = Counter(frases_candidatas=len(items))
     verdicts: Counter = Counter()
     rejected: Counter = Counter()
     usage: Counter = Counter()
     for start in range(0, min(len(items), BATCH * max_calls), BATCH):
-        batch = items[start : start + BATCH]
-        payload = [
-            {
-                "id": i,
-                "pais_por_defecto": default_geo_of(a),
-                "fecha": f"{_aware(a.published_at):%Y-%m-%d}",
-                "frase": s,
-            }
-            for i, (a, s) in enumerate(batch)
-        ]
-        user = (
-            "Series oficiales disponibles:\n"
-            + _catalog()
-            + "\n\nFrases:\n"
-            + json.dumps(payload, ensure_ascii=False)
-        )
-        try:
-            res = ai.structured(SYSTEM, user, claims_schema())
-        except AIError as exc:
-            log.warning("extraccion con IA no disponible: %s", exc)
-            stats["errores"] += 1
+        accepted = propose_batch(ai, items[start : start + BATCH], stats, rejected, usage)
+        if accepted is None:
             break
-        stats["llamadas"] += 1
-        stats["frases_enviadas"] += len(batch)
-        for k, v in (res.usage or {}).items():
-            usage[k] += v or 0
-        for p in res.data.get("afirmaciones", []):
-            i = p.get("id")
-            if not isinstance(i, int) or not 0 <= i < len(batch) or not p.get("comprobable"):
-                continue
-            stats["propuestas"] += 1
-            a, sentence = batch[i]
-            pub = _aware(a.published_at)
-            cand = check_proposal(
-                sentence,
-                article_text(a),
-                p.get("indicador", ""),
-                p.get("territorio", ""),
-                float(p.get("valor", 0)),
-                p.get("periodo") or None,
-                p.get("sentido"),
-                default_geo_of(a),
-                pub.year,
-                pub.month,
-            )
-            if isinstance(cand, ClaimCandidate) and not _has_series(cand.indicator, cand.geo):
-                cand = "sin serie oficial para ese territorio"
-            if not isinstance(cand, ClaimCandidate):
-                rejected[cand] += 1
-                continue
-            verdict = save_claim(session, a, cand, verifier, extractor="ia")
+        for it, cand in accepted:
+            verdict = save_claim(session, it.ref, cand, verifier, extractor="ia")
             if verdict is None:
                 continue
             stats["aceptadas"] += 1

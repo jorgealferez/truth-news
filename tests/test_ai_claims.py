@@ -319,3 +319,22 @@ def test_annual_gdp_from_the_ai():
     c = check(s, "pib_anual", "ES", 2.6)
     assert isinstance(c, ClaimCandidate) and c.period == "2025"
     assert "contexto" in check("La economía española creció un 2,6 %, según el INE.", "pib_anual", "ES", 2.6)
+
+
+def test_public_entry_points_without_articles():
+    from truthnews.analysis.judge import judge_candidate, judge_text
+
+    text = (
+        "La tasa de paro se sitúa en el 10,5 % según el partido. Con un 10,5 % de paro, el país sigue igual."
+    )
+    judged = judge_text(text, "es", "ES", NOW, verifier())
+    assert [(c.indicator, r.verdict) for c, r in judged] == [("paro", "verdadero")]
+    items = [
+        ai_claims.Item(s, text, "ES", NOW, ref="declaracion-7") for s in ai_claims.candidate_sentences(text)
+    ]
+    reply = {"afirmaciones": [prop(1, "paro", "ES", 10.5), prop(0, "paro", "FR", 10.5)]}
+    got, stats = ai_claims.propose(FakeAI([reply]), items)
+    assert [(it.ref, c.geo) for it, c in got] == [("declaracion-7", "ES")]
+    assert stats["llamadas"] == 1 and sum(stats["rechazos"].values()) == 1
+    assert judge_candidate(got[0][1], verifier()).verdict == "verdadero"
+    assert ai_claims.propose(FakeAI([AIError("x")]), items)[1]["errores"] == 1
