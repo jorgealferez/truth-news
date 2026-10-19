@@ -80,7 +80,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
 | ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
-| ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
+| ADR 0035 | diseno | en main | Comparativas (afirmaciones que se repiten; sin migracion) |
 | ADR 0036 | diseno | PR #139 | Elecciones (seccion temporal, calendario: BOE, JEC, IFES y medios; candidaturas; sin migracion) |
 | ADR 0037 + migracion 0018 | datos | PR #139 | Elecciones (program, promise, promise_check) |
 | ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
