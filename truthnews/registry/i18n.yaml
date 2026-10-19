@@ -409,6 +409,17 @@ es:
     Ejecutado = obligaciones reconocidas netas sobre créditos definitivos; la comparación es con el mismo mes
     del año anterior. Lo calculamos a partir de los importes publicados, sin estimaciones.
   budget_extract: extracto de ejecución
+  speakers_title: Quién dice la verdad
+  speakers_lead: >-
+    Historial de veredictos de partidos y personas: cuántas de sus afirmaciones con datos resultan verdaderas
+    al compararlas con la fuente oficial. Mismo método y mismo listón para todos.
+  speakers_method: >-
+    Cuentan las afirmaciones que la noticia atribuye a quien habla, juzgadas por el mismo código que el resto
+    de verificaciones. No deducimos la afiliación de nadie: un partido suma solo lo que se atribuye al partido.
+  speakers_partido: Partidos
+  speakers_persona: Personas
+  speakers_empty: "Aún nadie tiene {n} afirmaciones comprobadas: la lista se llenará a medida que verifiquemos."
+  speakers_few: "Con pocas verificaciones todavía ({n})"
 
 en:
   tagline: We compare what the media report with what the data say
@@ -816,3 +827,14 @@ en:
     Executed = net recognised obligations over final appropriations; compared with the same month of the
     previous year. Computed from the published amounts, with no estimates.
   budget_extract: execution extract
+  speakers_title: Who tells the truth
+  speakers_lead: >-
+    Verdict record of parties and people: how many of their factual claims turn out true against the official
+    source. Same method and same bar for everyone.
+  speakers_method: >-
+    We count the claims that the story attributes to the speaker, judged by the same code as every other
+    check. We never infer anyone's affiliation: a party only adds up what is attributed to the party.
+  speakers_partido: Parties
+  speakers_persona: People
+  speakers_empty: "Nobody has {n} checked claims yet: the list fills up as we verify."
+  speakers_few: "With few checks so far ({n})"

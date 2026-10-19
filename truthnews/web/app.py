@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad, ranking, reliability
+from truthnews.analysis import abroad, ranking, reliability, speakers
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
@@ -309,6 +309,7 @@ def create_app(
                 "/investigaciones",
                 "/metodologia",
                 "/nombramientos",
+                "/quien-dice-la-verdad",
                 "/presupuestos",
                 "/publicidad",
                 "/acerca",
@@ -503,6 +504,12 @@ def create_app(
             contradictions=ranking.contradictions(session, limit=12),
             board=ranking.scoreboard(session),
         )
+
+    @app.get("/quien-dice-la-verdad", response_class=HTMLResponse)
+    def speakers_page(request: Request, session: SessionDep):
+        recs = speakers.records(session)
+        by_kind = {k: speakers.ranking([r for r in recs if r.entity.kind == k]) for k in speakers.KINDS}
+        return render(request, "speakers.html", by_kind=by_kind, min_checks=reliability.MIN_CHECKS)
 
     @app.get("/entidades", response_class=HTMLResponse)
     def entities(request: Request, session: SessionDep, tipo: str | None = None, dias: int = 30):

@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): the-star-ke (HTTP 404).
+country: KE
+default_language: en
+outlets:
+  - {slug: nation-ke, name: Nation, homepage: "https://nation.africa/kenya", scope: national, feeds: [{url: "https://nation.africa/kenya/rss.xml"}]}

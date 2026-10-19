@@ -1,0 +1,5 @@
+country: CZ
+default_language: cs
+outlets:
+  - {slug: ct24, name: ČT24, homepage: "https://ct24.ceskatelevize.cz", scope: national, kind: tv, owner: Česká televize (pública), feeds: [{url: "https://ct24.ceskatelevize.cz/rss/hlavni-zpravy"}]}
+  - {slug: idnes, name: iDNES.cz, homepage: "https://www.idnes.cz", scope: national, feeds: [{url: "https://servis.idnes.cz/rss.aspx?c=zpravodaj"}]}

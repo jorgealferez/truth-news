@@ -1,0 +1,222 @@
+{
+  "fase": "g7",
+  "titulo": "Cobertura global, tercer lote: 21 paises mas solo con datos del registro",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "rastreo_descargas_prohibidas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "medida": "python tools/check_feeds.py AT CH SE NO DK FI GR RO CZ HU KR PH SG PK KE SN TN BO PY GT PA",
+    "primera_pasada": {
+      "feeds_candidatos": 54,
+      "feeds_validos": 40,
+      "fuera": 14,
+      "motivos": "403, 404, 410, robots.txt que lo prohibe (1 URL, no se descargo) o contenido que no es feed; medios retirados anotados en su sources/<iso>.yaml",
+      "paises_sin_feed_valido": {
+        "HN": "La Prensa y El Heraldo: 404",
+        "SV": "El Faro: no es feed; La Prensa Grafica: robots.txt lo prohibe"
+      }
+    },
+    "segunda_pasada": {
+      "paises": 21,
+      "medios": 40,
+      "feeds_validos": "40/40",
+      "entradas": 999
+    },
+    "por_pais": {
+      "AT": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 85,
+        "lenguas": [
+          "de"
+        ]
+      },
+      "BO": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 20,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "CH": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 71,
+        "lenguas": [
+          "de",
+          "fr"
+        ]
+      },
+      "CZ": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 60,
+        "lenguas": [
+          "cs"
+        ]
+      },
+      "DK": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 40,
+        "lenguas": [
+          "da"
+        ]
+      },
+      "FI": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 44,
+        "lenguas": [
+          "fi"
+        ]
+      },
+      "GR": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "el"
+        ]
+      },
+      "GT": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "HU": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 85,
+        "lenguas": [
+          "hu"
+        ]
+      },
+      "KE": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 25,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "KR": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 90,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "NO": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 70,
+        "lenguas": [
+          "nb"
+        ]
+      },
+      "PA": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "PH": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 10,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "PK": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 59,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "PY": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 30,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "RO": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 50,
+        "lenguas": [
+          "ro"
+        ]
+      },
+      "SE": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 90,
+        "lenguas": [
+          "sv"
+        ]
+      },
+      "SG": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 50,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "SN": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 10,
+        "lenguas": [
+          "fr"
+        ]
+      },
+      "TN": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 20,
+        "lenguas": [
+          "fr"
+        ]
+      }
+    },
+    "registro_total": {
+      "paises": 59,
+      "medios": 290,
+      "lenguas": 21
+    },
+    "nota": "la clave NO (Noruega) va entre comillas en countries.yaml: YAML 1.1 la leeria como false"
+  },
+  "criterios_de_salida": {
+    "C10": "59 paises y 21 lenguas en el registro, solo con YAML"
+  },
+  "no_verificable": [
+    "Articulos ingeridos por pais en produccion"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Honduras y El Salvador cuando haya un feed valido"
+  ]
+}

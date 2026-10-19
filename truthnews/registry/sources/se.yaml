@@ -1,0 +1,6 @@
+country: SE
+default_language: sv
+outlets:
+  - {slug: svt-nyheter, name: SVT Nyheter, homepage: "https://www.svt.se/nyheter/", scope: national, kind: tv, owner: SVT (pública), feeds: [{url: "https://www.svt.se/nyheter/rss.xml"}]}
+  - {slug: dagens-nyheter, name: Dagens Nyheter, homepage: "https://www.dn.se", scope: national, feeds: [{url: "https://www.dn.se/rss/"}]}
+  - {slug: aftonbladet, name: Aftonbladet, homepage: "https://www.aftonbladet.se", scope: national, feeds: [{url: "https://rss.aftonbladet.se/rss2/small/pages/sections/senastenytt/"}]}

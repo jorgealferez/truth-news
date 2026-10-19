@@ -1,0 +1,5 @@
+country: PK
+default_language: en
+outlets:
+  - {slug: dawn, name: Dawn, homepage: "https://www.dawn.com", scope: national, feeds: [{url: "https://www.dawn.com/feeds/home"}]}
+  - {slug: express-tribune, name: The Express Tribune, homepage: "https://tribune.com.pk", scope: national, feeds: [{url: "https://tribune.com.pk/feed/home"}]}

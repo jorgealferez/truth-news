@@ -1,0 +1,5 @@
+country: FI
+default_language: fi
+outlets:
+  - {slug: yle, name: Yle Uutiset, homepage: "https://yle.fi/uutiset", scope: national, kind: tv, owner: Yle (pública), feeds: [{url: "https://yle.fi/rss/uutiset/paauutiset"}]}
+  - {slug: helsingin-sanomat, name: Helsingin Sanomat, homepage: "https://www.hs.fi", scope: national, feeds: [{url: "https://www.hs.fi/rss/tuoreimmat.xml"}]}

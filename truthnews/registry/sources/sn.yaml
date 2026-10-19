@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): seneweb (HTTP 404).
+country: SN
+default_language: fr
+outlets:
+  - {slug: aps-sn, name: Agence de Presse Sénégalaise, homepage: "https://aps.sn", scope: national, kind: agency, owner: APS (pública), feeds: [{url: "https://aps.sn/feed/"}]}

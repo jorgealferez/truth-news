@@ -1,0 +1,5 @@
+country: DK
+default_language: da
+outlets:
+  - {slug: dr-nyheder, name: DR Nyheder, homepage: "https://www.dr.dk/nyheder", scope: national, kind: tv, owner: DR (pública), feeds: [{url: "https://www.dr.dk/nyheder/service/feeds/allenyheder"}]}
+  - {slug: politiken, name: Politiken, homepage: "https://politiken.dk", scope: national, feeds: [{url: "https://politiken.dk/rss/senestenyt.rss"}]}

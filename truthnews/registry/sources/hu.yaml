@@ -1,0 +1,6 @@
+country: HU
+default_language: hu
+outlets:
+  - {slug: telex, name: Telex, homepage: "https://telex.hu", scope: national, feeds: [{url: "https://telex.hu/rss"}]}
+  - {slug: hvg, name: HVG, homepage: "https://hvg.hu", scope: national, feeds: [{url: "https://hvg.hu/rss"}]}
+  - {slug: magyar-nemzet, name: Magyar Nemzet, homepage: "https://magyarnemzet.hu", scope: national, feeds: [{url: "https://magyarnemzet.hu/feed"}]}

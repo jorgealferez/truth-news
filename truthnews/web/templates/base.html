@@ -74,7 +74,7 @@
   <div class="wrap">
     <p class="foot-brand"><img src="/static/mark.svg" alt="" width="22" height="22"> <strong>{{ site.site_domain }}</strong> · {{ t(lang, 'motto') }}</p>
     <p>{{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
-    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/nombramientos">{{ t(lang, 'appointments') }}</a> · <a href="/presupuestos">{{ t(lang, 'budget') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a> · <a href="/publicidad">{{ t(lang, 'advertising') }}</a> · <a href="/rss.xml">RSS</a></p>
+    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/quien-dice-la-verdad">{{ t(lang, 'speakers_title') }}</a> · <a href="/nombramientos">{{ t(lang, 'appointments') }}</a> · <a href="/presupuestos">{{ t(lang, 'budget') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a> · <a href="/publicidad">{{ t(lang, 'advertising') }}</a> · <a href="/rss.xml">RSS</a></p>
   </div>
 </footer>
 <nav class="tabbar" aria-label="{{ t(lang, 'site_sections') }}">

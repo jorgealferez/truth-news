@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'speakers_title') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'speakers_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/quien-dice-la-verdad">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'speakers_title') }}</h1>
+<p class="lead-text">{{ t(lang, 'speakers_lead') }}</p>
+<p class="meta">{{ t(lang, 'rank_note')|replace('{n}', min_checks|string) }} {{ t(lang, 'speakers_method') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+{% for kind in ['partido', 'persona'] %}{% set ranked, few = by_kind[kind] %}
+<section class="ranking" id="{{ kind }}s" aria-label="{{ t(lang, 'speakers_' ~ kind) }}">
+  <h2>{{ t(lang, 'speakers_' ~ kind) }}</h2>
+  {% if ranked %}<ol class="rank-list">{% for r in ranked %}
+    <li><a class="rk-name" href="{{ url('entidad', r.entity.id, r.entity.name) }}">{{ r.entity.name }}</a>
+      <span class="rk-acc"><b>{{ (100 * r.accuracy)|round|int }} %</b> <span class="meta">{{ r.right }}/{{ r.checked }}</span></span>
+      <span class="meter bar" role="img" aria-label="{{ r.right }}/{{ r.checked }}">{% for v, n, pct in r.shares() %}<span class="v-{{ v }}" style="width:{{ pct }}%"></span>{% endfor %}</span></li>{% endfor %}
+  </ol>{% else %}<p>{{ t(lang, 'speakers_empty')|replace('{n}', min_checks|string) }}</p>{% endif %}
+  {% if few %}<details class="who-more"><summary>{{ t(lang, 'speakers_few')|replace('{n}', few|length|string) }}</summary>
+    <ul class="who-omits">{% for r in few %}<li><a href="{{ url('entidad', r.entity.id, r.entity.name) }}">{{ r.entity.name }}</a> <span class="meta">{{ r.checked }}/{{ min_checks }} · {% for v, n, pct in r.shares() %}{{ t(lang, 'verdict_' ~ v) }} {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}</span></li>{% endfor %}</ul></details>{% endif %}
+</section>{% endfor %}
+{% endblock %}

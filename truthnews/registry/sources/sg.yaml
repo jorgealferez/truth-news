@@ -1,0 +1,5 @@
+country: SG
+default_language: en
+outlets:
+  - {slug: cna, name: CNA, homepage: "https://www.channelnewsasia.com", scope: national, kind: tv, owner: Mediacorp (pública), feeds: [{url: "https://www.channelnewsasia.com/rssfeeds/8395986"}]}
+  - {slug: straits-times, name: The Straits Times, homepage: "https://www.straitstimes.com", scope: national, feeds: [{url: "https://www.straitstimes.com/news/world/rss.xml", category: internacional}]}

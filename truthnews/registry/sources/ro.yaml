@@ -1,0 +1,5 @@
+country: RO
+default_language: ro
+outlets:
+  - {slug: digi24, name: Digi24, homepage: "https://www.digi24.ro", scope: national, kind: tv, feeds: [{url: "https://www.digi24.ro/rss"}]}
+  - {slug: hotnews-ro, name: HotNews.ro, homepage: "https://hotnews.ro", scope: national, feeds: [{url: "https://hotnews.ro/feed"}]}
