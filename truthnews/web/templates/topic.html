@@ -19,6 +19,8 @@
     <li><b>{{ view.n_verdicts }}</b><span>{{ t(lang, 'verified_n') }}</span></li>
   </ul>
 
+  {% if threads %}{% for th in threads %}{% include "_thread_teaser.html" %}{% endfor %}{% endif %}
+
   {% if a %}
   <section class="essentials" aria-label="{{ t(lang, 'essentials') }}">
     <div class="ess origin-card"><p class="ess-k">① {{ t(lang, 'key_origin') }}</p>

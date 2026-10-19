@@ -2,10 +2,10 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi.testclient import TestClient
 
-from truthnews.ai import threads
+from truthnews.ai import prompts, threads, writer
 from truthnews.ai.client import AIError, AIResult
 from truthnews.config import Settings
-from truthnews.models import Article, Outlet, Story, Thread
+from truthnews.models import Article, Outlet, Piece, Story, Thread, Topic
 from truthnews.web import seo
 from truthnews.web.app import create_app
 
@@ -88,14 +88,38 @@ def fake_encyclopedia(query, limit=2):
     ]
 
 
+def piece_data(number="10.000"):
+    return {
+        "titular": "Ceuta, cinco años después",
+        "entradilla": "Lo que pasó en 2021 explica lo de hoy.",
+        "claves": {
+            "en_una_frase": "La presión de hoy repite el patrón de 2021.",
+            "origen": "La crisis diplomática de abril de 2021.",
+            "que_falla": ["La cobertura de hoy no recuerda el ingreso de Ghali"],
+            "que_falta": ["Si hubo una orden expresa"],
+        },
+        "analisis": [
+            {"subtitulo": "Qué pasó", "parrafos": [f"Entraron {number} personas."], "fuentes": ["G1", "W1"]},
+            {"subtitulo": "Por qué", "parrafos": ["Ghali fue ingresado antes."], "fuentes": ["G2", "X9"]},
+            {"subtitulo": "Sin fuente", "parrafos": ["Nada."], "fuentes": ["X9"]},
+        ],
+    }
+
+
 class FakeAI:
-    def __init__(self, thread_data=None, fail=False):
+    def __init__(self, thread_data=None, fail=False, piece=None, fail_piece=False):
         self.thread_data, self.fail, self.calls = thread_data, fail, []
+        self.piece, self.fail_piece = piece or piece_data(), fail_piece
 
     def structured(self, system, user, schema):
         self.calls.append(system)
         if self.fail:
             raise AIError("rechazo")
+        if system == prompts.THREAD_WRITER_SYSTEM:
+            if self.fail_piece:
+                raise AIError("rechazo de la pieza")
+            assert user.startswith("HILO (JSON)") and '"G1"' in user
+            return AIResult(data=self.piece, model="modelo-pieza", usage={"output_tokens": 50})
         if system == threads.PLAN_SYSTEM:
             assert "HISTORIA" in user and "Medio 0" in user
             return AIResult(
@@ -209,7 +233,7 @@ def test_run_picks_front_stories_and_respects_refresh(session):
     out = threads.run(
         session, FakeAI(content()), limit=2, articles=fake_articles, encyclopedia=fake_encyclopedia
     )
-    assert out == {"threads": 1, "threads_in_revision": 0, "threads_failed": 0}
+    assert out == {"threads": 1, "threads_in_revision": 0, "threads_failed": 0, "thread_pieces": 1}
     assert (
         threads.run(
             session, FakeAI(content()), limit=2, articles=fake_articles, encyclopedia=fake_encyclopedia
@@ -247,3 +271,68 @@ def test_thread_pages(engine, session):
     home = client.get("/").text
     assert "Por qué está pasando" in home and "De Ghali a Ceuta" in home
     assert f"{seo.path('hilo', th.id, th.title)}</loc>" in client.get("/sitemap.xml").text
+
+
+def test_thread_piece_is_grounded_and_not_repeated(session):
+    st = _story(session)
+    th = threads.build_thread(
+        session, st, FakeAI(content()), articles=fake_articles, encyclopedia=fake_encyclopedia
+    )
+    piece = writer.write_thread_piece(session, th, FakeAI())
+    assert piece.status == "publicada" and piece.thread_id == th.id and piece.topic_id is None
+    assert [sec["subtitulo"] for sec in piece.body] == ["Qué pasó", "Por qué"]
+    assert piece.body[1]["fuentes"] == ["G2"]  # el id inventado se cae
+    assert piece.grounding == {"secciones_sin_fuente": 1, "cifras_sin_fuente": [], "ok": True}
+    assert piece.synthesis["claves"]["origen"].startswith("La crisis")
+    assert writer.write_thread_piece(session, th, FakeAI()) is None  # mismo dossier: no se paga otra vez
+    th.content = {**th.content, "resumen": "Otro resumen"}
+    bad = writer.write_thread_piece(session, th, FakeAI(piece=piece_data("77.777")))
+    assert bad.status == "revision" and bad.grounding["cifras_sin_fuente"] == ["77777"]
+    th.status = "revision"
+    assert writer.write_thread_piece(session, th, FakeAI()) is None
+
+
+def test_thread_piece_failure_keeps_the_thread(session):
+    _story(session)
+    out = threads.run(
+        session,
+        FakeAI(content(), fail_piece=True),
+        limit=2,
+        articles=fake_articles,
+        encyclopedia=fake_encyclopedia,
+    )
+    assert out["threads"] == 1 and out["thread_pieces"] == 0
+    assert session.query(Thread).count() == 1 and session.query(Piece).count() == 0
+
+
+def test_thread_piece_pages_and_cross_links(engine, session):
+    st = _story(session)
+    tp = Topic(title="Ceuta y Marruecos", category="sucesos", country="ES", first_seen=NOW, last_seen=NOW)
+    session.add(tp)
+    session.flush()
+    st.topic_id = tp.id
+    th = threads.build_thread(
+        session, st, FakeAI(content()), articles=fake_articles, encyclopedia=fake_encyclopedia
+    )
+    piece = writer.write_thread_piece(session, th, FakeAI())
+    session.commit()
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    page = client.get(seo.path("hilo", th.id, th.title)).text
+    for needle in (
+        'id="analisis"',
+        "Ceuta, cinco años después",
+        "La presión de hoy repite el patrón de 2021.",
+        "La crisis diplomática de abril de 2021.",
+        "La cobertura de hoy no recuerda el ingreso de Ghali",
+        "Leer el análisis completo",
+        "Entraron 10.000 personas.",
+        f'href="{seo.path("tema", tp.id, tp.title)}"',
+    ):
+        assert needle in page, needle
+    href = seo.piece_path(piece)
+    assert href == seo.path("hilo", th.id, th.title) + "#analisis"
+    lst = client.get("/analisis").text
+    assert f'href="{href}"' in lst and "el antes y el después" in lst
+    topic_page = client.get(seo.path("tema", tp.id, tp.title)).text
+    assert f'href="{seo.path("hilo", th.id, th.title)}"' in topic_page
+    assert f"http://localhost:8000{href}</link>" in client.get("/rss.xml").text

@@ -30,6 +30,13 @@ def path(kind: str, ident: int, title: str | None = None) -> str:
     return f"/{kind}/{ident}-{slug}" if slug else f"/{kind}/{ident}"
 
 
+def piece_path(piece) -> str:
+    """Una pieza de tema vive en su tema; la de un hilo, en la pagina del hilo (ADR 0020)."""
+    if piece.thread_id:
+        return path("hilo", piece.thread_id, piece.thread.title) + "#analisis"
+    return path("tema", piece.topic_id, piece.title)
+
+
 def parse_ref(ref: str) -> int | None:
     """'19-mas-electricos' o '19' -> 19; cualquier otra cosa -> None."""
     head = ref.split("-", 1)[0]

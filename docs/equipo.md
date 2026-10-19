@@ -43,6 +43,7 @@ pequenos.
 | Publicidad (solo cliente de `ads-service`) | sesion `nosmienten:publicidad` | `truthnews/ads.py`, `_ad.html`, `advertising.html`, `static/ads.js`, estilos `.ad*` de `site.css`; la plataforma (anunciantes, campanas, subasta, medicion) vive en microservices-ecosystem (squad publicidad): aqui nada de tablas ni migraciones |
 | Entidades, archivo historico y grandes falsedades | sesion "Entidades" (`session_01Juk7hZcsWaeHLeGwUxFzuh`) | `truthnews/entities/`, `truthnews/archive.py`, `entity.html`, `entities.html`, `discrepancies.html`, `_discrepancias.html` |
 | Hilos, worker, produccion | direccion | `truthnews/ai/threads.py`, `worker.py`, `config.py`, Railway |
+| Migracion al holding (ADR 0025) | sesion `session_01DgF9WootYzqTr7jwzkbDSj` | `docs/migracion-holding.md`, `truthnews/ports/`, `truthnews/holding/`; la parte del holding (BFF, `newsroom-service`, ampliaciones) vive en microservices-ecosystem (squad nosmienten). Arranca cuando cierren los items en curso |
 
 Ficheros compartidos: `story.html`, `base.html`, `home.html`, `site.css`, `app.py`, `queries.py`,
 `i18n.yaml`, `models.py`, el ledger y la carta. Reglas: cambios pequenos y localizados, `git fetch` y
@@ -67,6 +68,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0022 + migracion 0013 | datos | reservado | Global (cobertura exterior: misma historia en otros paises) |
 | ADR 0024 + migracion 0014 | datos | reservado | Global (fuentes politicas) |
 | ADR 0023 | diseno | reservado | Verificaciones (consulta puntual de interes publico) |
+| ADR 0025 | diseno | PR (este) | Migracion al holding (plan) |
 | siguiente libre | — | — | pedir a la direccion |
 
 ## Como se trabaja

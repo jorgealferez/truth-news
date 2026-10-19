@@ -1,6 +1,7 @@
 # OBJETIVO — carta de meta de truth-news
 
 estado: en-curso
+alcance: microservices-ecosystem
 
 Esta carta dice **de donde parte** el repositorio `truth-news` y **a donde tiene que llegar**. Es la
 referencia contra la que se mide todo el trabajo y la razon por la que el agente no para hasta
@@ -70,6 +71,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [ ] C12 Temas y sintesis — medida: tests y consulta a produccion — objetivo: cada tema con >= 3 medios publica coincidencias, diferencias y valoracion con datos; >= 80 % de los temas del dia con >= 3 medios tienen pieza propia
 - [ ] C13 Analisis propio con IA — medida: piezas publicadas con su metodo — objetivo: cada pieza propia enlaza >= 5 paginas internas y todas sus fuentes, se marca como elaborada con IA y no afirma nada que no este en la evidencia; NO VERIFICADO hasta tener clave de IA
 - [ ] C11 Despliegue — medida: `curl` a la URL publica de Railway y logs del worker — objetivo: `/healthz` 200, web y worker en marcha, ingesta automatica registrada en produccion
+- [ ] C14 Migracion al holding — medida: conciliacion por tabla local/holding (`docs/benchmarks/fase_1N.json`) y monitor de disponibilidad durante cada corte — objetivo: los dominios D1 a D7 de `docs/migracion-holding.md` servidos por el BFF y los servicios del holding, 0 filas perdidas (diferencia 0 y huellas iguales), 0 minutos de caida atribuibles a la migracion, p95 de portada < 300 ms (C7 es suelo) y truth-news sin `DATABASE_URL` propio (ADR 0025)
 
 ## Fases
 
@@ -86,6 +88,13 @@ alcanza; el sistema nunca afirma sin fuente.
 - [x] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18) (#11)
 - [ ] Fase 9 — Quien miente, quien informa, quien dice la verdad: fiabilidad por medio con historial de veredictos, ranking por exactitud comprobada, comparativas lado a lado y "la verdad segun los datos" cuando la hay (peticion del usuario 2026-10-18; acerca C6, C12)
 - [ ] Fase 10 — Hilo y consecuencias: archivo historico cruzado con la actualidad, linea temporal por tema, conexiones entre hechos con evidencia y analisis profundo con IA; portada con el porque y el antes/despues de lo que ocurre (peticion del usuario 2026-10-19; acerca C12, C13)
+- [ ] Fase 11 — Migracion al holding (plan): ADR 0025, `docs/migracion-holding.md`, items cruzados en ambos ledgers, alcance de la carta (peticion del usuario 2026-10-19; acerca C14)
+- [ ] Fase 12 — Puertos de datos: `truthnews/ports/` con adaptador SQL identico y cliente del BFF del holding, banderas `DATA_BACKEND_*` a `local` (acerca C14)
+- [ ] Fase 13 — Registro e ingesta en el holding: doble escritura, outbox, backfill idempotente, conciliacion, sombra y corte de D1 y D2 (acerca C14)
+- [ ] Fase 14 — Contraste en el holding: D3 con la invariante C6 medida en `newsroom-service` (acerca C6, C14)
+- [ ] Fase 15 — IA, traduccion y redes por servicios del holding: D4 y D5 (acerca C9, C13, C14)
+- [ ] Fase 16 — Busqueda y admin con OIDC del holding: D6 y D7 (acerca C8, C14)
+- [ ] Fase 17 — Retirada del Postgres propio: 7 dias limpios, volcado final archivado con huella; truth-news queda como frontend con su logica (acerca C14)
 
 ## Calidad y proyeccion
 
@@ -114,3 +123,4 @@ tal; el crawler se identifica con su User-Agent y respeta `robots.txt` y un ritm
 - 2026-10-19 (peticion): ir mas alla de la noticia: cruzar archivo historico con la actualidad, que se decia, que paso, quien dijo que y que consecuencias tuvo, buscando correlaciones entre hechos aparentemente sueltos; con IA (el usuario aportara la clave de Anthropic); en portada siempre lo que ocurre ahora con su porque.
 - 2026-10-19 (peticion no aplicada): saltarse robots.txt cuando la informacion sea fundada y relevante. No se implementa: en la UE una exclusion legible por maquina puede valer como reserva frente a la mineria de textos (Directiva 2019/790, art. 4) y contradice ADR 0003. Alternativa aplicada: metadatos de GDELT y RSS (titular, fecha, URL) de los medios bloqueados, sin descargar sus paginas; y peticion de permiso a esos medios. Si el usuario quiere revisarlo, decision suya con asesoria legal. Insistencia del usuario el mismo dia (usar un agente, interes publico): se mantiene la decision; el interes publico ampara citar y publicar, no esta claro que ampare rastrear contra una exclusion expresa. Se usan agentes y fuentes de uso publico (datos oficiales, GDELT, Wikipedia, RSS).
 - 2026-10-19 (decision del usuario, precisada): no rastrear sitios que lo excluyen, pero si consultar puntualmente una pagina concreta de interes publico (p. ej. transparencia) cuando sea imprescindible para contrastar un dato, una sola descarga, sin evadir bloqueos y con el motivo publicado.
+- 2026-10-19 (peticion): cuando termine el trabajo en curso de nosmienten, y sin pararlo, migrar todo truth-news a microservices-ecosystem para que aqui solo quede el frontend con la logica de negocio, usando su BFF, sus microservicios y su base de datos, sin caida de servicio ni perdida de informacion, coordinado con los agentes del holding y de forma automatica. Plan: ADR 0025 y `docs/migracion-holding.md`. Suposicion revisable: las credenciales del holding (clave de aplicacion del BFF y `HOLDING_PLATFORM_API_KEY`) las crea una persona (regla del holding, `docs/holding/CREDENCIALES.md`); mientras falten, se construye y se prueba en local y no se corta ningun dominio en produccion.

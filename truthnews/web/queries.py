@@ -158,7 +158,11 @@ def verdict_counts(
 def latest_pieces(
     session: Session, *, kind: str | None = None, limit: int = 12, offset: int = 0
 ) -> list[Piece]:
-    q = select(Piece).options(joinedload(Piece.topic)).where(Piece.status == "publicada")
+    q = (
+        select(Piece)
+        .options(joinedload(Piece.topic), joinedload(Piece.thread))
+        .where(Piece.status == "publicada")
+    )
     if kind:
         q = q.where(Piece.kind == kind)
     q = q.order_by(Piece.created_at.desc(), Piece.id.desc()).limit(limit).offset(offset)
@@ -187,7 +191,7 @@ def topic_titles(session: Session) -> dict[int, str]:
     """Titular publicado vigente de cada tema (el de su ultimo analisis): da el slug de su URL."""
     rows = session.execute(
         select(Piece.topic_id, Piece.title)
-        .where(Piece.kind == "analisis", Piece.status == "publicada")
+        .where(Piece.kind == "analisis", Piece.status == "publicada", Piece.topic_id.is_not(None))
         .order_by(Piece.created_at)
     )
     return dict(rows.all())
@@ -241,6 +245,15 @@ def latest_checks(session: Session, limit: int = 8) -> list[Claim]:
 def thread_for_story(session: Session, story_id: int) -> Thread | None:
     return session.scalars(
         select(Thread).where(Thread.anchor_story_id == story_id, Thread.status == "publicado")
+    ).first()
+
+
+def thread_piece(session: Session, thread_id: int) -> Piece | None:
+    """Pieza propia publicada mas reciente de un hilo (ADR 0020)."""
+    return session.scalars(
+        select(Piece)
+        .where(Piece.thread_id == thread_id, Piece.status == "publicada")
+        .order_by(Piece.created_at.desc(), Piece.id.desc())
     ).first()
 
 
