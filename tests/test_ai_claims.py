@@ -262,3 +262,19 @@ def test_new_indicators_real_sentences():
     assert "cifra" in check(gdp, "pib_trimestral", "ES", 0.6)
     deficit = "El déficit público cerró en el 2,8 % del PIB, según Hacienda."
     assert isinstance(check(deficit, "deficit_publico", "ES", 2.8), ClaimCandidate)
+
+
+def test_variations_are_not_levels():
+    assert "variacion" in check(
+        "El paro registrado baja un 2 % en septiembre, según el ministerio.", "paro", "ES", 2.0
+    )
+    assert "variacion" in check(
+        "La inflación ha subido un 0,3 % este mes en el conjunto del país.", "inflacion", "ES", 0.3
+    )
+    assert isinstance(
+        check("Con un 10,5 % de paro, el país sigue a la cabeza.", "paro", "ES", 10.5), ClaimCandidate
+    )
+    assert isinstance(
+        check("El PIB crece un 0,6 % en el segundo trimestre, según el INE.", "pib_trimestral", "ES", 0.6),
+        ClaimCandidate,
+    )
