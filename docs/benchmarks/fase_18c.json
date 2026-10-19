@@ -27,5 +27,32 @@
   "no_verificable": [
     "Precision de las propuestas de la IA: no hay clave de IA en este entorno; se mide en produccion con las primeras revisiones en /admin",
     "PSOE: programa de 2023 no importable (su web bloquea al rastreador): sin medir"
-  ]
+  ],
+  "produccion": {
+    "fecha": "2026-10-19",
+    "despliegue": "6947fce6 (squash 27f4936, #212), worker en marcha 19:30 UTC",
+    "ciclos": [
+      {
+        "hora_utc": "19:52",
+        "promesas_revisadas": 20,
+        "por_dato": 0,
+        "con_candidatas_boe": 3,
+        "ia": "parada: presupuesto diario de IA agotado (10.12 de 10.00 USD); 0 propuestas guardadas"
+      },
+      {
+        "hora_utc": "19:55",
+        "run": 171,
+        "promesas_revisadas": 20,
+        "por_dato": 0,
+        "con_candidatas_boe": 2,
+        "segundos_paso": 10.6,
+        "ia": "parada: presupuesto diario de IA agotado (10.12 de 10.00 USD); 0 propuestas guardadas"
+      }
+    ],
+    "promesas_a_ia_pct": 12.5,
+    "promesas_reglas_segundos_por_promesa": 0.53,
+    "promesas_ia_publicadas_sin_revision": 0,
+    "no_verificado": "precision de las propuestas de la IA: el tope diario de IA (10 USD, decision del usuario) ya estaba agotado y la API sin credito; sin propuestas que revisar en /admin",
+    "nota": "el contador ai.calls cuenta 1 intento rechazado por el tope (0 tokens); por_dato 0 porque las 40 promesas revisadas no tienen meta medible de un indicador oficial"
+  }
 }
