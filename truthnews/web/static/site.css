@@ -362,3 +362,4 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
   .cite { position:relative; } .cite::after { content:""; position:absolute; inset:-15px -8px; }
   h2 > a, h3 > a { padding:12px 0; } .stats a { padding:15px 0; }
 }
+.timely { margin-top:14px; } .timely h3 { font-size:17px; margin:0 0 4px; } .tl-table td, .tl-table th { font-size:14px; }
