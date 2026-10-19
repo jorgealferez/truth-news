@@ -32,7 +32,7 @@ def claim(value, indicator="paro", direction=None, unit="pct", geo="ES"):
 def test_level_verdicts(claimed, official, verdict):
     r = Verifier(lambda s, g, label: obs(official)).judge(claim(claimed))
     assert r.verdict == verdict and r.observations and "dato oficial" in r.explanation
-    assert r.method.endswith("/v11")
+    assert r.method.endswith("/v12")
 
 
 def test_direction_misleading_and_consistent():
@@ -52,12 +52,12 @@ def test_absolute_values():
 def test_no_source_stale_and_failing_source():
     assert Verifier(lambda s, g, label: None).judge(claim(10)).verdict == "sin-datos"
     stale = Verifier(lambda s, g, label: obs(10.0, period="2019-01")).judge(claim(10))
-    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v11"
+    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v12"
 
     def boom(s, g, label):
         raise RuntimeError("caida")
 
-    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v11"
+    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v12"
 
 
 def test_cited_period_is_compared_with_that_period():
@@ -74,7 +74,7 @@ def test_cited_period_is_compared_with_that_period():
     up = ClaimCandidate("sube al 4,3 % en agosto", "inflacion", "ES", 4.3, "pct", "baja", "2026-08")
     assert v.judge(up).verdict == "enganoso"  # julio 3,58 -> agosto 4,28: sube
     gone = v.judge(ClaimCandidate("x", "inflacion", "ES", 4.3, "pct", None, "2020-01"))
-    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v11"
+    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v12"
     assert latest.at("2026-07").previous is None
 
 
@@ -165,7 +165,7 @@ def test_public_debt_is_never_judged_against_central_government_debt():
     res = Verifier(lambda s, g, label: calls.append(s) or obs(120.0)).judge(
         claim(123.0, indicator="deuda_publica", geo="US")
     )
-    assert calls == [] and res.verdict == "sin-datos" and res.method == "sin-fuente/v11"
+    assert calls == [] and res.verdict == "sin-datos" and res.method == "sin-fuente/v12"
 
 
 def test_approximate_figure_within_the_wide_band_is_true():
@@ -175,7 +175,7 @@ def test_approximate_figure_within_the_wide_band_is_true():
         return ClaimCandidate(text, "poblacion", "CA", value, "abs", None)
 
     approx = v.judge(pop("Canadá tiene unos 40 millones de habitantes.", 40e6))
-    assert approx.verdict == "verdadero" and approx.method == "aproximado/v11"
+    assert approx.verdict == "verdadero" and approx.method == "aproximado/v12"
     assert v.judge(pop("Canadá tiene 40 millones de habitantes.", 40e6)).verdict == "impreciso"
     assert v.judge(pop("Canadá tiene unos 30 millones de habitantes.", 30e6)).verdict == "falso"
 
@@ -201,3 +201,39 @@ def test_euribor_is_judged_against_the_ecb_monthly_average(monkeypatch):
     sep = extract("El Euríbor de septiembre se situó en el 3,2 %.", "es", "ES", 2026, 10)
     assert [(c.indicator, c.period) for c in sep] == [("euribor", "2026-09")]
     assert extract("El Euríbor a tres meses se sitúa en el 2,1 %.", "es", "ES", 2026, 10) == []
+
+
+def test_v12_published_unfair_falsos_are_not_judged(monkeypatch):
+    """Casos reales del 19/10/2026 publicados como Falso con v11 (revision manual de /verificaciones)."""
+    from truthnews.analysis import verify as v
+
+    # La Nacion: Argentina "211 % en 2023" (diciembre/diciembre) frente a la media anual del Banco Mundial.
+    def wb(indicator, geo, label=""):
+        hist = {"2022": 72.4, "2023": 133.5, "2024": 219.9}
+        return Observation("worldbank", label, "https://x", "2024", 219.9, history=hist)
+
+    monkeypatch.setattr(v.worldbank, "latest", wb)
+    judge = v.Verifier().judge
+    ar = judge(ClaimCandidate("x", "inflacion", "AR", 211.0, "pct", None, "2023"))
+    assert ar.verdict == "sin-datos" and ar.method == "otra-medida/v12" and "diciembre" in ar.explanation
+    assert judge(ClaimCandidate("x", "inflacion", "AR", 133.5, "pct", None, "2023")).verdict == "verdadero"
+    # The Guardian: deuda de Francia 119 % (T2 del INSEE) frente a Eurostat 2026-Q1 117,6 %.
+    hist = {"2025-Q2": 115.4, "2025-Q3": 117.3, "2025-Q4": 115.7, "2026-Q1": 117.6}
+    fr = Verifier(lambda s, g, label: Observation("eurostat", label, "u", "2026-Q1", 117.6, history=hist))
+    later = fr.judge(claim(119.0, indicator="deuda_publica", geo="FR"))
+    assert later.verdict == "sin-datos" and later.method == "periodo-posterior/v12"
+    # Una diferencia mayor que cualquier cambio entre trimestres si se juzga.
+    assert fr.judge(claim(130.0, indicator="deuda_publica", geo="FR")).verdict == "falso"
+    # Serie mensual: el siguiente dato llega pronto, no se aplica.
+    monthly = Verifier(lambda s, g, label: Observation("e", label, "u", RECENT, 10.0, history={RECENT: 10.0}))
+    assert monthly.judge(claim(12.5)).verdict == "falso"
+
+
+def test_v12_assumed_country_in_a_story_about_another_never_accuses():
+    v = Verifier(lambda s, g, label: obs(10.0))
+    doubtful = ClaimCandidate("texto", "paro", "ES", 7.9, "pct", None, doubtful_geo=True)
+    r = v.judge(doubtful)
+    assert r.verdict == "sin-datos" and r.method == "pais-supuesto/v12" and r.observations
+    # Puede decir que cuadra.
+    ok = ClaimCandidate("texto", "paro", "ES", 10.0, "pct", None, doubtful_geo=True)
+    assert v.judge(ok).verdict == "verdadero"

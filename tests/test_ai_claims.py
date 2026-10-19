@@ -423,3 +423,31 @@ def test_outlet_country_from_the_global_registry_is_a_known_territory():
     assert isinstance(c, ClaimCandidate) and c.geo == "CL"
     # un pais fuera del registro sigue sin juzgarse
     assert check_proposal(s, s, "paro", "LU", 8.9, None, None, "XX", Y, 10) != c
+
+
+def test_v12_targets_and_assumed_country_in_a_foreign_story():
+    """Casos reales del 19/10/2026 (El Economista Mexico y El HuffPost) publicados como Falso con v11."""
+    # Objetivo de la Fed: no es un dato publicado.
+    s = 'Warsh dijo que la Fed no "tuviera que perjudicar a los mercados" para devolver la inflación al 2%.'
+    assert extract(s, "es", "MX", 2026) == []
+    fed = check_proposal(s, s, "inflacion", "MX", 2.0, None, None, "MX", Y, 10)
+    assert not isinstance(fed, ClaimCandidate)
+    target = "El banco central mantiene su objetivo de inflación del 2 %."
+    assert extract(target, "es", "ES", 2026) == []
+    # Paro de Argentina en una noticia sobre Milei (el pais solo esta lejos de la frase): pais dudoso.
+    s = "La tasa de paro se sitúa en el 7,9 % este año."
+    far = (
+        "Milei llega a España para verse con Ayuso. Su visita llega tras meses de ajuste en Argentina. "
+        "Los mercados siguen atentos a cada anuncio. El Gobierno insiste en su programa. " + s
+    )
+    got = extract(far, "es", "ES", 2026)
+    assert [c.doubtful_geo for c in got] == [True]
+    k = check_proposal(s, far, "paro", "ES", 7.9, None, None, "ES", Y, 10)
+    assert isinstance(k, ClaimCandidate) and k.doubtful_geo
+    # Una noticia que solo habla de Espana no deja dudas.
+    es = "El Gobierno presenta sus cuentas en el Congreso. " + s
+    assert [c.doubtful_geo for c in extract(es, "es", "ES", 2026)] == [False]
+    assert not check_proposal(s, es, "paro", "ES", 7.9, None, None, "ES", Y, 10).doubtful_geo
+    # Con el pais nombrado y ligado a la cifra no hay duda aunque la noticia hable de otro.
+    named = "En España la tasa de paro se sitúa en el 8,1 % este año."
+    assert [c.doubtful_geo for c in extract(far + " " + named, "es", "ES", 2026)][-1:] == [False]

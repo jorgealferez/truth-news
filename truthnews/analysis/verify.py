@@ -23,13 +23,18 @@ from truthnews.data import Observation, ecb, eurostat, ine, worldbank
 #      pais solo es el de la cifra si va ligado a ella en la misma oracion (no "mientras Turquia"); una cifra
 #      aproximada ("unos 40 millones") dentro de la franja amplia es verdadera, no imprecisa.
 # v11: una frase sin pais no es del pais del medio si las frases vecinas hablan de otro pais.
-METHOD_VERSION = "v11"
+# v12: objetivos y metas no se juzgan; con el pais supuesto en una noticia que nombra otro pais, ni falso ni
+#      impreciso; una media anual frente a una cifra que puede ser de diciembre, ni falso ni impreciso; sin
+#      periodo citado, si la diferencia cabe en un cambio normal entre periodos de una serie trimestral o
+#      anual, la cifra puede ser de un periodo posterior que la fuente aun no publica: sin juicio.
+METHOD_VERSION = "v12"
 # Cifra dada como aproximada ("unos 40 millones"): dentro de la franja amplia no es imprecisa. Caso de la
 # revision de #157: Canada "con solo unos 40 millones de habitantes" frente a 41,5 millones.
 _APPROX = re.compile(
     r"\b(?:unos|unas|cerca de|alrededor de|aproximadamente|en torno a|about|around|roughly|approximately"
     r"|some|por volta de|cerca de)\s+\d"
 )
+NEGATIVE = ("falso", "enganoso", "impreciso")
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -79,7 +84,12 @@ def default_fetch(source: dict, geo: str, label: str) -> Observation | None:
             obs.extra = {**obs.extra, "otra_medida": source["other_measure"]}
         return obs
     if conn == "worldbank":
-        return worldbank.latest(source["indicator"], geo, label)
+        obs = worldbank.latest(source["indicator"], geo, label)
+        if obs is not None and source.get("other_measure"):
+            obs.extra = {**obs.extra, "otra_medida": source["other_measure"]}
+            if source.get("measure_gap") == "any":
+                obs.extra["otra_medida_sin_tope"] = True
+        return obs
     if conn == "ine_yoy":
         return ine.annual_change(source["serie"])
     if conn == "ine_level":
@@ -96,6 +106,20 @@ def applicable(source: dict, geo: str) -> bool:
     if geos == "EU":
         return geo in indicators()["eu_geos"]
     return geo in geos
+
+
+def _later_period_fits(obs: Observation, value: float, unit: str) -> bool:
+    """Si la cifra puede ser del periodo siguiente al ultimo publicado (series trimestrales o anuales)."""
+    if "-" in obs.period and "-Q" not in obs.period:
+        return False  # serie mensual: el siguiente dato llega pronto y la diferencia suele ser pequena
+    values = [v for _, v in sorted(obs.history.items())][-9:]
+    if unit == "pct":
+        steps = [abs(b - a) for a, b in zip(values, values[1:], strict=False)]
+        diff = abs(value - obs.value)
+    else:
+        steps = [abs(b - a) / max(abs(a), 1e-9) for a, b in zip(values, values[1:], strict=False)]
+        diff = abs(value - obs.value) / max(abs(obs.value), 1e-9)
+    return bool(steps) and round(diff, 6) <= round(max(steps), 6)
 
 
 class Verifier:
@@ -123,6 +147,17 @@ class Verifier:
 
     def judge(self, claim: ClaimCandidate) -> Result:
         result = self._judge(claim)
+        if claim.doubtful_geo and result.verdict in NEGATIVE:
+            # Caso real (El HuffPost, 19/10/2026): paro de Argentina en una noticia sobre Milei juzgado contra
+            # Espana. Con el pais supuesto se puede decir que cuadra, nunca acusar.
+            result = Result(
+                "sin-datos",
+                0.0,
+                result.explanation + " No lo juzgamos: la frase no nombra el país y la noticia habla también "
+                "de otro, así que no podemos asegurar que la cifra sea de " + f"{claim.geo}.",
+                "pais-supuesto",
+                result.observations,
+            )
         result.method = f"{result.method}/{METHOD_VERSION}"
         return result
 
@@ -179,6 +214,17 @@ class Verifier:
                 )
         if close:
             return Result("verdadero", 0.9, base, "nivel", [obs])
+        if obs.extra.get("otra_medida_sin_tope"):
+            # Caso real (La Nacion, 19/10/2026): Argentina "211 % en 2023" es diciembre sobre diciembre; el
+            # Banco Mundial da la media anual (133,5 %). Medidas distintas: la diferencia no tiene tope.
+            return Result(
+                "sin-datos",
+                0.0,
+                base + f" No lo juzgamos: esta serie es una media anual y el texto puede dar el "
+                f"{obs.extra['otra_medida']}, que puede ser muy distinto.",
+                "otra-medida",
+                [obs],
+            )
         if rough and obs.extra.get("otra_medida"):
             # Hay otra medida oficial del mismo indicador que no tenemos: la diferencia puede ser de medida.
             return Result(
@@ -188,6 +234,17 @@ class Verifier:
                 + f" No lo juzgamos: el {obs.extra['otra_medida']} puede diferir unas décimas de esta serie "
                 "y el texto no dice cuál usa.",
                 "otra-medida",
+                [obs],
+            )
+        if not claim.period and _later_period_fits(obs, claim.value, claim.unit):
+            # Caso real (The Guardian, 19/10/2026): deuda de Francia 119 % (segundo trimestre del INSEE)
+            # frente al 117,6 % del primero en Eurostat, que aun no publica el segundo.
+            return Result(
+                "sin-datos",
+                0.0,
+                base + " No lo juzgamos: la diferencia cabe en lo que esta serie cambia de un periodo a "
+                "otro y la cifra puede ser de un periodo posterior que la fuente aún no publica.",
+                "periodo-posterior",
                 [obs],
             )
         if rough and _APPROX.search(normalize(claim.text)):

@@ -34,7 +34,9 @@ inflacion:
     # IPCA armonizado: el IPC nacional de cada pais puede diferir unas decimas (caso real, La Gaceta de
     # Salamanca 19/10/2026: Francia 3,1 % frente a 3,4 % del IPCA). En esa franja no se juzga.
     - {connector: eurostat, dataset: prc_hicp_minr, params: {unit: RCH_A, coicop18: TOTAL}, geos: EU, other_measure: IPC nacional}
-    - {connector: worldbank, indicator: FP.CPI.TOTL.ZG}
+    # Media anual: la cifra de la prensa suele ser diciembre sobre diciembre (Argentina 2023: 211 % frente a
+    # 133,5 %), asi que fuera de la franja de "verdadero" no se juzga (v12).
+    - {connector: worldbank, indicator: FP.CPI.TOTL.ZG, other_measure: dato de diciembre sobre diciembre, measure_gap: any}
 inflacion_subyacente:
   name: {es: Inflación subyacente interanual, en: Annual core inflation}
   unit: pct

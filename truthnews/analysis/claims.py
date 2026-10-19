@@ -71,6 +71,10 @@ _NOT_CURRENT = re.compile(
     # prevision, no el dato publicado.
     r"|expectativa|expectativas|eleva su|elevan su|rebaja su|rebajan su|revisa al alza|revisa a la baja"
     r"|pronostico|pronostica|pronostican|proyeccion|proyecciones|anticipa|calcula que|espera que|esperan que"
+    # Objetivos y metas no son el dato publicado (caso real, El Economista Mexico 19/10/2026: "devolver la
+    # inflacion al 2%", objetivo de la Fed, juzgado contra la inflacion de Mexico).
+    r"|objetivo|objetivos|meta|metas|devolver|devolverla|reconducir|llevar la inflacion|target|targets|goal"
+    r"|bring inflation|return inflation"
     r"|outlook|projection|estimate|estimates|expects"
     r")\b"
 )
@@ -219,6 +223,9 @@ class ClaimCandidate:
     unit: str
     direction: str | None
     period: str | None = None  # periodo citado: se compara con el dato de ese periodo, no con el ultimo
+    # Pais supuesto (el del medio, la frase no lo nombra) en una noticia que nombra otro pais: sirve para
+    # decir que cuadra, nunca para acusar (v12).
+    doubtful_geo: bool = False
 
 
 def _number(raw: str, pct: bool = False) -> float:
@@ -332,6 +339,7 @@ def extract(
     out: list[ClaimCandidate] = []
     seen: set[tuple] = set()
     sents = sentences(text)
+    text_n, foreign = normalize(text or ""), None  # foreign: la noticia nombra otro pais (perezoso)
     for i, sentence in enumerate(sents):
         sn = normalize(sentence)
         near = sents[max(0, i - _CONTEXT_BEFORE) : i] + sents[i + 1 : i + 1 + _CONTEXT_AFTER]
@@ -391,6 +399,9 @@ def extract(
                 geo = _geo(sn, here, explicit_only=ind.get("requires_explicit_geo", False), figure=figure)
             if geo is None:
                 continue
+            assumed = not regions and geo == here and not _named_positions(sn)
+            if assumed and foreign is None:
+                foreign = _foreign_context([text_n], default_geo)
             direction = "sube" if _UP.search(verb) else "baja" if _DOWN.search(verb) else None
             if not ind.get("directional", True):
                 direction = None
@@ -403,7 +414,10 @@ def extract(
                 continue  # cifra del ano en curso o futuro: no es el ultimo dato mensual o trimestral
             if period is None and ind.get("annual") and len(years) == 1:
                 period = str(next(iter(years)))  # "crecio un 2,6 % en 2025": se compara con 2025
-            out.append(ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction, period))
+            doubtful = bool(assumed and foreign)
+            out.append(
+                ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction, period, doubtful)
+            )
     return out
 
 
@@ -420,6 +434,10 @@ _FORECAST = re.compile(
     # prevision, no el dato publicado.
     r"|expectativa|expectativas|eleva su|elevan su|rebaja su|rebajan su|revisa al alza|revisa a la baja"
     r"|pronostico|pronostica|pronostican|proyeccion|proyecciones|anticipa|calcula que|espera que|esperan que"
+    # Objetivos y metas no son el dato publicado (caso real, El Economista Mexico 19/10/2026: "devolver la
+    # inflacion al 2%", objetivo de la Fed, juzgado contra la inflacion de Mexico).
+    r"|objetivo|objetivos|meta|metas|devolver|devolverla|reconducir|llevar la inflacion|target|targets|goal"
+    r"|bring inflation|return inflation"
     r"|outlook|projection|estimate|estimates|expects"
     r")\b"
 )
@@ -479,6 +497,7 @@ def check_proposal(
         return "la frase no esta literalmente en el articulo"
     if indicator not in indicator_keys():
         return "indicador desconocido"
+    outlet_geo = default_geo
     default_geo = context_default(article_text, sentence, default_geo)
     ind = indicators()[indicator]
     sn = normalize(sentence)
@@ -564,6 +583,9 @@ def check_proposal(
             return "territorio no nombrado en la frase"
         if any(_word_in(normalize(m), sn) for m in indicators()["foreign_markers"]):
             return "habla de otro pais sin nombrarlo"
+        k = _finish(sentence, indicator, ind, geo, value, period, direction, sn)
+        k.doubtful_geo = _foreign_context([normalize(article_text)], outlet_geo)
+        return k
     return _finish(sentence, indicator, ind, geo, value, period, direction, sn)
 
 
