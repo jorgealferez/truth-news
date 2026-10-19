@@ -1,0 +1,291 @@
+{
+ "status": {
+  "code": "200",
+  "text": "ok"
+ },
+ "data": {
+  "sumario": {
+   "metadatos": {
+    "publicacion": "BOE",
+    "fecha_publicacion": "20261007"
+   },
+   "diario": [
+    {
+     "numero": "249",
+     "sumario_diario": {
+      "identificador": "BOE-S-2026-249",
+      "url_pdf": {
+       "szBytes": "399469",
+       "szKBytes": "390",
+       "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-S-2026-249.pdf"
+      }
+     },
+     "seccion": [
+      {
+       "codigo": "1",
+       "nombre": "I. Disposiciones generales",
+       "departamento": []
+      },
+      {
+       "codigo": "2A",
+       "nombre": "II. Autoridades y personal. - A. Nombramientos, situaciones e incidencias",
+       "departamento": [
+        {
+         "codigo": "9562",
+         "nombre": "MINISTERIO DE ASUNTOS EXTERIORES, UNIÓN EUROPEA Y COOPERACIÓN",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": {
+            "identificador": "BOE-A-2026-20826",
+            "control": "2026/15387",
+            "titulo": "Orden AUC/1054/2026, de 30 de septiembre, por la que se nombra Directora del Gabinete del Secretario de Estado para la Unión Europea a doña María Tejero Martín.",
+            "url_pdf": {
+             "szBytes": "191381",
+             "szKBytes": "187",
+             "pagina_inicial": "132732",
+             "pagina_final": "132732",
+             "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20826.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20826",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20826"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "6110",
+         "nombre": "MINISTERIO DE DEFENSA",
+         "epigrafe": [
+          {
+           "nombre": "Ascensos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20827",
+             "control": "2026/15035",
+             "titulo": "Real Decreto 790/2026, de 30 de septiembre, por el que se promueve al empleo de Teniente General del Cuerpo de la Guardia Civil al General de División don Francisco Javier Moscoso Sicardo.",
+             "url_pdf": {
+              "szBytes": "190831",
+              "szKBytes": "186",
+              "pagina_inicial": "132733",
+              "pagina_final": "132733",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20827.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20827",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20827"
+            },
+            {
+             "identificador": "BOE-A-2026-20828",
+             "control": "2026/15036",
+             "titulo": "Real Decreto 791/2026, de 30 de septiembre, por el que se promueve al empleo de General de Brigada del Cuerpo de la Guardia Civil al Coronel don José Miguel García Malo de Molina Martínez.",
+             "url_pdf": {
+              "szBytes": "191149",
+              "szKBytes": "187",
+              "pagina_inicial": "132734",
+              "pagina_final": "132734",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20828.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20828",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20828"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "codigo": "9591",
+         "nombre": "MINISTERIO DE INDUSTRIA Y TURISMO",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": {
+            "identificador": "BOE-A-2026-20829",
+            "control": "2026/15443",
+            "titulo": "Orden ITU/1055/2026, de 2 de octubre, por la que se nombra Directora del Gabinete de la Secretaria de Estado de Turismo a doña Raquel Santos Lacueva.",
+            "url_pdf": {
+             "szBytes": "190364",
+             "szKBytes": "186",
+             "pagina_inicial": "132735",
+             "pagina_final": "132735",
+             "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20829.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20829",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20829"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "4110",
+         "nombre": "MINISTERIO DE CULTURA",
+         "epigrafe": [
+          {
+           "nombre": "Destinos",
+           "item": {
+            "identificador": "BOE-A-2026-20830",
+            "control": "2026/15330",
+            "titulo": "Resolución de 1 de octubre de 2026, de la Subsecretaría, por la que se resuelve la convocatoria de libre designación, efectuada por Resolución de 14 de agosto de 2026, en el Instituto de la Cinematografía y de las Artes Audiovisuales.",
+            "url_pdf": {
+             "szBytes": "196708",
+             "szKBytes": "192",
+             "pagina_inicial": "132736",
+             "pagina_final": "132737",
+             "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20830.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20830",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20830"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "4510",
+         "nombre": "MINISTERIO FISCAL",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20831",
+             "control": "2026/15240",
+             "titulo": "Decreto de 16 de septiembre de 2026, de la Fiscal General del Estado, por el que se nombra Fiscal Delegada de Seguridad y Salud en el Trabajo de la Fiscalía Provincial de Guadalajara a doña María del Carmen Ruiz Torres.",
+             "url_pdf": {
+              "szBytes": "199203",
+              "szKBytes": "195",
+              "pagina_inicial": "132738",
+              "pagina_final": "132739",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20831.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20831",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20831"
+            },
+            {
+             "identificador": "BOE-A-2026-20832",
+             "control": "2026/15241",
+             "titulo": "Decreto de 25 de septiembre de 2026, de la Fiscal General del Estado, por el que se nombra Fiscal Delegada de la especialidad de Violencia sobre la Mujer de la Fiscalía Provincial de Huesca a doña Teresa Duerto Argemi.",
+             "url_pdf": {
+              "szBytes": "200062",
+              "szKBytes": "195",
+              "pagina_inicial": "132740",
+              "pagina_final": "132741",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20832.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20832",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20832"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "codigo": "8110",
+         "nombre": "COMUNIDAD AUTÓNOMA DE LA RIOJA",
+         "epigrafe": [
+          {
+           "nombre": "Destinos",
+           "item": {
+            "identificador": "BOE-A-2026-20833",
+            "control": "2026/15138",
+            "titulo": "Resolución 1366/2026, de 29 de septiembre, de la Dirección General de Justicia e Interior, de la Consejería de Salud y Políticas Sociales, por la que se resuelve de forma definitiva el concurso específico para la provisión de puestos de trabajo singularizados en el Instituto de Medicina Legal y Ciencias Forenses de La Rioja, convocado por Resolución 1098/2026, de 27 de julio.",
+            "url_pdf": {
+             "szBytes": "204135",
+             "szKBytes": "199",
+             "pagina_inicial": "132742",
+             "pagina_final": "132743",
+             "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20833.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20833",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20833"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "310",
+         "nombre": "UNIVERSIDADES",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20834",
+             "control": "2026/14944",
+             "titulo": "Resolución de 24 de septiembre de 2026, de la Universidad de La Laguna, por la que se nombra Catedrático de Universidad a don Luis Alberto Bermejo Asensio.",
+             "url_pdf": {
+              "szBytes": "192222",
+              "szKBytes": "188",
+              "pagina_inicial": "132744",
+              "pagina_final": "132744",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20834.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20834",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20834"
+            },
+            {
+             "identificador": "BOE-A-2026-20835",
+             "control": "2026/14945",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Universidad de Córdoba, por la que se nombran Profesoras y Profesores Titulares de Universidad.",
+             "url_pdf": {
+              "szBytes": "192645",
+              "szKBytes": "188",
+              "pagina_inicial": "132745",
+              "pagina_final": "132745",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20835.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20835",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20835"
+            },
+            {
+             "identificador": "BOE-A-2026-20836",
+             "control": "2026/14946",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Universidad de Vigo, por la que se nombran Profesoras y Profesores Titulares de Universidad.",
+             "url_pdf": {
+              "szBytes": "196508",
+              "szKBytes": "192",
+              "pagina_inicial": "132746",
+              "pagina_final": "132747",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20836.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20836",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20836"
+            },
+            {
+             "identificador": "BOE-A-2026-20837",
+             "control": "2026/14947",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Universidad de Zaragoza, por la que se nombra Profesor Titular de Universidad a don Miguel Ángel Puente Ajovín.",
+             "url_pdf": {
+              "szBytes": "193118",
+              "szKBytes": "189",
+              "pagina_inicial": "132748",
+              "pagina_final": "132748",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20837.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20837",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20837"
+            },
+            {
+             "identificador": "BOE-A-2026-20838",
+             "control": "2026/14948",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Universidad de Zaragoza, por la que se nombra Profesora Titular de Universidad a doña Burcu Gülüm Tekin.",
+             "url_pdf": {
+              "szBytes": "193200",
+              "szKBytes": "189",
+              "pagina_inicial": "132749",
+              "pagina_final": "132749",
+              "texto": "https://www.boe.es/boe/dias/2026/10/07/pdfs/BOE-A-2026-20838.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20838",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20838"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
