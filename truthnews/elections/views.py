@@ -13,6 +13,7 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from truthnews.classify import normalize
+from truthnews.elections import changes
 from truthnews.elections.calendar import Election, _aliases
 from truthnews.models import VERDICTS, PoliticalStatement, Program, Promise, StatementCheck, Story
 from truthnews.registry import load_political
@@ -98,6 +99,7 @@ def parties(session: Session, e: Election) -> list[dict]:
                 "previous": previous,
                 "promises": promises_for(session, e, a.slug, current, limit=PROMISES_PER_PARTY),
                 "n_promises": count_promises(session, e, a.slug, current),
+                "comparable": program_pair(session, e, a.slug) is not None,
             }
         )
     return out
@@ -168,6 +170,38 @@ def promises_page(
     for p in rows:
         by_topic[p.topic] = by_topic.get(p.topic, 0) + 1
     return {"rows": rows, "by_topic": sorted(by_topic.items(), key=lambda kv: -kv[1]), "year": year}
+
+
+def program_pair(session: Session, e: Election, actor: str) -> tuple[Program, Program] | None:
+    """Los dos ultimos programas importados del partido para este tipo de eleccion (anterior, posterior)."""
+    rows = session.scalars(
+        select(Program)
+        .where(
+            Program.country == e.country,
+            Program.actor == actor,
+            Program.election_kind == e.kind,
+            Program.election_year <= e.date.year,
+            Program.status == "importado",
+        )
+        .order_by(Program.election_year.desc(), Program.id)
+    ).all()
+    latest: dict[int, Program] = {}
+    for p in rows:
+        latest.setdefault(p.election_year, p)
+    years = sorted(latest, reverse=True)[:2]
+    return (latest[years[1]], latest[years[0]]) if len(years) == 2 else None
+
+
+def compare_programs(session: Session, e: Election, actor: str) -> dict | None:
+    pair = program_pair(session, e, actor)
+    if not pair:
+        return None
+    before, after = pair
+
+    def of(p: Program) -> list[Promise]:
+        return list(session.scalars(select(Promise).where(Promise.program_id == p.id).order_by(Promise.page)))
+
+    return {"before": before, "after": after, "c": changes.compare(of(before), of(after))}
 
 
 def coverage(session: Session, e: Election, now: datetime) -> list[Story]:

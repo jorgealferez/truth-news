@@ -896,6 +896,7 @@ def create_app(
             topic=tema,
             names={a.slug: a.name for a in actors},
             v=el_views.promises_page(session, e, partido, tema, anio),
+            cmp=el_views.compare_programs(session, e, partido) if partido else None,
         )
 
     @app.get("/publicidad", response_class=HTMLResponse)

@@ -182,6 +182,7 @@ def pdf_text(data: bytes) -> tuple[list[str], int]:
     """Texto por pagina de un PDF (hasta MAX_PAGES) y su numero total de paginas."""
     from pypdf import PdfReader
 
+    logging.getLogger("pypdf").setLevel(logging.ERROR)  # avisos de fuentes: ruido, no fallos
     reader = PdfReader(io.BytesIO(data))
     pages = []
     for page in reader.pages[:MAX_PAGES]:

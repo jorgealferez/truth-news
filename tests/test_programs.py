@@ -312,6 +312,9 @@ def test_election_page_shows_programmes_and_promises(engine, session):
     r = client.get(f"/elecciones/{slug}/promesas?partido=sumar&anio={poll.year - 3}")
     assert "Reduciremos la jornada" in r.text and "Construiremos vivienda" not in r.text
     assert "noindex" in r.text
+    assert "Comparar sus dos últimos programas" in page
+    r = client.get(f"/elecciones/{slug}/promesas?partido=sumar")
+    assert f"Qué cambia entre su programa de {poll.year - 3} y el de {poll.year}" in r.text
     r = client.get(f"/elecciones/{slug}/promesas?tema=impuestos")
     assert "Bajaremos el IRPF" in r.text and "Construiremos" not in r.text
     assert client.get(f"/elecciones/{slug}/promesas?partido=nadie").status_code == 404
@@ -329,3 +332,26 @@ def test_programs_by_actor_prefers_imported_and_latest(session):
 
     cur, prev = views.programs_by_actor(session, e, ["bng"])["bng"]
     assert cur is None and prev.title == "p1"
+
+
+def test_compare_programmes_pairs_conservatively():
+    from types import SimpleNamespace as N
+
+    from truthnews.elections import changes
+
+    before = [
+        N(id=1, text="Reclamaremos una mayor participación de las empresas canarias en los programas."),
+        N(id=2, text="Crearemos un fondo para rehabilitar viviendas vacías en los municipios rurales."),
+        N(id=3, text="Corto."),
+    ]
+    after = [
+        N(
+            id=11,
+            text="Reclamaremos, por otro lado, una mayor participación de las empresas canarias "
+            "en los programas.",
+        ),
+        N(id=12, text="Bajaremos las tasas aeroportuarias para los residentes en las islas no capitalinas."),
+    ]
+    c = changes.compare(before, after)
+    assert [(a.id, b.id) for a, b, _ in c.repeated] == [(1, 11)] and c.repeated[0][2] >= 0.6
+    assert [p.id for p in c.new] == [12] and [p.id for p in c.dropped] == [2]  # la frase corta no cuenta

@@ -554,6 +554,12 @@ es:
   el_congress: Congreso
   el_senate: Senado
   el_heads: Cabezas de lista
+  el_changes: "Qué cambia entre su programa de {a} y el de {b}"
+  el_repeated: promesas repetidas
+  el_new: nuevas
+  el_dropped: que ya no aparecen
+  el_compare: Comparar sus dos últimos programas
+  el_changes_method: Dos promesas se cuentan como la misma si comparten la mayor parte de sus palabras de contenido (criterio conservador). Repetir una promesa no dice si se cumplió; que desaparezca, tampoco.
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1104,3 +1110,9 @@ en:
   el_congress: Congress
   el_senate: Senate
   el_heads: Heads of list
+  el_changes: "What changes between its {a} and {b} manifestos"
+  el_repeated: repeated promises
+  el_new: new
+  el_dropped: no longer present
+  el_compare: Compare its last two manifestos
+  el_changes_method: Two promises count as the same if they share most of their content words (a conservative criterion). Repeating a promise does not say whether it was kept; dropping it does not either.
