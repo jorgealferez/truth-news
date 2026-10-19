@@ -65,3 +65,14 @@ def test_keys_order_sources_and_outputs(engine, session):
         assert r.status_code == 200 and Image.open(io.BytesIO(r.content)).size == size
     assert client.get("/og/hoy-gigante.png").status_code == 404
     assert "Today in 1 minute" in client.get("/en/hoy").text
+
+
+def test_today_is_cached_between_crawls(engine, session):
+    client = _client(engine)
+    assert "Hoy todavía no hay nada contrastado" in client.get("/hoy").text
+    st = _story(session, "Desalojo en la calle Mayor", [400, 1000])
+    _verification(session, st, verdict="falso")
+    session.commit()
+    # Dentro de los 5 minutos la pagina no se recalcula (cambia con el ciclo del worker, no por visita).
+    assert "Hoy todavía no hay nada contrastado" in client.get("/hoy").text
+    assert "Hoy todavía no hay nada contrastado" not in _client(engine).get("/hoy").text
