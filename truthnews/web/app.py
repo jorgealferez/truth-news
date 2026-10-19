@@ -222,6 +222,17 @@ def create_app(
             totals_cache.update(at=now, value=queries.totals(session))
         return totals_cache["value"]
 
+    nocuadra_cache: dict = {}
+
+    def nocuadra_cached(session: Session) -> list:
+        # Lo que no cuadra en portada (ADR 0027): una sola consulta y 5 min de cache (cambia con el ciclo
+        # del worker). Solo falsedades con dato oficial y al menos 2; con menos, el bloque no sale.
+        now = time.monotonic()
+        if not nocuadra_cache or now - nocuadra_cache["at"] > 300:
+            found = [f for f in ranking.falsehoods(session, limit=10) if f.official is not None][:3]
+            nocuadra_cache.update(at=now, value=found if len(found) >= 2 else [])
+        return nocuadra_cache["value"]
+
     def lang_of(request: Request) -> str:
         prefix = getattr(request.state, "lang_prefix", None)
         if prefix:
@@ -491,6 +502,7 @@ def create_app(
                 home_country,
             ),
             top_outlets=reliability.ranking(reliability.records(session, home_country))[0][:5],
+            nocuadra=nocuadra_cached(session),
             min_checks=reliability.MIN_CHECKS,
         )
 

@@ -244,6 +244,8 @@ def test_rankings_profile_and_web_pages(engine, session, corpus):
     assert views.profile(session, lonely.id) is None  # descubierta con un solo medio: no se publica
     session.commit()
     client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    home = client.get("/")
+    assert home.status_code == 200 and 'class="nocuadra"' not in home.text  # una sola: no se rellena
     r = client.get("/discrepancias")
     assert r.status_code == 200 and "Elena Martínez" in r.text and "14,5 %" in r.text and "10,5 %" in r.text
     assert client.get("/entidades").status_code == 200
@@ -555,3 +557,28 @@ def test_archive_anchor_ignores_old_dates_in_feeds(session, corpus):
     out = archive.run(session, slots=1, now=NOW, fetch=lambda url: gkg_zip([]))
     assert out["slots"] == 1
     assert archive.oldest(session, NOW) == archive.floor_slot(min(a.fetched_at for a in arts))
+
+
+def test_home_shows_what_does_not_add_up_only_with_two_or_more(engine, session, corpus):
+    outs, arts, st, claim = corpus
+    other = Claim(
+        article_id=arts[2].id,
+        outlet_id=outs[2].id,
+        text="La inflacion se situa en el 9 %.",
+        indicator="inflacion",
+        geo="ES",
+        value=9.0,
+        unit="pct",
+    )
+    session.add(other)
+    session.flush()
+    v = Verification(claim_id=other.id, verdict="falso", confidence=0.9, explanation="x", method="nivel/v3")
+    v.evidence.append(
+        Evidence(source="ine", label="IPC", url="https://ine.es/ipc", period="2026-09", value=3.0)
+    )
+    session.add(v)
+    session.commit()
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    home = client.get("/").text
+    assert 'class="nocuadra"' in home and "14,5 %" in home and "9,0 %" in home
+    assert "«La inflacion se situa en el 9 %.»" in home and 'href="https://ine.es/ipc"' in home
