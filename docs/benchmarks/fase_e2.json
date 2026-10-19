@@ -9,16 +9,17 @@
     }
   },
   "medidas": {
-    "relectura_comparaciones_por_s": 365,
+    "relectura_comparaciones_por_s": 1357,
     "tests_fallidos": 0,
     "ruff_avisos": 0
   },
   "detalle": {
     "comparacion": {
-      "que": "body_excerpts sobre pares de textos de 758 palabras (30 parrafos): 200 con una cifra cambiada y 200 con un retoque sin cifra",
-      "pares_por_s": 365,
+      "que": "body_excerpts sobre pares de textos de 758 palabras (30 parrafos, el mismo texto antes y despues): 200 con una cifra cambiada en una frase y 200 con una frase anadida sin cifra",
+      "pares_por_s": 1357,
       "pares_con_revision": 200,
-      "coste_por_rastreo": "como mucho 60 relecturas por rastreo (MAX_TEXT_RECHECK_PER_RUN): ~0,16 s de CPU; el resto es red, en paralelo entre dominios y con el cliente educado del rastreo"
+      "coste_por_rastreo": "como mucho 60 relecturas por rastreo (MAX_TEXT_RECHECK_PER_RUN): ~0,05 s de CPU; el resto es red, en paralelo entre dominios, con el cliente educado del rastreo y un tope de 60 s",
+      "nota": "tras la revision de Global: se compara solo la misma frase con otra cifra (solapamiento de palabras >= 0,6); la primera medida (365 pares/s) usaba parrafos aleatorios distintos antes y despues y la regla de la primera cifra"
     },
     "produccion_antes": {
       "fuente": "registros del worker en Railway, 2026-10-19 06:35-12:40 UTC",

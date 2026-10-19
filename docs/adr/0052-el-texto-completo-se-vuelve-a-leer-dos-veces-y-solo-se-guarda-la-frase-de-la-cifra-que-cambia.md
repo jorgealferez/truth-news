@@ -114,6 +114,18 @@ por dominio. Cuando cambia una cifra se guarda una revision `content` con la fra
 despues; cuando no, solo se actualiza el texto y su hash. Las revisiones de cuerpo entran en «Quien
 cambio su cifra» con las mismas reglas de ADR 0032.
 
+Que es «cambiar una cifra» en el cuerpo (revision de Global): la misma frase con otra cifra. Una frase
+nueva que comparte al menos el 60 % de sus palabras, sin contar cifras, con una frase anterior que ya no
+esta, y en la que la cifra de un mismo sustantivo vale distinto. La regla de ADR 0032, la primera cifra
+del sustantivo, no sirve en un cuerpo largo: un parrafo nuevo de contexto («en 2019 hubo 30 muertos»)
+cambiaria esa primera cifra sin que el medio corrija nada, y «cambio su cifra en silencio» es una
+acusacion.
+
+Una relectura con menos de la mitad de palabras que el texto guardado (muro de pago, registro o
+consentimiento de cookies) cuenta como relectura fallida. No pisa el cuerpo y se mide en
+`run.stats["recheck_shorter"]`. Un texto que llego tarde (relleno) espera 21 h entre sus dos
+relecturas.
+
 Tres limites, de la revision de Global y de la direccion (2026-10-19):
 - Los directos no se releen: su texto cambia a cada minuto y no es una correccion (#87).
 - El paso no empieza ninguna peticion pasado un minuto (`RECHECK_MAX_SECONDS`). Su duracion se publica en

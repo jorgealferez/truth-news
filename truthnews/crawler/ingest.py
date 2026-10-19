@@ -36,6 +36,7 @@ BACKFILL_DOMAIN_FAILURES = 2
 RECHECK_WINDOW = timedelta(hours=48)
 RECHECK_FIRST = timedelta(hours=3)
 RECHECK_SECOND = timedelta(hours=24)
+RECHECK_MIN_SHARE = 0.5  # una relectura con menos de la mitad de palabras se trata como fallida
 RECHECK_MAX_SECONDS = 60.0  # tope de la direccion: la relectura no alarga el rastreo mas de un minuto
 
 
@@ -275,7 +276,12 @@ async def recheck_texts(
     now = now or datetime.now(UTC)
     due = or_(
         and_(Article.content_checks == 0, Article.fetched_at <= now - RECHECK_FIRST),
-        and_(Article.content_checks == 1, Article.published_at <= now - RECHECK_SECOND),
+        and_(
+            Article.content_checks == 1,
+            Article.published_at <= now - RECHECK_SECOND,
+            # un texto que llego tarde (relleno) no hace sus dos relecturas en ciclos seguidos
+            Article.fetched_at <= now - (RECHECK_SECOND - RECHECK_FIRST),
+        ),
     )
     rows = session.scalars(
         select(Article)
@@ -292,9 +298,12 @@ async def recheck_texts(
     rows = [a for a in rows if not _LIVE.search(normalize(a.title or ""))]
     refused: dict[str, int] = {}
     _, fetched = await _fetch_by_domain(client, rows, limit, started + max_seconds, refused)
-    out = {"rechecked": 0, "changed": 0, "revisions": 0}
+    out = {"rechecked": 0, "changed": 0, "revisions": 0, "shorter": 0}
     for art, text in fetched:
         art.content_checks += 1
+        if text and art.word_count and word_count(text) < RECHECK_MIN_SHARE * art.word_count:
+            out["shorter"] += 1  # muro de pago, registro o cookies: la entradilla no pisa el cuerpo
+            continue
         out["rechecked"] += bool(text)
         if not text or sha256(text) == art.content_hash:
             continue
@@ -464,6 +473,7 @@ async def crawl(
             "content_revisions": rechecked.get("revisions", 0),
             "recheck_refused": rechecked.get("refused", {}),
             "recheck_seconds": rechecked.get("seconds", 0.0),
+            "recheck_shorter": rechecked.get("shorter", 0),
             "promotional_skipped": n_promo,
         }
     run.finished_at = utcnow()

@@ -76,8 +76,16 @@ def _sentences(text: str) -> list[str]:
     return [s for s in (" ".join(p.split()) for p in _SENTENCE.split(text)) if s]
 
 
-def _first_with(sentences: list[str], noun: str) -> str | None:
-    return next((s for s in sentences if noun in _first_values(s)), None)
+SAME_SENTENCE = 0.6  # solapamiento minimo de palabras (sin cifras) para tratar dos frases como la misma
+_WORD = re.compile(r"[a-z]+")
+
+
+def _words(sentence: str) -> set[str]:
+    return set(_WORD.findall(normalize(sentence)))
+
+
+def _overlap(a: set[str], b: set[str]) -> float:
+    return len(a & b) / max(len(a), len(b), 1)
 
 
 def _join(parts: list[str]) -> str:
@@ -89,22 +97,31 @@ def _join(parts: list[str]) -> str:
 def body_excerpts(before: str, after: str) -> tuple[str, str] | None:
     """Las frases del texto completo de antes y de despues donde cambia una cifra (ADR 0052), o None.
 
-    Solo se guarda la cita, no el cuerpo (ADR 0003). Si el texto nuevo, y no el anterior, avisa del cambio,
-    la frase del aviso va delante en el despues: asi `changes_in` sobre las citas da lo mismo que sobre
-    los textos enteros. Un cuerpo largo cita «directo» sin serlo; los directos se descartan por el titular.
+    En un cuerpo largo no vale «la primera cifra del sustantivo»: un parrafo nuevo de contexto («en 2019
+    hubo 30 muertos») la cambiaria sin que el medio corrija nada. Solo cuenta la misma frase con otra
+    cifra: una frase nueva que comparte al menos el 60 % de sus palabras (sin cifras) con una frase
+    anterior que ya no esta, y cuya cifra de un mismo sustantivo vale distinto. Solo se guarda la cita
+    (ADR 0003). Si el texto nuevo, y no el anterior, avisa del cambio, la frase del aviso va detras en el
+    despues, para que `changes_in` sobre las citas lea las mismas cifras y el mismo aviso.
     """
     old, new = _sentences(before), _sentences(after)
+    gone = [(s, _words(s), _first_values(s)) for s in old if s not in set(new)]
     b_parts, a_parts = [], []
-    for noun, _, _, _ in _diff(before, after):
-        sb, sa = _first_with(old, noun), _first_with(new, noun)
-        if sb and sa:
-            b_parts.append(sb)
+    for sa in new:
+        if sa in old or not (va := _first_values(sa)):
+            continue
+        wa = _words(sa)
+        best = max(gone, key=lambda g: _overlap(g[1], wa), default=None)
+        if best is None or _overlap(best[1], wa) < SAME_SENTENCE:
+            continue
+        if any(n in best[2] and best[2][n] != v for n, v in va.items()):
+            b_parts.append(best[0])
             a_parts.append(sa)
     if not b_parts:
         return None
     notice = next((s for s in new if _ANNOUNCED.search(normalize(s))), None)
     if notice and not _ANNOUNCED.search(normalize(before)):
-        a_parts.insert(0, notice)
+        a_parts.append(notice)
     b_ex, a_ex = _join(b_parts), _join(a_parts)
     return (b_ex, a_ex) if changes_in(b_ex, a_ex) else None
 

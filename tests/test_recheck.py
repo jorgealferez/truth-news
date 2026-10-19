@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 import httpx
 from sqlalchemy import select
 
-from truthnews.analysis.figure_changes import body_excerpts, for_outlet
+from truthnews.analysis.figure_changes import body_excerpts, changes_in, for_outlet
 from truthnews.crawler.extract import sha256
 from truthnews.crawler.http import PoliteClient
 from truthnews.crawler.ingest import recheck_texts
@@ -82,7 +82,14 @@ def test_body_excerpts_quote_only_the_changed_sentence_and_the_notice():
     )
     told = NEW.replace(FILLER, "Actualizacion: el Gobierno eleva a 15 el numero de victimas.")
     before, after = body_excerpts(OLD, told)
-    assert after.startswith("Actualizacion: el Gobierno eleva a 15") and "15 los muertos" in after
+    assert after.startswith("El Gobierno cifra en 15 los muertos") and after.endswith("numero de victimas.")
+    assert changes_in(before, after) == [("muertos", 12, 15, True)]
+    # un parrafo nuevo de contexto con una cifra historica no es cambiar la cifra (revision de Global)
+    context = OLD.replace(FILLER, "En las riadas de 2019 hubo 30 muertos en la comarca.")
+    assert body_excerpts(OLD, context) is None
+    # otra frase distinta con otra cifra del mismo sustantivo tampoco
+    other = OLD + "\nLos servicios de emergencia atendieron a 40 muertos y heridos en total."
+    assert body_excerpts(OLD, other) is None
     assert body_excerpts(OLD, OLD.replace("mantiene", "prolonga")) is None  # sin cifra no hay revision
     long = "x " * 400 + "con 12 muertos."
     b, a = body_excerpts(f"Hoy hay 12 muertos. {long}", f"Hoy hay 14 muertos. {long}")
@@ -158,3 +165,17 @@ def test_recheck_skips_live_coverage_and_stops_at_the_time_limit(session):
     assert hits == [] and normal.content_checks == 0  # sin tiempo no se empieza nada
     _, hits = _run(session, {"/politica/1": NEW, "/politica/2": OLD})
     assert hits == ["/politica/2"] and live.content_checks == 0 and live.content_hash == sha256(OLD)
+
+
+def test_recheck_ignores_a_paywall_teaser_and_spaces_out_late_texts(session):
+    o = _outlet(session)
+    full = _article(session, o, 1, OLD, NOW - timedelta(hours=5), word_count=len(OLD.split()))
+    late = _article(
+        session, o, 2, OLD, NOW - timedelta(hours=26), fetched_at=NOW - timedelta(hours=6), content_checks=1
+    )
+    out, hits = _run(session, {"/politica/1": "Solo para suscriptores: 15 muertos.", "/politica/2": NEW})
+    assert hits == ["/politica/1"]  # late: su primera relectura fue hace poco; la segunda espera
+    assert out["shorter"] == 1 and out["revisions"] == 0 and full.content_hash == sha256(OLD)
+    assert full.content_checks == 1 and late.content_checks == 1
+    _, hits = _run(session, {"/politica/2": NEW}, now=NOW + timedelta(hours=16))
+    assert hits == ["/politica/2"] and late.content_checks == 2
