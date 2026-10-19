@@ -96,7 +96,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0048 + migracion 0020 | datos | reservado | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
 | ADR 0050 | diseno | PR (este) | Entidades (graficos SVG de entidad e historia; asignado por la direccion) |
-| siguiente libre | — | — | ADR 0051 + migracion 0022; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
+| ADR 0054 | diseno | PR #218 | Coste de la IA (medido, tope diario y cadencia minima de piezas; peticion del usuario; sin migracion) |
+| siguiente libre | — | — | ADR 0055 + migracion 0024 (0052 y 0023 son de Entidades, 0053 de Comparativas); pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 

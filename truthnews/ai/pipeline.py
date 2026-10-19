@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from datetime import UTC, timedelta
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from truthnews.ai import statements, translate
@@ -15,7 +16,7 @@ from truthnews.ai.writer import ask_piece, prepare_piece, store_pieces
 from truthnews.analysis import abroad
 from truthnews.analysis.verify import Verifier
 from truthnews.config import Settings
-from truthnews.models import Topic
+from truthnews.models import Piece, Topic, utcnow
 
 log = logging.getLogger(__name__)
 
@@ -74,20 +75,34 @@ def run(
         verifier or Verifier(),
         settings.ai_max_pieces_per_cycle,
         settings.ai_piece_concurrency,
+        timedelta(minutes=settings.ai_piece_refresh_minutes),
     )
     out.update({"pieces_written": written, "pieces_in_revision": revision, "failed": failed})
     log.info("IA: %s", out)
     return out
 
 
-def write_batch(session, ai, topics, verifier, max_pieces: int, concurrency: int) -> tuple[int, int, int]:
+def recent_piece(session: Session, topic: Topic, refresh: timedelta) -> bool:
+    """El tema tiene una pieza de hace menos de `refresh`: no se paga otra aunque el dossier haya cambiado."""
+    last = session.scalar(select(func.max(Piece.created_at)).where(Piece.topic_id == topic.id))
+    if last is None:
+        return False
+    return (last if last.tzinfo else last.replace(tzinfo=UTC)) > utcnow() - refresh
+
+
+def write_batch(
+    session, ai, topics, verifier, max_pieces: int, concurrency: int, refresh: timedelta | None = None
+) -> tuple[int, int, int]:
     """(escritas, en revision, fallidas). Las llamadas de las piezas van en paralelo (2-2,5 min cada una con
     esfuerzo alto: en serie eran la mitad del ciclo); los dossieres se preparan y las piezas se guardan en
-    serie y en orden, porque la sesion no se comparte entre hilos."""
+    serie y en orden, porque la sesion no se comparte entre hilos. Con `refresh`, un tema con pieza reciente
+    cede su plaza al siguiente (ADR 0054)."""
     batch = []
     for topic in topics:
         if len(batch) >= max_pieces:
             break
+        if refresh and recent_piece(session, topic, refresh):
+            continue
         prepared = prepare_piece(session, topic, verifier)
         if prepared is not None:
             batch.append((topic, *prepared))
