@@ -1,0 +1,130 @@
+{
+  "fase": "m1",
+  "titulo": "Movil: objetivos tactiles de 44 px sin mover el diseno (ADR 0046, #171)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "chromium": "1194 (Playwright 1.56.1)",
+      "node": "22.22.0"
+    },
+    "perfil": "412x823 tactil (pointer: coarse), CPU 4x mas lenta, red 150 ms / 1,6 Mbit/s, sin cache, mediana de 3 cargas, contra https://nosmienten.com"
+  },
+  "medidas": {
+    "movil_tactiles_menores_44": 0,
+    "movil_contraste_fallos": 0,
+    "movil_cls_max": 0
+  },
+  "detalle": {
+    "despues": {
+      "/": {
+        "lcp_ms": 1156,
+        "fcp_ms": 1156,
+        "ttfb_ms": 616,
+        "cls": 0,
+        "kb": 24,
+        "requests": 6,
+        "tap_lt44": 0,
+        "tap_lt24": 0,
+        "low_contrast": 0,
+        "text_checked": 531
+      },
+      "/historia/24": {
+        "lcp_ms": 1112,
+        "fcp_ms": 1112,
+        "ttfb_ms": 764,
+        "cls": 0,
+        "kb": 18,
+        "requests": 5,
+        "tap_lt44": 0,
+        "tap_lt24": 0,
+        "low_contrast": 0,
+        "text_checked": 297
+      },
+      "/verificacion/1": {
+        "lcp_ms": 984,
+        "fcp_ms": 984,
+        "ttfb_ms": 601,
+        "cls": 0,
+        "kb": 18,
+        "requests": 5,
+        "tap_lt44": 0,
+        "tap_lt24": 0,
+        "low_contrast": 0,
+        "text_checked": 270
+      },
+      "/quien-dice-la-verdad": {
+        "lcp_ms": 944,
+        "fcp_ms": 944,
+        "ttfb_ms": 571,
+        "cls": 0,
+        "kb": 15,
+        "requests": 5,
+        "tap_lt44": 0,
+        "tap_lt24": 0,
+        "low_contrast": 0,
+        "text_checked": 207
+      }
+    },
+    "antes": {
+      "/": {
+        "lcp_ms": 1052,
+        "fcp_ms": 1052,
+        "ttfb_ms": 573,
+        "cls": 0,
+        "kb": 24,
+        "requests": 6,
+        "tap_lt44": 23,
+        "tap_lt24": 14,
+        "low_contrast": 0,
+        "text_checked": 532
+      },
+      "/historia/24": {
+        "lcp_ms": 1096,
+        "fcp_ms": 1096,
+        "ttfb_ms": 748,
+        "cls": 0,
+        "kb": 18,
+        "requests": 5,
+        "tap_lt44": 24,
+        "tap_lt24": 5,
+        "low_contrast": 0,
+        "text_checked": 297
+      },
+      "/verificacion/1": {
+        "lcp_ms": 920,
+        "fcp_ms": 920,
+        "ttfb_ms": 547,
+        "cls": 0,
+        "kb": 17,
+        "requests": 5,
+        "tap_lt44": 23,
+        "tap_lt24": 5,
+        "low_contrast": 0,
+        "text_checked": 270
+      },
+      "/quien-dice-la-verdad": {
+        "lcp_ms": 932,
+        "fcp_ms": 932,
+        "ttfb_ms": 567,
+        "cls": 0,
+        "kb": 15,
+        "requests": 5,
+        "tap_lt44": 13,
+        "tap_lt24": 5,
+        "low_contrast": 0,
+        "text_checked": 207
+      }
+    },
+    "otras_paginas": "0 objetivos de menos de 44 px tambien en /medios, /contrastes, /analisis, /medio/el-pais, /hilo/1, /metodologia, /entidades y /discrepancias",
+    "escritorio": "sin cambios: misma altura de pagina (portada 4725 px, historia 1890 px)",
+    "no_se_publican_como_medidas": "LCP, peso y peticiones dependen de la red y del contenido del dia; el ratchet estricto los convertiria en falsos retrocesos. Todos muy por dentro de los umbrales buenos de Google (LCP 0,9-1,2 s frente a 2,5 s)",
+    "excepcion": "enlaces dentro de una frase (incluidas las llamadas a fuentes [1], con area ampliada por pseudoelemento) no se cuentan: excepcion en linea de WCAG 2.5.8"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Datos de campo de usuarios reales (Chrome UX Report, Search Console): sin acceso desde este entorno"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}
