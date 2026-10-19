@@ -360,3 +360,40 @@ class Thread(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     anchor: Mapped[Story | None] = relationship()
+
+
+SOCIAL_NETWORKS = ("x", "bluesky", "mastodon", "telegram")
+SOCIAL_KINDS = ("historia", "hilo", "verificacion")
+SOCIAL_STATUSES = ("prueba", "enviado", "error")
+
+
+class SocialPost(Base):
+    """Una pieza para una red: lo que se publico (o se habria publicado en modo prueba) y su resultado
+    (ADR 0018). `kind` + `ref_id` apuntan a `story`, `thread` o `verification` sin clave foranea: el
+    registro sobrevive aunque el contenido se retire."""
+
+    __tablename__ = "social_post"
+    __table_args__ = (
+        CheckConstraint(f"network IN {SOCIAL_NETWORKS!r}", name="ck_social_post_network"),
+        CheckConstraint(f"kind IN {SOCIAL_KINDS!r}", name="ck_social_post_kind"),
+        CheckConstraint(f"status IN {SOCIAL_STATUSES!r}", name="ck_social_post_status"),
+        UniqueConstraint("network", "kind", "ref_id", name="uq_social_post_network_ref"),
+        Index("ix_social_post_network_created", "network", "created_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    network: Mapped[str] = mapped_column(String(16))
+    kind: Mapped[str] = mapped_column(String(16))
+    ref_id: Mapped[int] = mapped_column(Integer)
+    language: Mapped[str] = mapped_column(String(8), default="es")
+    score: Mapped[float] = mapped_column(Float, default=0.0)
+    text: Mapped[str] = mapped_column(Text)
+    link: Mapped[str] = mapped_column(String(1000))
+    image_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    status: Mapped[str] = mapped_column(String(16))
+    external_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    external_url: Mapped[str | None] = mapped_column(String(1000), nullable=True)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    attempts: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
