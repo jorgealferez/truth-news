@@ -337,3 +337,6 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .legal-pending { background:var(--soft); border-left:4px solid var(--brand); padding:10px 12px; font:14px system-ui, sans-serif; }
 .legal-links, .foot-legal { font:13px system-ui, sans-serif; color:var(--muted); }
 @media (max-width:520px) { .legal-owner { grid-template-columns:1fr; } .legal-owner dd { margin-bottom:6px; } }
+.rep-card { background:#fff; border:1px solid var(--line); border-radius:6px; padding:10px 14px; margin:10px 0; font-family:system-ui, sans-serif; }
+.rep-head { margin:0 0 4px; display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; overflow-wrap:anywhere; } .rep-v { font-size:22px; }
+.rep-list { list-style:none; margin:6px 0; padding:0; } .rep-list li { margin:4px 0; line-height:1.45; font-size:14px; overflow-wrap:anywhere; }

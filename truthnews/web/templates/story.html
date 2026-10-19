@@ -1,9 +1,11 @@
 {% extends "base.html" %}
 {% block title %}{{ (st_tr or {}).get(st.id) or st.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ (st_tr or {}).get(st.id) or st.title }}{% endblock %}
+{% block canonical %}{{ site.site_url }}{{ url('historia', st.id, st.title) }}{% endblock %}
 {% block og_image %}{{ site.site_url }}/og/historia/{{ st.id }}.png{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('historia', st.id, st.title) }}">{% endblock %}
-{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/contrastes">{{ t(lang, 'contrasts') }}</a> › <a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a></p>{% endblock %}
+
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block crumbs %}{{ breadcrumbs([(t(lang, 'home'), '/'), (t(lang, 'contrasts'), '/contrastes'), (category_name(st.category, lang), '/seccion/' ~ st.category)]) }}{% endblock %}
 {% block content %}
 {% set n_out = comp.outlets|length %}
 {% set vc = {} %}{% for c in claims %}{% set _ = vc.update({c.verification.verdict: vc.get(c.verification.verdict, 0) + 1}) %}{% endfor %}
@@ -121,6 +123,7 @@
       <p class="chips">{% for name, n in comp.shared_names %}<span>{{ name }} <b>{{ n }}/{{ n_out }}</b></span>{% endfor %}</p>{% endif %}
   </details>{% endif %}
 
+  {% if repeats %}{% include "_repeated.html" %}{% endif %}
   {% if fig_changes %}{% include "_figure_changes.html" %}{% endif %}
   {% if missing %}{% include "_missing.html" %}{% endif %}
   <details class="block fold" id="cobertura"><summary><h2>{{ t(lang, 'coverage') }}</h2> <span class="meta">{{ arts|length }} {{ t(lang, 'articles_count') }}</span></summary>
