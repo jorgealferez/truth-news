@@ -260,27 +260,13 @@
       "objetivo": 0.1
     },
     {
-<<<<<<< HEAD
       "id": "claimreview_incompletos",
       "descripcion": "Verificaciones con veredicto cuyo ClaimReview falta o esta incompleto (claimReviewed, rating con el veredicto, medio y noticia, fecha, cifra oficial citada), medido en produccion",
       "unidad": "paginas",
-=======
-      "id": "promesas_a_ia_pct",
-      "descripcion": "C15/18c: % de promesas de quien goberno que el codigo deja para la IA (las que tienen normas candidatas del BOE)",
-      "unidad": "%",
-      "direccion": "max",
-      "objetivo": 20
-    },
-    {
-      "id": "promesas_ia_publicadas_sin_revision",
-      "descripcion": "C15/18c: propuestas de la IA publicadas sin revision humana",
-      "unidad": "propuestas",
->>>>>>> a47126f (Elecciones 18c: cumplimiento de quien goberno, datos primero e IA solo lo justo y revisada (ADR 0040))
       "direccion": "max",
       "objetivo": 0
     },
     {
-<<<<<<< HEAD
       "id": "claimreview_sin_datos_con_rating",
       "descripcion": "Verificaciones 'sin datos' que llevan valoracion en ClaimReview (no se inventa)",
       "unidad": "paginas",
@@ -321,13 +307,27 @@
       "unidad": "paginas",
       "direccion": "max",
       "objetivo": 0
-=======
+    },
+    {
+      "id": "promesas_a_ia_pct",
+      "descripcion": "C15/18c: % de promesas de quien goberno que el codigo deja para la IA (las que tienen normas candidatas del BOE)",
+      "unidad": "%",
+      "direccion": "max",
+      "objetivo": 20
+    },
+    {
+      "id": "promesas_ia_publicadas_sin_revision",
+      "descripcion": "C15/18c: propuestas de la IA publicadas sin revision humana",
+      "unidad": "propuestas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
       "id": "promesas_reglas_segundos_por_promesa",
       "descripcion": "C15/18c: segundos del paso de reglas por promesa (busqueda en la legislacion consolidada del BOE)",
       "unidad": "s",
       "direccion": "max",
       "objetivo": 5
->>>>>>> a47126f (Elecciones 18c: cumplimiento de quien goberno, datos primero e IA solo lo justo y revisada (ADR 0040))
     }
   ]
 }
