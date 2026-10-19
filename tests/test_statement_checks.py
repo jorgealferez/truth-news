@@ -7,7 +7,7 @@ from fastapi.testclient import TestClient
 
 from truthnews import registry
 from truthnews.analysis import speakers, statement_checks
-from truthnews.analysis.verify import Observation, Verifier
+from truthnews.analysis.verify import METHOD_VERSION, Observation, Verifier
 from truthnews.config import Settings
 from truthnews.models import Entity, PoliticalStatement, StatementCheck
 from truthnews.web.app import create_app
@@ -68,7 +68,7 @@ def test_judges_statement_and_attributes_to_party(session):
     check = session.query(StatementCheck).one()
     assert check.statement_id == st.id and check.speaker_entity_id == ent.id
     assert check.indicator == "paro" and check.verdict == "verdadero"
-    assert check.method.endswith("/v5") and check.evidence[0]["source"] == "eurostat"
+    assert check.method.endswith(f"/{METHOD_VERSION}") and check.evidence[0]["source"] == "eurostat"
     # ya juzgada: el siguiente ciclo no la repite
     assert statement_checks.run(session, verifier(), now=NOW, actors=actors())["claims"] == 0
 
