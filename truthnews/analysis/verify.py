@@ -16,7 +16,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v6: "la inflacion le resta un 3,1 %" es un efecto, no el nivel; umbrales sin error de coma flotante.
 # v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
 # v8: inflacion con el IPCA de Eurostat: la franja que puede explicar el IPC nacional no se juzga.
-METHOD_VERSION = "v8"
+# v9: subgrupos (colectivo, discapacidad, "entre quienes"...) no se juzgan contra la tasa general.
+METHOD_VERSION = "v9"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
