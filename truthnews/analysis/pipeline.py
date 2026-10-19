@@ -94,7 +94,18 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
     ]
     created = updated = relaunched = 0
     used: set[int] = set()
-    for group in cluster(docs, threshold=DEFAULT_THRESHOLD, idf=idf):
+    # Se agrupa por pais: una historia no mezcla paises (la cobertura exterior se enlaza aparte, ADR 0022)
+    # y asi cada articulo solo se compara con los de su pais. Con la ingesta global la ventana de 72 h pasa
+    # de 15 000 articulos y agrupar todo junto disparaba el paso (55 -> 179 s medido el 2026-10-19).
+    by_country: dict[str, list[Doc]] = {}
+    for d in docs:
+        by_country.setdefault(by_id[d.key].country or "", []).append(d)
+    groups = [
+        g
+        for country in sorted(by_country)
+        for g in cluster(by_country[country], threshold=DEFAULT_THRESHOLD, idf=idf)
+    ]
+    for group in groups:
         members = [by_id[d.key] for d in group.members]
         lead = by_id[representative(group).key]
         # La historia conserva el id que tenga la mayoria de sus articulos (y que no se haya usado ya).
