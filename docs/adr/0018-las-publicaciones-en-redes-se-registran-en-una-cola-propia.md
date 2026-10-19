@@ -24,7 +24,7 @@ mismo contenido no se publica dos veces en la misma red aunque el worker se rede
 repita), cupo por red y por dia (hay que contar lo publicado hoy) y registro de cada envio (texto exacto,
 identificador y enlace devueltos por la red, error y reintentos). Alternativas sin esquema nuevo:
 (a) recordar lo publicado en memoria del worker: se pierde en cada redespliegue (los agentes despliegan
-varias veces por hora, ver `RECENT_CYCLE_MIN` en `truthnews/worker.py`) y se duplicaria;
+varias veces por hora, ver `next_cycle_at` en `truthnews/worker.py`) y se duplicaria;
 (b) consultar a cada red sus ultimas publicaciones antes de publicar: no existe sin credenciales (modo
 prueba), cuesta una llamada por red y ciclo y no guarda los errores; (c) una columna JSON
 `published_on` en `story`, `thread` y `verification`: reparte el registro en tres tablas ajenas al

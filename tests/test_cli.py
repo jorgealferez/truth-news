@@ -41,6 +41,7 @@ def test_db_upgrade_sync_and_crawl(tmp_path, monkeypatch, capsys):
     assert summary["political"] == {"channels": 0}
     assert summary["articles_new"] == 0
     assert summary["investigations"] == {"processed": 0, "failed": 0}
+    assert worker.last_full_cycle(worker.get_settings()) is not None  # el ciclo que termina queda marcado
     get_engine.cache_clear()
 
 
@@ -55,7 +56,8 @@ def test_database_url_normalization(monkeypatch):
     assert get_settings().fetch_full_text is False
 
 
-def test_recent_cycle_skips_duplicate_runs_after_redeploys(tmp_path, monkeypatch):
+def test_only_finished_full_cycles_defer_the_next_one(tmp_path, monkeypatch):
+    """Un ciclo cortado por un redespliegue no aplaza el siguiente; uno terminado lo fija a +intervalo."""
     from datetime import UTC, datetime, timedelta
 
     from truthnews.config import Settings
@@ -66,12 +68,17 @@ def test_recent_cycle_skips_duplicate_runs_after_redeploys(tmp_path, monkeypatch
     url = f"sqlite:///{tmp_path / 'w.db'}"
     upgrade(url)
     get_engine.cache_clear()
-    settings = Settings(database_url=url)
-    assert worker.recent_cycle(settings) is False
+    settings = Settings(database_url=url, crawl_interval_minutes=30)
+    assert worker.next_cycle_at(settings) is None  # nunca hubo ciclo: toca ya
+    with session_scope(get_engine(url)) as s:  # empezado hace 2 min y cortado: no cuenta
+        s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=2)))
+    assert worker.last_full_cycle(settings) is None and worker.next_cycle_at(settings) is None
+    done = datetime.now(UTC) - timedelta(minutes=10)
     with session_scope(get_engine(url)) as s:
-        s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=10)))
-    assert worker.recent_cycle(settings) is True
-    assert worker.recent_cycle(settings, now=datetime.now(UTC) + timedelta(minutes=30)) is False
+        s.add(CrawlRun(stats={"cycle": "terminado", "cycle_finished": done.isoformat()}))
+        s.add(CrawlRun(stats={"lane": "rapido"}))  # el carril rapido tampoco cuenta
+    assert worker.next_cycle_at(settings) == done + timedelta(minutes=30)
+    assert worker.next_cycle_at(settings, now=done + timedelta(minutes=31)) is None
     get_engine.cache_clear()
 
 
@@ -115,10 +122,7 @@ def test_breaking_lane_crawls_national_outlets_and_never_overlaps(tmp_path, monk
     summary = worker.run_breaking(settings)
     assert seen["slugs"] == ["nac"] and summary["lane"] == "rapido" and "analysis" in summary
     # Un rastreo del carril rapido no cuenta como ciclo completo tras un redespliegue.
-    assert worker.recent_cycle(settings) is False
-    with session_scope(get_engine(url)) as s:
-        s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=5)))
-    assert worker.recent_cycle(settings) is True
+    assert worker.last_full_cycle(settings) is None
 
     # Con el ciclo completo en marcha, el carril rapido se salta la vuelta.
     with worker._busy:
@@ -131,6 +135,14 @@ def test_breaking_lane_crawls_national_outlets_and_never_overlaps(tmp_path, monk
     try:
         jobs = {j.id: j for j in sched.get_jobs()}
         assert set(jobs) == {"crawl", "breaking"} and all(j.next_run_time for j in jobs.values())
+    finally:
+        sched.shutdown(wait=False)
+    first = datetime.now(UTC) + timedelta(minutes=7)
+    sched = BackgroundScheduler(timezone="UTC")
+    worker.add_jobs(sched, settings, first_cycle=first)
+    sched.start(paused=True)
+    try:
+        assert sched.get_job("crawl").next_run_time == first
     finally:
         sched.shutdown(wait=False)
     sched = BackgroundScheduler(timezone="UTC")
