@@ -94,7 +94,8 @@ ida y vuelta y `alembic check` antes del PR).
 - **Ventana de merges de codigo del worker.** El worker solo se redespliega si cambia `truthnews/**`
   (salvo plantillas y estaticos), `alembic/**`, `pyproject.toml`, `Dockerfile` o `railway.json` (watch
   paths en Railway). Un ciclo completo dura ~25 min y un redespliegue lo corta. Por eso esos merges se
-  hacen **solo entre HH:00 y HH:10 UTC**; documentacion, ledger, plantillas y estaticos, a cualquier hora.
+  hacen **solo en las horas pares, entre HH:00 y HH:10 UTC** (00:00, 02:00, 04:00…; el despliegue tarda ~10 min mas): asi
+  caben ciclos completos cada 30 min en las dos horas entre ventanas (criterio C11); documentacion, ledger, plantillas y estaticos, a cualquier hora.
   Urgencias de produccion (un fallo que tumba el ciclo), fuera de ventana avisando a la direccion.
 - Cambio de esquema: ADR `Tipo: datos` en el mismo PR (puerta `datos`).
 - Credenciales: nunca en el chat ni en el repositorio; se piden al usuario para que las ponga en Railway.
