@@ -167,7 +167,7 @@ def test_recheck_skips_live_coverage_and_stops_at_the_time_limit(session):
     assert hits == ["/politica/2"] and live.content_checks == 0 and live.content_hash == sha256(OLD)
 
 
-def test_recheck_ignores_a_paywall_teaser_and_spaces_out_late_texts(session):
+def test_recheck_ignores_a_paywall_teaser_and_spaces_out_late_arrivals(session):
     o = _outlet(session)
     full = _article(session, o, 1, OLD, NOW - timedelta(hours=5), word_count=len(OLD.split()))
     late = _article(

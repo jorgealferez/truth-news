@@ -123,8 +123,12 @@ acusacion.
 
 Una relectura con menos de la mitad de palabras que el texto guardado (muro de pago, registro o
 consentimiento de cookies) cuenta como relectura fallida. No pisa el cuerpo y se mide en
-`run.stats["recheck_shorter"]`. Un texto que llego tarde (relleno) espera 21 h entre sus dos
-relecturas.
+`run.stats["recheck_shorter"]`. La segunda relectura exige ademas que la noticia entrase hace 21 h
+(`fetched_at`), para que una noticia que llega tarde al feed no haga sus dos relecturas seguidas.
+Limite conocido (nota de Global): `fetched_at` es la entrada de la noticia, no la del relleno del texto,
+asi que un texto rellenado tarde aun puede releerse dos veces en ciclos seguidos. Cuesta una peticion
+de mas en 0–10 textos por rastreo (lo que rellena hoy `backfill_texts`) y no da revisiones falsas, porque
+solo cuenta la misma frase con otra cifra. Queda para otro PR, si la medida en produccion lo pide.
 
 Tres limites, de la revision de Global y de la direccion (2026-10-19):
 - Los directos no se releen: su texto cambia a cada minuto y no es una correccion (#87).

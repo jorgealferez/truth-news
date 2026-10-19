@@ -279,7 +279,7 @@ async def recheck_texts(
         and_(
             Article.content_checks == 1,
             Article.published_at <= now - RECHECK_SECOND,
-            # un texto que llego tarde (relleno) no hace sus dos relecturas en ciclos seguidos
+            # una noticia que entro tarde no se relee dos veces seguidas (el relleno no cambia fetched_at)
             Article.fetched_at <= now - (RECHECK_SECOND - RECHECK_FIRST),
         ),
     )
