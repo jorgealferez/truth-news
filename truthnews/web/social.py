@@ -8,6 +8,7 @@ vez por enlace compartido.
 from __future__ import annotations
 
 import io
+import re
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import quote
@@ -33,7 +34,7 @@ def _font(weight: str, size: int) -> ImageFont.FreeTypeFont:
 
 def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int, max_lines: int) -> list[str]:
     lines: list[str] = []
-    for word in text.split():
+    for word in re.split(r"\s+(?![%€])", text.strip()):  # "11,2 %" no se parte entre lineas
         if lines and draw.textlength(f"{lines[-1]} {word}", font=font) <= width:
             lines[-1] = f"{lines[-1]} {word}"
         else:
@@ -163,3 +164,54 @@ def rss_xml(title: str, link: str, description: str, items: list[dict]) -> str:
         f"<title>{escape(title)}</title><link>{escape(link)}</link>"
         f"<description>{escape(description)}</description><language>es</language>{body}</channel></rss>\n"
     )
+
+
+TODAY_SIZES = {"vertical": (1080, 1350), "cuadrada": (1080, 1080), "horizontal": (1200, 630)}
+
+
+def today_image(
+    items: list[tuple[str | None, str, str]],
+    title: str,
+    date_label: str,
+    footer: str,
+    empty: str,
+    fmt: str = "vertical",
+) -> bytes:
+    """PNG de "Hoy en 1 minuto" (ADR 0047). `items`: (veredicto o None, etiqueta del veredicto, frase).
+    Vertical 1080x1350 para Instagram/Bluesky/Telegram, cuadrada 1080x1080 para X y Mastodon; la
+    cuadrada lleva menos claves para que se lean."""
+    w, h = TODAY_SIZES[fmt]
+    img = Image.new("RGB", (w, h), PAPER)
+    d = ImageDraw.Draw(img)
+    d.rectangle((0, 0, w, 96), fill=INK)
+    _mark(d, 48, 22, 52)
+    _wordmark(d, 116, 62, 36)
+    d.text((48, 130), title, font=_font("ExtraBold", 58), fill=INK)
+    d.text((48, 202), date_label.upper(), font=_font("ExtraBold", 24), fill="#8a5a00")
+    y, bottom = 256, h - 120
+    lines_per_item = {"vertical": 3, "cuadrada": 2}.get(fmt, 1)
+    body = _font("Medium", 30)
+    if not items:
+        for line in _wrap(d, empty, _font("ExtraBold", 40), w - 96, 6):
+            d.text((48, y), line, font=_font("ExtraBold", 40), fill=INK)
+            y += 52
+    for verdict, label, sentence in items:
+        lines = _wrap(d, sentence, body, w - 96, lines_per_item)
+        need = 46 + 40 * len(lines) + 28
+        if y + need > bottom:
+            break
+        color = VERDICT_COLORS.get(verdict or "", MUTED)
+        tw = d.textlength(label.upper(), font=_font("ExtraBold", 22))
+        d.rounded_rectangle((48, y, 48 + tw + 28, y + 36), radius=8, fill=color)
+        d.text((62, y + 6), label.upper(), font=_font("ExtraBold", 22), fill=PAPER)
+        y += 46
+        for line in lines:
+            d.text((48, y), line, font=body, fill=INK)
+            y += 40
+        y += 28
+    _ruler(d, 48, w - 48, h - 104, 16)
+    d.rectangle((0, h - 72, w, h), fill=INK)
+    d.text((48, h - 56), footer, font=_font("Medium", 26), fill=PAPER)
+    buf = io.BytesIO()
+    img.save(buf, format="PNG", optimize=True)
+    return buf.getvalue()

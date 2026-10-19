@@ -92,6 +92,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
 | ADR 0045 | diseno | PR #151 | Rastreo (piezas publicitarias de los medios; sin migracion) |
 | ADR 0046 | diseno | PR (este) | Temas, SEO y sintesis (objetivos tactiles de 44 px en movil; sin migracion) |
+| ADR 0047 | diseno | PR #174 | Redes (Hoy en 1 minuto) |
+| ADR 0048 + migracion 0020 | datos | reservado | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
 | siguiente libre | — | — | ADR 0050 + migracion 0022; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
