@@ -1,0 +1,13 @@
+{# Publicidad (cliente de ads-service): siempre etiquetada (LSSI art. 20), con estilo distinto del editorial
+   y sin animaciones. Sin anuncio no se pinta nada. Variables: ad, slot. #}
+{% if ad %}
+<aside class="ad ad-{{ slot }} ad-{{ ad.format }}" data-ad-view="{{ ad.view_url }}" aria-label="{{ ad.label }}">
+  <p class="ad-label"><span class="ad-tag">{{ ad.label }}</span>{% if ad.advertiser.kind == 'own' %} <span class="ad-own">{{ ad.advertiser.group_disclosure or t(lang, 'ad_own_brand') }}</span>{% endif %}</p>
+  <a class="ad-link" href="{{ ad.click_url }}" rel="sponsored noopener" target="_blank">
+    {%- if ad.image_url and ad.format == 'native' %}<img src="{{ ad.image_url }}" alt="" width="96" height="96" loading="lazy">{% endif -%}
+    <span class="ad-text"><span class="ad-head">{{ ad.headline }}</span>{% if ad.body and ad.format != 'text' %} <span class="ad-body">{{ ad.body }}</span>{% endif %}
+      <span class="ad-foot">{% if ad.cta %}<span class="ad-cta">{{ ad.cta }} ›</span> {% endif %}<span class="ad-url">{{ ad.display_url }}</span></span></span>
+  </a>
+  <details class="ad-why"><summary>{{ t(lang, 'ad_why') }}</summary><p>{{ ad.why or t(lang, 'ad_why_default') }} <a href="/publicidad">{{ t(lang, 'ad_policy_link') }}</a></p></details>
+</aside>
+{% endif %}

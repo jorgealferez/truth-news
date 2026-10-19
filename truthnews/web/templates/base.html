@@ -64,12 +64,13 @@
 <main class="wrap" id="contenido">
 {% block crumbs %}{% endblock %}
 {% block content %}{% endblock %}
+{% with ad = (ads or {}).get('footer-strip'), slot = 'footer-strip' %}{% include "_ad.html" %}{% endwith %}
 </main>
 <footer class="foot">
   <div class="wrap">
     <p class="foot-brand"><img src="/static/mark.svg" alt="" width="22" height="22"> <strong>{{ site.site_domain }}</strong> · {{ t(lang, 'motto') }}</p>
     <p>{{ t(lang, 'copyright_note') }} {{ t(lang, 'ai_note') }}</p>
-    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a> · <a href="/rss.xml">RSS</a></p>
+    <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a> · <a href="/publicidad">{{ t(lang, 'advertising') }}</a> · <a href="/rss.xml">RSS</a></p>
   </div>
 </footer>
 <nav class="tabbar" aria-label="{{ t(lang, 'site_sections') }}">
@@ -79,5 +80,6 @@
   <a href="/medios" class="{{ 'on' if request.url.path.startswith('/medio') }}"><span aria-hidden="true">▤</span>{{ t(lang, 'outlets') }}</a>
   <a href="/analisis" class="{{ 'on' if request.url.path.startswith('/analisis') or request.url.path.startswith('/tema') }}"><span aria-hidden="true">✎</span>{{ t(lang, 'analysis') }}</a>
 </nav>
+{% if ads %}<script src="/static/ads.js" defer></script>{% endif %}
 </body>
 </html>

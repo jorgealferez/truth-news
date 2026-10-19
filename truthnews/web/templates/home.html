@@ -18,7 +18,7 @@
   <div class="main-col">
     {% if not stories %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% else %}
     {% with st = stories[0], lead = True %}{% include "_story_card.html" %}{% endwith %}
-    <div class="grid">{% for st in stories[1:] %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div>
+    <div class="grid">{% for st in stories[1:] %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% if loop.index == 5 %}{% with ad = (ads or {}).get('list-native'), slot = 'list-native' %}{% include "_ad.html" %}{% endwith %}{% endif %}{% endfor %}</div>
     <p class="more"><a href="/contrastes">{{ t(lang, 'more') }} {{ t(lang, 'contrasts')|lower }} →</a></p>
     {% endif %}
   </div>
