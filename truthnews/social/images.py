@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 
 from truthnews import registry
 from truthnews.analysis.compare import compare
-from truthnews.models import Story
+from truthnews.models import Story, utcnow
 from truthnews.web import queries, social
 
 DEFAULT_IMAGE = Path(__file__).resolve().parent.parent / "web" / "static" / "og-default.png"
@@ -33,3 +33,28 @@ def image_for(
     if st is None:
         return DEFAULT_IMAGE.read_bytes(), f"{site_url.rstrip('/')}/static/og-default.png"
     return story_png(session, st, lang, title), f"{site_url.rstrip('/')}/og/historia/{st.id}.png"
+
+
+def today_png(session: Session, lang: str, fmt: str, site_domain: str, now=None) -> tuple[bytes, list]:
+    """(PNG de "Hoy en 1 minuto", claves) en el formato pedido (ADR 0047)."""
+    from truthnews.social import today  # perezoso: today importa la web
+
+    now = now or utcnow()
+    items = today.keys(session, now, lang)
+    labels = [
+        (
+            k.verdict,
+            registry.t(lang, "verdict_" + k.verdict) if k.verdict else registry.t(lang, "today_dispute"),
+            k.sentence,
+        )
+        for k in items
+    ]
+    png = social.today_image(
+        labels,
+        registry.t(lang, "today_title"),
+        now.strftime("%d/%m/%Y"),
+        f"{site_domain}/hoy",
+        registry.t(lang, "today_empty"),
+        fmt,
+    )
+    return png, items
