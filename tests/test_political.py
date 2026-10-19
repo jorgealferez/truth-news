@@ -1,5 +1,6 @@
+import hashlib
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 import httpx
@@ -258,3 +259,81 @@ def test_wikidata_stops_and_says_why_when_robots_forbids(monkeypatch):
     monkeypatch.setattr(wikidata, "_DONE", False)
     out = wikidata.run_once(Settings(database_url="sqlite://", per_domain_delay_seconds=0), [ACTORS[0]])
     assert out == {"_parado": "a: robots.txt lo prohibe"}
+
+
+ARTICLE = (
+    "<html><head><title>Nota</title></head><body><nav>Inicio | Prensa</nav><article><h1>Nota de prensa</h1>"
+    + "".join(
+        f"<p>El paro se situa en el 10,6 % segun los ultimos datos, y el partido propone la medida {i} para "
+        "seguir reduciendolo en los proximos meses con un plan de empleo para jovenes y parados.</p>"
+        for i in range(6)
+    )
+    + "</article><footer>Aviso legal</footer></body></html>"
+)
+NOW = datetime(2026, 10, 19, 12, tzinfo=UTC)
+
+
+def _web(session, url, hours_ago=1, channel="web"):
+    st = PoliticalStatement(
+        actor="a",
+        country="ES",
+        channel=channel,
+        url=url,
+        url_hash=hashlib.sha256(url.encode()).hexdigest(),
+        text="Nota de prensa",
+        published_at=NOW - timedelta(hours=hours_ago),
+    )
+    session.add(st)
+    session.flush()
+    return st
+
+
+@respx.mock
+def test_bodies_once_with_caps_robots_and_a_403_that_stops_the_domain(session):
+    for host in ("partido.test", "cerrado.test", "vacio.test"):
+        respx.get(f"https://{host}/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get("https://prohibido.test/robots.txt").mock(
+        return_value=httpx.Response(200, text="User-agent: *\nDisallow: /")
+    )
+    page = respx.get(url__startswith="https://partido.test/n").mock(
+        return_value=httpx.Response(200, text=ARTICLE)
+    )
+    closed = respx.get(url__startswith="https://cerrado.test/n").mock(return_value=httpx.Response(403))
+    respx.get("https://vacio.test/n1").mock(return_value=httpx.Response(200, text="<html></html>"))
+    ok = [_web(session, f"https://partido.test/n{i}", hours_ago=i + 1) for i in range(4)]  # 4 > 3 por dominio
+    shut = [_web(session, f"https://cerrado.test/n{i}") for i in range(2)]
+    empty = _web(session, "https://vacio.test/n1")
+    banned = _web(session, "https://prohibido.test/n1")
+    social = _web(session, "https://t.me/canal/1", channel="telegram")
+    old = _web(session, "https://partido.test/viejo", hours_ago=24 * 31)
+    settings = Settings(database_url="sqlite://", per_domain_delay_seconds=0)
+
+    out = political.fetch_bodies(session, settings, now=NOW)
+    assert out == {"intentos": 6, "ok": 3, "estados": {"http 403": 1, "vacio": 1, "robots": 1}}
+    assert page.call_count == 3 and closed.call_count == 1  # el 403 para el dominio en el acto
+    assert all(st.body_status == "ok" and "10,6 %" in st.body for st in ok[:3])
+    assert ok[0].body_fetched_at is not None and "Aviso legal" not in ok[0].body  # solo el cuerpo
+    assert ok[3].body_status is None  # el cuarto del mismo dominio, en el siguiente ciclo
+    assert sorted(s.body_status or "-" for s in shut) == ["-", "http 403"]  # el otro, sin intento
+    assert all(s.body is None for s in shut)
+    assert empty.body_status == "vacio" and banned.body_status == "robots"
+    assert social.body_status is None and old.body_status is None  # solo web y solo la ventana
+
+    # Siguiente ciclo: el cuarto de partido.test; cerrado.test no se vuelve a pedir en 24 h.
+    again = political.fetch_bodies(session, settings, now=NOW + timedelta(minutes=30))
+    assert again["intentos"] == 1 and ok[3].body_status == "ok" and closed.call_count == 1
+    assert political.fetch_bodies(session, settings, now=NOW + timedelta(hours=1))["intentos"] == 0
+    later = political.fetch_bodies(session, settings, now=NOW + timedelta(hours=25))
+    assert later["estados"] == {"http 403": 1} and closed.call_count == 2
+    assert [s.body_status for s in shut] == ["http 403", "http 403"]
+
+
+@respx.mock
+def test_bodies_respect_the_cycle_cap_and_survive_a_dead_page(session):
+    respx.get("https://partido.test/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get(url__startswith="https://partido.test/n").mock(side_effect=httpx.ConnectError("x"))
+    rows = [_web(session, f"https://partido.test/n{i}") for i in range(3)]
+    settings = Settings(database_url="sqlite://", per_domain_delay_seconds=0)
+    out = political.fetch_bodies(session, settings, now=NOW, limit=2)
+    assert out == {"intentos": 2, "ok": 0, "estados": {"error ConnectErr": 2}}
+    assert sum(r.body_status is None for r in rows) == 1

@@ -515,23 +515,7 @@ def create_app(
         if key not in image_cache:
             if len(image_cache) > 500:
                 image_cache.clear()
-            image_cache[key] = social.today_image(
-                [
-                    (
-                        k.verdict,
-                        registry.t(lang, "verdict_" + k.verdict)
-                        if k.verdict
-                        else registry.t(lang, "today_dispute"),
-                        k.sentence,
-                    )
-                    for k in items
-                ],
-                registry.t(lang, "today_title"),
-                date_label,
-                f"{settings.site_domain}/hoy",
-                registry.t(lang, "today_empty"),
-                fmt,
-            )
+            image_cache[key] = images.today_png(session, lang, fmt, settings.site_domain)[0]
         return Response(
             image_cache[key], media_type="image/png", headers={"Cache-Control": "public, max-age=900"}
         )

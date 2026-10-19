@@ -203,6 +203,11 @@ class PoliticalStatement(Base):
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    # Cuerpo del comunicado (solo canal web), descargado una vez para analisis interno (ADR 0051):
+    # body_status ok | vacio | robots | http <codigo> | error; NULL = aun no se intento.
+    body: Mapped[str | None] = mapped_column(Text, nullable=True)
+    body_status: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    body_fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     # Historia de la que habla, propuesta por la IA y validada por el codigo (ADR 0007); None = ninguna.
     story_id: Mapped[int | None] = mapped_column(
         ForeignKey("story.id", ondelete="SET NULL", name="fk_political_statement_story_id"), nullable=True
@@ -458,7 +463,7 @@ class Thread(Base):
 SOCIAL_NETWORKS = ("x", "bluesky", "mastodon", "telegram")
 # Cuentas en ingles (cuentas distintas, misma red): solo historias con titular traducido (ADR 0017).
 SOCIAL_NETWORKS_EN = ("x_en", "bluesky_en", "mastodon_en", "telegram_en")
-SOCIAL_KINDS = ("historia", "hilo", "verificacion")
+SOCIAL_KINDS = ("historia", "hilo", "verificacion", "hoy")  # hoy: pieza diaria, ref_id = AAAAMMDD (ADR 0048)
 SOCIAL_STATUSES = ("prueba", "enviado", "error")
 
 
