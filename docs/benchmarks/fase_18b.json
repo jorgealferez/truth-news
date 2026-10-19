@@ -22,7 +22,9 @@
     "precision": "muestra aleatoria de 20 promesas de Sumar 2023: 20/20 son compromisos; 3/20 cortadas por un salto de pagina o de columna",
     "tiempos": "descubrimiento 21.5 s, importacion 10.8 s",
     "postgres": "migracion 0018 aplicada, alembic check sin diferencias, downgrade a 0017 (0 tablas) y upgrade de nuevo en PostgreSQL 16",
-    "tests": "tests/test_programs.py (11) y tests/test_elections.py (11)"
+    "tests": "tests/test_programs.py (11) y tests/test_elections.py (11)",
+    "produccion": "Railway worker 2026-10-19: migracion 0017->0018 aplicada a las 08:15 UTC; primer ciclo 08:35 UTC: 45 programas descubiertos y guardados, 3 importados por ciclo (09:05 y 09:27 otros 3 cada uno), 7 promesas de declaraciones en la ventana; ilegibles desde Railway: Podemos y Vox (403) y PSOE (212 bytes); ERC si responde desde Railway. /elecciones/es-generales-2026-11-29/promesas 200 (0,63 s) con promesas de declaraciones y 'Lo que prometio en' de CC (2019)",
+    "nota": "un redespliegue del worker vacia la memoria de 'cada 6 h' y repite el descubrimiento (09:27): ~20 s y 0 duplicados (unicidad por URL)"
   },
   "criterios_de_salida": {
     "C15": "en curso: 18a y 18b hechos; faltan cumplimiento (18c), contradicciones (18d) y mas ambitos y paises (18e)"
