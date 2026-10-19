@@ -24,7 +24,15 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad, figure_changes, ranking, reliability, speakers, statement_checks
+from truthnews.analysis import (
+    abroad,
+    figure_changes,
+    ranking,
+    reliability,
+    repeated,
+    speakers,
+    statement_checks,
+)
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
@@ -38,6 +46,7 @@ from truthnews.web import (
     appointments,
     budget,
     citations,
+    council,
     legal,
     queries,
     seo,
@@ -140,12 +149,14 @@ def create_app(
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
     boe_index: appointments.BoeIndex | None = None,
+    council_index: council.CouncilIndex | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
     boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
+    council_index = council_index or council.CouncilIndex()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -540,6 +551,10 @@ def create_app(
     def verifications(request: Request, session: SessionDep):
         return render(request, "verifications.html", claims=queries.all_verifications(session))
 
+    @app.get("/repetidas", response_class=HTMLResponse)
+    def repeated_claims(request: Request, session: SessionDep):
+        return render(request, "repeated.html", groups=repeated.repeated(session))
+
     @app.get("/discrepancias", response_class=HTMLResponse)
     def discrepancies(request: Request, session: SessionDep):
         # Lo que no cuadra (ADR 0027): la noticia grande es donde los datos y lo publicado no coinciden.
@@ -615,6 +630,7 @@ def create_app(
             plain=in_plain_words(comp, claims),
             missing=reliability.missing_outlets(session, st),
             fig_changes=figure_changes.for_story(session, st.id),
+            repeats=repeated.repeated_for_story(session, st.id),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -804,6 +820,17 @@ def create_app(
             archive_url=citations.archive_url(a),
             live=citations.is_live(a.title, *(x for r in a.revisions for x in (r.before, r.after))),
             boe=boe_index.confirmations([a.title, a.summary or ""], datetime.now(UTC).date()),
+        )
+
+    @app.get("/consejo-de-ministros", response_class=HTMLResponse)
+    def council_page(request: Request):
+        today = datetime.now(UTC).date()
+        return render(
+            request,
+            "council.html",
+            councils=council_index.councils(today),
+            today=today,
+            publish_days=council.consejo.PUBLISH_DAYS,
         )
 
     @app.get("/nombramientos", response_class=HTMLResponse)

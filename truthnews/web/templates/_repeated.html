@@ -1,0 +1,5 @@
+{# En la historia: sus afirmaciones que se repiten en otros articulos (carril Comparativas). Entrada: repeats. #}
+<details class="block fold" id="repetidas" open><summary><h2>{{ t(lang, 'rep_story') }}</h2> <span class="meta">{{ repeats|length }}</span></summary>
+  {% for r in repeats %}{% include "_repeated_card.html" %}{% endfor %}
+  <p class="meta"><a href="/repetidas">{{ t(lang, 'rep_see_all') }} →</a></p>
+</details>

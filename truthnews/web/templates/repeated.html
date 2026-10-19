@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'rep_title') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'rep_lead') }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'rep_title') }}</h1>
+<p class="lead-text">{{ t(lang, 'rep_lead') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+{% if not groups %}<p class="empty">{{ t(lang, 'rep_none') }}</p>{% endif %}
+{% for r in groups %}{% include "_repeated_card.html" %}{% endfor %}
+{% endblock %}

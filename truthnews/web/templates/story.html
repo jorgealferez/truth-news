@@ -123,6 +123,7 @@
       <p class="chips">{% for name, n in comp.shared_names %}<span>{{ name }} <b>{{ n }}/{{ n_out }}</b></span>{% endfor %}</p>{% endif %}
   </details>{% endif %}
 
+  {% if repeats %}{% include "_repeated.html" %}{% endif %}
   {% if fig_changes %}{% include "_figure_changes.html" %}{% endif %}
   {% if missing %}{% include "_missing.html" %}{% endif %}
   <details class="block fold" id="cobertura"><summary><h2>{{ t(lang, 'coverage') }}</h2> <span class="meta">{{ arts|length }} {{ t(lang, 'articles_count') }}</span></summary>
