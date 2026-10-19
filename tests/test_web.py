@@ -72,7 +72,8 @@ def test_pages_render(client):
         r = client.get(path)
         assert r.status_code == 200, path
     home = client.get("/").text
-    assert "Titular 0" in home and "35 noticias" in home and "Contrastes de hoy" in home
+    assert "35 noticias" in home and "Contrastes de hoy" in home and "Verificado" in home
+    assert 'href="/noticia/' not in home  # sin titulares sueltos en portada (peticion 2026-10-19)
 
 
 def test_article_and_related(client, session):
@@ -80,9 +81,23 @@ def test_article_and_related(client, session):
     r = client.get(f"/noticia/{a.id}")
     assert r.status_code == 200
     assert "Leer en el medio original" in r.text and 'href="https://m.es/1"' in r.text
-    # Noticia de un solo medio: lo dice arriba y no rellena con titulares sueltos.
-    assert "Solo lo publica Medio Uno: sin contraste todavía." in r.text
-    assert "Titular 3" not in r.text
+    assert "Solo lo publica Medio Uno: sin contraste todavía" in r.text
+    assert "Titular 3" not in r.text  # sin titulares sueltos
+
+
+def test_article_of_a_multi_outlet_story_redirects_to_the_comparison(client, session):
+    now = datetime.now(UTC)
+    st = Story(
+        title="Contada por dos", category="politica", country="ES", first_seen=now, last_seen=now, n_outlets=2
+    )
+    session.add(st)
+    session.flush()
+    a = session.query(Article).filter_by(url="https://m.es/4").one()
+    a.story_id = st.id
+    session.commit()
+    r = client.get(f"/noticia/{a.id}", follow_redirects=False)
+    assert r.status_code == 302 and r.headers["location"] == f"/historia/{st.id}?medio=medio#m-medio"
+    assert client.get(f"/noticia/{a.id}?ficha=1").status_code == 200
 
 
 def test_article_cites_figures_tracks_changes_and_outlet_profile(client, session):

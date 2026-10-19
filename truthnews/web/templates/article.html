@@ -12,9 +12,10 @@
   <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a> · <a href="/pais/{{ a.country }}">{{ country_name(a.country, lang) }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>
   <h1>{{ a.title }}</h1>
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
+  {% if not a.story or a.story.n_outlets < 2 %}<div class="summary-box flat"><h2>{{ t(lang, 'only_one_outlet')|replace('{m}', a.outlet.name) }}</h2><p>{{ t(lang, 'only_one_outlet_text') }}</p></div>{% endif %}
 
   {% if contrasted %}<p class="status-note"><a href="/historia/{{ a.story_id }}?medio={{ a.outlet.slug }}#m-{{ a.outlet.slug }}">{{ t(lang, 'compared_in')|replace('{n}', a.story.n_outlets|string) }} →</a></p>
-  {% else %}<p class="status-note solo"><b>{{ t(lang, 'only_outlet')|replace('{outlet}', a.outlet.name) }}</b> {{ t(lang, 'only_outlet_note') }}</p>{% endif %}
+  {% endif %}
 
   {% set checked = claims|selectattr('verification')|list %}
   {% if checked %}<section class="verdicts" aria-label="{{ t(lang, 'what_we_checked') }}"><h2>{{ t(lang, 'what_we_checked') }}</h2>
@@ -66,6 +67,6 @@
 </article>
 {% if related %}
 <section class="section-block"><h2>{{ t(lang, 'more_contrasts_in') }} {{ category_name(a.category, lang)|lower }}</h2>
-  <ul class="related">{% for r in related %}<li><a href="/historia/{{ r.id }}">{{ r.title }}</a> <span class="meta">{{ r.n_outlets }} {{ t(lang, 'n_outlets') }}{% if r.contrast and r.contrast.disputas %} · {{ t(lang, 'disputed_figures')|lower }}: {{ r.contrast.disputas|join(', ') }}{% endif %}</span></li>{% endfor %}</ul></section>
+<div class="grid">{% for st in related %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div></section>
 {% endif %}
 {% endblock %}
