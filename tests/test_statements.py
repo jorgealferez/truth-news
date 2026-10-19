@@ -74,7 +74,7 @@ def test_ai_links_are_validated_by_code(session):
             ]
         }
     )
-    assert statements.run(session, ai, "ES") == {"statements": 3, "linked": 2}
+    assert statements.run(session, ai, "ES") == {"statements": 3, "stories": 1, "linked": 2}
     assert a.story_id == st.id and b.story_id == st.id and c.story_id is None
     historias = ai.users[0].split("\n\nDECLARACIONES")[0].splitlines()
     assert f"{old.id}\tVieja" not in historias and "Comunicado sobre Ceuta" in ai.users[0]
@@ -115,3 +115,25 @@ def test_block_is_symmetric_alphabetical_and_hidden_without_links(engine, sessio
 
 def test_nothing_to_link(session):
     assert statements.run(session, FakeAI({"links": []}), "ES") == {"statements": 0, "linked": 0}
+
+
+def test_politics_stories_are_offered_even_below_the_top(session):
+    st, _old, _rows = _setup(session)
+    st.priority = 0.0
+    for i in range(45):  # 45 historias de mas prioridad que no son de politica
+        session.add(
+            Story(
+                title=f"Otra {i}",
+                category="sociedad",
+                country="ES",
+                first_seen=NOW,
+                last_seen=NOW,
+                n_outlets=5,
+                priority=10.0 + i,
+            )
+        )
+    session.commit()
+    ai = FakeAI({"links": []})
+    statements.run(session, ai, "ES")
+    historias = ai.users[0].split("\n\nDECLARACIONES")[0]
+    assert f"{st.id}\tDesalojo en Ceuta" in historias
