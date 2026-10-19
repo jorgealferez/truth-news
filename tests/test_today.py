@@ -19,6 +19,9 @@ def test_empty_day_says_so_and_does_not_fill(engine, session):
     assert today.keys(session, NOW) == []
     page = _client(engine).get("/hoy").text
     assert "Hoy todavía no hay nada contrastado con datos oficiales" in page
+    from truthnews.web import structured
+
+    assert not structured.of_type(page, "ItemList")  # sin claves no se declara lista
     img = Image.open(io.BytesIO(_client(engine).get("/og/hoy-vertical.png").content))
     assert img.size == (1080, 1350)
 
@@ -46,6 +49,15 @@ def test_keys_order_sources_and_outputs(engine, session):
     page = client.get("/hoy").text
     assert "Hoy en 1 minuto" in page and v.sentence in page and "Cifras en disputa" in page
     assert 'href="/hoy.xml"' in page and "og/hoy-horizontal.png" in page
+    from truthnews.web import structured
+
+    (lst,) = structured.of_type(page, "ItemList")
+    urls = [i["url"] for i in lst["itemListElement"]]
+    assert lst["numberOfItems"] == len(urls) >= 2 and lst["url"].endswith("/hoy")
+    assert any("/verificacion/" in u for u in urls) and any("/historia/" in u for u in urls)
+    assert [i["position"] for i in lst["itemListElement"]] == list(range(1, len(urls) + 1))
+    (crumbs,) = structured.of_type(page, "BreadcrumbList")
+    assert crumbs["itemListElement"][-1]["item"].endswith("/hoy")
     rss = client.get("/hoy.xml")
     assert rss.headers["content-type"].startswith("application/rss+xml") and "Dato oficial" in rss.text
     for fmt, size in (("vertical", (1080, 1350)), ("cuadrada", (1080, 1080)), ("horizontal", (1200, 630))):
