@@ -40,6 +40,7 @@ pequenos.
 | Cobertura global e idiomas | agente "Global" | `truthnews/registry/sources/` (nuevos paises), `registry/countries.yaml`, traduccion de titulares, comparacion entre paises |
 | Ficha de medio y noticia, textos es/en | sesion "Railway project" | `list.html`, `article.html`, `outlets.html`, `registry/i18n.yaml` (ingles) |
 | Temas, SEO y sintesis | sesion "SEO y sintesis" | `topic.html`, `truthnews/ai/topics.py`, `writer.py`, metadatos y URLs |
+| Publicidad (solo cliente de `ads-service`) | sesion `nosmienten:publicidad` | `truthnews/ads.py`, `_ad.html`, `advertising.html`, `static/ads.js`, estilos `.ad*` de `site.css`; la plataforma (anunciantes, campanas, subasta, medicion) vive en microservices-ecosystem (squad publicidad): aqui nada de tablas ni migraciones |
 | Hilos, worker, produccion | direccion | `truthnews/ai/threads.py`, `worker.py`, `config.py`, Railway |
 
 Ficheros compartidos: `story.html`, `base.html`, `home.html`, `site.css`, `app.py`, `queries.py`,

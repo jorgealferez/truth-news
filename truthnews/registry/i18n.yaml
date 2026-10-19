@@ -194,6 +194,48 @@ es:
     afirmada contradice el dato) y Sin datos suficientes (no hay serie fresca o la afirmación no es
     comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
     tomamos partido: aplicamos las mismas reglas a todos los medios.
+  advertising: Publicidad
+  advertising_title: Publicidad en nosmienten.com
+  advertising_lead: >-
+    Para sostener el proyecto mostramos poca publicidad, discreta y siempre señalada como tal. Nunca toca
+    lo que verificamos ni cómo lo contamos.
+  advertising_what_h: Qué publicidad hay
+  advertising_what: >-
+    Hoy solo anunciamos marcas propias del grupo Simvix, al que pertenece nosmienten.com; cada anuncio lo
+    indica con «Marca del grupo Simvix». En el futuro podrá haber anunciantes de terceros, con las mismas
+    reglas. Como mucho verás un anuncio dentro de una historia (después de la comparativa entre medios),
+    uno en cada listado y una franja encima del pie.
+  advertising_label_h: Siempre etiquetada
+  advertising_label: >-
+    Cada anuncio lleva la etiqueta visible «Publicidad», un aspecto distinto del de nuestras noticias y su
+    enlace marcado como patrocinado, como exigen el artículo 20 de la Ley 34/2002 de servicios de la
+    sociedad de la información (LSSI), el artículo 9 de la Ley 34/1988 General de Publicidad y el artículo
+    26 de la Ley 3/1991 de Competencia Desleal. Nunca lo hacemos pasar por información.
+  advertising_context_h: Elegida por el contenido, sin cookies ni perfiles
+  advertising_context: >-
+    El anuncio se elige solo por el tema de la página que estás leyendo (sección y palabras clave). No
+    usamos cookies publicitarias, no creamos perfiles ni compartimos datos personales. Para no repetirte el
+    mismo anuncio usamos un identificador opaco que cambia cada día y no se guarda. Cada anuncio tiene un
+    desplegable «Por qué veo esto».
+  advertising_independence_h: Independencia
+  advertising_independence: >-
+    La publicidad nunca influye en los veredictos, en lo que verificamos ni en el orden de las noticias:
+    los decide el código con datos y el mismo método para todos. Un anunciante, propio o ajeno, no puede
+    pedir que se publique, se retire o se cambie nada.
+  advertising_contact_h: Contacto
+  advertising_contact: >-
+    Para preguntas sobre la publicidad o para anunciarte, abre una incidencia en el repositorio público del
+    proyecto (github.com/jorgealferez/truth-news).
+  ad_why: Por qué veo esto
+  ad_why_default: Se muestra por el tema de esta página. No usamos datos personales.
+  ad_policy_link: Cómo funciona la publicidad
+  ad_own_brand: Marca del grupo Simvix
+  about_ads: >-
+    Mostramos poca publicidad, siempre etiquetada, elegida solo por el contenido de la página y sin influir
+    nunca en los veredictos.
+  methodology_ads: >-
+    La publicidad no interviene en el método: no cambia veredictos, afirmaciones comprobadas ni el orden de
+    las noticias, y se elige solo por el contenido de la página, sin cookies ni perfiles.
 en:
   tagline: We compare what the media report with what the data say
   motto: No sides. Just data.
@@ -386,3 +428,43 @@ en:
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules
     for every outlet.
+  advertising: Advertising
+  advertising_title: Advertising on nosmienten.com
+  advertising_lead: >-
+    To keep the project going we show a little advertising, discreet and always labelled. It never touches
+    what we check or how we report it.
+  advertising_what_h: What advertising we show
+  advertising_what: >-
+    Today we only advertise brands of the Simvix group, which owns nosmienten.com; each ad says so with
+    "Simvix group brand". Third-party advertisers may follow under the same rules. At most you will see one
+    ad inside a story (after the outlet comparison), one in each listing and a strip above the footer.
+  advertising_label_h: Always labelled
+  advertising_label: >-
+    Every ad carries a visible "Advertising" label, looks different from our news and its link is marked as
+    sponsored, as required by article 20 of Spanish Law 34/2002 (LSSI), article 9 of the General Advertising
+    Law 34/1988 and article 26 of the Unfair Competition Law 3/1991. We never pass it off as news.
+  advertising_context_h: Chosen by content, no cookies or profiles
+  advertising_context: >-
+    The ad is chosen only from the topic of the page you are reading (section and keywords). We use no
+    advertising cookies, build no profiles and share no personal data. To avoid repeating the same ad we
+    use an opaque identifier that changes every day and is never stored. Each ad has a "Why am I seeing
+    this" panel.
+  advertising_independence_h: Independence
+  advertising_independence: >-
+    Advertising never influences verdicts, what we check or the order of the news: the code decides with
+    data and the same method for everyone. No advertiser, ours or third-party, can ask for anything to be
+    published, removed or changed.
+  advertising_contact_h: Contact
+  advertising_contact: >-
+    For questions about advertising or to advertise, open an issue in the project's public repository
+    (github.com/jorgealferez/truth-news).
+  ad_why: Why am I seeing this
+  ad_why_default: Shown because of the topic of this page. We use no personal data.
+  ad_policy_link: How advertising works
+  ad_own_brand: Simvix group brand
+  about_ads: >-
+    We show a little advertising, always labelled, chosen only from the page content and never influencing
+    verdicts.
+  methodology_ads: >-
+    Advertising plays no part in the method: it does not change verdicts, checked claims or the order of
+    the news, and it is chosen only from the page content, with no cookies or profiles.

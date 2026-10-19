@@ -211,3 +211,22 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 @media (max-width: 760px) { .kpis { grid-template-columns:repeat(2, 1fr); } .essentials { grid-template-columns:1fr; } }
 /* Titular traducido con IA (ADR 0017): debajo del original, nunca en su lugar */
 .tr { display:block; margin:2px 0 4px; font-size:14px; line-height:1.35; color:var(--muted); font-style:italic; } .ocard p.tr { font-size:14px; }
+/* Publicidad (cliente de ads-service): discreta pero inequivoca. Tipografia de interfaz y papel atenuado,
+   nunca la serif de los titulares ni los colores de los veredictos o de la marca; sin animaciones. */
+.ad { font:14px/1.4 system-ui, sans-serif; color:var(--muted); background:#f4f3ef; border:1px solid var(--line); border-radius:4px; padding:10px 12px; margin:18px 0; max-width:720px; }
+.ad-label { margin:0 0 6px; font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+.ad-tag { font-weight:700; color:#4a4a4a; } .ad-own { text-transform:none; letter-spacing:0; }
+.ad-link { display:flex; gap:12px; align-items:flex-start; color:#3a3a3a; }
+.ad-link:hover { text-decoration:none; } .ad-link:hover .ad-head { text-decoration:underline; }
+.ad-link img { width:96px; height:96px; max-width:96px; object-fit:cover; border-radius:3px; flex:none; }
+.ad-text { display:block; min-width:0; } .ad-head { font-weight:600; color:#2f2f2f; }
+.ad-foot { display:block; margin-top:4px; font-size:13px; } .ad-cta { font-weight:600; } .ad-url { color:var(--muted); overflow-wrap:anywhere; }
+.ad-why { margin-top:6px; font-size:12px; } .ad-why summary { cursor:pointer; color:var(--muted); }
+.ad-why p { margin:4px 0 0; } .ad-why a { text-decoration:underline; }
+.grid .ad-list-native { margin:0; max-width:none; }
+.ad-list-native .ad-link img { width:56px; height:56px; }
+.ad-footer-strip { max-width:none; margin:24px 0 8px; padding:8px 12px; }
+.ad-footer-strip .ad-link img { display:none; }
+.ad-head { overflow-wrap:anywhere; }
+@media (max-width: 760px) { .ad { margin:14px 0; } .ad-link img { width:64px; height:64px; } }
+@media (prefers-reduced-motion: reduce) { .ad * { transition:none !important; } }
