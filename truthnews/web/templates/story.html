@@ -74,6 +74,7 @@
       </div>{% endfor %}
     </div>{% if outlets_view|length > 6 %}</details>{% endif %}
   </section>
+  {% include "_boe_confirm.html" %}
   {% with ad = (ads or {}).get('story-inline'), slot = 'story-inline' %}{% include "_ad.html" %}{% endwith %}
 
   {% if abroad %}<section class="block" id="otros-paises"><h2>{{ t(lang, 'abroad_title') }}</h2>

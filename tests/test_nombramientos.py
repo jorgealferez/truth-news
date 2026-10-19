@@ -200,3 +200,72 @@ def test_appointments_page(engine, session):
         assert tc.get(f"/nombramientos?fecha={bad}").status_code == 404
     assert "/nombramientos" in tc.get("/sitemap.xml").text
     assert "Appointments and dismissals" in tc.get("/nombramientos?fecha=2026-10-07&lang=en").text
+
+
+# --- Confirmacion en el BOE de lo que cuenta una noticia ------------------------------------------------
+
+
+def warmed_index(window=36500):
+    from truthnews.web.appointments import BoeDays, BoeIndex
+
+    days = BoeDays(boe_transport([]))
+    for d in (date(2026, 10, 7), date(2026, 10, 8)):
+        days.day(d, date(2026, 10, 9))
+    index = BoeIndex(days, window, background=False)
+    index._warmed_at = index._clock()  # ya caliente: no se descarga nada mas
+    return index
+
+
+def test_confirmations_need_name_and_appointment_wording():
+    index = warmed_index()
+    today = date(2026, 10, 9)
+    hit = index.confirmations(["El Gobierno nombra a Maria Dolores Rial teniente fiscal en Baleares"], today)
+    assert [i.persona for i in hit] == ["María Dolores Rial de la Calle"]
+    assert index.confirmations(["María Dolores Rial asistió a un acto"], today) == []  # sin verbo de cargo
+    assert index.confirmations(["El Gobierno nombra a otra persona"], today) == []
+    assert index.confirmations([""], today) == []
+    assert warmed_index(window=0).confirmations(["nombra a María Dolores Rial"], today) == []
+
+
+def test_index_warms_missing_days_once_and_skips_sundays():
+    from truthnews.web.appointments import BoeDays, BoeIndex
+
+    calls = []
+    index = BoeIndex(BoeDays(boe_transport(calls)), 3, background=False)
+    index.ensure_warm(date(2026, 10, 12))  # lunes: 12, 10 y 9 (el 11 es domingo)
+    assert sorted(c[-8:] for c in calls) == ["20261009", "20261010", "20261012"]
+    index.ensure_warm(date(2026, 10, 12))
+    assert len(calls) == 3  # no se repite antes de 6 h
+    index.days.warm(date(2026, 10, 9), 2, pause=0)  # el 8 y el 7 tienen datos: se piden una vez y quedan
+    index.days.warm(date(2026, 10, 9), 2, pause=0)
+    assert sum(c.endswith("20261008") for c in calls) == 1
+
+
+def test_story_and_article_show_boe_confirmation(engine, session):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.models import Article, Outlet
+    from truthnews.web.app import create_app
+
+    o = Outlet(slug="m", name="Medio", homepage="https://m.es", country="ES", language="es", scope="nacional")
+    session.add(o)
+    session.flush()
+    a = Article(
+        outlet_id=o.id,
+        url="https://m.es/n",
+        url_hash="n" * 64,
+        title="El Gobierno nombra a María Dolores Rial teniente fiscal de Baleares",
+        published_at=datetime(2026, 10, 8, 9, tzinfo=UTC),
+        language="es",
+        country="ES",
+        category="politica",
+        topics=[],
+    )
+    session.add(a)
+    session.commit()
+    tc = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, boe_index=warmed_index()))
+    page = tc.get(f"/noticia/{a.id}?ficha=1", follow_redirects=True).text
+    assert "Consta en el BOE" in page and "María Dolores Rial de la Calle" in page
+    assert "Teniente Fiscal de la Fiscalía de la Comunidad Autónoma de las Illes Balears" in page
+    assert "BOE del 08/10/2026" in page and "diario_boe/txt.php?id=BOE-A-" in page

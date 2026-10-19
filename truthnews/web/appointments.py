@@ -24,6 +24,13 @@ RETRY_SECONDS = 600
 MAX_DAYS_CACHED = 120
 LOOKBACK_DAYS = 4
 MENTION_DAYS = 60
+INDEX_REFRESH_SECONDS = 6 * 3600
+# Vocabulario de nombramiento o cese: sin el, nombrar a una persona no basta para enlazar su BOE.
+_APPOINT_WORDS = re.compile(
+    r"\b(nombra\w*|nombramiento\w*|designa\w*|cesa\w*|cese\w*|destitu\w*|relev\w*|sustitu\w*|"
+    r"nuev[oa]s? (director|directora|secretari[oa]|subsecretari[oa]|presidente|presidenta|embajador|"
+    r"embajadora|fiscal|delegad[oa]|jef[ea]))",
+)
 MENTIONS_PER_PERSON = 3
 
 
@@ -48,6 +55,26 @@ class BoeDays:
                 self._cache.clear()
             self._cache[d] = (self._clock(), items)
         return items
+
+    def cached(self, today: date, days: int) -> list[nb.Disposicion]:
+        """Lo ya descargado de los ultimos `days` dias, sin pedir nada (para no bloquear una pagina)."""
+        since = today - timedelta(days=days)
+        with self._lock:
+            return [i for d, (_, items) in self._cache.items() if since <= d <= today for i in items]
+
+    def warm(self, today: date, days: int, pause: float = 0.5) -> None:
+        """Descarga los dias que falten (sin domingos, cuando no hay BOE), con pausa entre peticiones."""
+        for back in range(days + 1):
+            d = today - timedelta(days=back)
+            if d.weekday() == 6:
+                continue
+            with self._lock:
+                hit = self._cache.get(d)
+            if hit and hit[1] and d < today:
+                continue
+            self.day(d, today)
+            if pause:
+                time.sleep(pause)
 
     def latest(self, today: date) -> tuple[date, list[nb.Disposicion]]:
         """El BOE mas reciente con disposiciones de personal (hoy o hasta LOOKBACK_DAYS atras)."""
@@ -125,3 +152,56 @@ def mentions(session: Session, people: list[str], until) -> dict[str, list[Artic
         if hits:
             out[persona] = hits
     return out
+
+
+class BoeIndex:
+    """Nombramientos y ceses de los ultimos dias en memoria, refrescados en segundo plano cada 6 h."""
+
+    def __init__(self, days: BoeDays, window: int, clock=time.monotonic, background: bool = True) -> None:
+        self.days = days
+        self.window = window
+        self._clock = clock
+        self._background = background
+        self._warmed_at = -1e18
+        self._running = False
+        self._lock = threading.Lock()
+
+    def ensure_warm(self, today: date) -> None:
+        if self.window <= 0:
+            return
+        with self._lock:
+            if self._running or self._clock() - self._warmed_at < INDEX_REFRESH_SECONDS:
+                return
+            self._running = True
+
+        def job():
+            try:
+                self.days.warm(today, self.window, pause=0.5 if self._background else 0)
+            finally:
+                with self._lock:
+                    self._running = False
+                    self._warmed_at = self._clock()
+
+        if self._background:
+            threading.Thread(target=job, name="boe-index", daemon=True).start()
+        else:
+            job()
+
+    def confirmations(self, texts: list[str], today: date) -> list[nb.Disposicion]:
+        """Nombramientos y ceses del BOE reciente de personas que el texto nombra junto a un verbo de cargo.
+
+        Solo confirma: que algo no este en el BOE no se muestra (el BOE publica dias despues del anuncio).
+        """
+        self.ensure_warm(today)
+        text = normalize(" ".join(t for t in texts if t))
+        if not text or not _APPOINT_WORDS.search(text):
+            return []
+        out, seen = [], set()
+        for i in self.days.cached(today, self.window):
+            if i.tipo not in ("nombramiento", "cese") or not i.persona or i.id in seen:
+                continue
+            keys = _name_keys(i.persona)
+            if keys and _word(normalize(keys[0]), text) and _word(normalize(keys[1]), text):
+                seen.add(i.id)
+                out.append(i)
+        return sorted(out, key=lambda i: i.fecha, reverse=True)[:5]
