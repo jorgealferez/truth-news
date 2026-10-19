@@ -15,6 +15,7 @@
 <article class="story wide">
   <p class="kicker">{{ category_name(st.category, lang) }} · {{ n_out }} {{ t(lang, 'n_outlets') }}</p>
   <h1>{{ st.title }}</h1>
+  {% set lead = arts|selectattr('title', 'equalto', st.title)|first %}{% if lead and tr[lead.id] and lead.language != lang %}<p class="tr" lang="{{ lang }}">{{ tr[lead.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ lead.language }})</span></p>{% endif %}
   {% if not plain.empty %}{% include "_plain.html" %}{% endif %}
 
   {% if spread %}<section class="origin" aria-label="{{ t(lang, 'origin') }}">

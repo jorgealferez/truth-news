@@ -70,6 +70,9 @@ class Settings:
     ai_max_translations_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_TRANSLATIONS_PER_CYCLE", "120"))
     )
+    ai_max_translations_en_per_cycle: int = field(
+        default_factory=lambda: int(os.environ.get("AI_MAX_TRANSLATIONS_EN_PER_CYCLE", "60"))
+    )
     # Publicidad (cliente de ads-service, microservices-ecosystem). Sin URL o sin clave no se pinta nada.
     ads_service_url: str = field(default_factory=lambda: os.environ.get("ADS_SERVICE_URL", ""))
     ads_site_key: str = field(default_factory=lambda: os.environ.get("ADS_SITE_KEY", ""))
