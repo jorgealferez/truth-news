@@ -224,7 +224,7 @@ async def crawl(
                 continue
             feed.error_count = 0
             feed.last_error = None
-            feed.etag = res.etag or feed.etag
+            feed.etag = (res.etag or "")[:300] or feed.etag
             feed.last_modified = res.last_modified or feed.last_modified
             run.feeds_ok += 1
             for entry in res.entries:
