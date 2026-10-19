@@ -24,28 +24,44 @@
   {% block head %}{% endblock %}
 </head>
 <body>
+<a class="skip" href="#contenido">{{ t(lang, 'skip_to_content') }}</a>
 <header class="masthead">
   <div class="wrap top">
-    <span class="date">{{ now_label if now_label is defined else '' }}</span>
+    <span class="date">{{ t(lang, 'motto') }}</span>
     <nav class="langs" aria-label="{{ t(lang, 'language') }}">
-      {% for l in languages %}<a href="/idioma/{{ l }}" class="{{ 'on' if l == lang }}">{{ l|upper }}</a>{% endfor %}
+      {% for l in languages %}<a href="/idioma/{{ l }}" class="{{ 'on' if l == lang }}" hreflang="{{ l }}">{{ l|upper }}</a>{% endfor %}
     </nav>
   </div>
   <div class="wrap brand">
     <a href="/" class="logo"><img src="/static/logo.svg" alt="{{ site.site_name }}" width="540" height="64"></a>
     <p class="tagline">{{ t(lang, 'tagline') }}</p>
   </div>
-  <nav class="sections" aria-label="{{ t(lang, 'sections') }}">
-    <div class="wrap">
-      <a href="/analisis" class="hl">{{ t(lang, 'analysis') }}</a>
+</header>
+<nav class="sections" aria-label="{{ t(lang, 'sections') }}">
+  <div class="wrap bar">
+    <a href="/" class="mini" aria-label="{{ t(lang, 'home') }}"><img src="/static/mark.svg" alt="" width="26" height="26"></a>
+    <div class="scroller">
       <a href="/contrastes" class="hl">{{ t(lang, 'contrasts') }}</a>
+      <a href="/analisis" class="hl">{{ t(lang, 'analysis') }}</a>
+      <a href="/verificaciones">{{ t(lang, 'verifications') }}</a>
+      <a href="/medios">{{ t(lang, 'outlets') }}</a>
       <a href="/investigaciones">{{ t(lang, 'investigations') }}</a>
       {% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}
-      <a href="/medios">{{ t(lang, 'outlets') }}</a>
     </div>
-  </nav>
-</header>
-<main class="wrap">
+    <details class="menu">
+      <summary>{{ t(lang, 'menu') }}</summary>
+      <div class="menu-panel">
+        <div><h3>{{ t(lang, 'site_sections') }}</h3>
+          <a href="/">{{ t(lang, 'home') }}</a><a href="/contrastes">{{ t(lang, 'contrasts') }}</a><a href="/analisis">{{ t(lang, 'analysis') }}</a><a href="/verificaciones">{{ t(lang, 'verifications') }}</a><a href="/medios">{{ t(lang, 'outlets') }}</a><a href="/investigaciones">{{ t(lang, 'investigations') }}</a></div>
+        <div><h3>{{ t(lang, 'sections') }}</h3>{% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}</div>
+        <div><h3>{{ t(lang, 'countries') }}</h3>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a>{% endfor %}
+          <h3>{{ site.site_domain }}</h3><a href="/metodologia">{{ t(lang, 'methodology') }}</a><a href="/acerca">{{ t(lang, 'about') }}</a></div>
+      </div>
+    </details>
+  </div>
+</nav>
+<main class="wrap" id="contenido">
+{% block crumbs %}{% endblock %}
 {% block content %}{% endblock %}
 </main>
 <footer class="foot">
@@ -55,5 +71,12 @@
     <p>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a> · {% endfor %}<a href="/verificaciones">{{ t(lang, 'verifications') }}</a> · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · <a href="/acerca">{{ t(lang, 'about') }}</a></p>
   </div>
 </footer>
+<nav class="tabbar" aria-label="{{ t(lang, 'site_sections') }}">
+  <a href="/" class="{{ 'on' if request.url.path == '/' }}"><span aria-hidden="true">◧</span>{{ t(lang, 'home') }}</a>
+  <a href="/contrastes" class="{{ 'on' if request.url.path.startswith('/contrastes') or request.url.path.startswith('/historia') }}"><span aria-hidden="true">⇄</span>{{ t(lang, 'tab_contrasts') }}</a>
+  <a href="/verificaciones" class="{{ 'on' if request.url.path.startswith('/verificaciones') }}"><span aria-hidden="true">✓</span>{{ t(lang, 'tab_checks') }}</a>
+  <a href="/medios" class="{{ 'on' if request.url.path.startswith('/medio') }}"><span aria-hidden="true">▤</span>{{ t(lang, 'outlets') }}</a>
+  <a href="/analisis" class="{{ 'on' if request.url.path.startswith('/analisis') or request.url.path.startswith('/tema') }}"><span aria-hidden="true">✎</span>{{ t(lang, 'analysis') }}</a>
+</nav>
 </body>
 </html>

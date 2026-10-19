@@ -1,0 +1,32 @@
+{
+  "fase": "8",
+  "titulo": "Navegacion movil y escritorio e historia visual: origen, lo que difiere y como lo cuenta cada medio",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "navegacion": "Barra de secciones fija con acceso a portada, menu completo sin JS (<details>), pestanas inferiores en movil (Portada, Contrastes, Verificado, Medios, Analisis), migas de pan, enlace de salto al contenido",
+    "historia": "Orden por valor para el lector (peticion del usuario 2026-10-18): origen con linea de tiempo de la difusion; tarjetas con barras de las cifras en disputa (rango y cifra mas repetida), medidor de veredictos, a quien senala cada version y omisiones; una ficha por medio con su titular, propietario, cifra que da, a quien senala, que omite y lenguaje cargado; datos oficiales, cifras por medio, coincidencias y todas las piezas en desplegables",
+    "coincidencias": "Antes: lista de ~60 nombres propios. Ahora: cifras en las que coinciden todos como frases y nombres con cuantos medios los citan (n/N), plegados; limpieza de conectores ('Comunidad Valenciana Pero' -> 'Comunidad Valenciana'); omisiones limitadas a las 5 mas compartidas",
+    "senalados": "Deteccion de atribucion de culpa/responsabilidad (culpa, responsabiliza, acusa, senala, apunta, carga/arremete contra, por culpa de) sobre titular, resumen y arranque; con datos reales sin texto completo: 3 historias con atribucion, revisadas a mano, todas correctas como atribucion citada (por eso se rotula 'a quien senala cada version', no 'a quien culpa el medio')",
+    "rendimiento": "A/B con 400 peticiones por pasada en las mismas condiciones: portada rama 13,0 / 13,4 / 13,0 ms frente a main 13,1 / 12,2 / 15,2 ms; historia rama 12,3 / 11,8 / 12,9 ms frente a main 11,5 / 11,1 / 12,4 ms (+0,5-0,8 ms por las historias relacionadas). No se publican como medidas: el suelo del ratchet se fijo en una sesion mas tranquila y main tampoco lo alcanza hoy",
+    "capturas": "Revisado a 375 px y 1280 px con datos reales (protestas en Francia, 20 medios; Feijoo y la ley antiokupacion, 7 medios)"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Analisis de encuadre y sesgo con IA (quien favorece a quien, intereses): NO VERIFICADO sin ANTHROPIC_API_KEY; la version actual es por reglas y se rotula como tal"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Portada y tarjetas de contraste con la misma vista grafica (barras y medidor)",
+    "Cuando haya clave de IA: resumen de 2-3 lineas de 'la historia real' y encuadre por medio"
+  ]
+}

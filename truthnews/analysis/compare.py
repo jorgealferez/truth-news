@@ -143,7 +143,51 @@ _SKIP_PROPER = {
     "Vídeo",
     "Video",
     "Directo",
+    "Sigue",
+    "Alert",
+    "Alerta",
+    "Última",
+    "Ultima",
+    "Hora",
+    "Así",
+    "Aunque",
+    "Cuando",
+    "Donde",
 }
+MAX_CONSENSUS = 12  # nombres que mas medios comparten; una lista de 60 nombres no informa
+MAX_OMISSIONS = 5
+
+
+# A quien atribuye cada medio la responsabilidad (el encuadre que mas cambia entre medios). Se busca en el
+# titular, el resumen y el arranque del texto; el objetivo debe ser un nombre propio o una institucion.
+_CAP = r"[A-ZÁÉÍÓÚÑ][\wáéíóúñ]+"
+_TARGET = r"((?:el |la |los |las |al )?" + _CAP + r"(?:\s(?:de |del |de la |y )?" + _CAP + r"){0,3})"
+_BLAME = re.compile(
+    r"\b(?:culpa|culpan|culpó|culparon|responsabiliza|responsabilizan|responsabilizó|acusa|acusan|acusó|"
+    r"señala|señalan|señaló|apunta|apuntan|apuntó)\s+(?:a|al|de|del)\s+"
+    + _TARGET
+    + r"|\b(?:por culpa|a causa|responsabilidad) (?:de|del)\s+"
+    + _TARGET
+    + r"|\b(?:carga|cargan|cargó|arremete|arremeten|arremetió)\s+contra\s+"
+    + _TARGET
+)
+_ARTICLE = re.compile(r"^(?:el|la|los|las|al)\s+")
+_INSTITUTIONS = {"Gobierno", "Policía", "Policia"}  # no son nombres propios utiles, pero si culpables
+
+
+def blames(text: str) -> list[str]:
+    """Objetivos a los que el texto atribuye culpa o responsabilidad, en orden de aparicion."""
+    out: list[str] = []
+    for m in _BLAME.finditer(text or ""):
+        target = next(g for g in m.groups() if g)
+        words = _ARTICLE.sub("", target).split()
+        skip = _SKIP_PROPER - _INSTITUTIONS
+        while words and words[-1] in skip | {"y", "de", "del"}:
+            words.pop()
+        name = " ".join(words)
+        if name and name.split()[0] not in skip and name not in out:
+            out.append(name)
+    return out
 
 
 @dataclass
@@ -161,9 +205,53 @@ class Comparison:
     outlets: list[str]
     disputes: dict[str, list[Figure]] = field(default_factory=dict)
     consensus: list[str] = field(default_factory=list)
+    agreed_figures: list[tuple[str, int, int]] = field(default_factory=list)  # (sustantivo, valor, medios)
+    shared_names: list[tuple[str, int]] = field(default_factory=list)  # (nombre, medios), mas citados antes
     omissions: dict[str, list[str]] = field(default_factory=dict)
     loaded: dict[str, list[str]] = field(default_factory=dict)
+    blame: dict[str, list[str]] = field(default_factory=dict)  # medio -> a quien culpa
     basis: str = "titulares y resumenes"
+
+    @property
+    def blame_differs(self) -> bool:
+        """Varios medios culpan y no todos a los mismos."""
+        targets = [frozenset(t) for t in self.blame.values()]
+        return len(targets) >= 2 and len(set(targets)) >= 2
+
+    def dispute_summaries(self) -> list[DisputeSummary]:
+        return [summarize_dispute(n, figs) for n, figs in self.disputes.items()]
+
+
+QUALIFIER_LABEL = {
+    "mas de": "más de",
+    "menos de": "menos de",
+    "casi": "casi",
+    "unos": "unos",
+    "unas": "unas",
+    "al menos": "al menos",
+    "cerca de": "cerca de",
+}
+
+
+@dataclass
+class DisputeSummary:
+    noun: str
+    low: float
+    high: float
+    n_outlets: int
+    mode: float  # la cifra que mas medios dan
+    mode_n: int
+    groups: list[tuple[float, list[Figure]]]  # cifra -> medios que la dan, de mas a menos medios
+
+
+def summarize_dispute(noun: str, figs: list[Figure]) -> DisputeSummary:
+    """Agrupa una disputa por cifra: rango, cifra mas repetida y que medios dan cada una."""
+    by_value: dict[float, list[Figure]] = defaultdict(list)
+    for f in figs:
+        by_value[f.value].append(f)
+    groups = sorted(by_value.items(), key=lambda kv: (-len(kv[1]), kv[0]))
+    values = [f.value for f in figs]
+    return DisputeSummary(noun, min(values), max(values), len(figs), groups[0][0], len(groups[0][1]), groups)
 
 
 def _value(raw: str, scale: str) -> float:
@@ -196,7 +284,16 @@ def figures(text: str) -> list[tuple[str, float, str, str]]:
 
 def proper_nouns(text: str) -> set[str]:
     text = re.sub(r"\s+", " ", text or "").strip()  # el inicio de frase se detecta con un solo espacio
-    return {m.group(1) for m in _PROPER.finditer(text) if m.group(1).split()[0] not in _SKIP_PROPER}
+    out = set()
+    for m in _PROPER.finditer(text):
+        words = m.group(1).split()
+        while words and words[0] in _SKIP_PROPER:
+            words.pop(0)
+        while words and words[-1] in _SKIP_PROPER:  # "Comunidad Valenciana Pero" -> "Comunidad Valenciana"
+            words.pop()
+        if words:
+            out.add(" ".join(words))
+    return out
 
 
 def loaded_words(text: str, language: str = "es") -> list[str]:
@@ -236,6 +333,7 @@ def compare(articles: list) -> Comparison:
             comp.disputes[noun] = sorted(by.values(), key=lambda f: f.published_at)
         else:
             comp.consensus.append(f"{noun}: {int(min(values)):,}".replace(",", "."))
+            comp.agreed_figures.append((noun, int(min(values)), len(by)))
 
     # Omisiones: nombres propios que cuenta la mayoria (>= 3 medios) y un medio no. Solo se juzga a los
     # medios de los que tenemos el texto completo: con un titular, no mencionar algo no es omitirlo.
@@ -243,15 +341,25 @@ def compare(articles: list) -> Comparison:
         nouns = {o: proper_nouns(text_of(arts)) for o, arts in by_outlet.items()}
         counts = Counter(n for s in nouns.values() for n in s)
         majority = {n for n, c in counts.items() if c >= max(3, (len(by_outlet) + 1) // 2)}
-        comp.consensus += sorted(majority)
+        ranked = sorted(majority, key=lambda n: (-counts[n], n))
+        comp.consensus += ranked[:MAX_CONSENSUS]
+        comp.shared_names = [(n, counts[n]) for n in ranked]
         for o, s in nouns.items():
             if not any(a.content_text for a in by_outlet[o]):
                 continue
-            missing = sorted(majority - s)
+            # Lo que mas medios cuentan y este no: las omisiones mas significativas primero.
+            missing = [n for n in ranked if n not in s][:MAX_OMISSIONS]
             if missing:
-                comp.omissions[o] = missing
+                comp.omissions[o] = sorted(missing)
 
     for outlet, arts in by_outlet.items():
+        found: list[str] = []
+        for a in arts:
+            for name in blames(f"{a.title}. {a.summary or ''} {(a.content_text or '')[:LEAD_CHARS]}"):
+                if name not in found:
+                    found.append(name)
+        if found:
+            comp.blame[outlet] = found
         words = loaded_words(text_of(arts), arts[0].language)
         if words:
             comp.loaded[outlet] = words

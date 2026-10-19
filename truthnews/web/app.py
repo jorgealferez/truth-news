@@ -15,7 +15,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from truthnews import registry
-from truthnews.analysis.compare import compare
+from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story
@@ -37,6 +37,50 @@ def _ago(value: datetime | None, lang: str = "es") -> str:
     return value.strftime("%d/%m/%Y")
 
 
+def story_outlets(arts: list, comp, claims: list) -> list[dict]:
+    """Una ficha por medio: su ultimo titular y lo que lo distingue ('como lo cuenta cada uno')."""
+    verdicts: dict[str, list[str]] = {}
+    for c in claims:
+        verdicts.setdefault(c.outlet.name, []).append(c.verification.verdict)
+    latest: dict[str, object] = {}
+    for a in arts:
+        latest[a.outlet.name] = a  # arts va en orden de publicacion
+    out = []
+    for name, a in latest.items():
+        out.append(
+            {
+                "article": a,
+                "outlet": a.outlet,
+                "blame": comp.blame.get(name, []),
+                "loaded": comp.loaded.get(name, []),
+                "omits": comp.omissions.get(name, []),
+                "verdicts": verdicts.get(name, []),
+                "figures": {n: f for n, figs in comp.disputes.items() for f in figs if f.outlet == name},
+            }
+        )
+    # Primero los medios con algo que marcar.
+    out.sort(key=lambda o: -(len(o["blame"]) + len(o["omits"]) + len(o["loaded"]) + 2 * len(o["verdicts"])))
+    return out
+
+
+def spread(arts: list) -> dict:
+    """Como se extendio la historia: primer medio y posicion relativa (0-100) de cada publicacion."""
+    if not arts:
+        return {}
+    first, last = arts[0].published_at, arts[-1].published_at
+    total = (last - first).total_seconds() or 1.0
+    seen: set[str] = set()
+    dots = []
+    for a in arts:
+        if a.outlet.name in seen:
+            continue
+        seen.add(a.outlet.name)
+        dots.append(
+            {"name": a.outlet.name, "pos": round(100 * (a.published_at - first).total_seconds() / total)}
+        )
+    return {"first": arts[0], "hours": round(total / 3600), "dots": dots}
+
+
 def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
     settings = settings or get_settings()
     engine = engine or get_engine(settings.database_url)
@@ -45,6 +89,8 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
     templates = Jinja2Templates(directory=HERE / "templates")
     templates.env.filters["ago"] = _ago
+    templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
+    templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
     templates.env.globals.update(
         site=settings,
         t=registry.t,
@@ -168,13 +214,23 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         if st is None:
             raise HTTPException(404)
         arts = queries.story_articles(session, st.id)
+        related = [
+            r
+            for r in queries.top_stories(session, country=st.country, category=st.category, limit=7)
+            if r.id != st.id
+        ][:6]
+        comp = compare(arts)
+        claims = queries.claims_for_story(session, st.id)
         return render(
             request,
             "story.html",
             st=st,
             arts=arts,
-            comp=compare(arts),
-            claims=queries.claims_for_story(session, st.id),
+            comp=comp,
+            claims=claims,
+            related=related,
+            outlets_view=story_outlets(arts, comp, claims),
+            spread=spread(arts),
         )
 
     @app.get("/contrastes", response_class=HTMLResponse)

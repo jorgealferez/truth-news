@@ -57,3 +57,31 @@ def test_personas_is_disambiguated_by_context():
     assert [f[:2] for f in figures("11 personas resultaron heridas")] == [("heridos", 11.0)]
     assert [f[:2] for f in figures("Unas 300 personas fueron evacuadas")] == [("evacuados", 300.0)]
     assert figures("Un cayuco con 132 personas llega a El Hierro") == []
+
+
+def test_blames_and_framing_differences():
+    from truthnews.analysis.compare import blames
+
+    assert blames("Feijóo culpa al Gobierno de Sánchez del caos en Rodalies") == ["Gobierno de Sánchez"]
+    assert blames("Vox carga contra Marlaska por la crisis") == ["Marlaska"]
+    assert blames("Retrasos por culpa de Adif en la línea") == ["Adif"]
+    assert blames("El Gobierno apunta a que la cifra sube") == []
+    arts = [
+        art("A", "El PSOE culpa a la Generalitat de los retrasos"),
+        art("B", "El PP responsabiliza al Gobierno de los retrasos", minutes=30),
+        art("C", "Retrasos en la red ferroviaria", minutes=60),
+    ]
+    c = compare(arts)
+    assert c.blame == {"A": ["Generalitat"], "B": ["Gobierno"]} and c.blame_differs
+    assert c.dispute_summaries() == []
+
+
+def test_summarize_dispute_groups_by_value():
+    arts = [
+        art("A", "Protestas: 1.800 detenidos"),
+        art("B", "Protestas con 1.800 detenidos", minutes=10),
+        art("C", "Protestas: más de 2.400 detenidos", minutes=20),
+    ]
+    (d,) = compare(arts).dispute_summaries()
+    assert (d.low, d.high, d.mode, d.mode_n, d.n_outlets) == (1800, 2400, 1800, 2, 3)
+    assert [len(figs) for _, figs in d.groups] == [2, 1]
