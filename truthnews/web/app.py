@@ -212,8 +212,24 @@ def create_app(
             raise HTTPException(404)
         return ident
 
+    def story_translations(ctx: dict, lang: str) -> dict[int, str]:
+        """Titulares traducidos de las historias que pinta la pagina (portada, listas, la propia historia)."""
+        ids = set()
+        for v in ctx.values():
+            for x in v if isinstance(v, list) else [v]:
+                if isinstance(x, Story):
+                    ids.add(x.id)
+        if not ids:
+            return {}
+        session = make_session()
+        try:
+            return queries.story_title_translations(session, sorted(ids), lang)
+        finally:
+            session.close()
+
     def render(request: Request, name: str, **ctx) -> HTMLResponse:
         lang = lang_of(request)
+        ctx.setdefault("st_tr", story_translations(ctx, lang) if lang != settings.default_language else {})
         resp = templates.TemplateResponse(request, name, {"lang": lang, "ads": {}, **ctx})
         if request.query_params.get("lang") == lang:
             resp.set_cookie("lang", lang, max_age=60 * 60 * 24 * 365, samesite="lax")

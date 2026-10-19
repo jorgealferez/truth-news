@@ -2,7 +2,7 @@
   <p class="kicker"><a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a> · <span class="count">{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}</span>
     {% set v = verdicts.get(st.id, {}) %}{% for k, n in v.items() %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }} {{ n }}</span>{% endfor %}</p>
   {% if st.relaunched_at %}<p class="relaunch">{{ t(lang, 'relaunched') }}</p>{% endif %}
-  <h3><a href="{{ url('historia', st.id, st.title) }}">{{ st.title }}</a></h3>
+  {% set tt = (st_tr or {}).get(st.id) %}<h3><a href="{{ url('historia', st.id, st.title) }}"{% if tt %} lang="{{ lang }}"{% endif %}>{{ tt or st.title }}</a></h3>{% if tt %}<p class="meta tr-mark">{{ t(lang, 'machine_translation') }}</p>{% endif %}
   {% set c = st.contrast or {} %}{% if c.disputas or c.omisiones or c.lenguaje_cargado %}
   <p class="marks">{% if c.disputas %}<span>{{ t(lang, 'disputed_figures') }}: {{ c.disputas|join(', ') }}</span>{% endif %}{% if c.omisiones %}<span>{{ t(lang, 'omissions_in') }} {{ c.omisiones }} {{ t(lang, 'n_outlets') if c.omisiones != 1 else t(lang, 'outlet')|lower }}</span>{% endif %}{% if c.lenguaje_cargado %}<span>{{ t(lang, 'loaded_in') }} {{ c.lenguaje_cargado }} {{ t(lang, 'n_outlets') if c.lenguaje_cargado != 1 else t(lang, 'outlet')|lower }}</span>{% endif %}</p>{% endif %}
   <p class="outlets">{{ (outlet_names.get(st.id, []))[:8]|join(' · ') }}{% if (outlet_names.get(st.id, []))|length > 8 %} …{% endif %}</p>
