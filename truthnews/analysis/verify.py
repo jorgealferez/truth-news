@@ -14,7 +14,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v4: una variacion ("el paro baja un 2 %") no se lee como el nivel del indicador.
 # v5: el pais del medio solo se supone si la noticia no es de otro pais; paro EPA por comunidad.
 # v6: "la inflacion le resta un 3,1 %" es un efecto, no el nivel; umbrales sin error de coma flotante.
-METHOD_VERSION = "v6"
+# v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
+METHOD_VERSION = "v7"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
