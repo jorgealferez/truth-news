@@ -1,0 +1,32 @@
+{
+  "fase": "g5",
+  "titulo": "Que dicen los partidos: enlace declaracion-historia propuesto por la IA y validado por el codigo, bloque simetrico",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "por_que_ia": "el coseno de titulares medido en fase_g4 da 0 enlaces utiles; la IA lee las declaraciones en cualquier idioma (euskera, gallego, catalan) y solo elige una historia de la lista o null (ADR 0007)",
+    "validacion": "tests/test_statements.py: ids de declaracion inventados, historias fuera de la lista y enlaces repetidos se descartan; una declaracion ya enlazada no se reenvia",
+    "presupuesto_ia": "1 llamada por ciclo con esfuerzo bajo: <= 60 declaraciones de sus 3 primeras horas frente a <= 40 historias activas; cada declaracion se evalua en ~6 ciclos como maximo",
+    "vista": "bloque 'Que dicen los partidos' solo si algun partido tiene una declaracion enlazada; entonces aparecen los 12 en orden alfabetico con el mismo formato: texto original citado, canal y fecha con enlace, o 'Sin declaracion enlazada' / 'Sin canal oficial verificado todavia'"
+  },
+  "criterios_de_salida": {
+    "C10": "declaraciones de los partidos junto a la historia, simetricas y citadas"
+  },
+  "no_verificable": [
+    "Precision del enlace con la API real: la clave esta solo en el worker de Railway; se etiqueta una muestra de enlaces tras los primeros ciclos en produccion"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Canales verificados de PSOE, PNV, Podemos y Vox",
+    "Sitemap de noticias de PP y PNV"
+  ]
+}

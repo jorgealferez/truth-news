@@ -45,6 +45,14 @@ es:
   after: Después
   capture_record: Ficha de captura
   machine_translation: traducción automática con IA del original
+  parties_title: Qué dicen los partidos
+  parties_note: Lo que cada partido con escaño publica sobre esta historia en sus canales oficiales verificados, en orden alfabético y sin valoraciones. La IA propone el enlace y el código lo comprueba.
+  parties_none: Sin declaración enlazada en sus canales verificados.
+  parties_no_channel: Sin canal oficial verificado todavía.
+  channel_web: web
+  channel_bluesky: Bluesky
+  channel_mastodon: Mastodon
+  channel_telegram: Telegram
   abroad_title: Cómo lo cuentan en otros países
   abroad_note: Medios de otros países que publican la misma historia, enlazados por su titular. No entran en la comparación de cifras.
   source: Fuente
@@ -357,6 +365,14 @@ en:
   after: After
   capture_record: Capture record
   machine_translation: AI machine translation of the original
+  parties_title: What the parties say
+  parties_note: What each party with seats publishes about this story on its verified official channels, in alphabetical order and without judgement. AI proposes the link and code checks it.
+  parties_none: No linked statement on its verified channels.
+  parties_no_channel: No verified official channel yet.
+  channel_web: website
+  channel_bluesky: Bluesky
+  channel_mastodon: Mastodon
+  channel_telegram: Telegram
   abroad_title: How other countries tell it
   abroad_note: Outlets from other countries covering the same story, linked by their headline. They are not part of the figure comparison.
   source: Source

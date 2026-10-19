@@ -85,6 +85,13 @@
     </div>
   </section>{% endif %}
 
+  {% if parties %}<section class="block" id="partidos"><h2>{{ t(lang, 'parties_title') }}</h2>
+    <p class="meta">{{ t(lang, 'parties_note') }}</p>
+    <ul class="parties">{% for p in parties %}<li><p class="who"><b>{{ p.actor.name }}</b> <span class="meta">{{ p.actor.full_name }}</span></p>
+      {% for s in p.statements %}<p class="said">«{{ s.text }}» <a class="meta" href="{{ s.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'channel_' ~ s.channel) }} · {{ s.published_at.strftime('%d/%m %H:%M') }}</a></p>
+      {% else %}<p class="meta">{{ t(lang, 'parties_none') if p.actor.channels else t(lang, 'parties_no_channel') }}</p>{% endfor %}</li>{% endfor %}</ul>
+  </section>{% endif %}
+
   {% if claims %}<details class="block fold" id="datos" open><summary><h2>{{ t(lang, 'data_check') }}</h2></summary>
     {% for c in claims %}{% set v = c.verification %}
       <div class="claim">
