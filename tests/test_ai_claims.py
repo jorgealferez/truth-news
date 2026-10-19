@@ -306,3 +306,9 @@ def test_private_house_price_measures_are_not_the_official_index():
     assert "parecido" in check(s, "precio_vivienda", "ES", 12.1)
     ok = "El precio de la vivienda sube un 12,1 % en el segundo trimestre, según el INE."
     assert isinstance(check(ok, "precio_vivienda", "ES", 12.1), ClaimCandidate)
+
+
+def test_core_inflation_is_not_the_general_one():
+    s = "La inflación subyacente se moderó hasta el 2,4 % en septiembre, según el INE."
+    assert "parecido" in check(s, "inflacion", "ES", 2.4)
+    assert check(s, "inflacion_subyacente", "ES", 2.4).period == f"{Y}-09"

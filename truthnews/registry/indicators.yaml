@@ -26,10 +26,23 @@ inflacion:
     es: ["inflación", "ipc", "ipca", "precios al consumo", "subida de precios"]
     en: ["inflation", "consumer prices", "cpi"]
     pt: ["inflação", "preços no consumidor"]
+  # La subyacente y los subindices (alimentos, energia...) son otras series: no se comparan con la general.
+  excludes: [subyacente, "core inflation", "núcleo", alimentos, alimentación, energía, energética, energéticos,
+    carburantes, electricidad, servicios, bienes industriales]
   sources:
     - {connector: ine_yoy, serie: IPC290751, geos: [ES]}
     - {connector: eurostat, dataset: prc_hicp_minr, params: {unit: RCH_A, coicop18: TOTAL}, geos: EU}
     - {connector: worldbank, indicator: FP.CPI.TOTL.ZG}
+inflacion_subyacente:
+  name: {es: Inflación subyacente interanual, en: Annual core inflation}
+  unit: pct
+  patterns:
+    es: ["inflación subyacente", "ipc subyacente", "subyacente"]
+    en: ["core inflation"]
+    pt: ["inflação subjacente"]
+  sources:
+    # INE base 2025: general sin alimentos no elaborados ni productos energeticos, variacion anual (tabla 76130).
+    - {connector: ine_level, series_by_geo: {ES: IPC292510}, geos: [ES]}
 pib_trimestral:
   name: {es: Crecimiento trimestral del PIB, en: Quarterly GDP growth}
   unit: pct

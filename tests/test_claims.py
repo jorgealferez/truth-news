@@ -93,3 +93,12 @@ def test_helpers():
     assert sentences(
         "Corta. " + "Una frase suficientemente larga para contar. Otra más larga todavía aquí."
     ) == ["Una frase suficientemente larga para contar.", "Otra más larga todavía aquí."]
+
+
+def test_core_inflation_is_its_own_series():
+    got = [
+        (c.indicator, c.value)
+        for c in extract("La inflación subyacente se sitúa en el 2,4 % en el país.", "es", "ES", 2026)
+    ]
+    assert got == [("inflacion_subyacente", 2.4)]
+    assert extract("La inflación de los alimentos se sitúa en el 6 % en el país.", "es", "ES", 2026) == []
