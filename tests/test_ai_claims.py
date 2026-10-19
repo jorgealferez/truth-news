@@ -184,6 +184,7 @@ def article(session):
         title="Balance económico del Gobierno",
         summary="Con un 10,5 % de paro, el Gobierno presume de empleo.",
         content_text=(
+            "El Ejecutivo destaca la creación de empleo del último año. "
             "La inflación en Francia fue del 2,1 % y en Alemania del 2,4 % en septiembre. "
             "El paro juvenil se sitúa en el 25,3 % este trimestre."
         ),
@@ -390,3 +391,26 @@ def test_a_single_named_country_must_be_tied_to_the_figure():
     # Un solo pais ligado (sujeto o complemento) si cuenta.
     fr = "En Francia, la tasa de paro se sitúa en el 7,5 %."
     assert check(fr, "paro", "FR", 7.5).geo == "FR"
+
+
+def test_a_sentence_without_country_takes_it_from_its_context():
+    """v11: casos reales del 19/10/2026, juzgados contra el pais del medio y publicados como Falso."""
+    # La Razon (ES): parrafo sobre Francia; 3,1 % es el IPC frances.
+    s = "La inflación volvió a acelerarse en septiembre hasta el 3,1%, aumentando la presión."
+    fr = "El coste de la vida alimenta protestas sobre el futuro del modelo social francés. " + s
+    assert extract(fr, "es", "ES", 2026) == []
+    got = check_proposal(s, fr, "inflacion", "ES", 3.1, None, None, "ES", Y, 10)
+    assert not isinstance(got, ClaimCandidate)
+    # Infobae (AR): analisis de EEUU; 4,2 % es el paro estadounidense.
+    us = (
+        "En materia económica, el análisis es más matizado. "
+        "El desempleo se mantiene relativamente bajo, en torno al 4,2 %. "
+        "Estados Unidos también produce petróleo a niveles récord."
+    )
+    s = "El desempleo se mantiene relativamente bajo, en torno al 4,2 %."
+    assert not isinstance(check_proposal(s, us, "paro", "AR", 4.2, None, None, "AR", Y, 10), ClaimCandidate)
+    # Sin otro pais cerca, la frase sigue siendo del pais del medio.
+    es = "El Gobierno presenta sus cuentas. La inflación se situó en el 4,9 % en septiembre. Habrá debate."
+    s = "La inflación se situó en el 4,9 % en septiembre."
+    assert [c.geo for c in extract(es, "es", "ES", 2026)] == ["ES"]
+    assert check_proposal(s, es, "inflacion", "ES", 4.9, None, None, "ES", Y, 10).geo == "ES"
