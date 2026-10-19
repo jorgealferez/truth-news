@@ -9,6 +9,9 @@
 {% set vc = {} %}{% for c in claims %}{% set _ = vc.update({c.verification.verdict: vc.get(c.verification.verdict, 0) + 1}) %}{% endfor %}
 {% set accused = {} %}{% for o, targets in comp.blame.items() %}{% for x in targets %}{% set _ = accused.update({x: accused.get(x, 0) + 1}) %}{% endfor %}{% endfor %}
 {% set differs = comp.disputes or comp.omissions or claims or comp.blame_differs %}
+{% set art_of = {} %}{% for o in outlets_view %}{% set _ = art_of.update({o.outlet.name: o.article.id}) %}{% endfor %}
+{% set accusers = {} %}{% for o, targets in comp.blame.items() %}{% for x in targets %}{% set _ = accusers.update({x: accusers.get(x, []) + [o]}) %}{% endfor %}{% endfor %}
+{% macro who(name, extra='') %}{% if name in art_of %}<a href="/noticia/{{ art_of[name] }}">{{ name }}</a>{% else %}<span>{{ name }}</span>{% endif %}{{ extra }}{% endmacro %}
 <article class="story wide">
   <p class="kicker">{{ category_name(st.category, lang) }} · {{ n_out }} {{ t(lang, 'n_outlets') }}</p>
   <h1>{{ st.title }}</h1>
@@ -26,7 +29,8 @@
       <p class="card-k">{{ t(lang, 'disputed_figures') }}</p>
       <h3>{{ d.noun|capitalize }} <span class="range">{{ d.low|num }}–{{ d.high|num }}</span></h3>
       <ul class="bars">{% for value, figs in d.groups[:5] %}
-        <li><span class="bar" style="width:{{ [8, (100 * value / maxv)|round|int]|max }}%"></span><b>{{ value|num }}</b><span class="n">{{ figs|length }} {{ t(lang, 'n_outlets') if figs|length != 1 else t(lang, 'outlet')|lower }}</span></li>{% endfor %}
+        <li class="x"><details><summary aria-label="{{ value|num }}: {{ t(lang, 'which_outlets') }}"><span class="bar" style="width:{{ [8, (100 * value / maxv)|round|int]|max }}%"></span><b>{{ value|num }}</b><span class="n">{{ figs|length }} {{ t(lang, 'n_outlets') if figs|length != 1 else t(lang, 'outlet')|lower }}</span></summary>
+          <p class="who-list">{% for f in figs %}{{ who(f.outlet, (' (' ~ (f.qualifier|qual) ~ ')') if f.qualifier else '') }}{% endfor %}</p></details></li>{% endfor %}
       </ul>{% if d.groups|length > 5 %}<p class="meta">+{{ d.groups|length - 5 }} {{ t(lang, 'other_figures') }}</p>{% endif %}
     </div>{% endfor %}
     {% if claims %}{% set total = claims|length %}
@@ -39,7 +43,8 @@
     <div class="card-v">
       <p class="card-k">{{ t(lang, 'who_is_pointed') }}</p>
       <ul class="bars">{% for x, n in accused|dictsort(by='value', reverse=true) %}{% if loop.index <= 4 %}
-        <li><span class="bar alt" style="width:{{ [8, (100 * n / n_out)|round|int]|max }}%"></span><b>{{ x }}</b><span class="n">{{ n }}/{{ n_out }}</span></li>{% endif %}{% endfor %}</ul>
+        <li class="x"><details><summary aria-label="{{ x }}: {{ t(lang, 'which_outlets') }}"><span class="bar alt" style="width:{{ [8, (100 * n / n_out)|round|int]|max }}%"></span><b>{{ x }}</b><span class="n">{{ n }}/{{ n_out }}</span></summary>
+          <p class="who-list">{% for o in accusers.get(x, []) %}{{ who(o) }}{% endfor %}</p></details></li>{% endif %}{% endfor %}</ul>
       {% if comp.blame_differs %}<p class="flag">{{ t(lang, 'blame_differs') }}</p>{% endif %}
     </div>{% endif %}
     {% if comp.omissions %}
@@ -47,6 +52,8 @@
       <p class="card-k">{{ t(lang, 'omissions') }}</p>
       <p class="big">{{ comp.omissions|length }}<small>/{{ n_out }} {{ t(lang, 'n_outlets') }}</small></p>
       <p class="meta">{{ t(lang, 'omit_what') }} {{ (comp.omissions.values()|list)[0][:3]|join(', ') }}</p>
+      <details class="who-more"><summary>{{ t(lang, 'see_what_each_omits') }}</summary>
+        <ul class="who-omits">{% for o, miss in comp.omissions.items() %}<li>{{ who(o) }} <span class="meta">{{ t(lang, 'does_not_mention') }} {{ miss|join(', ') }}</span></li>{% endfor %}</ul></details>
     </div>{% endif %}
     {% if not differs %}
     <div class="card-v flat"><p class="card-k">{{ t(lang, 'nothing_differs') }}</p><p>{{ t(lang, 'nothing_differs_text')|replace('{n}', n_out|string) }}</p></div>{% endif %}

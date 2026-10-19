@@ -17,6 +17,8 @@ es:
   same_figure_in: misma cifra en
   shared_names_note: "Personas, lugares e instituciones que citan la mayoría de los {n} medios (cuántos lo citan):"
   see_all: Ver todos
+  which_outlets: ver qué medios
+  see_what_each_omits: Ver qué calla cada medio
   range_from: de
   range_to: a
   depending_on_outlet: según el medio
@@ -162,6 +164,8 @@ en:
   same_figure_in: same figure in
   shared_names_note: "People, places and institutions named by most of the {n} outlets (how many name each):"
   see_all: See all
+  which_outlets: see which outlets
+  see_what_each_omits: See what each outlet leaves out
   range_from: from
   range_to: to
   depending_on_outlet: depending on the outlet
