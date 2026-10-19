@@ -1,0 +1,8 @@
+{# Portada: quien acierta con los datos (carril Comparativas). Entrada: top_outlets, min_checks. #}
+<div class="rank-mini">
+  <h2><a href="/medios#fiabilidad">{{ t(lang, 'rank_title') }}</a></h2>
+  {% if top_outlets %}<ol class="rank-list">{% for r in top_outlets %}<li><a class="rk-name" href="/medio/{{ r.outlet.slug }}">{{ r.outlet.name }}</a>
+    <span class="rk-acc"><b>{{ (100 * r.accuracy)|round|int }} %</b> <span class="meta">{{ r.right }}/{{ r.checked }}</span></span>
+    <span class="meter bar" role="img" aria-label="{{ r.right }}/{{ r.checked }}">{% for v, n, pct in r.shares() %}<span class="v-{{ v }}" style="width:{{ pct }}%"></span>{% endfor %}</span></li>{% endfor %}</ol>
+  {% else %}<p class="meta">{{ t(lang, 'rank_empty')|replace('{n}', min_checks|string) }}</p>{% endif %}
+</div>

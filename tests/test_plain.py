@@ -19,7 +19,9 @@ def art(outlet, title, minutes=0):
 
 
 def claim(outlet, value, verdict, geo="ES"):
-    ev = NS(label="Tasa de paro", value=10.0, period="2026-08", source="eurostat", url="https://ec.europa.eu/x")
+    ev = NS(
+        label="Tasa de paro", value=10.0, period="2026-08", source="eurostat", url="https://ec.europa.eu/x"
+    )
     return NS(
         outlet=NS(name=outlet),
         indicator="paro",

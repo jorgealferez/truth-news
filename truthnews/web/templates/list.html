@@ -5,6 +5,7 @@
 {% if outlet is defined and outlet %}
 <p class="outlet-meta">{{ t(lang, 'scope_' ~ outlet.scope) }}{% if outlet.region %} · {{ region_name(outlet.region) }}{% endif %}{% if outlet.owner %} · {{ outlet.owner }}{% endif %} · <a href="{{ outlet.homepage }}" rel="noopener nofollow">{{ outlet.homepage }}</a></p>
 {% if record is defined and record %}<p class="outlet-meta">{{ t(lang, 'outlet_record') }}: {% for k, n in record.items() %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }} {{ n }}</span> {% endfor %}</p>{% endif %}
+{% if min_checks is defined %}{% include "_outlet_reliability.html" %}{% endif %}
 {% if profile is defined and profile %}<section class="cards" aria-label="{{ t(lang, 'outlet_profile') }}">
   <div class="card-v flat"><p class="card-k">{{ t(lang, 'articles_total') }}</p><p class="big">{{ profile.articles|num }}<small> · {{ profile.articles_30d|num }} {{ t(lang, 'last_30_days') }}</small></p></div>
   <div class="card-v"><p class="card-k">{{ t(lang, 'changes_detected') }}</p><p class="big">{{ profile.revisions|num }}<small> {{ t(lang, 'in_n_articles')|replace('{n}', profile.revised_articles|string) }}</small></p>

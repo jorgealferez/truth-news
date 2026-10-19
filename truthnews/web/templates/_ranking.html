@@ -1,0 +1,12 @@
+{# Ranking de medios por exactitud comprobada (carril Comparativas). Entrada: ranked, few, min_checks. #}
+<section class="ranking" id="fiabilidad" aria-label="{{ t(lang, 'rank_title') }}">
+  <h2>{{ t(lang, 'rank_title') }}</h2>
+  <p class="meta">{{ t(lang, 'rank_note')|replace('{n}', min_checks|string) }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+  {% if ranked %}<ol class="rank-list">{% for r in ranked %}
+    <li><a class="rk-name" href="/medio/{{ r.outlet.slug }}">{{ r.outlet.name }}</a>
+      <span class="rk-acc"><b>{{ (100 * r.accuracy)|round|int }} %</b> <span class="meta">{{ r.right }}/{{ r.checked }}</span></span>
+      <span class="meter bar" role="img" aria-label="{{ r.right }}/{{ r.checked }}">{% for v, n, pct in r.shares() %}<span class="v-{{ v }}" style="width:{{ pct }}%"></span>{% endfor %}</span></li>{% endfor %}
+  </ol>{% else %}<p>{{ t(lang, 'rank_empty')|replace('{n}', min_checks|string) }}</p>{% endif %}
+  {% if few %}<details class="who-more"><summary>{{ t(lang, 'rank_few')|replace('{n}', few|length|string) }}</summary>
+    <ul class="who-omits">{% for r in few %}<li><a href="/medio/{{ r.outlet.slug }}">{{ r.outlet.name }}</a> <span class="meta">{{ r.checked }}/{{ min_checks }} · {% for v, n, pct in r.shares() %}{{ t(lang, 'verdict_' ~ v) }} {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}</span></li>{% endfor %}</ul></details>{% endif %}
+</section>

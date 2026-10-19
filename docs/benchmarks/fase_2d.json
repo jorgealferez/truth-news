@@ -1,0 +1,30 @@
+{
+  "fase": "2d",
+  "titulo": "Fiabilidad por medio: ranking por exactitud comprobada con muestra suficiente, historial y quien no lo cuenta",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "produccion": "Medido en nosmienten.com/verificaciones el 2026-10-19: 3 afirmaciones verificadas, 2 con dato (1 verdadera, 1 falsa) en 2 medios. Con MIN_CHECKS=5 el ranking sale vacio y lo dice; ordenar por porcentaje habria puesto primero a un medio con 1 de 1",
+    "metodo": "Exactitud = verdaderas / comprobadas (sin-datos no cuenta); orden por limite inferior de Wilson al 95 % (2/2 -> 0,34; 40/45 -> 0,77); minimo 5 comprobaciones (ADR 0023)",
+    "quien_no_lo_cuenta": "Historia: medios nacionales del mismo pais que publicaron en la ventana [primera-12 h, ultima+12 h] sin pieza en ella. Medio: % de historias grandes (>= 5 medios) de su pais en 7 dias que conto, solo dias en que publico",
+    "visual": "Revisado a 375 px (emulacion movil) en /medios y /medio/{slug} con datos de prueba; arreglado el medidor de barra, que la regla .meter del tema (#26) dejaba gris tambien en la historia (variante .meter.bar)",
+    "coste": "Consultas agregadas en lectura (GROUP BY por medio y veredicto); sin tabla nueva"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Ranking con medios reales: NO VERIFICADO hasta que haya >= 5 verificaciones por medio en produccion (carril Verificaciones)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Integrar el ranking y la ficha en el diseno de outlets.html/list.html con la sesion Railway project (hoy, una linea de inclusion en cada una)"
+  ]
+}
