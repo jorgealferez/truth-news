@@ -18,7 +18,9 @@ def alembic_config(url: str) -> Config:
     return cfg
 
 
-def upgrade(url: str, revision: str = "head") -> None:
+def upgrade(url: str, revision: str = "heads") -> None:
+    # "heads" y no "head": si dos agentes dejan por error dos ramas de migracion, el arranque las aplica
+    # en vez de tumbar web y worker. La rama doble se detecta antes en el gauntlet (test de un solo head).
     command.upgrade(alembic_config(url), revision)
 
 
