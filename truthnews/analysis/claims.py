@@ -284,13 +284,55 @@ def sentences(text: str) -> list[str]:
     return [s.strip() for s in _SENTENCE.split(text or "") if 20 <= len(s.strip()) <= 600]
 
 
+# Contexto (v11): una frase sin pais no es del pais del medio si las vecinas hablan de otro. Casos reales
+# (19/10/2026): Infobae, "el desempleo se mantiene relativamente bajo, en torno al 4,2 %" junto a "Estados
+# Unidos tambien produce petroleo..." (juzgado contra Argentina); La Razon, "la inflacion volvio a acelerarse
+# en septiembre hasta el 3,1 %" tras "el futuro del modelo social frances" (juzgado contra Espana).
+_CONTEXT_BEFORE, _CONTEXT_AFTER = 2, 1
+_SUPRANATIONAL = {"europeo", "europea", "bruselas", "otan"}  # no son otro pais
+
+
+def _foreign_context(neighbours: list[str], default: str) -> bool:
+    """True si las frases vecinas (normalizadas) nombran otro pais o un gentilicio extranjero."""
+    names = {**world_countries(), **indicators()["geo_names"]}
+    for sn in neighbours:
+        for iso, ns in names.items():
+            if iso in (default, "EU", "EA"):
+                continue
+            if any(_word_in(normalize(n), sn) for n in ns):
+                return True
+        if default == "ES":  # los gentilicios del registro son extranjeros vistos desde Espana
+            markers = [m for m in indicators()["foreign_markers"] if normalize(m) not in _SUPRANATIONAL]
+            if any(_word_in(normalize(m), sn) for m in markers):
+                return True
+    return False
+
+
+def context_default(text: str, sentence: str, default: str) -> str:
+    """Pais por defecto de una frase: el del medio, salvo que el contexto hable de otro ("XX")."""
+    if default in ("XX", ""):
+        return default
+    sents = sentences(text)
+    try:
+        i = sents.index(sentence)
+    except ValueError:
+        return default
+    near = sents[max(0, i - _CONTEXT_BEFORE) : i] + sents[i + 1 : i + 1 + _CONTEXT_AFTER]
+    return "XX" if _foreign_context([normalize(x) for x in near], default) else default
+
+
 def extract(
     text: str, language: str, default_geo: str, published_year: int, published_month: int = 12
 ) -> list[ClaimCandidate]:
     out: list[ClaimCandidate] = []
     seen: set[tuple] = set()
-    for sentence in sentences(text):
+    sents = sentences(text)
+    for i, sentence in enumerate(sents):
         sn = normalize(sentence)
+        near = sents[max(0, i - _CONTEXT_BEFORE) : i] + sents[i + 1 : i + 1 + _CONTEXT_AFTER]
+        here = default_geo
+        if here not in ("XX", "") and _foreign_context([normalize(x) for x in near], here):
+            here = "XX"  # la frase no nombra pais y sus vecinas hablan de otro: no se supone el del medio
         if _SUBGROUP.search(sn) or _CHANGE.search(sn) or _NOT_CURRENT.search(sn):
             continue
         years = {int(y) for y in _YEAR.findall(sn)}
@@ -339,9 +381,7 @@ def extract(
                     continue  # sin serie regional, o la frase nombra tambien un pais
                 geo = next(iter(regions))
             else:
-                geo = _geo(
-                    sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False), figure=figure
-                )
+                geo = _geo(sn, here, explicit_only=ind.get("requires_explicit_geo", False), figure=figure)
             if geo is None:
                 continue
             direction = "sube" if _UP.search(verb) else "baja" if _DOWN.search(verb) else None
@@ -432,6 +472,7 @@ def check_proposal(
         return "la frase no esta literalmente en el articulo"
     if indicator not in indicator_keys():
         return "indicador desconocido"
+    default_geo = context_default(article_text, sentence, default_geo)
     ind = indicators()[indicator]
     sn = normalize(sentence)
     pats = {normalize(p) for ps in ind["patterns"].values() for p in ps}
