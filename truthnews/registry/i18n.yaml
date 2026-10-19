@@ -43,6 +43,24 @@ es:
   see_all: Ver todos
   which_outlets: ver qué medios
   official_figure: Dato oficial
+  verification_page: Verificación
+  see_verification: Ver la verificación y el gráfico
+  see_story: Ver la historia
+  official_short: oficial
+  points_unit: puntos
+  trend_up: sube
+  trend_down: baja
+  chart_title: "{ind}: serie oficial y cifra de {who}"
+  chart_table: Ver los datos del gráfico
+  period_col: Periodo
+  value_col: Valor
+  said_by: Lo que dice
+  claim_extracted_ai: "Afirmación localizada con ayuda de IA y validada por nuestras reglas; el veredicto lo da el código con el dato oficial."
+  vs_verdadero: "Verdadero: {who} dice {said} y el dato oficial ({period}, {source}) es {official}."
+  vs_impreciso: "Impreciso: {who} dice {said}; el dato oficial ({period}, {source}) es {official}, {gap} de diferencia."
+  vs_falso: "Falso: {who} dice {said}, pero el dato oficial ({period}, {source}) es {official}: {gap} de diferencia."
+  vs_enganoso: "Engañoso: {who} dice que «{ind}» {claimed}, pero el dato oficial {real} ({prev_period} → {period}, {source})."
+  vs_sin-datos: "Sin datos suficientes: no hay un dato oficial comparable con lo que dice {who} ({said}, «{ind}»)."
   vs_said: frente a
   compared_in: "Esta noticia se compara en {n} medios: ver la comparativa"
   what_we_checked: Lo que comprobamos
@@ -465,6 +483,24 @@ en:
   see_all: See all
   which_outlets: see which outlets
   official_figure: Official figure
+  verification_page: Fact check
+  see_verification: See the fact check and the chart
+  see_story: See the story
+  official_short: official
+  points_unit: points
+  trend_up: rises
+  trend_down: falls
+  chart_title: "{ind}: official series and the figure from {who}"
+  chart_table: See the chart data
+  period_col: Period
+  value_col: Value
+  said_by: What they say
+  claim_extracted_ai: "Claim located with the help of AI and validated by our rules; the verdict is given by code against the official data."
+  vs_verdadero: "True: {who} says {said} and the official figure ({period}, {source}) is {official}."
+  vs_impreciso: "Imprecise: {who} says {said}; the official figure ({period}, {source}) is {official}, {gap} apart."
+  vs_falso: "False: {who} says {said}, but the official figure ({period}, {source}) is {official}: {gap} apart."
+  vs_enganoso: "Misleading: {who} says «{ind}» {claimed}, but the official figure {real} ({prev_period} → {period}, {source})."
+  vs_sin-datos: "Not enough data: there is no comparable official figure for what {who} says ({said}, «{ind}»)."
   vs_said: versus
   compared_in: "This story is compared across {n} outlets: see the comparison"
   what_we_checked: What we checked

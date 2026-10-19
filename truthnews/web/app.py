@@ -34,22 +34,14 @@ from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topi
 from truthnews.social import images
 from truthnews.social import select as select_social
 from truthnews.web import admin, appointments, budget, citations, queries, seo, social, topicview
+from truthnews.web import verdicts as vview
 from truthnews.web.langprefix import LangPrefix, localize
 
+_dato = vview.dato  # nombre historico: lo usan plantillas y tests
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
 RSS_DAYS = 14
 RSS_MAX_ITEMS = 100
-
-
-def _dato(value: float | None, unit: str | None = None) -> str:
-    """Un dato oficial legible: 10,0 % o 1.234,5 (es)."""
-    if value is None:
-        return "—"
-    if unit == "pct":
-        return f"{value:.1f}".replace(".", ",") + " %"
-    text = f"{value:,.1f}" if value % 1 else f"{value:,.0f}"
-    return text.replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 def _ago(value: datetime | None, lang: str = "es") -> str:
@@ -173,6 +165,7 @@ def create_app(
         lang_path=lambda path, lang: path if lang == settings.default_language else localize(path, lang),
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
+        verdict_line=vview.sentence,
     )
 
     def get_session():
@@ -505,6 +498,26 @@ def create_app(
             outlet_names=queries.story_outlet_names(session, ids),
             verdicts=verdicts,
             threads=queries.front_threads(session, ids),
+        )
+
+    @app.get("/verificacion/{claim_id}", response_class=HTMLResponse)
+    def verification(request: Request, claim_id: int, session: SessionDep):
+        c = queries.claim_detail(session, claim_id)
+        if c is None or c.verification is None:
+            raise HTTPException(404)
+        lang = lang_of(request)
+        line = vview.sentence(c, lang)
+        url = f"{settings.site_url}/verificacion/{c.id}"
+        return render(
+            request,
+            "verification.html",
+            c=c,
+            v=c.verification,
+            line=line,
+            chart=vview.chart(c, lang),
+            series=vview.series_of(c),
+            share=social.share_links(url, line),
+            share_url=url,
         )
 
     @app.get("/verificaciones", response_class=HTMLResponse)

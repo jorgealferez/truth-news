@@ -33,6 +33,7 @@ RELAUNCH_LOOKBACK = timedelta(days=14)
 RELAUNCH_MIN_SCORE = 2.0
 RELAUNCH_THRESHOLD = 0.45  # coseno entre titulares; mas estricto que el de agrupacion (0,30)
 RELAUNCH_AGE = timedelta(hours=48)
+SERIES_POINTS = 14
 
 
 def _aware(dt: datetime) -> datetime:
@@ -146,7 +147,8 @@ def _store(ver: Verification, result: Result) -> None:
                 period=obs.period,
                 value=obs.value,
                 retrieved_at=obs.retrieved_at,
-                payload=obs.extra,
+                # Ultimos periodos de la serie: el grafico de la verificacion los pinta con la cifra.
+                payload={**obs.extra, "serie": dict(sorted(obs.history.items())[-SERIES_POINTS:])},
             )
         )
 

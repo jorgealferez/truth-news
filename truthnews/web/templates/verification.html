@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'verdict_' ~ v.verdict) }}: {{ c.outlet.name }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ line }}{% endblock %}
+{% block crumbs %}<div class="wrap"><p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/verificaciones">{{ t(lang, 'verifications') }}</a> › {{ t(lang, 'verification_page') }}</p></div>{% endblock %}
+{% block content %}
+<article class="vpage">
+  <p class="vhead"><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span></p>
+  <h1 class="vline">{{ line }}</h1>
+  {% if chart %}<figure class="vfig">{{ chart }}
+    <figcaption class="meta">{% for e in v.evidence %}{% if loop.first %}{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }}</a>{% endif %}{% endfor %}</figcaption>
+  </figure>
+  <details class="fold"><summary>{{ t(lang, 'chart_table') }}</summary>
+    <table class="vtable"><thead><tr><th>{{ t(lang, 'period_col') }}</th><th>{{ t(lang, 'value_col') }}</th></tr></thead>
+      <tbody>{% for p, val in series %}<tr><td>{{ p }}</td><td>{{ val|dato(c.unit, lang) }}</td></tr>{% endfor %}
+      <tr class="vt-claim"><td>{{ c.outlet.name }}</td><td>{{ c.value|dato(c.unit, lang) }}</td></tr></tbody></table>
+  </details>{% endif %}
+  <section class="block">
+    <h2>{{ t(lang, 'said_by') }}</h2>
+    <blockquote class="vquote">«{{ c.text }}» <cite>— <a href="/medio/{{ c.outlet.slug }}">{{ c.outlet.name }}</a>{% if c.article %}, <a href="{{ c.article.url }}" rel="nofollow noopener" target="_blank">{{ c.article.published_at.strftime('%d/%m/%Y') }}</a> · <a href="/noticia/{{ c.article_id }}">{{ t(lang, 'cited_data') }}</a>{% endif %}</cite></blockquote>
+  </section>
+  <details class="block fold" open><summary><h2>{{ t(lang, 'method') }}</h2></summary>
+    <p>{{ v.explanation }}</p>
+    {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit, lang) }}</b> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+    {% if c.extractor == 'ia' %}<p class="meta">{{ t(lang, 'claim_extracted_ai') }}</p>{% endif %}
+    <p class="meta">{{ v.method }} · {{ v.checked_at.strftime('%d/%m/%Y %H:%M') }} UTC · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>{% if c.story_id %} · <a href="/historia/{{ c.story_id }}">{{ t(lang, 'see_story') }}</a>{% endif %}</p>
+  </details>
+  <div class="share" aria-label="{{ t(lang, 'share') }}">
+    <button type="button" class="share-native" hidden data-title="{{ line }}" data-url="{{ share_url }}">↗ {{ t(lang, 'share') }}</button>
+    {% for id, name, href in share %}<a class="share-{{ id }}" href="{{ href }}" target="_blank" rel="noopener nofollow">{{ name }}</a>{% endfor %}
+    <button type="button" class="share-copy" data-url="{{ share_url }}" data-done="{{ t(lang, 'copied') }}">{{ t(lang, 'copy_link') }}</button>
+  </div>
+  <script>
+  (function () {
+    var n = document.querySelector('.share-native');
+    if (n && navigator.share) { n.hidden = false; n.onclick = function () { navigator.share({title: n.dataset.title, url: n.dataset.url}).catch(function () {}); }; }
+    var c = document.querySelector('.share-copy');
+    if (c) c.onclick = function () { if (navigator.clipboard) navigator.clipboard.writeText(c.dataset.url).then(function () { c.textContent = c.dataset.done; }); };
+  })();
+  </script>
+</article>
+{% endblock %}

@@ -256,6 +256,19 @@ def outlets_by_slug(session: Session, slugs: list[str]) -> dict[str, Outlet]:
     return {o.slug: o for o in session.scalars(select(Outlet).where(Outlet.slug.in_(slugs)))}
 
 
+def claim_detail(session: Session, claim_id: int) -> Claim | None:
+    q = (
+        select(Claim)
+        .options(
+            joinedload(Claim.verification).joinedload(Verification.evidence),
+            joinedload(Claim.outlet),
+            joinedload(Claim.article),
+        )
+        .where(Claim.id == claim_id)
+    )
+    return session.scalars(q).unique().first()
+
+
 def all_verifications(session: Session, limit: int = 200) -> list[Claim]:
     q = (
         select(Claim)
