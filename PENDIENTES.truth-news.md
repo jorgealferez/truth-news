@@ -68,7 +68,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [ ] Reposicionar el producto en "quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos": ficha de fiabilidad por medio con historial de veredictos, ranking de medios por exactitud comprobada, portada que lo destaca (peticion del usuario 2026-10-18) — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19), carril Comparativas: datos y componentes; plantillas outlets.html/list.html de la sesion "Railway project"
   - [ ] Ranking por exactitud con muestra minima (Wilson 95 %, >= 5 comprobaciones), ficha de fiabilidad con historial de veredictos, quien no lo cuenta (historia y medio) y portada (ADR 0023)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
-- [ ] Fase 5 — Despliegue en Railway medido en produccion
+- [ ] Fase 5 — Despliegue en Railway medido en produccion — EN CURSO (session_0161mHJUdETFgtxqSGotgKjo, 2026-10-19)
 
 ## Esperando
 
