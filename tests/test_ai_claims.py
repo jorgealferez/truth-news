@@ -312,3 +312,10 @@ def test_core_inflation_is_not_the_general_one():
     s = "La inflación subyacente se moderó hasta el 2,4 % en septiembre, según el INE."
     assert "parecido" in check(s, "inflacion", "ES", 2.4)
     assert check(s, "inflacion_subyacente", "ES", 2.4).period == f"{Y}-09"
+
+
+def test_annual_gdp_from_the_ai():
+    s = "La economía española creció un 2,6 % en 2025, según el INE."
+    c = check(s, "pib_anual", "ES", 2.6)
+    assert isinstance(c, ClaimCandidate) and c.period == "2025"
+    assert "contexto" in check("La economía española creció un 2,6 %, según el INE.", "pib_anual", "ES", 2.6)

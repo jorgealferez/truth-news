@@ -102,3 +102,16 @@ def test_core_inflation_is_its_own_series():
     ]
     assert got == [("inflacion_subyacente", 2.4)]
     assert extract("La inflación de los alimentos se sitúa en el 6 % en el país.", "es", "ES", 2026) == []
+
+
+def test_annual_gdp_growth_uses_the_cited_year():
+    got = [
+        (c.indicator, c.value, c.period)
+        for c in extract("El PIB creció un 3,7 % en 2024 en España.", "es", "ES", 2026)
+    ]
+    assert got == [("pib_anual", 3.7, "2024")]
+    assert extract("La economía crecerá un 2,2 % este año.", "es", "ES", 2026) == []
+    assert extract("El PIB de 2019 creció un 2 % y el de 2024 un 3,7 %.", "es", "ES", 2026) == []
+    assert [
+        c.indicator for c in extract("El PIB crece un 0,7 % en el segundo trimestre.", "es", "ES", 2026)
+    ] == ["pib_trimestral"]

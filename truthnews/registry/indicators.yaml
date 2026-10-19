@@ -56,6 +56,22 @@ pib_trimestral:
   sources:
     - {connector: eurostat, dataset: namq_10_gdp, params: {unit: CLV_PCH_PRE, s_adj: SCA, na_item: B1GQ}, geos: EU}
     - {connector: worldbank, indicator: NY.GDP.MKTP.KD.ZG}
+pib_anual:
+  name: {es: Crecimiento anual del PIB, en: Annual GDP growth}
+  unit: pct
+  change_is_level: true  # "la economia crecio un 2,6 % en 2025" es el valor del indicador
+  directional: false
+  annual: true  # el ano escrito en la frase es el periodo citado
+  patterns:
+    es: ["pib", "producto interior bruto", "la economía"]
+    en: ["gdp", "the economy"]
+    pt: ["pib", "a economia"]
+  requires: ["anual", "en el conjunto del año", "annual"]
+  requires_year_ok: true  # tambien vale un ano escrito ("en 2025")
+  excludes: [trimestre, trimestral, quarter, "este año", "este ejercicio", "próximo año", "this year", "per cápita"]
+  sources:
+    - {connector: eurostat, dataset: nama_10_gdp, params: {unit: CLV_PCH_PRE, na_item: B1GQ}, geos: EU}
+    - {connector: worldbank, indicator: NY.GDP.MKTP.KD.ZG}
 deuda_publica:
   name: {es: Deuda pública (% del PIB), en: Government debt (% of GDP)}
   unit: pct

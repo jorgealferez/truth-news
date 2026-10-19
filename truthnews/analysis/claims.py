@@ -95,6 +95,13 @@ def _territory_gap() -> str:
     return rf"(?:(?:en|de)\s+(?:la\s+|el\s+)?(?:{alt})\s+)?"
 
 
+def _requirements_met(ind: dict, sn: str) -> bool:
+    requires = ind.get("requires", [])
+    if not requires or any(_word_in(normalize(r), sn) for r in requires):
+        return True
+    return bool(ind.get("requires_year_ok") and _YEAR.search(sn))
+
+
 def regions_in(sn: str) -> tuple[dict[str, list[int]], bool]:
     """Comunidades nombradas sin ambiguedad (codigo -> posiciones) y si queda otro nombre regional dudoso."""
     found: dict[str, list[int]] = {}
@@ -243,16 +250,16 @@ def extract(
         if _SUBGROUP.search(sn) or _CHANGE.search(sn) or _NOT_CURRENT.search(sn):
             continue
         years = {int(y) for y in _YEAR.findall(sn)}
-        if any(y < published_year - 1 for y in years):
-            continue  # habla de un ano pasado: no se compara con el ultimo dato
+        past = any(y < published_year - 1 for y in years)  # habla de un ano pasado
         regions, leftover = regions_in(sn)
         if leftover or len(regions) > 1:
             continue  # nombre regional dudoso (ciudad o comunidad) o varias comunidades: no se atribuye
         for key, ind in indicators().items():
             if key in META_KEYS:
                 continue
-            requires = ind.get("requires", [])
-            if requires and not any(_word_in(normalize(r), sn) for r in requires):
+            if past and not (ind.get("annual") and len(years) == 1):
+                continue  # un ano pasado solo se compara en una serie anual con ese ano citado
+            if not _requirements_met(ind, sn):
                 continue
             if any(_word_in(normalize(x), sn) for x in ind.get("excludes", [])):
                 continue  # otro indicador parecido (p. ej. pobreza o exclusion frente a riesgo de pobreza)
@@ -297,6 +304,8 @@ def extract(
                 continue
             seen.add(k)
             period = period_of(sn, published_year, published_month)
+            if period is None and ind.get("annual") and len(years) == 1:
+                period = str(next(iter(years)))  # "crecio un 2,6 % en 2025": se compara con 2025
             out.append(ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction, period))
     return out
 
@@ -372,8 +381,7 @@ def check_proposal(
     pats = {normalize(p) for ps in ind["patterns"].values() for p in ps}
     if not any(_word_in(p, sn) for p in pats):
         return "la frase no nombra el indicador"
-    requires = ind.get("requires", [])
-    if requires and not any(_word_in(normalize(r), sn) for r in requires):
+    if not _requirements_met(ind, sn):
         return "falta el contexto que exige el indicador"
     if any(_word_in(normalize(x), sn) for x in ind.get("excludes", [])):
         return "la frase habla de otro indicador parecido"
@@ -409,6 +417,8 @@ def check_proposal(
     if not ruled and period and (len(period) != 4 or period not in sn):
         return "periodo no escrito en la frase"
     years = {int(y) for y in _YEAR.findall(sn)}
+    if not period and ind.get("annual") and len(years) == 1:
+        period = str(next(iter(years)))  # serie anual: el ano escrito es el periodo citado
     if not period and (any(y < published_year - 1 for y in years) or _NOT_CURRENT.search(sn)):
         return "habla del pasado sin periodo comprobable"
     # Territorio: nombrado en la frase (el mas cercano a la cifra si hay varios) o el del medio.
