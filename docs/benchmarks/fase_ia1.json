@@ -1,0 +1,60 @@
+{
+  "$comentario": [
+    "Linea base del coste de la IA antes del ADR 0054 (PR #218), sacada de los logs 'ciclo terminado' del worker en produccion.",
+    "Sin `medidas` en el ratchet: el objetivo de coste (tope diario) lo decide el usuario; cuando lo fije, se anade la metrica a presupuesto.json."
+  ],
+  "fase": "ia1",
+  "titulo": "Coste de la IA: linea base por paso antes de la cadencia minima de piezas y el tope diario",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "produccion (Railway, servicio worker 5779a8ad), logs 'ciclo terminado'",
+    "intervalo": "2026-10-18T00:00Z - 2026-10-19T11:07Z (corte por falta de credito en la API a las 11:07)",
+    "precios_usd_por_mtok": {"modelo": "claude-opus-5-5", "entrada": 4.0, "salida": 20.0, "lectura_cache": 0.2, "escritura_cache": 5.0}
+  },
+  "medidas": {},
+  "linea_base": {
+    "ciclos_terminados": 18,
+    "ciclos_con_ia": 9,
+    "ciclos_sin_ia": "9 (runs 1-10: sin ANTHROPIC_API_KEY)",
+    "piezas": {
+      "escritas_total": 54,
+      "por_ciclo": {"min": 6, "media": 6, "max": 6},
+      "en_revision_total": 11,
+      "fallidas": 0,
+      "nota": "el tope AI_MAX_PIECES_PER_CYCLE=6 se llena en TODOS los ciclos: la huella del dossier cambia con cualquier articulo nuevo; con AI_PIECE_CONCURRENCY=3 (#181) van de 3 en 3 en paralelo"
+    },
+    "hilos": {"total": 14, "por_ciclo_media": 1.56, "piezas_de_hilo_total": 7},
+    "traducciones": {"es_por_ciclo": 120, "en_por_ciclo": 60, "nota": "siempre al tope"},
+    "temas": {
+      "ciclos": 9,
+      "tokens_por_ciclo": {"entrada": 10060, "salida": 1643, "lectura_cache": 0, "escritura_cache": 822},
+      "usd_total": 0.6949,
+      "usd_por_ciclo": 0.0772
+    },
+    "afirmaciones": {
+      "llamadas_total": 7,
+      "tokens_por_ciclo_con_uso": {"entrada": 2761, "salida": 1555, "lectura_cache": 0, "escritura_cache": 1702},
+      "usd_total": 0.3546,
+      "usd_por_ciclo": 0.0507
+    },
+    "segundos_medios_por_paso": {
+      "ciclos": "6 (runs 89-108; antes no se guardaba `seconds`)",
+      "ai": 765.1,
+      "ai_rango": [403.7, 911.7],
+      "threads": 401.0,
+      "threads_rango": [0.0, 669.4],
+      "ai_claims": 16.7
+    },
+    "cache": "lectura de cache 0 en todos los ciclos: el prompt de sistema se vuelve a escribir en cada ciclo (TTL de 5 min, ciclos cada 30)"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "NO VERIFICADO (los logs no traen el uso de las piezas, los hilos ni las traducciones; esta en Piece.usage y Thread.usage de la base de produccion, que este entorno no lee): tokens y USD de piezas, hilos y traducciones. Los temas y las afirmaciones suman 1,05 USD en 9 ciclos, muy lejos de los ~40 USD gastados: el resto es de piezas, hilos y traducciones.",
+    "NO VERIFICADO (API sin credito desde las 11:07 UTC): ahorro real tras el ADR 0054; se mide con stats.ai_cost por paso en cuanto vuelva el credito."
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Medir stats.ai_cost (por paso y por dia) en produccion tras el despliegue de #218 y comparar con esta linea base.",
+    "Que el usuario fije el tope diario (AI_DAILY_BUDGET_USD, 40 USD por omision como suposicion) y, si quiere, el objetivo de coste en presupuesto.json."
+  ]
+}
