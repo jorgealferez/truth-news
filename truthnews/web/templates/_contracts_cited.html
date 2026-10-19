@@ -1,0 +1,6 @@
+{# Contratos publicos (TED) de empresas que la noticia nombra por su nombre completo. Solo enlaza el dato
+   oficial; la mencion no implica relacion con el contrato (ADR 0042). Variable: contracts_cited. #}
+{% if contracts_cited %}<aside class="block boe-confirm" aria-label="{{ t(lang, 'contracts_cited') }}"><h2>{{ t(lang, 'contracts_cited') }}</h2>
+  <ul class="compact">{% for f in contracts_cited %}<li><strong>{{ f.nombre }}</strong> — {{ f.n }} {{ t(lang, 'contracts_n_contracts') }}{% if f.importe is not none %} · {{ f.importe|num }} €{% endif %}
+    <ul class="compact">{% for a in f.contratos %}<li><a href="{{ a.url }}" rel="noopener" target="_blank">{{ a.objeto }}</a> <span class="meta">{{ a.comprador }}{% if a.importe is not none %} · {{ a.importe|num }} €{% endif %} · {{ a.fecha }}</span></li>{% endfor %}</ul></li>{% endfor %}</ul>
+  <p class="meta">{{ t(lang, 'contracts_cited_note') }} <a href="/contratos">{{ t(lang, 'contracts') }}</a></p></aside>{% endif %}
