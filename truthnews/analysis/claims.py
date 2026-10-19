@@ -60,9 +60,10 @@ _VERBS = (
     r"(?:se\s+situa|se\s+situo|se\s+coloca|se\s+coloco|alcanza|alcanzo|sube|subio|baja|bajo|cae|cayo"
     r"|repunta|repunto|se\s+modera|se\s+modero|escala|escalo|llega|llego|queda|quedo|cierra|cerro|marca|marco"
     r"|crece|crecio|avanza|avanzo|es|fue|esta|estaba|rises\s+to|rose\s+to|falls\s+to|fell\s+to|is|was"
+    r"|alcanzan|alcanzaron|se\s+situan|se\s+situaron|son|fueron|suben|subieron|bajan|bajaron|caen|cayeron"
     r"|stands\s+at|stood\s+at|sobe|subiu|desce|desceu|fica|ficou)"
 )
-_CONNECT = r"(?:en\s+el|en\s+un|al|del|de\s+un|hasta\s+el|hasta\s+un|un|at|to|of|no|para\s+os|em)"
+_CONNECT = r"(?:en\s+el|en\s+un|al|del|de\s+un|hasta\s+el|hasta\s+un|el|un|at|to|of|no|para\s+os|em)"
 
 
 @lru_cache(maxsize=1)

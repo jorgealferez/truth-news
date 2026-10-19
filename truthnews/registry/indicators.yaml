@@ -95,6 +95,33 @@ deficit_publico:
   sources:
     # Eurostat publica la capacidad (+) o necesidad (-) de financiacion (B9): el deficit es su opuesto.
     - {connector: eurostat, dataset: gov_10dd_edpt1, params: {unit: PC_GDP, sector: S13, na_item: B9}, geos: EU, negate: true}
+gasto_publico:
+  name: {es: Gasto público (% del PIB), en: Government expenditure (% of GDP)}
+  unit: pct
+  of_gdp: true
+  directional: false
+  patterns:
+    es: ["gasto público", "gasto de las administraciones públicas"]
+    en: ["government expenditure", "public spending", "government spending"]
+    pt: ["despesa pública"]
+  requires: ["pib", "producto interior bruto", "gdp"]  # el total sobre el PIB, no una partida
+  excludes: [sanitario, sanidad, educativo, educación, defensa, militar, pensiones, "per cápita", presupuesto]
+  sources:
+    # Propuesto y comprobado por la sesion Datos politicos (2026-10-19): ES 2025 = 45,3 %.
+    - {connector: eurostat, dataset: gov_10a_main, params: {unit: PC_GDP, sector: S13, na_item: TE}, geos: EU}
+ingresos_publicos:
+  name: {es: Ingresos públicos (% del PIB), en: Government revenue (% of GDP)}
+  unit: pct
+  of_gdp: true
+  directional: false
+  patterns:
+    es: ["ingresos públicos", "ingresos de las administraciones públicas"]
+    en: ["government revenue", "public revenue"]
+    pt: ["receita pública"]
+  requires: ["pib", "producto interior bruto", "gdp"]
+  excludes: ["per cápita", presupuesto]
+  sources:
+    - {connector: eurostat, dataset: gov_10a_main, params: {unit: PC_GDP, sector: S13, na_item: TR}, geos: EU}
 riesgo_pobreza:
   name: {es: Tasa de riesgo de pobreza, en: At-risk-of-poverty rate}
   unit: pct
