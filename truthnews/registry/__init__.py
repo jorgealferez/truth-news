@@ -161,3 +161,70 @@ def stats(outlets: list[OutletSpec] | None = None) -> dict:
         }
     out["regions_covered"] = coverage
     return out
+
+
+# --- Fuentes politicas (ADR 0024): partidos y sus canales oficiales verificados ---------------------------
+POLITICAL_CHANNELS = ("web", "bluesky", "mastodon", "telegram")
+VERIFIED_BY = ("dominio", "web")
+
+
+@dataclass(frozen=True)
+class ChannelSpec:
+    channel: str
+    url: str | None = None
+    handle: str | None = None
+    verified: str | None = None
+
+
+@dataclass(frozen=True)
+class ActorSpec:
+    slug: str
+    name: str
+    full_name: str
+    homepage: str
+    country: str
+    note: str | None = None
+    channels: tuple[ChannelSpec, ...] = field(default_factory=tuple)
+
+
+def _parse_channel(raw: dict, slug: str) -> ChannelSpec:
+    ch = raw.get("channel")
+    if ch not in POLITICAL_CHANNELS:
+        raise RegistryError(f"{slug}: canal invalido {ch!r}")
+    if ch in ("web", "mastodon") and not raw.get("url"):
+        raise RegistryError(f"{slug}: el canal {ch} necesita url")
+    if ch in ("bluesky", "telegram") and not raw.get("handle"):
+        raise RegistryError(f"{slug}: el canal {ch} necesita handle")
+    if ch != "web" and raw.get("verified") not in VERIFIED_BY:
+        raise RegistryError(f"{slug}: el canal {ch} debe decir como se verifico ({'|'.join(VERIFIED_BY)})")
+    return ChannelSpec(channel=ch, url=raw.get("url"), handle=raw.get("handle"), verified=raw.get("verified"))
+
+
+def load_political(directory: Path | None = None) -> list[ActorSpec]:
+    """Partidos de cada pais en orden alfabetico por slug: el mismo orden y formato para todos."""
+    directory = directory or REGISTRY_DIR / "political"
+    actors: list[ActorSpec] = []
+    for path in sorted(directory.glob("*.yaml")):
+        data = _load_yaml(path)
+        country = data["country"]
+        if country not in countries():
+            raise RegistryError(f"{path.name}: pais {country!r} no esta en countries.yaml")
+        for raw in data.get("actors") or []:
+            for key in ("slug", "name", "full_name", "homepage"):
+                if not raw.get(key):
+                    raise RegistryError(f"actor sin '{key}': {raw}")
+            channels = tuple(_parse_channel(c, raw["slug"]) for c in raw.get("channels") or [])
+            if not channels and not raw.get("note"):
+                raise RegistryError(f"{raw['slug']}: sin canales hay que anotar el motivo en 'note'")
+            actors.append(
+                ActorSpec(
+                    raw["slug"],
+                    raw["name"],
+                    raw["full_name"],
+                    raw["homepage"],
+                    country,
+                    raw.get("note"),
+                    channels,
+                )
+            )
+    return sorted(actors, key=lambda a: (a.country, a.slug))
