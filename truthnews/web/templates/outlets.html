@@ -5,11 +5,11 @@
 {% if ranked is defined %}{% include "_ranking.html" %}{% endif %}
 <nav class="chips">{% for c in countries %}<a href="/medios?pais={{ c }}">{{ country_name(c, lang) }}</a>{% endfor %}</nav>
 <table class="table">
-  <thead><tr><th>{{ t(lang, 'outlet') }}</th><th>{{ t(lang, 'countries') }}</th><th></th><th>{{ t(lang, 'regions') }}</th><th>{{ t(lang, 'articles_count') }}</th></tr></thead>
+  <thead><tr><th>{{ t(lang, 'outlet') }}</th><th>{{ t(lang, 'country_col') }}</th><th>{{ t(lang, 'scope_col') }}</th><th>{{ t(lang, 'region_col') }}</th><th class="num">{{ t(lang, 'articles_count')|capitalize }}</th></tr></thead>
   <tbody>
   {% for o, n in rows %}
-    <tr><td><a href="/medio/{{ o.slug }}">{{ o.name }}</a></td><td>{{ o.country }}</td><td>{{ t(lang, 'scope_' ~ o.scope) }}</td>
-      <td>{% if o.region %}<a href="/region/{{ o.region }}">{{ region_name(o.region) }}</a>{% endif %}</td><td>{{ n }}</td></tr>
+    <tr><td><a href="/medio/{{ o.slug }}">{{ o.name }}</a></td><td>{{ country_name(o.country, lang) }}</td><td>{{ t(lang, 'scope_' ~ o.scope) }}</td>
+      <td>{% if o.region %}<a href="/region/{{ o.region }}">{{ region_name(o.region) }}</a>{% endif %}</td><td class="num">{{ n|num }}</td></tr>
   {% endfor %}
   </tbody>
 </table>
