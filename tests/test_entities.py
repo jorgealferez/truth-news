@@ -394,7 +394,7 @@ def test_archive_imports_gkg_slots_backwards(session, corpus):
         session, slots=2, stride=timedelta(hours=6), now=NOW, fetch=fake, clock=lambda: next(ticks)
     )
     assert out["slots"] == 2 and out["new"] == 3  # la catalana tiene el mismo enlace en los dos tramos
-    first = archive.floor_slot(min(a.published_at for a in arts)) - timedelta(hours=6)
+    first = archive.floor_slot(min(a.fetched_at for a in arts)) - timedelta(hours=6)
     assert calls == [
         f"{archive.BASE}/{first:%Y%m%d%H%M%S}.translation.gkg.csv.zip",
         f"{archive.BASE}/{first - timedelta(hours=6):%Y%m%d%H%M%S}.translation.gkg.csv.zip",
@@ -519,7 +519,7 @@ def test_archive_cursor_ignores_stray_old_articles(session, corpus):
         )
     )
     session.flush()
-    start = archive.floor_slot(min(a.published_at for a in arts))
+    start = archive.floor_slot(min(a.fetched_at for a in arts))
     stride = timedelta(hours=6)
     assert archive.oldest(session, NOW, stride) == start
     calls = []
@@ -532,3 +532,26 @@ def test_archive_cursor_ignores_stray_old_articles(session, corpus):
     archive.run(session, slots=2, stride=stride, now=NOW, fetch=fake)
     assert calls[0].endswith(f"{start - stride:%Y%m%d%H%M%S}.translation.gkg.csv.zip")
     assert archive.oldest(session, NOW, stride) == start - 2 * stride
+
+
+def test_archive_anchor_ignores_old_dates_in_feeds(session, corpus):
+    # Produccion 2026-10-19 05:41-06:21: "0 tramos" en cada ciclo; una noticia rastreada con fecha de
+    # publicacion antigua llevaba el ancla antes de 2015. El ancla es cuando empezamos a rastrear.
+    outs, arts, *_ = corpus
+    session.add(
+        Article(
+            outlet_id=outs[0].id,
+            url="https://medio0.es/2009",
+            url_hash="v" * 64,
+            title="Pagina de 2009",
+            published_at=datetime(2009, 5, 1, tzinfo=UTC),
+            language="es",
+            country="ES",
+            category="politica",
+            topics=[],
+        )
+    )
+    session.flush()
+    out = archive.run(session, slots=1, now=NOW, fetch=lambda url: gkg_zip([]))
+    assert out["slots"] == 1
+    assert archive.oldest(session, NOW) == archive.floor_slot(min(a.fetched_at for a in arts))
