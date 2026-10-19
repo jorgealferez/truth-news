@@ -29,6 +29,9 @@ es:
   blame_differs: Los medios no señalan a los mismos
   omit_what: Callan, entre otros,
   how_each_tells_it: Cómo lo cuenta cada medio
+  share: Compartir
+  copy_link: Copiar enlace
+  copied: Copiado
   latest: Última hora
   sections: Secciones
   countries: Países
@@ -153,6 +156,9 @@ en:
   blame_differs: Outlets do not point at the same people
   omit_what: Left out, among others,
   how_each_tells_it: How each outlet tells it
+  share: Share
+  copy_link: Copy link
+  copied: Copied
   latest: Latest
   sections: Sections
   countries: Countries

@@ -83,8 +83,9 @@ alcanza; el sistema nunca afirma sin fuente.
 - [ ] Fase 5 — Despliegue en Railway: Postgres, web, worker programado, medido en produccion (acerca C2, C11)
 - [x] Fase 6 — Marca nosmienten.com: identidad sobria y neutral (logotipo, favicon, imagen social, cabecera), dominio propio en Railway (peticion del usuario 2026-10-18; acerca C9, C11) (#9; www pendiente de DNS)
 - [x] Fase 7 — Prioridad a lo que difiere: puntuacion de contraste por historia que ordena portada y contrastes, y relanzamiento de historias antiguas con datos nuevos y tendencia (peticion del usuario 2026-10-18; acerca C6, C12) (#10)
-- [ ] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18)
+- [x] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18) (#11)
 - [ ] Fase 9 — Quien miente, quien informa, quien dice la verdad: fiabilidad por medio con historial de veredictos, ranking por exactitud comprobada, comparativas lado a lado y "la verdad segun los datos" cuando la hay (peticion del usuario 2026-10-18; acerca C6, C12)
+- [ ] Fase 10 — Hilo y consecuencias: archivo historico cruzado con la actualidad, linea temporal por tema, conexiones entre hechos con evidencia y analisis profundo con IA; portada con el porque y el antes/despues de lo que ocurre (peticion del usuario 2026-10-19; acerca C12, C13)
 
 ## Calidad y proyeccion
 
@@ -110,3 +111,4 @@ tal; el crawler se identifica con su User-Agent y respeta `robots.txt` y un ritm
 - 2026-10-18 (suposicion revisable): no hay CI con runners; la pasada local del gauntlet es el veredicto.
 - 2026-10-18 (peticion): mejorar de forma indefinida con PR y squash merge por mejora; prioridad a la marca y los logotipos, y a las historias con datos que difieren sobre las que no tienen nada que marcar; relanzar historias antiguas si hay datos nuevos relevantes y es tendencia.
 - 2026-10-18 (peticion): mejorar la navegacion en movil y escritorio, sitemap, compartir en redes, mejores comparativas y subir el nivel de verdad y mentira por medio: el producto no es un sitio de noticias sino de quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos.
+- 2026-10-19 (peticion): ir mas alla de la noticia: cruzar archivo historico con la actualidad, que se decia, que paso, quien dijo que y que consecuencias tuvo, buscando correlaciones entre hechos aparentemente sueltos; con IA (el usuario aportara la clave de Anthropic); en portada siempre lo que ocurre ahora con su porque.

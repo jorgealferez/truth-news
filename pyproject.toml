@@ -23,6 +23,7 @@ dependencies = [
   "apscheduler>=3.10,<4",
   "python-multipart>=0.0.9",
   "anthropic>=1.15",
+  "pillow>=10.4",
 ]
 
 [project.optional-dependencies]
@@ -35,7 +36,7 @@ truthnews = "truthnews.cli:main"
 include = ["truthnews*"]
 
 [tool.setuptools.package-data]
-truthnews = ["registry/*.yaml", "registry/sources/*.yaml", "web/templates/*.html", "web/static/*"]
+truthnews = ["registry/*.yaml", "registry/sources/*.yaml", "web/templates/*.html", "web/static/*", "web/fonts/*"]
 
 [tool.ruff]
 line-length = 110
