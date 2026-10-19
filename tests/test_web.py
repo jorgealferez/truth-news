@@ -13,6 +13,7 @@ from truthnews.models import (
     Outlet,
     Piece,
     Story,
+    Thread,
     Topic,
     Verification,
 )
@@ -583,3 +584,73 @@ def test_social_image_handles_long_titles_and_verdicts():
         "Palabra " * 60, "Economía · 9 medios", [("paro", 10.0, 12.5, 4)], {"falso": 1, "verdadero": 2}, "x"
     )
     assert png[:4] == b"\x89PNG"
+
+
+def test_breaking_band_and_now_json(client, session):
+    """Ultimo minuto: lo nuevo arriba, con impulso, cifras en disputa y el porque (peticion 2026-10-19)."""
+    o2 = Outlet(
+        slug="otro", name="Otro", homepage="https://o.es", country="ES", language="es", scope="national"
+    )
+    session.add(o2)
+    session.flush()
+    now = datetime.now(UTC)
+    fresh = Story(
+        title="Apagon en tres comunidades",
+        category="sociedad",
+        country="ES",
+        first_seen=now - timedelta(minutes=20),
+        last_seen=now - timedelta(minutes=5),
+        n_articles=2,
+        n_outlets=2,
+        contrast={"disputas": ["afectados"]},
+    )
+    old = Story(
+        title="Historia de anteayer",
+        category="politica",
+        country="ES",
+        first_seen=now - timedelta(days=2),
+        last_seen=now - timedelta(minutes=5),
+        n_articles=2,
+        n_outlets=2,
+    )
+    session.add_all([fresh, old])
+    session.flush()
+    session.query(Article).filter_by(url="https://m.es/2").one().story_id = fresh.id
+    session.add(
+        Article(
+            outlet_id=o2.id,
+            url="https://o.es/apagon",
+            url_hash="a" * 64,
+            title="Apagon",
+            published_at=now,
+            fetched_at=now,
+            language="es",
+            country="ES",
+            category="sociedad",
+            topics=[],
+            story_id=fresh.id,
+        )
+    )
+    session.add(
+        Thread(title="Por que falla la red", status="publicado", anchor_story_id=fresh.id, content={})
+    )
+    session.commit()
+
+    home = client.get("/").text
+    band = home.split('class="breaking"')[1].split("</section>")[0]
+    assert "Último minuto" in band and "Apagon en tres comunidades" in band
+    assert "Historia de anteayer" not in band  # solo lo nacido en las ultimas horas
+    assert "+2 en la última hora" in band  # m.es/2 tambien se rastreo ahora (fetched_at por defecto)
+    assert "Cifras en disputa" in band
+    assert "El porqué" in band and "/hilo/" in band
+    assert "se revisan cada 10 min" in band and 'src="/static/live.js"' in home
+    data = client.get("/ahora.json").json()
+    assert data["latest"] > 0 and data["last_crawl"] > 0
+    assert client.get("/static/live.js").status_code == 200
+    en = client.get("/?lang=en").text
+    assert "Latest" in en and "ago" in en
+
+
+def test_no_breaking_band_without_fresh_stories(client):
+    assert 'class="breaking"' not in client.get("/").text
+    assert client.get("/ahora.json").json()["latest"] == 0

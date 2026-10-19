@@ -69,6 +69,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0024 + migracion 0014 | datos | reservado | Global (fuentes politicas) |
 | ADR 0023 | diseno | reservado | Verificaciones (consulta puntual de interes publico) |
 | ADR 0025 | diseno | PR (este) | Migracion al holding (plan) |
+| ADR 0026 | diseno | en este PR | Ultimo minuto (session_01VVUuDkKCf1JjwvouACQM38) |
 | siguiente libre | — | — | pedir a la direccion |
 
 ## Como se trabaja

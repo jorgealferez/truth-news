@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from datetime import UTC, datetime, timedelta
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -19,15 +20,60 @@ from truthnews.config import Settings, get_settings
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.investigate import process_pending, seed_defaults
-from truthnews.models import CrawlRun
+from truthnews.models import CrawlRun, Outlet
 from truthnews.social import queue as social
 
 log = logging.getLogger(__name__)
 RECENT_CYCLE_MIN = 25  # los agentes despliegan a menudo; cada arranque no debe pagar un ciclo completo
+BREAKING_LANE = "rapido"  # marca en CrawlRun.stats de los rastreos del carril de ultimo minuto
+_busy = threading.Lock()  # el ciclo completo y el carril rapido nunca se solapan
 
 
 def run_cycle(settings: Settings | None = None) -> dict:
+    with _busy:
+        return _run_cycle(settings or get_settings())
+
+
+def breaking_outlets(session, country: str) -> list[str]:
+    """Medios nacionales del pais (agencias, diarios, radio y television): los que dan el ultimo minuto."""
+    q = select(Outlet.slug).where(
+        Outlet.active.is_(True), Outlet.country == country, Outlet.scope == "national"
+    )
+    return list(session.scalars(q))
+
+
+def run_breaking(settings: Settings | None = None) -> dict | None:
+    """Carril rapido: rastreo de los medios nacionales y contraste con datos, sin IA (barato y frecuente).
+
+    Si el ciclo completo esta en marcha no se espera: ese ciclo ya rastrea todo."""
     settings = settings or get_settings()
+    if not _busy.acquire(blocking=False):
+        log.info("ultimo minuto: ciclo completo en marcha, se salta esta vuelta")
+        return None
+    try:
+        engine = get_engine(settings.database_url)
+        with session_scope(engine) as session:
+            slugs = breaking_outlets(session, settings.default_country)
+            if not slugs:
+                return None
+            run = asyncio.run(crawl(session, settings, outlet_slugs=slugs))
+            run.stats = {**(run.stats or {}), "lane": BREAKING_LANE}
+            summary = {
+                "run": run.id,
+                "lane": BREAKING_LANE,
+                "outlets": len(slugs),
+                "articles_new": run.articles_new,
+            }
+            started = run.started_at
+        with session_scope(engine) as session:
+            summary["analysis"] = analyze(session, since=started)
+        log.info("ultimo minuto terminado: %s", summary)
+        return summary
+    finally:
+        _busy.release()
+
+
+def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
         sync_registry(session)
@@ -81,16 +127,19 @@ def recent_cycle(settings: Settings, now: datetime | None = None) -> bool:
     now = now or datetime.now(UTC)
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        last = session.scalars(select(CrawlRun.started_at).order_by(CrawlRun.id.desc()).limit(1)).first()
+        rows = session.execute(
+            select(CrawlRun.started_at, CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(50)
+        )
+        # Los rastreos del carril rapido no cuentan: no hacen el trabajo del ciclo completo (IA, redes).
+        last = next((at for at, stats in rows if (stats or {}).get("lane") != BREAKING_LANE), None)
     if last is None:
         return False
     last = last if last.tzinfo else last.replace(tzinfo=UTC)
     return now - last < timedelta(minutes=RECENT_CYCLE_MIN)
 
 
-def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle infinito
-    settings = settings or get_settings()
-    scheduler = BlockingScheduler(timezone="UTC")
+def add_jobs(scheduler, settings: Settings) -> None:
+    """Ciclo completo cada crawl_interval_minutes y carril de ultimo minuto cada breaking_interval_minutes."""
     scheduler.add_job(
         run_cycle,
         "interval",
@@ -99,8 +148,25 @@ def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle 
         id="crawl",
         max_instances=1,
         coalesce=True,
-        next_run_time=None,
+        # Sin next_run_time=None: en APScheduler 3 eso deja el trabajo en pausa y el ciclo horario solo
+        # ocurria al redesplegar. El primero cae a +intervalo; el del arranque se lanza a mano abajo.
     )
+    if settings.breaking_interval_minutes > 0:
+        scheduler.add_job(
+            run_breaking,
+            "interval",
+            minutes=settings.breaking_interval_minutes,
+            args=[settings],
+            id="breaking",
+            max_instances=1,
+            coalesce=True,
+        )
+
+
+def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle infinito
+    settings = settings or get_settings()
+    scheduler = BlockingScheduler(timezone="UTC")
+    add_jobs(scheduler, settings)
     if recent_cycle(settings):
         log.info(
             "worker: ciclo reciente (redespliegue); el siguiente, en %s min", settings.crawl_interval_minutes

@@ -40,6 +40,11 @@ class Settings:
     crawl_interval_minutes: int = field(
         default_factory=lambda: int(os.environ.get("CRAWL_INTERVAL_MINUTES", "60"))
     )
+    # Carril rapido de ultimo minuto: medios nacionales y agencias del pais por defecto, sin IA, cada N
+    # minutos ademas del ciclo completo (peticion del usuario 2026-10-19). 0 lo desactiva.
+    breaking_interval_minutes: int = field(
+        default_factory=lambda: int(os.environ.get("BREAKING_INTERVAL_MINUTES", "10"))
+    )
     crawl_concurrency: int = field(default_factory=lambda: int(os.environ.get("CRAWL_CONCURRENCY", "16")))
     per_domain_delay_seconds: float = field(
         default_factory=lambda: float(os.environ.get("PER_DOMAIN_DELAY_SECONDS", "1.0"))
