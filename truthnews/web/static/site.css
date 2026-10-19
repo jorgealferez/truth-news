@@ -287,3 +287,21 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .meter.bar { display:flex; gap:0; height:14px; border-radius:7px; overflow:hidden; margin:8px 0; background:var(--soft); }
 .meter.bar span { width:auto; height:100%; border-radius:0; } .meter.bar .v-verdadero { background:#1b7a3a; } .meter.bar .v-impreciso { background:#b07300; }
 .meter.bar .v-falso { background:#b3001b; } .meter.bar .v-enganoso { background:#7a2a8c; } .meter.bar .v-sin-datos { background:#6b6b6b; }
+/* Lo que no cuadra (ADR 0027): lo publicado frente al dato oficial, de un vistazo */
+.nc-list { list-style:none; margin:8px 0 18px; padding:0; display:grid; gap:12px; }
+.nc-item { background:#fff; border:1px solid var(--line); border-left:4px solid var(--ink); border-radius:6px; padding:10px 14px; }
+.nc-one { margin:6px 0; font-size:17px; line-height:1.35; overflow-wrap:anywhere; }
+.nc-vs { display:grid; gap:4px; margin:8px 0; font:600 12px system-ui, sans-serif; }
+.nc-bar { display:block; min-width:4.5em; padding:3px 8px; border-radius:3px; white-space:nowrap; }
+.nc-bar.said { background:#b3001b; color:#fff; } .nc-bar.data { background:#1b7a3a; color:#fff; }
+.nocuadra h2 a { text-decoration:underline; text-decoration-color:var(--brand); text-underline-offset:4px; }
+/* Ficha de entidad: noticias por mes, rastreadas y de archivo */
+.ent-tl { display:flex; align-items:flex-end; gap:2px; height:140px; padding-bottom:20px; margin-bottom:6px; overflow-x:auto; }
+.ent-tl .col { position:relative; flex:1 0 10px; min-width:10px; max-width:36px; height:100%; display:flex; flex-direction:column; justify-content:flex-end; }
+.ent-tl .seg { display:block; width:100%; } .ent-tl .seg.rss, .legend .sw.rss { background:var(--brand); } .ent-tl .seg.arch, .legend .sw.arch { background:#8c8c8c; }
+.ent-tl small { position:absolute; bottom:-16px; left:50%; transform:translateX(-50%); font:10px system-ui, sans-serif; color:var(--muted); }
+.ent-tl .col:not(:nth-child(6n+1)) small { display:none; }
+.legend .sw { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin-left:8px; }
+.chips a.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
+.ent-bars .tag { position:relative; z-index:1; }
+.ent-list { margin:6px 0 14px; padding-left:20px; } .ent-list li { margin:6px 0; line-height:1.4; overflow-wrap:anywhere; }

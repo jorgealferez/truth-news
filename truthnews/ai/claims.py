@@ -134,7 +134,7 @@ def run(
         session.scalars(
             select(Article)
             .options(joinedload(Article.outlet))
-            .where(Article.fetched_at >= since)
+            .where(Article.fetched_at >= since, Article.origin == "rss")  # sin archivo (ADR 0028)
             .order_by(Article.published_at.desc())
         )
     )

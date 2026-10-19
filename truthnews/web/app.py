@@ -24,11 +24,12 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad, reliability
+from truthnews.analysis import abroad, ranking, reliability
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
+from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.social import images
 from truthnews.web import admin, appointments, budget, citations, queries, seo, social, topicview
@@ -450,6 +451,35 @@ def create_app(
     @app.get("/verificaciones", response_class=HTMLResponse)
     def verifications(request: Request, session: SessionDep):
         return render(request, "verifications.html", claims=queries.all_verifications(session))
+
+    @app.get("/discrepancias", response_class=HTMLResponse)
+    def discrepancies(request: Request, session: SessionDep):
+        # Lo que no cuadra (ADR 0027): la noticia grande es donde los datos y lo publicado no coinciden.
+        return render(
+            request,
+            "discrepancies.html",
+            falsehoods=ranking.falsehoods(session, limit=20),
+            discrepancies=ranking.discrepancies(session, country=settings.default_country, limit=12),
+            contradictions=ranking.contradictions(session, limit=12),
+            board=ranking.scoreboard(session),
+        )
+
+    @app.get("/entidades", response_class=HTMLResponse)
+    def entities(request: Request, session: SessionDep, tipo: str | None = None, dias: int = 30):
+        kind = tipo if tipo in ("persona", "partido", "institucion", "organizacion", "lugar") else None
+        days = dias if dias in (7, 30, 365) else 30
+        return render(
+            request, "entities.html", rows=entity_views.ranking(session, kind, days), tipo=kind, dias=days
+        )
+
+    @app.get("/entidad/{ref}", response_class=HTMLResponse)
+    def entity(request: Request, ref: str, session: SessionDep):
+        p = entity_views.profile(session, ref_id(ref))
+        if p is None:
+            raise HTTPException(404)
+        if redirect := canonical(request, "entidad", p.entity.id, p.entity.name):
+            return redirect
+        return render(request, "entity.html", p=p, e=p.entity)
 
     @app.get("/historia/{ref}", response_class=HTMLResponse)
     def story(request: Request, ref: str, session: SessionDep, medio: str | None = None):

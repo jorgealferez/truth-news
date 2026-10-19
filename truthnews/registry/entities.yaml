@@ -1,0 +1,194 @@
+# Registro curado de entidades (ADR 0028). Solo nombre, tipo, pais y formas con las que aparecen en la
+# prensa; nunca cargos (caducan y no los podemos sostener con una fuente). Un alias de una sola palabra
+# solo se pone si en la prensa espanola se refiere sin ambiguedad a esa entidad ("Feijoo" si,
+# "Sanchez" no). Las demas personas y organizaciones se descubren en el texto (truthnews/entities).
+# Formato: - {name, kind, country?, aliases?}. kind: persona | partido | institucion | organizacion | lugar
+entidades:
+  # --- Partidos de Espana con representacion (mismo trato para todos)
+  - {name: PSOE, kind: partido, country: ES, aliases: [Partido Socialista Obrero Español]}
+  - {name: Partido Popular, kind: partido, country: ES, aliases: [PP]}
+  - {name: Vox, kind: partido, country: ES}
+  - {name: Sumar, kind: partido, country: ES}
+  - {name: Podemos, kind: partido, country: ES}
+  - {name: ERC, kind: partido, country: ES, aliases: [Esquerra Republicana]}
+  - {name: Junts, kind: partido, country: ES, aliases: [Junts per Catalunya]}
+  - {name: EH Bildu, kind: partido, country: ES, aliases: [Bildu]}
+  - {name: PNV, kind: partido, country: ES, aliases: [Partido Nacionalista Vasco, EAJ-PNV]}
+  - {name: BNG, kind: partido, country: ES, aliases: [Bloque Nacionalista Galego]}
+  - {name: Coalición Canaria, kind: partido, country: ES}
+  - {name: UPN, kind: partido, country: ES, aliases: [Unión del Pueblo Navarro]}
+  - {name: Ciudadanos, kind: partido, country: ES}
+  - {name: Izquierda Unida, kind: partido, country: ES, aliases: [IU]}
+  - {name: Más Madrid, kind: partido, country: ES}
+  - {name: Compromís, kind: partido, country: ES}
+  - {name: Se Acabó La Fiesta, kind: partido, country: ES, aliases: [SALF]}
+  # --- Personas frecuentes en la prensa espanola (orden alfabetico por apellido, sin cargos)
+  - {name: Santiago Abascal, kind: persona, country: ES, aliases: [Abascal]}
+  - {name: José Luis Ábalos, kind: persona, country: ES, aliases: [Ábalos]}
+  - {name: Pilar Alegría, kind: persona, country: ES}
+  - {name: Isabel Díaz Ayuso, kind: persona, country: ES, aliases: [Díaz Ayuso, Ayuso]}
+  - {name: Ione Belarra, kind: persona, country: ES, aliases: [Belarra]}
+  - {name: Félix Bolaños, kind: persona, country: ES, aliases: [Bolaños]}
+  - {name: Carlos Cuerpo, kind: persona, country: ES}
+  - {name: Yolanda Díaz, kind: persona, country: ES}
+  - {name: Aitor Esteban, kind: persona, country: ES}
+  - {name: Alberto Núñez Feijóo, kind: persona, country: ES, aliases: [Núñez Feijóo, Feijóo]}
+  - {name: Cuca Gamarra, kind: persona, country: ES}
+  - {name: Álvaro García Ortiz, kind: persona, country: ES, aliases: [García Ortiz]}
+  - {name: Begoña Gómez, kind: persona, country: ES}
+  - {name: Fernando Grande-Marlaska, kind: persona, country: ES, aliases: [Grande-Marlaska, Marlaska]}
+  - {name: Pablo Iglesias, kind: persona, country: ES}
+  - {name: Salvador Illa, kind: persona, country: ES}
+  - {name: Oriol Junqueras, kind: persona, country: ES, aliases: [Junqueras]}
+  - {name: Koldo García, kind: persona, country: ES, aliases: [Koldo]}
+  - {name: Carlos Mazón, kind: persona, country: ES, aliases: [Mazón]}
+  - {name: Irene Montero, kind: persona, country: ES}
+  - {name: María Jesús Montero, kind: persona, country: ES}
+  - {name: Juanma Moreno, kind: persona, country: ES, aliases: [Juan Manuel Moreno]}
+  - {name: Ester Muñoz, kind: persona, country: ES}
+  - {name: Arnaldo Otegi, kind: persona, country: ES, aliases: [Otegi]}
+  - {name: Imanol Pradales, kind: persona, country: ES, aliases: [Pradales]}
+  - {name: Óscar Puente, kind: persona, country: ES}
+  - {name: Carles Puigdemont, kind: persona, country: ES, aliases: [Puigdemont]}
+  - {name: Margarita Robles, kind: persona, country: ES}
+  - {name: Gabriel Rufián, kind: persona, country: ES, aliases: [Rufián]}
+  - {name: Pedro Sánchez, kind: persona, country: ES}
+  - {name: Santos Cerdán, kind: persona, country: ES, aliases: [Cerdán]}
+  - {name: Miguel Tellado, kind: persona, country: ES, aliases: [Tellado]}
+  - {name: Felipe VI, kind: persona, country: ES}
+  - {name: José Luis Rodríguez Zapatero, kind: persona, country: ES, aliases: [Rodríguez Zapatero, Zapatero]}
+  - {name: Mariano Rajoy, kind: persona, country: ES, aliases: [Rajoy]}
+  - {name: José María Aznar, kind: persona, country: ES, aliases: [Aznar]}
+  # --- Personas frecuentes en la prensa internacional
+  - {name: Donald Trump, kind: persona, country: US, aliases: [Trump]}
+  - {name: JD Vance, kind: persona, country: US}
+  - {name: Joe Biden, kind: persona, country: US, aliases: [Biden]}
+  - {name: Elon Musk, kind: persona, country: US, aliases: [Musk]}
+  - {name: Emmanuel Macron, kind: persona, country: FR, aliases: [Macron]}
+  - {name: Friedrich Merz, kind: persona, country: DE, aliases: [Merz]}
+  - {name: Giorgia Meloni, kind: persona, country: IT, aliases: [Meloni]}
+  - {name: Keir Starmer, kind: persona, country: GB, aliases: [Starmer]}
+  - {name: Ursula von der Leyen, kind: persona, aliases: [Von der Leyen]}
+  - {name: António Costa, kind: persona, country: PT}
+  - {name: Kaja Kallas, kind: persona}
+  - {name: Mark Rutte, kind: persona, aliases: [Rutte]}
+  - {name: Vladímir Putin, kind: persona, country: RU, aliases: [Vladimir Putin, Putin]}
+  - {name: Volodímir Zelenski, kind: persona, country: UA, aliases: [Volodymyr Zelensky, Zelenski, Zelensky]}
+  - {name: Benjamín Netanyahu, kind: persona, country: IL, aliases: [Benjamin Netanyahu, Netanyahu]}
+  - {name: Xi Jinping, kind: persona, country: CN}
+  - {name: Mohamed VI, kind: persona, country: MA}
+  - {name: Recep Tayyip Erdogan, kind: persona, country: TR, aliases: [Erdogan, Erdoğan]}
+  - {name: Javier Milei, kind: persona, country: AR, aliases: [Milei]}
+  - {name: Claudia Sheinbaum, kind: persona, country: MX, aliases: [Sheinbaum]}
+  - {name: Luiz Inácio Lula da Silva, kind: persona, country: BR, aliases: [Lula da Silva, Lula]}
+  - {name: Nicolás Maduro, kind: persona, country: VE, aliases: [Maduro]}
+  - {name: Gustavo Petro, kind: persona, country: CO, aliases: [Petro]}
+  - {name: Papa León XIV, kind: persona, aliases: [León XIV]}
+  # --- Instituciones de Espana
+  - {name: Gobierno de España, kind: institucion, country: ES, aliases: [Gobierno central, Moncloa, La Moncloa]}
+  - {name: Congreso de los Diputados, kind: institucion, country: ES, aliases: [Congreso]}
+  - {name: Senado, kind: institucion, country: ES}
+  - {name: Tribunal Supremo, kind: institucion, country: ES, aliases: [Supremo]}
+  - {name: Tribunal Constitucional, kind: institucion, country: ES, aliases: [Constitucional]}
+  - {name: Audiencia Nacional, kind: institucion, country: ES}
+  - {name: Fiscalía General del Estado, kind: institucion, country: ES, aliases: [Fiscalía General]}
+  - {name: Consejo General del Poder Judicial, kind: institucion, country: ES, aliases: [CGPJ]}
+  - {name: Banco de España, kind: institucion, country: ES}
+  - {name: INE, kind: institucion, country: ES, aliases: [Instituto Nacional de Estadística]}
+  - {name: CIS, kind: institucion, country: ES, aliases: [Centro de Investigaciones Sociológicas]}
+  - {name: AIReF, kind: institucion, country: ES, aliases: [Autoridad Independiente de Responsabilidad Fiscal]}
+  - {name: Guardia Civil, kind: institucion, country: ES}
+  - {name: Policía Nacional, kind: institucion, country: ES}
+  - {name: Seguridad Social, kind: institucion, country: ES}
+  - {name: Agencia Tributaria, kind: institucion, country: ES}
+  - {name: Casa Real, kind: institucion, country: ES, aliases: [Casa del Rey]}
+  - {name: Tribunal de Cuentas, kind: institucion, country: ES}
+  - {name: CNMC, kind: institucion, country: ES, aliases: [Comisión Nacional de los Mercados y la Competencia]}
+  - {name: Generalitat de Catalunya, kind: institucion, country: ES}
+  - {name: Junta de Andalucía, kind: institucion, country: ES}
+  - {name: Comunidad de Madrid, kind: institucion, country: ES}
+  - {name: Gobierno Vasco, kind: institucion, country: ES}
+  - {name: Xunta de Galicia, kind: institucion, country: ES, aliases: [Xunta]}
+  # --- Instituciones y organismos internacionales
+  - {name: Comisión Europea, kind: institucion}
+  - {name: Parlamento Europeo, kind: institucion, aliases: [Eurocámara]}
+  - {name: Unión Europea, kind: institucion, aliases: [UE]}
+  - {name: Banco Central Europeo, kind: institucion, aliases: [BCE]}
+  - {name: Eurostat, kind: institucion}
+  - {name: OTAN, kind: institucion, aliases: [NATO]}
+  - {name: ONU, kind: institucion, aliases: [Naciones Unidas, Organización de las Naciones Unidas]}
+  - {name: FMI, kind: institucion, aliases: [Fondo Monetario Internacional]}
+  - {name: OCDE, kind: institucion}
+  - {name: OMS, kind: institucion, aliases: [Organización Mundial de la Salud]}
+  - {name: Casa Blanca, kind: institucion, country: US}
+  - {name: Kremlin, kind: institucion, country: RU}
+  - {name: Hamás, kind: organizacion, aliases: [Hamas]}
+  - {name: Hezbolá, kind: organizacion, aliases: [Hezbollah]}
+  # --- Organizaciones de Espana
+  - {name: CCOO, kind: organizacion, country: ES, aliases: [Comisiones Obreras]}
+  - {name: UGT, kind: organizacion, country: ES, aliases: [Unión General de Trabajadores]}
+  - {name: CEOE, kind: organizacion, country: ES}
+  - {name: Cepyme, kind: organizacion, country: ES}
+  # --- Lugares (paises y territorios frecuentes)
+  - {name: España, kind: lugar, country: ES}
+  - {name: Cataluña, kind: lugar, country: ES, aliases: [Catalunya]}
+  - {name: Andalucía, kind: lugar, country: ES}
+  - {name: País Vasco, kind: lugar, country: ES, aliases: [Euskadi]}
+  - {name: Galicia, kind: lugar, country: ES}
+  - {name: Comunitat Valenciana, kind: lugar, country: ES, aliases: [Comunidad Valenciana]}
+  - {name: Canarias, kind: lugar, country: ES}
+  - {name: Ceuta, kind: lugar, country: ES}
+  - {name: Melilla, kind: lugar, country: ES}
+  - {name: Gibraltar, kind: lugar, country: GB}
+  - {name: Marruecos, kind: lugar, country: MA}
+  - {name: Argelia, kind: lugar, country: DZ}
+  - {name: Francia, kind: lugar, country: FR}
+  - {name: Portugal, kind: lugar, country: PT}
+  - {name: Alemania, kind: lugar, country: DE}
+  - {name: Italia, kind: lugar, country: IT}
+  - {name: Reino Unido, kind: lugar, country: GB}
+  - {name: Estados Unidos, kind: lugar, country: US, aliases: [EEUU, EE UU, EE.UU.]}
+  - {name: Rusia, kind: lugar, country: RU}
+  - {name: Ucrania, kind: lugar, country: UA}
+  - {name: Israel, kind: lugar, country: IL}
+  - {name: Gaza, kind: lugar, aliases: [Franja de Gaza]}
+  - {name: Cisjordania, kind: lugar}
+  - {name: Irán, kind: lugar, country: IR}
+  - {name: China, kind: lugar, country: CN}
+  - {name: Venezuela, kind: lugar, country: VE}
+  - {name: México, kind: lugar, country: MX}
+  - {name: Argentina, kind: lugar, country: AR}
+  - {name: Sáhara Occidental, kind: lugar, aliases: [Sáhara]}
+
+# Nombres de pila: una secuencia de nombres propios que empieza por uno de estos se toma por persona.
+nombres_de_pila: [
+  adrian, agustin, aitor, alba, alberto, alejandra, alejandro, alfonso, alfredo, alicia, alvaro, amparo, ana,
+  andrea, andres, angel, angela, angeles, antonio, arantxa, ariadna, arturo, beatriz, begona, belen, benjamin,
+  blanca, borja, carla, carles, carlos, carme, carmen, carolina, catalina, cayetana, celia, cesar, clara,
+  concepcion, cristina, cristian, cristobal, daniel, david, diana, diego, dolores, eduardo, elena, elisa,
+  elvira, emilio, emiliano, enric, enrique, ernesto, esperanza, esteban, ester, esther, eva, federico, felipe,
+  felix, fernando, francesc, francisco, francina, gabriel, gabriela, gaspar, gema, gemma, gerardo, gloria,
+  gonzalo, guillermo, gustavo, hector, helena, hugo, ignacio, imanol, ines, inigo, irene, isabel, ismael,
+  ivan, jaime, javier, jesus, joan, joaquin, jordi, jorge, jose, josep, josefa, juan, juana, juanma, julia,
+  julian, julio, laia, laura, lidia, lorena, lorenzo, lucia, luis, luisa, lourdes, macarena, manuel, manuela,
+  marc, marcos, margarita, maria, mariano, marina, mario, marta, martin, mercedes, miguel, mikel, miriam,
+  monica, montserrat, nacho, natalia, nerea, nicolas, nuria, olga, oriol, oscar, pablo, paloma, patricia,
+  pau, paula, pedro, pere, pilar, rafael, ramon, raquel, raul, rebeca, ricardo, roberto, rocio, rodrigo,
+  rosa, rosario, ruben, salvador, samuel, sandra, santiago, sara, sergio, silvia, sofia, soledad, sonia,
+  susana, teresa, tomas, valentin, vanesa, veronica, vicente, victor, victoria, virginia, xavier, yolanda,
+  alexander, alexandre, andrew, anne, boris, charles, david, donald, elizabeth, emmanuel, francois, friedrich,
+  george, hillary, jacques, james, jean, jeff, john, joseph, kamala, keir, marine, mark, michael, nancy,
+  olaf, peter, pierre, richard, robert, sarah, stephen, thomas, ursula, vladimir, william, wolfgang, xi
+]
+
+# Primera palabra de una organizacion o institucion: "Tribunal Superior de Justicia de Madrid".
+cabezas_institucion: [
+  ministerio, tribunal, ayuntamiento, junta, consejo, consejeria, conselleria, audiencia, fiscalia, juzgado,
+  gobierno, parlamento, cortes, diputacion, cabildo, delegacion, subdelegacion, defensor, instituto, agencia,
+  servicio, comision, direccion, oficina, secretaria, autoridad, policia, guardia, ejercito, armada,
+  universidad, hospital
+]
+cabezas_organizacion: [
+  partido, asociacion, fundacion, federacion, confederacion, sindicato, plataforma, colegio, camara, grupo,
+  empresa, compania, banco, club, coordinadora, movimiento, union, frente, organizacion, red, observatorio
+]

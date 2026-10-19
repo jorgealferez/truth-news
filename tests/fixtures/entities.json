@@ -1,0 +1,101 @@
+{
+  "_comentario": "Conjunto etiquetado a mano para medir el extractor de entidades (ADR 0027). Textos con la forma de la prensa espanola (incisos, 'segun', cargos delante del nombre, apellidos sueltos) y trampas: verbos que coinciden con partidos, siglas en minusculas, meses y dias con mayuscula. 'entidades' son [tipo, nombre]; 'hablan' los nombres que dicen algo en el texto.",
+  "docs": [
+    {
+      "title": "Feijóo acusa a Sánchez de gobernar sin presupuestos",
+      "text": "El líder del PP, Alberto Núñez Feijóo, ha acusado este lunes al Gobierno de Pedro Sánchez de gobernar sin cuentas. Según Feijóo, el Ejecutivo ha perdido la mayoría en el Congreso.",
+      "entidades": [["persona", "Alberto Núñez Feijóo"], ["persona", "Pedro Sánchez"], ["partido", "Partido Popular"], ["institucion", "Congreso de los Diputados"]],
+      "hablan": ["Alberto Núñez Feijóo"]
+    },
+    {
+      "title": "Sumar pide sumar fuerzas para la ley de vivienda",
+      "text": "Sumar ha anunciado que llevará la ley al Congreso. Podemos no ha confirmado su apoyo. podemos decir que la negociación sigue abierta, explicó una fuente.",
+      "entidades": [["partido", "Sumar"], ["partido", "Podemos"], ["institucion", "Congreso de los Diputados"]],
+      "hablan": ["Sumar"]
+    },
+    {
+      "title": "El INE sitúa el paro en el 10,5 % en el tercer trimestre",
+      "text": "La tasa de paro se situó en el 10,5 %, según el INE. La vicepresidenta Yolanda Díaz aseguró que es el dato más bajo desde 2008.",
+      "entidades": [["institucion", "INE"], ["persona", "Yolanda Díaz"]],
+      "hablan": ["INE", "Yolanda Díaz"]
+    },
+    {
+      "title": "El Tribunal Superior de Justicia de Madrid anula la ordenanza",
+      "text": "El Tribunal Superior de Justicia de Madrid ha anulado la ordenanza de movilidad del Ayuntamiento de Madrid. La portavoz municipal, Inmaculada Sanz, ha replicado que recurrirán al Tribunal Supremo.",
+      "entidades": [["institucion", "Tribunal Superior de Justicia de Madrid"], ["institucion", "Ayuntamiento de Madrid"], ["institucion", "Tribunal Supremo"]],
+      "hablan": []
+    },
+    {
+      "title": "Trump amenaza con nuevos aranceles a la Unión Europea",
+      "text": "El presidente de Estados Unidos, Donald Trump, dijo el viernes que impondrá aranceles a la UE. La Comisión Europea respondió que defenderá a sus empresas. Ursula von der Leyen no ha hecho declaraciones.",
+      "entidades": [["persona", "Donald Trump"], ["lugar", "Estados Unidos"], ["institucion", "Unión Europea"], ["institucion", "Comisión Europea"], ["persona", "Ursula von der Leyen"]],
+      "hablan": ["Donald Trump", "Comisión Europea"]
+    },
+    {
+      "title": "Marruecos y España firman un acuerdo sobre Ceuta y Melilla",
+      "text": "Los gobiernos de Marruecos y España han firmado un acuerdo aduanero para Ceuta y Melilla. El ministro José Manuel Albares ha destacado que abre una etapa nueva.",
+      "entidades": [["lugar", "Marruecos"], ["lugar", "España"], ["lugar", "Ceuta"], ["lugar", "Melilla"], ["persona", "José Manuel Albares"]],
+      "hablan": ["José Manuel Albares"]
+    },
+    {
+      "title": "Laura Fernández, de la plataforma vecinal, denuncia retrasos en las obras",
+      "text": "Laura Fernández, portavoz de la Plataforma por el Tren de Extremadura, ha denunciado nuevos retrasos. Fernández añadió que pedirán explicaciones al Ministerio de Transportes.",
+      "entidades": [["persona", "Laura Fernández"], ["organizacion", "Plataforma por el Tren de Extremadura"], ["institucion", "Ministerio de Transportes"]],
+      "hablan": ["Laura Fernández"]
+    },
+    {
+      "title": "El Banco de España eleva la previsión de crecimiento",
+      "text": "El Banco de España ha elevado su previsión de crecimiento. En octubre, el organismo advirtió del riesgo de la deuda. El FMI coincide en el diagnóstico.",
+      "entidades": [["institucion", "Banco de España"], ["institucion", "FMI"]],
+      "hablan": []
+    },
+    {
+      "title": "Ayuso y Puigdemont, frente a frente por la financiación",
+      "text": "Isabel Díaz Ayuso ha criticado el acuerdo con Junts. Carles Puigdemont sostuvo desde Waterloo que Cataluña merece un trato singular.",
+      "entidades": [["persona", "Isabel Díaz Ayuso"], ["partido", "Junts"], ["persona", "Carles Puigdemont"], ["lugar", "Cataluña"]],
+      "hablan": ["Isabel Díaz Ayuso", "Carles Puigdemont"]
+    },
+    {
+      "title": "CCOO y UGT convocan movilizaciones por la jornada de 37,5 horas",
+      "text": "Los sindicatos CCOO y UGT han convocado movilizaciones el jueves. La CEOE rechaza la medida. El ministro Carlos Cuerpo ha recordado que la ley está en el Senado.",
+      "entidades": [["organizacion", "CCOO"], ["organizacion", "UGT"], ["organizacion", "CEOE"], ["persona", "Carlos Cuerpo"], ["institucion", "Senado"]],
+      "hablan": ["Carlos Cuerpo"]
+    },
+    {
+      "title": "Zelenski pide más defensa antiaérea tras el ataque ruso",
+      "text": "Volodímir Zelenski ha pedido a la OTAN más sistemas de defensa. Rusia lanzó el domingo un ataque masivo contra Ucrania, según el Gobierno ucraniano.",
+      "entidades": [["persona", "Volodímir Zelenski"], ["institucion", "OTAN"], ["lugar", "Rusia"], ["lugar", "Ucrania"]],
+      "hablan": []
+    },
+    {
+      "title": "La Guardia Civil detiene a doce personas en una operación en Andalucía",
+      "text": "La Guardia Civil ha detenido a doce personas en Andalucía. Fuentes de la investigación señalan que la red operaba desde Gibraltar.",
+      "entidades": [["institucion", "Guardia Civil"], ["lugar", "Andalucía"], ["lugar", "Gibraltar"]],
+      "hablan": []
+    },
+    {
+      "title": "Netanyahu rechaza el alto el fuego propuesto por Hamás",
+      "text": "Benjamín Netanyahu ha rechazado la propuesta de Hamás para Gaza. Israel mantiene sus operaciones, ha dicho un portavoz militar.",
+      "entidades": [["persona", "Benjamín Netanyahu"], ["organizacion", "Hamás"], ["lugar", "Gaza"], ["lugar", "Israel"]],
+      "hablan": []
+    },
+    {
+      "title": "Junqueras y Rufián defienden el pacto fiscal",
+      "text": "Oriol Junqueras ha defendido el pacto fiscal en el Parlament. Gabriel Rufián afirmó en el Congreso que ERC cumplirá su palabra.",
+      "entidades": [["persona", "Oriol Junqueras"], ["persona", "Gabriel Rufián"], ["institucion", "Congreso de los Diputados"], ["partido", "ERC"]],
+      "hablan": ["Oriol Junqueras", "Gabriel Rufián"]
+    },
+    {
+      "title": "La AIReF alerta del desvío del déficit",
+      "text": "La AIReF ha alertado de un desvío del déficit. Según la Autoridad Independiente de Responsabilidad Fiscal, el gasto crece por encima de lo previsto. El Martes se conocerán los datos del Ministerio de Hacienda.",
+      "entidades": [["institucion", "AIReF"], ["institucion", "Ministerio de Hacienda"]],
+      "hablan": ["AIReF"]
+    },
+    {
+      "title": "Macron y Merz piden una defensa europea común",
+      "text": "Emmanuel Macron y Friedrich Merz han pedido en Berlín una defensa europea común. Francia y Alemania presentarán la propuesta en Bruselas.",
+      "entidades": [["persona", "Emmanuel Macron"], ["persona", "Friedrich Merz"], ["lugar", "Francia"], ["lugar", "Alemania"]],
+      "hablan": []
+    }
+  ]
+}

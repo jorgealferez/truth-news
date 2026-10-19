@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_figure.html" import fig %}
+{% block title %}{{ e.name }} — {{ site.site_name }}{% endblock %}
+{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/entidades">{{ t(lang, 'ent_title') }}</a> › {{ e.name }}</p>{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ e.name }} <span class="tag">{{ t(lang, 'ent_kind_' ~ e.kind) }}</span></h1>
+<ul class="kpis">
+  <li><b>{{ e.n_articles|num }}</b><span>{{ t(lang, 'ent_news') }}</span></li>
+  <li><b>{{ e.n_outlets }}</b><span>{{ t(lang, 'outlets')|lower }}</span></li>
+  <li><b>{% if e.first_seen %}{{ e.first_seen.strftime('%m/%Y') }}{% else %}—{% endif %}</b><span>{{ t(lang, 'ent_since') }}</span></li>
+  <li class="{{ 'bad' if p.bad else '' }}"><b>{{ p.bad }} / {{ p.checked }}</b><span>{{ t(lang, 'ent_bad_checked') }}</span></li>
+</ul>
+
+{% if p.months %}
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_timeline') }}</h2>
+  <p class="meta">{{ t(lang, 'ent_timeline_note') }}{% if p.archive_articles %} · {{ p.archive_articles }} {{ t(lang, 'ent_from_archive') }}{% endif %}</p>
+  <div class="ent-tl" role="img" aria-label="{{ t(lang, 'ent_timeline') }}">
+  {% for m, r, a in p.months %}<span class="col" title="{{ m }}: {{ r + a }}"><span class="seg arch" style="height:{{ 100 * a / p.peak }}%"></span><span class="seg rss" style="height:{{ 100 * r / p.peak }}%"></span><small>{{ m[2:] }}</small></span>{% endfor %}
+  </div>
+  <p class="meta legend"><span class="sw rss"></span> {{ t(lang, 'ent_tracked') }} <span class="sw arch"></span> {{ t(lang, 'ent_archive') }}</p>
+</section>
+{% endif %}
+
+{% if p.claims %}
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_claims') }}</h2>
+  {% for c in p.claims %}{% set v = c.verification %}
+  <div class="claim"><p>{% if v %}<span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> {% endif %}«{{ c.text }}» <a class="meta" href="/noticia/{{ c.article_id }}">{{ c.outlet.name }} →</a></p>
+  {% if v %}<p class="meta">{{ v.explanation }}</p>{% endif %}</div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if p.contradictions %}
+<section class="section-block">
+  <h2>{{ t(lang, 'nc_contradictions') }}</h2>
+  {% for c in p.contradictions %}<p class="nc-one">{{ c.label }} ({{ c.geo }}, {{ c.period }}): {% for value, text, when, aid in c.values %}<a href="/noticia/{{ aid }}">{{ fig(value, c.unit) }}</a> ({{ when.strftime('%d/%m/%Y') }}){% if not loop.last %} · {% endif %}{% endfor %}</p>{% endfor %}
+</section>
+{% endif %}
+
+<div class="two">
+{% if p.together %}
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_together') }}</h2>
+  {% set top = p.together[0][1] %}
+  <ul class="bars">{% for o, n in p.together %}<li><span class="bar" style="width:{{ 100 * n / top }}%"></span><b><a href="{{ url('entidad', o.id, o.name) }}">{{ o.name }}</a></b><span class="n">{{ n }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+{% if p.outlets %}
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_outlets') }}</h2>
+  {% set top = p.outlets[0][1] %}
+  <ul class="bars">{% for o, n in p.outlets %}<li><span class="bar alt" style="width:{{ 100 * n / top }}%"></span><b><a href="/medio/{{ o.slug }}">{{ o.name }}</a></b><span class="n">{{ n }}</span></li>{% endfor %}</ul>
+</section>
+{% endif %}
+</div>
+
+{% if p.quotes %}
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_quotes') }}</h2>
+  <ul class="ent-list">{% for q in p.quotes %}<li>«{{ q.quote }}» <a class="meta" href="{{ url('noticia', q.article_id, q.article.title) }}">{{ q.article.outlet.name }} · {{ q.published_at.strftime('%d/%m/%Y') }}</a></li>{% endfor %}</ul>
+</section>
+{% endif %}
+
+<section class="section-block">
+  <h2>{{ t(lang, 'ent_latest') }}</h2>
+  <ul class="ent-list">{% for a in p.latest %}<li><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a> <span class="meta">{{ a.outlet.name }} · {{ a.published_at.strftime('%d/%m/%Y') }}{% if a.origin == 'archivo' %} · <span class="tag">{{ t(lang, 'ent_archive') }}</span>{% endif %}</span></li>{% endfor %}</ul>
+</section>
+<p class="meta">{{ t(lang, 'ent_method') }}</p>
+{% endblock %}
