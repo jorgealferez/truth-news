@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{{ st.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ st.title }}{% endblock %}
+{% block og_image %}{{ site.site_url }}/og/historia/{{ st.id }}.png{% endblock %}
 {% block head %}<link rel="canonical" href="{{ site.site_url }}/historia/{{ st.id }}">{% endblock %}
 {% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/contrastes">{{ t(lang, 'contrasts') }}</a> › <a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a></p>{% endblock %}
 {% block content %}
@@ -17,6 +18,7 @@
     <div class="track" role="img" aria-label="{{ t(lang, 'origin') }}">{% for d in spread.dots %}<span class="dot{{ ' first' if loop.first }}" style="left:{{ d.pos }}%" title="{{ d.name }}"></span>{% endfor %}</div>
   </section>{% endif %}
 
+  {% include "_share.html" %}
   <section class="cards" aria-label="{{ t(lang, 'what_differs') }}">
     {% for d in comp.dispute_summaries() %}{% set maxv = d.high or 1 %}
     <div class="card-v">

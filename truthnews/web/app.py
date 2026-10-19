@@ -2,12 +2,19 @@
 # Sin `from __future__ import annotations`: FastAPI resuelve los alias Annotated locales al definir.
 
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    PlainTextResponse,
+    RedirectResponse,
+    Response,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from sqlalchemy import select, text
@@ -18,10 +25,11 @@ from truthnews import registry
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
-from truthnews.models import Article, Investigation, Outlet, Story
-from truthnews.web import admin, queries
+from truthnews.models import Article, Investigation, Outlet, Story, Topic
+from truthnews.web import admin, queries, social
 
 HERE = Path(__file__).resolve().parent
+SITEMAP_DAYS = 90
 
 
 def _ago(value: datetime | None, lang: str = "es") -> str:
@@ -79,6 +87,14 @@ def spread(arts: list) -> dict:
             {"name": a.outlet.name, "pos": round(100 * (a.published_at - first).total_seconds() / total)}
         )
     return {"first": arts[0], "hours": round(total / 3600), "dots": dots}
+
+
+def share_text(st, comp) -> str:
+    """Texto para compartir: el titular y, si la hay, la diferencia mas llamativa."""
+    for d in comp.dispute_summaries()[:1]:
+        low, high = f"{d.low:,.0f}".replace(",", "."), f"{d.high:,.0f}".replace(",", ".")
+        return f"{st.title} — {d.noun}: de {low} a {high} según el medio"
+    return f"{st.title} — cómo lo cuentan {len(comp.outlets)} medios"
 
 
 def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
@@ -153,6 +169,108 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
                 ],
             },
             media_type="application/manifest+json",
+        )
+
+    @app.get("/robots.txt", include_in_schema=False)
+    def robots():
+        return PlainTextResponse(
+            f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nSitemap: {settings.site_url}/sitemap.xml\n"
+        )
+
+    @app.get("/sitemap.xml", include_in_schema=False)
+    def sitemap(session: SessionDep):
+        base = settings.site_url
+        since = datetime.now(UTC) - timedelta(days=SITEMAP_DAYS)
+        urls: list[tuple[str, datetime | None]] = [
+            (f"{base}{p}", None)
+            for p in (
+                "/",
+                "/contrastes",
+                "/analisis",
+                "/verificaciones",
+                "/medios",
+                "/investigaciones",
+                "/metodologia",
+                "/acerca",
+            )
+        ]
+        urls += [(f"{base}/seccion/{c}", None) for c in registry.categories()]
+        urls += [(f"{base}/pais/{c}", None) for c in registry.countries()]
+        urls += [(f"{base}/medio/{slug}", None) for slug in session.scalars(select(Outlet.slug))]
+        urls += [
+            (f"{base}/historia/{sid}", last)
+            for sid, last in session.execute(
+                select(Story.id, Story.last_seen)
+                .where(Story.n_outlets >= 2, Story.last_seen >= since)
+                .order_by(Story.last_seen.desc())
+                .limit(40_000)
+            )
+        ]
+        urls += [
+            (f"{base}/tema/{tid}", up) for tid, up in session.execute(select(Topic.id, Topic.updated_at))
+        ]
+        urls += [
+            (f"{base}/investigacion/{iid}", up)
+            for iid, up in session.execute(
+                select(Investigation.id, Investigation.updated_at).where(Investigation.status == "publicada")
+            )
+        ]
+        return Response(social.sitemap_xml(urls), media_type="application/xml")
+
+    @app.get("/rss.xml", include_in_schema=False)
+    def rss(session: SessionDep):
+        items = [
+            {
+                "title": st.title,
+                "link": f"{settings.site_url}/historia/{st.id}",
+                "description": f"{st.n_outlets} medios"
+                + (
+                    f" · cifras en disputa: {', '.join(st.contrast['disputas'])}"
+                    if (st.contrast or {}).get("disputas")
+                    else ""
+                ),
+                "date": st.last_seen if st.last_seen.tzinfo else st.last_seen.replace(tzinfo=UTC),
+            }
+            for st in queries.top_stories(session, country=settings.default_country, limit=40)
+        ]
+        items += [
+            {
+                "title": p.title,
+                "link": f"{settings.site_url}/tema/{p.topic_id}",
+                "description": p.dek or "",
+                "date": p.created_at if p.created_at.tzinfo else p.created_at.replace(tzinfo=UTC),
+            }
+            for p in queries.latest_pieces(session, limit=20)
+        ]
+        items.sort(key=lambda i: i["date"], reverse=True)
+        xml = social.rss_xml(
+            settings.site_name, settings.site_url, registry.t(settings.default_language, "tagline"), items
+        )
+        return Response(xml, media_type="application/rss+xml")
+
+    image_cache: dict[tuple, bytes] = {}
+
+    @app.get("/og/historia/{story_id}.png", include_in_schema=False)
+    def story_og(story_id: int, session: SessionDep):
+        st = session.get(Story, story_id)
+        if st is None:
+            raise HTTPException(404)
+        key = (st.id, st.updated_at, st.title)
+        if key not in image_cache:
+            arts = queries.story_articles(session, st.id)
+            comp = compare(arts)
+            verdicts = queries.verdict_counts(session, [st.id]).get(st.id, {})
+            kicker = (
+                f"{registry.category_name(st.category, settings.default_language)} · {st.n_outlets} medios"
+            )
+            disputes = [(d.noun, d.low, d.high, d.n_outlets) for d in comp.dispute_summaries()]
+            if len(image_cache) > 500:
+                image_cache.clear()
+            image_cache[key] = social.story_image(
+                st.title, kicker, disputes, verdicts, registry.t(settings.default_language, "tagline")
+            )
+        return Response(
+            image_cache[key], media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
         )
 
     @app.get("/healthz")
@@ -230,6 +348,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             claims=claims,
             related=related,
             outlets_view=story_outlets(arts, comp, claims),
+            share=social.share_links(f"{settings.site_url}/historia/{st.id}", share_text(st, comp)),
             spread=spread(arts),
         )
 

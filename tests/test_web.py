@@ -396,3 +396,67 @@ def test_story_card_shows_what_differs_and_relaunch(client, session):
     assert "Historia con contraste" in home and "Vuelve con datos nuevos" in home
     assert "Cifras en disputa: detenidos" in home and "Omisiones en 1 medio<" in home
     assert "Lenguaje cargado en 2 medios" in home
+
+
+def test_distribution_robots_sitemap_rss_and_share(client, session):
+    now = datetime.now(UTC)
+    st = Story(
+        title="Disturbios con cifras distintas",
+        category="sucesos",
+        country="ES",
+        first_seen=now,
+        last_seen=now,
+        n_articles=2,
+        n_outlets=2,
+        priority=3,
+        contrast={"disputas": ["detenidos"]},
+    )
+    session.add(st)
+    session.flush()
+    o2 = Outlet(
+        slug="otro", name="Otro Medio", homepage="https://o.es", country="ES", language="es", scope="national"
+    )
+    session.add(o2)
+    session.flush()
+    for i, (o, n) in enumerate(((session.query(Outlet).filter_by(slug="medio").one(), "tres"), (o2, "doce"))):
+        session.add(
+            Article(
+                outlet_id=o.id,
+                story_id=st.id,
+                url=f"https://x/{i}",
+                url_hash=f"s{i:063d}",
+                title=f"Disturbios: {n} detenidos",
+                summary="",
+                published_at=now,
+                language="es",
+                country="ES",
+                category="sucesos",
+                topics=[],
+            )
+        )
+    session.commit()
+    robots = client.get("/robots.txt").text
+    assert "Disallow: /admin" in robots and "Sitemap: http://localhost:8000/sitemap.xml" in robots
+    sm = client.get("/sitemap.xml")
+    assert sm.headers["content-type"].startswith("application/xml")
+    assert f"<loc>http://localhost:8000/historia/{st.id}</loc>" in sm.text and "/medio/medio</loc>" in sm.text
+    rss = client.get("/rss.xml")
+    assert rss.headers["content-type"].startswith("application/rss+xml")
+    assert "Disturbios con cifras distintas" in rss.text and "cifras en disputa: detenidos" in rss.text
+    png = client.get(f"/og/historia/{st.id}.png")
+    assert png.status_code == 200 and png.content[:8] == b"\x89PNG\r\n\x1a\n"
+    assert client.get(f"/og/historia/{st.id}.png").content == png.content  # cache
+    assert client.get("/og/historia/99999.png").status_code == 404
+    page = client.get(f"/historia/{st.id}").text
+    assert f'content="http://localhost:8000/og/historia/{st.id}.png"' in page
+    assert "https://wa.me/?text=Disturbios%20con%20cifras%20distintas" in page
+    assert "detenidos%3A%20de%203%20a%2012%20seg%C3%BAn%20el%20medio" in page and "Copiar enlace" in page
+
+
+def test_social_image_handles_long_titles_and_verdicts():
+    from truthnews.web.social import story_image
+
+    png = story_image(
+        "Palabra " * 60, "Economía · 9 medios", [("paro", 10.0, 12.5, 4)], {"falso": 1, "verdadero": 2}, "x"
+    )
+    assert png[:4] == b"\x89PNG"

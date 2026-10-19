@@ -1,0 +1,33 @@
+{
+  "fase": "4a",
+  "titulo": "Distribucion: sitemap, robots, RSS, compartir en redes e imagen social por historia",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16",
+      "pillow": "12.3.0"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "sitemap": "/sitemap.xml: paginas fijas, secciones, paises, medios, historias multimedio de 90 dias (hasta 40 000), temas e investigaciones publicadas; /robots.txt lo anuncia y excluye /admin y /api",
+    "rss": "/rss.xml: 40 contrastes por prioridad y 20 piezas propias, con las cifras en disputa en la descripcion",
+    "compartir": "WhatsApp, X, Telegram, Facebook, Bluesky, LinkedIn, email, copiar enlace y Web Share nativo en movil; enlaces propios sin scripts de terceros; el texto incluye la diferencia mas llamativa ('detenidos: de 400 a 2.400 segun el medio')",
+    "imagen_social": "/og/historia/{id}.png 1200x630 con titular, cifras en disputa en barras y veredictos; 73 ms de mediana por imagen (Pillow + Inter subconjunto, 37 KB por peso) y cache en memoria por historia y actualizacion",
+    "rendimiento": "bench_web con 400 peticiones: portada p95 14,1 / 14,6 ms, historia p95 11,6 / 13,1 ms (misma sesion ruidosa que la Fase 8; no se publican como medidas)"
+  },
+  "criterios_de_salida": {
+    "C9": "piezas listas para redes: imagen y texto por historia y enlaces de compartir; publicacion automatica en cuentas propias NO VERIFICADO (sin credenciales de redes)"
+  },
+  "no_verificable": [
+    "Publicacion automatica en X, Bluesky, Mastodon y Telegram: NO VERIFICADO (sin credenciales de las cuentas)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Interfaz completa en ingles (C10) y adaptadores de publicacion automatica cuando haya cuentas"
+  ]
+}

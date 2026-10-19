@@ -1,0 +1,13 @@
+<div class="share" aria-label="{{ t(lang, 'share') }}">
+  <button type="button" class="share-native" hidden data-title="{{ st.title }}" data-url="{{ site.site_url }}/historia/{{ st.id }}">↗ {{ t(lang, 'share') }}</button>
+  {% for id, name, href in share %}<a class="share-{{ id }}" href="{{ href }}" target="_blank" rel="noopener nofollow">{{ name }}</a>{% endfor %}
+  <button type="button" class="share-copy" data-url="{{ site.site_url }}/historia/{{ st.id }}" data-done="{{ t(lang, 'copied') }}">{{ t(lang, 'copy_link') }}</button>
+</div>
+<script>
+(function () {
+  var n = document.querySelector('.share-native');
+  if (n && navigator.share) { n.hidden = false; n.onclick = function () { navigator.share({title: n.dataset.title, url: n.dataset.url}).catch(function () {}); }; }
+  var c = document.querySelector('.share-copy');
+  if (c) c.onclick = function () { if (navigator.clipboard) navigator.clipboard.writeText(c.dataset.url).then(function () { c.textContent = c.dataset.done; }); };
+})();
+</script>
