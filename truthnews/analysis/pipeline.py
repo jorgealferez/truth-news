@@ -24,6 +24,7 @@ from truthnews.analysis.score import score_stories
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
 from truthnews.classify import normalize
 from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
+from truthnews.promo import is_promotional
 
 log = logging.getLogger(__name__)
 WINDOW = timedelta(hours=72)
@@ -40,6 +41,26 @@ def _aware(dt: datetime) -> datetime:
     return dt if dt.tzinfo else dt.replace(tzinfo=UTC)
 
 
+def purge_promotional(session: Session, arts: list[Article]) -> tuple[list[Article], int]:
+    """Retira las piezas comerciales guardadas antes del filtro del rastreo y las historias que solo
+    eran eso. Devuelve los articulos que quedan y cuantos se retiraron."""
+    promo = [a for a in arts if is_promotional(a.title, a.summary or "", a.url)]
+    if not promo:
+        return arts, 0
+    touched = {a.story_id for a in promo if a.story_id}
+    for a in promo:
+        session.delete(a)
+    session.flush()
+    alive = set(
+        session.scalars(select(Article.story_id).where(Article.story_id.in_(touched or {-1})).distinct())
+    )
+    for sid in touched - alive:
+        session.delete(session.get(Story, sid))
+    session.flush()
+    gone = {a.id for a in promo}
+    return [a for a in arts if a.id not in gone], len(promo)
+
+
 def assign_stories(session: Session, now: datetime | None = None, window: timedelta = WINDOW) -> dict:
     """Reagrupa los articulos de la ventana y conserva la identidad de las historias existentes."""
     now = now or utcnow()
@@ -48,6 +69,7 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
             select(Article).options(joinedload(Article.outlet)).where(Article.published_at >= now - window)
         )
     )
+    arts, n_promo = purge_promotional(session, arts)
     docs = [
         Doc(
             key=a.id,
@@ -129,6 +151,7 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
         "stories_created": created,
         "stories_updated": updated,
         "stories_relaunched": relaunched,
+        "promotional_removed": n_promo,
     }
 
 
@@ -220,9 +243,7 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     """Extrae y verifica afirmaciones de los articulos ingeridos desde `since`."""
     verifier = verifier or Verifier()
     # Lo importado del archivo no se juzga con el dato de hoy (ADR 0028).
-    arts = list(
-        session.scalars(select(Article).where(Article.fetched_at >= since, Article.origin == "rss"))
-    )
+    arts = list(session.scalars(select(Article).where(Article.fetched_at >= since, Article.origin == "rss")))
     n_claims = 0
     verdicts: Counter = Counter()
     for a in arts:

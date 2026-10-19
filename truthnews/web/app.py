@@ -46,6 +46,7 @@ from truthnews.web import (
     appointments,
     budget,
     citations,
+    council,
     legal,
     queries,
     seo,
@@ -53,6 +54,7 @@ from truthnews.web import (
     social,
     topicview,
 )
+from truthnews.web import structured as ld
 from truthnews.web import verdicts as vview
 from truthnews.web.langprefix import LangPrefix, localize
 
@@ -147,12 +149,14 @@ def create_app(
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
     boe_index: appointments.BoeIndex | None = None,
+    council_index: council.CouncilIndex | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
     boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
+    council_index = council_index or council.CouncilIndex()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -187,6 +191,8 @@ def create_app(
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
         verdict_line=vview.sentence,
+        ld=ld,
+        jsonld=ld.jsonld,
     )
 
     def get_session():
@@ -814,6 +820,17 @@ def create_app(
             archive_url=citations.archive_url(a),
             live=citations.is_live(a.title, *(x for r in a.revisions for x in (r.before, r.after))),
             boe=boe_index.confirmations([a.title, a.summary or ""], datetime.now(UTC).date()),
+        )
+
+    @app.get("/consejo-de-ministros", response_class=HTMLResponse)
+    def council_page(request: Request):
+        today = datetime.now(UTC).date()
+        return render(
+            request,
+            "council.html",
+            councils=council_index.councils(today),
+            today=today,
+            publish_days=council.consejo.PUBLISH_DAYS,
         )
 
     @app.get("/nombramientos", response_class=HTMLResponse)

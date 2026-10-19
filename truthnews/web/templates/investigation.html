@@ -2,6 +2,12 @@
 {% set an = r.get('analisis') %}
 {% block title %}{{ (an.titular if an else inv.question) }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ an.respuesta_corta if an else inv.question }}{% endblock %}
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block canonical %}{{ site.site_url }}{{ url('investigacion', inv.id, investigation_title(inv)) }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block head %}{% if inv.status == 'publicada' %}<meta property="article:published_time" content="{{ ld.iso(inv.created_at) }}"><meta property="article:modified_time" content="{{ ld.iso(inv.updated_at) }}">
+{{ jsonld(ld.news_article(site, url=site.site_url ~ url('investigacion', inv.id, investigation_title(inv)), headline=investigation_title(inv), description=an.respuesta_corta if an else inv.question, published=inv.created_at, modified=inv.updated_at, lang=lang, section=t(lang, 'investigations'))) }}{% endif %}{% endblock %}
+{% block crumbs %}{{ breadcrumbs([(t(lang, 'home'), '/'), (t(lang, 'investigations'), '/investigaciones'), (investigation_title(inv)[:60], None)]) }}{% endblock %}
 {% block content %}
 <article class="story wide">
   <p class="kicker"><a href="/investigaciones">{{ t(lang, 'investigations') }}</a> · {{ inv.updated_at.strftime('%d/%m/%Y') }}</p>

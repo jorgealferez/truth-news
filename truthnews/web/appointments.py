@@ -35,9 +35,15 @@ MENTIONS_PER_PERSON = 3
 
 
 class BoeDays:
-    def __init__(self, transport: httpx.BaseTransport | None = None, clock=time.monotonic) -> None:
+    """Sumarios del BOE por dia en memoria. `fetch` decide que se guarda de cada dia: por omision, la
+    seccion II.A (nombramientos); el Consejo de Ministros guarda el sumario entero (`data.boe.sumario`)."""
+
+    def __init__(
+        self, transport: httpx.BaseTransport | None = None, clock=time.monotonic, fetch=nb.nombramientos
+    ) -> None:
         self._transport = transport
         self._clock = clock
+        self._fetch = fetch
         self._cache: dict[date, tuple[float, list[nb.Disposicion]]] = {}
         self._lock = threading.Lock()
 
@@ -47,8 +53,8 @@ class BoeDays:
         if hit and ((hit[1] and d < today) or self._clock() - hit[0] < RETRY_SECONDS):
             return hit[1]
         try:
-            items = nb.nombramientos(d, transport=self._transport)
-        except httpx.HTTPError:
+            items = self._fetch(d, transport=self._transport)
+        except (httpx.HTTPError, ValueError):  # ValueError: el BOE responde algo que no es JSON
             items = []
         with self._lock:
             if len(self._cache) >= MAX_DAYS_CACHED:

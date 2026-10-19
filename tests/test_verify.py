@@ -32,7 +32,7 @@ def claim(value, indicator="paro", direction=None, unit="pct", geo="ES"):
 def test_level_verdicts(claimed, official, verdict):
     r = Verifier(lambda s, g, label: obs(official)).judge(claim(claimed))
     assert r.verdict == verdict and r.observations and "dato oficial" in r.explanation
-    assert r.method.endswith("/v9")
+    assert r.method.endswith("/v10")
 
 
 def test_direction_misleading_and_consistent():
@@ -52,12 +52,12 @@ def test_absolute_values():
 def test_no_source_stale_and_failing_source():
     assert Verifier(lambda s, g, label: None).judge(claim(10)).verdict == "sin-datos"
     stale = Verifier(lambda s, g, label: obs(10.0, period="2019-01")).judge(claim(10))
-    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v9"
+    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v10"
 
     def boom(s, g, label):
         raise RuntimeError("caida")
 
-    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v9"
+    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v10"
 
 
 def test_cited_period_is_compared_with_that_period():
@@ -74,7 +74,7 @@ def test_cited_period_is_compared_with_that_period():
     up = ClaimCandidate("sube al 4,3 % en agosto", "inflacion", "ES", 4.3, "pct", "baja", "2026-08")
     assert v.judge(up).verdict == "enganoso"  # julio 3,58 -> agosto 4,28: sube
     gone = v.judge(ClaimCandidate("x", "inflacion", "ES", 4.3, "pct", None, "2020-01"))
-    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v9"
+    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v10"
     assert latest.at("2026-07").previous is None
 
 
@@ -153,3 +153,28 @@ def test_harmonised_inflation_does_not_judge_the_measure_gap(monkeypatch):
     assert gap.verdict == "sin-datos" and "IPC nacional" in gap.explanation and gap.observations
     assert judge(ClaimCandidate("x", "inflacion", "FR", 3.4, "pct", None)).verdict == "verdadero"
     assert judge(ClaimCandidate("x", "inflacion", "FR", 5.0, "pct", None)).verdict == "falso"
+
+
+def test_public_debt_is_never_judged_against_central_government_debt():
+    from truthnews.analysis.claims import indicators
+
+    sources = indicators()["deuda_publica"]["sources"]
+    assert all(not s.get("indicator", "").startswith("GC.") for s in sources)
+    assert not any(applicable(s, "US") for s in sources)  # fuera de la UE: sin serie, sin juicio
+    calls = []
+    res = Verifier(lambda s, g, label: calls.append(s) or obs(120.0)).judge(
+        claim(123.0, indicator="deuda_publica", geo="US")
+    )
+    assert calls == [] and res.verdict == "sin-datos" and res.method == "sin-fuente/v10"
+
+
+def test_approximate_figure_within_the_wide_band_is_true():
+    v = Verifier(lambda s, g, label: obs(41_500_000))
+
+    def pop(text, value):
+        return ClaimCandidate(text, "poblacion", "CA", value, "abs", None)
+
+    approx = v.judge(pop("Canadá tiene unos 40 millones de habitantes.", 40e6))
+    assert approx.verdict == "verdadero" and approx.method == "aproximado/v10"
+    assert v.judge(pop("Canadá tiene 40 millones de habitantes.", 40e6)).verdict == "impreciso"
+    assert v.judge(pop("Canadá tiene unos 30 millones de habitantes.", 30e6)).verdict == "falso"

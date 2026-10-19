@@ -74,6 +74,14 @@ def test_accepts_what_rules_miss():
         ("La tasa de paro es del 10,5 % según la encuesta oficial.", "paro", "FR", 10.5, None, "nombrado"),
         ("La tasa de paro en Francia es del 7,5 % según el instituto.", "paro", "ES", 7.5, None, "nombrado"),
         ("La tasa de paro en Japón es del 2,5 % según el gobierno.", "paro", "ES", 2.5, None, "sin serie"),
+        (
+            "La tasa de paro se sitúa en el 10 % mientras Francia sufre una crisis.",
+            "paro",
+            "FR",
+            10.0,
+            None,
+            "ligado",
+        ),
         ("La tasa de paro de agosto fue del 10,5 % según el INE.", "paro", "ES", 10.5, f"{Y}-07", "periodo"),
         (
             "La tasa de paro fue del 10,5 % según el INE en su balance.",
@@ -363,3 +371,22 @@ def test_subgroups_are_not_the_general_rate():
     s = "La tasa AROPE alcanza el 38,7% en este colectivo, frente al 30,6% entre quienes no la tienen."
     assert "colectivo" in check(s, "pobreza_exclusion", "ES", 38.7)
     assert extract(s, "es", "ES", 2026) == []
+
+
+def test_a_single_named_country_must_be_tied_to_the_figure():
+    """v10 (direccion, revision de #157): sin ligadura en la misma oracion, sin juicio."""
+    # Caso Pakistan (ABC, 19/10/2026): el pais va en otra oracion coordinada, no es el sujeto de la cifra.
+    pk = "Pakistán vive una crisis política y la inflación se situó en el 10,3 % interanual en septiembre."
+    assert extract(pk, "es", "ES", 2026) == [] and extract(pk, "es", "XX", 2026) == []
+    for geo in ("PK", "ES"):
+        assert not isinstance(check(pk, "inflacion", geo, 10.3, period=f"{Y}-09"), ClaimCandidate)
+    # Eurozona y Espana en la misma frase: cada cifra es solo del territorio al que va ligada.
+    ea = "El paro en la eurozona se situó en el 6,3 %, mientras que en España alcanzó el 10,5 %."
+    assert extract(ea, "es", "ES", 2026) == []
+    assert not isinstance(check(ea, "paro", "ES", 6.3), ClaimCandidate)
+    assert not isinstance(check(ea, "paro", "EA", 10.5), ClaimCandidate)
+    assert check(ea, "paro", "EA", 6.3).geo == "EA"
+    assert check(ea, "paro", "ES", 10.5).geo == "ES"
+    # Un solo pais ligado (sujeto o complemento) si cuenta.
+    fr = "En Francia, la tasa de paro se sitúa en el 7,5 %."
+    assert check(fr, "paro", "FR", 7.5).geo == "FR"
