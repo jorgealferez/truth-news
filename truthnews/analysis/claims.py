@@ -39,7 +39,12 @@ _VARIATION = re.compile(
     r"\b(sube|subio|subido|baja|bajo|bajado|cae|cayo|caido|crece|crecio|crecido|aumenta|aumento|aumentado"
     r"|desciende|descendio|descendido|se reduce|se redujo|reducido|repunta|repunto|se dispara|se disparo"
     r"|retrocede|retrocedio|mejora|mejoro|empeora|empeoro|avanza|avanzo|subida|bajada|caida|descenso"
-    r"|incremento|reduccion|rises|rose|falls|fell|increases|decreases|grew|sobe|subiu|desce|caiu)"
+    r"|incremento|reduccion|rises|rose|falls|fell|increases|decreases|grew|sobe|subiu|desce|caiu"
+    # Efecto de un indicador sobre otra cosa (caso real, El Debate 19/10/2026: "la inflacion le resta un
+    # 3,1 %" a los ingresos): tampoco es el nivel del indicador.
+    r"|resta|restan|resto|restado|quita|quitan|quito|recorta|recortan|reduce|reducen|redujo|merma|mermo"
+    r"|erosiona|erosionan|descuenta|lastra|lastro|se come|se comen|se comio|suma|suman|sumo|anade|anadio"
+    r"|aporta|aportan|aporto)"
     r"\s+(?:(?:de|en|del|hasta)\s+)?(?:un|una|um|uma|by)\s*$"
 )
 
