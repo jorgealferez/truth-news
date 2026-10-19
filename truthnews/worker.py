@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import threading
+import time
 from datetime import UTC, datetime, timedelta
 
 from apscheduler.schedulers.blocking import BlockingScheduler
@@ -77,19 +78,37 @@ def run_breaking(settings: Settings | None = None) -> dict | None:
         _busy.release()
 
 
+class _Timed(dict):
+    """Resumen del ciclo que anota cuanto tardo cada paso (en `seconds`): los pasos van en serie y cada uno
+    escribe su clave al terminar, asi que el tiempo entre dos claves es lo que tardo ese paso."""
+
+    def __init__(self, clock=time.monotonic):
+        super().__init__()
+        self._clock = clock
+        self._last = clock()
+        self.seconds: dict[str, float] = {}
+
+    def __setitem__(self, key, value):
+        now = self._clock()
+        self.seconds.setdefault(key, round(now - self._last, 1))
+        self._last = now
+        super().__setitem__(key, value)
+
+
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
+    summary = _Timed()
     with session_scope(engine) as session:
         sync_registry(session)
     with session_scope(engine) as session:
         run = asyncio.run(crawl(session, settings))
-        summary = {
-            "run": run.id,
-            "feeds_ok": run.feeds_ok,
-            "feeds_failed": run.feeds_failed,
-            "articles_new": run.articles_new,
-            "robots_blocked": run.robots_blocked,
-        }
+        summary["run"] = run.id  # seconds["run"]: registro y rastreo
+        summary.update(  # `update` no pasa por __setitem__: no son pasos
+            feeds_ok=run.feeds_ok,
+            feeds_failed=run.feeds_failed,
+            articles_new=run.articles_new,
+            robots_blocked=run.robots_blocked,
+        )
         started = run.started_at
     with session_scope(engine) as session:
         summary["analysis"] = analyze(session, since=started)
@@ -150,7 +169,13 @@ def _run_cycle(settings: Settings) -> dict:
     with session_scope(engine) as session:  # solo cuenta un ciclo que llega aqui (no uno cortado a medias)
         row = session.get(CrawlRun, summary["run"])
         if row is not None:
-            row.stats = {**(row.stats or {}), "cycle": FULL_CYCLE, "cycle_finished": utcnow().isoformat()}
+            row.stats = {
+                **(row.stats or {}),
+                "cycle": FULL_CYCLE,
+                "cycle_finished": utcnow().isoformat(),
+                "seconds": summary.seconds,
+            }
+    dict.__setitem__(summary, "seconds", summary.seconds)  # duracion por paso, para ver el mas lento
     log.info("ciclo terminado: %s", summary)
     return summary
 

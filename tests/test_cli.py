@@ -41,6 +41,9 @@ def test_db_upgrade_sync_and_crawl(tmp_path, monkeypatch, capsys):
     assert summary["political"] == {"channels": 0}
     assert summary["articles_new"] == 0
     assert summary["investigations"] == {"processed": 0, "failed": 0}
+    # duracion por paso: una entrada por paso, ninguna por los contadores del rastreo
+    assert {"run", "analysis", "political", "statement_checks", "social"} <= set(summary["seconds"])
+    assert "feeds_ok" not in summary["seconds"] and all(v >= 0 for v in summary["seconds"].values())
     assert worker.last_full_cycle(worker.get_settings()) is not None  # el ciclo que termina queda marcado
     get_engine.cache_clear()
 
@@ -184,3 +187,14 @@ def test_breaking_lane_is_anchored_to_the_last_crawl(tmp_path):
     finally:
         sched.shutdown(wait=False)
     get_engine.cache_clear()
+
+
+def test_timed_summary_records_each_step_once():
+    ticks = iter([0.0, 2.5, 3.0, 10.0])
+    summary = worker._Timed(clock=lambda: next(ticks))
+    summary["run"] = 1
+    summary.update(feeds_ok=3)  # contador, no paso
+    summary["analysis"] = {}
+    summary["analysis"] = {"x": 1}  # reescribir no cambia la medida del paso
+    assert summary.seconds == {"run": 2.5, "analysis": 0.5}
+    assert summary == {"run": 1, "feeds_ok": 3, "analysis": {"x": 1}}
