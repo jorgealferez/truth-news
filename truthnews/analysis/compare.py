@@ -77,6 +77,26 @@ _PERSONAS_CONTEXT = (
 # Con quien le paso no basta: "mueren 12 inmigrantes" son 12 muertos y "1.000 policias y gendarmes heridos"
 # son 1.000 heridos. Si la frase dice que les paso, cuenta eso (ADR 0053); si no, el sustantivo.
 _PEOPLE = {"migrantes", "soldados", "agentes", "policias", "manifestantes"}
+# A quien le paso es parte del hecho: "seis carabineros heridos" y "cuatro manifestantes heridos" son dos
+# recuentos (caso real 2109, Chile, 19/10). Sinonimos de policia cuentan como policia.
+_SUBJECTS = {
+    "policias": "policias",
+    "agentes": "policias",
+    "gendarmes": "policias",
+    "carabineros": "policias",
+    "guardias": "policias",
+    "oficiales": "policias",
+    "soldados": "soldados",
+    "militares": "soldados",
+    "migrantes": "migrantes",
+    "inmigrantes": "migrantes",
+    "manifestantes": "manifestantes",
+    "menores": "menores",
+    "ninos": "menores",
+    "civiles": "civiles",
+    "presos": "presos",
+    "reclusos": "presos",
+}
 _DIED_BEFORE = re.compile(
     r"\b(mata|matan|mato|mataron|mueren|murieron|fallecen|fallecieron|pierden la vida)\b"
 )
@@ -268,6 +288,7 @@ class Figure:
     text: str
     territory: frozenset[str] = frozenset()
     party: str | None = None
+    subject: str | None = None
 
 
 @dataclass
@@ -360,8 +381,8 @@ def _scope(tn: str, start: int, end: int, noun: str) -> tuple[frozenset[str], st
 
 def _figures(
     tn: str, limit: int | None = None
-) -> list[tuple[str, float, str, str, frozenset[str], str | None]]:
-    """Como `figures`, sobre texto ya normalizado, con el territorio y el partido de cada cifra. `limit`:
+) -> list[tuple[str, float, str, str, frozenset[str], str | None, str | None]]:
+    """Como `figures`, sobre texto ya normalizado, con el territorio, el partido y a quien le paso. `limit`:
     solo cuentan las cifras que empiezan antes de esa posicion (el resto del texto solo da contexto)."""
     out = []
     for m in _FIGURE.finditer(tn, 0, len(tn) if limit is None else limit):
@@ -370,6 +391,8 @@ def _figures(
             continue
         frag = tn[max(0, m.start() - 30) : m.end() + 10].strip()
         noun = _COUNTABLE[m.group(4)]
+        between = tn[m.end(3) if m.group(3) else m.end(2) : m.start(4)].split()
+        subject = _SUBJECTS.get(m.group(4)) or (_SUBJECTS.get(between[0]) if between else None)
         if noun == "personas" or noun in _PEOPLE:
             # Solo la frase de la cifra, y primero lo que la sigue: en "cuatro muertos. Otras 39 personas
             # resultaron heridas" los 39 son heridos, no muertos.
@@ -389,7 +412,8 @@ def _figures(
                 if event is None and _DIED_BEFORE.search(before):
                     event = "muertos"
             noun = event or noun
-        out.append((noun, value, (m.group(1) or "").strip(), frag, *_scope(tn, m.start(), m.end(), noun)))
+        scope = _scope(tn, m.start(), m.end(), noun)
+        out.append((noun, value, (m.group(1) or "").strip(), frag, *scope, subject))
     return out
 
 
@@ -398,6 +422,8 @@ def same_fact(a: Figure, b: Figure) -> bool:
     if a.territory and b.territory and not a.territory & b.territory:
         return False
     if a.party and b.party and a.party != b.party:
+        return False
+    if a.subject and b.subject and a.subject != b.subject and a.noun not in _PEOPLE:
         return False
     low, high = sorted((a.value, b.value))
     if high <= SAME_FACT_RATIO * low or high - low <= SAME_FACT_MIN_GAP:
@@ -468,7 +494,7 @@ def compare(articles: list) -> Comparison:
             # La frase de una cifra del arranque puede seguir despues del corte: se lee entera.
             context = lead + (a.content_text or "")[LEAD_CHARS : LEAD_CHARS + SCOPE_CHARS]
             seen: set[str] = set()
-            for noun, value, qual, frag, territory, party in _figures(
+            for noun, value, qual, frag, territory, party, subject in _figures(
                 normalize(context), len(normalize(lead))
             ):
                 if noun in seen:
@@ -477,7 +503,7 @@ def compare(articles: list) -> Comparison:
                 prev = per_noun[noun].get(outlet)
                 if prev is None or a.published_at >= prev.published_at:
                     per_noun[noun][outlet] = Figure(
-                        noun, value, qual, outlet, a.published_at, frag, territory, party
+                        noun, value, qual, outlet, a.published_at, frag, territory, party, subject
                     )
     for noun, by in per_noun.items():
         if noun in MEASURES:

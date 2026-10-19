@@ -207,8 +207,15 @@ def test_territory_party_and_money_keep_facts_apart():
     pt.language = "pt"
     assert compare([art("A", "2.000 detenidos en Francia"), pt]).disputes == {}
     # El lugar de la data ("Madrid, 19 oct (EFE).-") no es el territorio de la cifra.
-    ((*_, territory, party),) = _figures(normalize("Madrid, 19 oct (EFE).- Detenidas 40 personas en Sevilla"))
-    assert territory == {"andalucia"} and party is None
+    ((*_, territory, party, subject),) = _figures(
+        normalize("Madrid, 19 oct (EFE).- Detenidas 40 personas en Sevilla")
+    )
+    assert territory == {"andalucia"} and party is None and subject is None
+    # A quien le paso es parte del hecho (caso real 2109, Chile): carabineros y manifestantes heridos.
+    arts = [art("A", "Seis carabineros heridos en Santiago"), art("B", "Hay cuatro manifestantes heridos")]
+    assert compare(arts).disputes == {}
+    arts = [art("A", "Seis carabineros heridos"), art("B", "14 agentes heridos, según el ministro")]
+    assert [f.value for f in compare(arts).disputes["heridos"]] == [6.0, 14.0]
 
 
 def test_personas_context_stays_in_its_sentence():

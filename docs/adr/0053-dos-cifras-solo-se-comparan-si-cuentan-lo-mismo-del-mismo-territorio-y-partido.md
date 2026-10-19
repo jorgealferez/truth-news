@@ -44,27 +44,42 @@ disputas y 7 eran falsas (precisión 0,462; por pares 0,138):
    que ya tenía «personas», sin descartar la cifra si no hay contexto.
 5. **Solo castellano.** Las cifras se leen en artículos en castellano: en portugués «dos votos» no son dos y
    «morreram» no es un verbo que el extractor conozca.
-6. La frase de una cifra del arranque se lee entera aunque pase del corte de 400 caracteres (hasta 300 más).
-7. **Medidas.** Además de la precisión y la exhaustividad de las disputas, la **agrupación**
+6. **A quién le pasó.** La palabra de persona junto a la cifra («seis carabineros heridos», «cuatro
+   manifestantes heridos») es parte del hecho: sujetos distintos no se comparan. Los sinónimos de policía
+   (agentes, gendarmes, carabineros, guardias, oficiales) cuentan como policía; militares como soldados.
+7. La frase de una cifra del arranque se lee entera aunque pase del corte de 400 caracteres (hasta 300 más).
+8. **Medidas.** Además de la precisión y la exhaustividad de las disputas, la **agrupación**
    (`grouping_quality`): por cada par de medios con el mismo sustantivo, si el comparador los pone en el
    mismo hecho como dice la etiqueta. Entra en el presupuesto (`disputas_agrupacion` ≥ 0,95).
-8. **Diseño y validación separados.** `tests/fixtures/disputes.json` es el conjunto con el que se diseñan
+9. **Diseño y validación separados.** `tests/fixtures/disputes.json` es el conjunto con el que se diseñan
    las reglas y la puerta exige ≥ 0,95. `tests/fixtures/disputes_validacion.json` guarda las muestras fuera
-   de muestra: se miden y se publican, no se ajustan para que pasen, y cada muestra dice si después se usó
-   para ajustar.
+   de muestra con su selección automática y sus ids: se miden y se publican, no se ajustan para que pasen, y
+   cada muestra dice si después se usó para ajustar. El merge exige ≥ 0,8 de precisión en una muestra limpia
+   sin bajar la exhaustividad (condición de la dirección).
+
+### Cada regla y el caso real que la motivó
+| Regla | Tipo general | Caso real |
+|---|---|---|
+| 1. Territorio | Comunidad, provincia o España de la frase | 11626 ozono: 300 muertes en Aragón frente a 500 en Castilla y León |
+| 2. Partido | Partido más cercano antes de la cifra (escaños, votos) | 12084 CIS andaluz: 20 escaños de Vox frente a 53 del PP |
+| 3. Dinero | Cantidades en euros sin indicador | 10022 alquiler: «por debajo de 700» frente a «superan los 1.000»; 7367, 8448, 11478 |
+| 4. Lo que les pasó | Verbo o participio de muerte, heridas, detención o desalojo con migrantes, soldados, agentes, policías, manifestantes | 9640 naufragios: «Mueren 12 inmigrantes» se leía como migrantes |
+| 5. Solo castellano | Idioma del artículo | 8537 y 9640: «47,03 % dos votos» leído como 2 votos; RTP en portugués |
+| 6. A quién le pasó | Palabra de persona entre la cifra y el sustantivo | 2109 Chile: «seis carabineros heridos» frente a «cuatro manifestantes heridos» |
 
 ## Medida (docs/benchmarks/fase_2h.json)
-| Muestra | Antes (ADR 0016) | Reglas 1-3 | Reglas 1-6 |
-|---|---|---|---|
-| Diseño: 15 historias del 17-18/10 | 5 disputas, precisión 1,00 | 1,00 | 1,00 |
-| Diseño: 13 historias del 18-19/10 | 13 disputas, precisión 0,462 (pares 0,138) | 6 disputas, 1,00 | 1,00 |
-| Fuera de muestra 1: 15 historias del 19/10 (190 artículos) | 5 disputas, precisión 0,20 | **3 disputas, 0,333** | 2 disputas, 0,50 |
+| Muestra | Antes (ADR 0016) | Reglas 1-3 | Reglas 1-5 | Reglas 1-6 |
+|---|---|---|---|---|
+| Diseño: 15 historias del 17-18/10 | 5 disputas, 1,00 | 1,00 | 1,00 | 1,00 |
+| Diseño: 13 historias del 18-19/10 | 13 disputas, 0,462 (pares 0,138) | 6, 1,00 | 1,00 | 1,00 |
+| Muestra 1: 15 historias del 19/10 (190 artículos) | 5, 0,20 | **3, 0,333 (limpia)** | 2, 0,50 | 2, 0,50 |
+| Muestra 2: 13 historias del 18-19/10 (117 artículos) | 3, 0,667 | 3, 0,667 | **3, 0,667 (limpia)** | 2, 1,00 |
 
-Exhaustividad 1,00 en todas (11 disputas reales en diseño, 1 en la muestra 1). La muestra 1 se midió limpia
-con las reglas 1-3 (0,333, bajo 0,8) y **después** se usó para ajustar (reglas 4 y 5), así que la columna de
-la derecha ya no es fuera de muestra. El error que queda es 9640: «seis migrantes» de un naufragio frente a
-«doce» de los dos: la parte y el todo, que ninguna de estas reglas distingue. La segunda muestra limpia se
-publica en el mismo benchmark.
+Exhaustividad: 1,00 en diseño y en la muestra 1; 0,667 en la muestra 2 con todas las versiones (2109: 29 → 110
+detenidos, un balance que sube más de ×3, no se junta). Las cifras en negrita son las limpias: medidas antes
+de usar la muestra para ajustar. Ninguna llega a 0,8, así que **no se mergea** hasta medir una tercera muestra
+limpia con las reglas 1-6. Los errores que quedan: la parte y el todo (9640: «seis migrantes» de un naufragio
+frente a «doce» de los dos) y los balances que crecen más de ×3.
 
 ## Alternativas consideradas
 | Alternativa | Por qué no |
@@ -75,6 +90,7 @@ publica en el mismo benchmark.
 | Gazetteer con ciudades del mundo | «París» y «Francia» se cruzarían como distintos y romperían las disputas reales de las protestas |
 | Leer el contexto de antes también con participios («desalojados 500 migrantes») | Arrastra el participio de la cifra anterior («1.800 detenidas y 500 policías») |
 | Meter la muestra de validación en el fixture con puerta | Una muestra con la que no se diseña no debe ajustarse para pasar una puerta; se publica |
+| Bajar el umbral ×3 para juntar 29 → 110 detenidos | Volvería a juntar 12 migrantes en una casa con 500 desalojados (ADR 0016) |
 
 ## Consecuencias
 - Desaparecen de las fichas las disputas de euros. Una discrepancia real en euros (dos multas distintas por
@@ -85,7 +101,7 @@ publica en el mismo benchmark.
 
 ## Verificación
 `tests/test_compare.py::test_territory_party_and_money_keep_facts_apart` (ozono por comunidad, CIS por
-partido, alquiler en euros, lo que les pasó, data de agencia),
+partido, alquiler en euros, lo que les pasó, portugués, data de agencia, a quién le pasó),
 `tests/test_compare.py::test_dispute_precision_on_real_labeled_stories` (diseño: precisión, por pares y
 exhaustividad ≥ 0,95 con 11 disputas esperadas; agrupación ≥ 0,98) y
 `tests/test_compare.py::test_dispute_validation_set_is_measured` (validación separada del diseño).
