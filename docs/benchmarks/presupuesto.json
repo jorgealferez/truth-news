@@ -188,6 +188,27 @@
       "unidad": "noticias/s",
       "direccion": "min",
       "objetivo": 500
+    },
+    {
+      "id": "elecciones_convocatorias_no_detectadas",
+      "descripcion": "C15: convocatorias publicadas en el BOE dentro del barrido que no aparecen en /elecciones",
+      "unidad": "convocatorias",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "elecciones_falsos_positivos",
+      "descripcion": "C15: elecciones detectadas en el BOE que no son una convocatoria de comicios",
+      "unidad": "elecciones",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "elecciones_barrido_boe_segundos",
+      "descripcion": "C15: segundos del barrido inicial de 75 dias de BOE (segundo plano, una vez por proceso)",
+      "unidad": "s",
+      "direccion": "max",
+      "objetivo": 300
     }
   ]
 }

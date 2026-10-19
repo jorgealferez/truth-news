@@ -481,6 +481,40 @@ es:
   legal_registry: Inscripción registral
   legal_site: Sitio web
 
+  el_title: Elecciones
+  el_nav: "Elecciones {d}"
+  el_lead: Las elecciones convocadas o anunciadas en cualquier país y ámbito, con lo que dicen y prometen los partidos y lo que cuentan los medios. La sección aparece sola mientras hay comicios en curso y se retira un mes después de votar.
+  el_page_lead: Fechas oficiales, lo que dice cada partido en sus canales oficiales, sus programas y la cobertura de los medios, con cada dato citado.
+  el_none: Ahora mismo no hay elecciones convocadas ni anunciadas en los países que seguimos.
+  el_how: El calendario se rellena solo con los decretos de convocatoria del BOE, el registro de elecciones comprobadas y las que al menos dos medios distintos sitúan en el mismo país y la misma fecha.
+  el_no_ads: Las páginas de elecciones no llevan publicidad.
+  el_status_convocada: Convocada
+  el_status_anunciada: Anunciada en medios
+  el_status_note_convocada: Consta en una fuente oficial, citada abajo.
+  el_status_note_anunciada: Aún no consta en una fuente oficial que sigamos; la citan los medios enlazados abajo.
+  el_phase_precampana: Precampaña
+  el_phase_campana: Campaña electoral
+  el_phase_reflexion: Jornada de reflexión
+  el_phase_jornada: Jornada electoral
+  el_phase_celebrada: Celebrada
+  el_days_left: "faltan {n} días"
+  el_dates: Calendario oficial
+  el_convened: Publicación del decreto de convocatoria
+  el_campaign_start: Empieza la campaña electoral
+  el_campaign_end: Termina la campaña electoral
+  el_poll: Votación
+  el_constitution: Sesión constitutiva de las Cámaras
+  el_source: "Fuente:"
+  el_parties: Qué dicen los partidos
+  el_parties_note: Partidos con escaño, en orden alfabético y con el mismo formato; sus declaraciones en canales oficiales desde la convocatoria y cómo salen las afirmaciones comprobables con datos. Las candidaturas proclamadas se añadirán cuando se publiquen.
+  el_n_statements: "{n} declaraciones"
+  el_n_checked: "{n} afirmaciones comprobadas"
+  el_program: Programa electoral
+  el_program_missing: no localizado aún en su web oficial
+  el_no_channel: Sin canal oficial que podamos leer
+  el_no_statements: Sin declaraciones en sus canales desde la convocatoria
+  el_coverage: Lo que cuentan los medios
+  el_no_coverage: Aún no hay historias sobre estas elecciones.
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -958,3 +992,37 @@ en:
   speakers_no_channel: >-
     We also judge what each party publishes on its verified official channels. No verified channel yet (their
     direct statements cannot be judged yet; what the press attributes to them still counts): {names}.
+  el_title: Elections
+  el_nav: "Elections {d}"
+  el_lead: Elections called or announced in any country and at any level, with what parties say and promise and what the media report. The section appears on its own while elections are under way and is withdrawn a month after polling day.
+  el_page_lead: Official dates, what each party says on its official channels, its manifesto and media coverage, with every fact cited.
+  el_none: There are no elections called or announced right now in the countries we follow.
+  el_how: The calendar fills itself from the calling decrees in the Spanish Official Gazette (BOE), the register of checked elections and those that at least two different outlets place in the same country on the same date.
+  el_no_ads: Election pages carry no advertising.
+  el_status_convocada: Called
+  el_status_anunciada: Announced in the media
+  el_status_note_convocada: Recorded in an official source, cited below.
+  el_status_note_anunciada: Not yet in an official source we follow; the outlets linked below report it.
+  el_phase_precampana: Pre-campaign
+  el_phase_campana: Election campaign
+  el_phase_reflexion: Day of reflection
+  el_phase_jornada: Polling day
+  el_phase_celebrada: Held
+  el_days_left: "{n} days to go"
+  el_dates: Official calendar
+  el_convened: Calling decree published
+  el_campaign_start: Election campaign starts
+  el_campaign_end: Election campaign ends
+  el_poll: Polling day
+  el_constitution: Inaugural session of Parliament
+  el_source: "Source:"
+  el_parties: What the parties say
+  el_parties_note: Parties with seats, in alphabetical order and in the same format; their statements on official channels since the call and how their checkable claims fare against data. Officially proclaimed candidacies will be added once published.
+  el_n_statements: "{n} statements"
+  el_n_checked: "{n} claims checked"
+  el_program: Manifesto
+  el_program_missing: not yet found on its official website
+  el_no_channel: No official channel we can read
+  el_no_statements: No statements on its channels since the call
+  el_coverage: What the media report
+  el_no_coverage: No stories about these elections yet.

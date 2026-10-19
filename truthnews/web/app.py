@@ -37,6 +37,8 @@ from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
+from truthnews.elections import calendar as el_calendar
+from truthnews.elections import views as el_views
 from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread
 from truthnews.social import images
@@ -147,12 +149,14 @@ def create_app(
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
     boe_index: appointments.BoeIndex | None = None,
+    elections: el_calendar.Calendar | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
     boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
+    elections = elections or el_calendar.Calendar(settings.elections_lookback_days)
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -187,6 +191,8 @@ def create_app(
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
         verdict_line=vview.sentence,
+        # Seccion temporal (ADR 0036): solo hay enlace mientras alguna eleccion este en ventana.
+        elections_nav=lambda: elections.active(),
     )
 
     def get_session():
@@ -847,6 +853,20 @@ def create_app(
     def budget_page(request: Request):
         ex = igae_extract.get()
         return render(request, "budget.html", ex=ex, v=budget.view(ex) if ex else None)
+
+    @app.get("/elecciones", response_class=HTMLResponse)
+    def elections_page(request: Request, session: SessionDep):
+        now = datetime.now(UTC)
+        return render(request, "elections.html", active=elections.active(session, now), today=now.date())
+
+    @app.get("/elecciones/{slug}", response_class=HTMLResponse)
+    def election_page(request: Request, slug: str, session: SessionDep):
+        now = datetime.now(UTC)
+        e = elections.get(slug, session, now)
+        if e is None:
+            raise HTTPException(404)
+        # Sin publicidad en paginas de elecciones (ads.py): ni se llama al servicio.
+        return render(request, "election.html", v=el_views.page(session, e, now))
 
     @app.get("/publicidad", response_class=HTMLResponse)
     def advertising(request: Request):

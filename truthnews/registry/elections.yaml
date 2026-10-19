@@ -1,0 +1,42 @@
+# Elecciones conocidas y como reconocerlas (datos, no codigo; ADR 0036). La seccion /elecciones se rellena
+# sola con lo que detecta en el BOE y en los medios rastreados; aqui solo va lo que una persona ha
+# comprobado con su fuente oficial, y los alias para reconocer cada territorio en los titulos oficiales.
+#
+# Cada eleccion: country, kind (generales | autonomicas | locales | europeas | presidenciales |
+# legislativas | referendum), region (codigo de countries.yaml, opcional), place (texto, opcional), date,
+# convened (fecha del decreto), campaign [inicio, fin], constitution (opcional), name, source {label, url},
+# programs {slug_del_partido: url} solo con el enlace oficial del partido.
+elections:
+  - country: ES
+    kind: generales
+    name: Elecciones generales
+    date: 2026-11-29
+    convened: 2026-10-06
+    campaign: [2026-11-13, 2026-11-27]
+    constitution: 2026-12-23
+    source:
+      label: "Real Decreto 806/2026, de 5 de octubre, de disolución del Congreso de los Diputados y del Senado y de convocatoria de elecciones (BOE-A-2026-20742)"
+      url: https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20742
+    programs: {}
+
+# Como se llama cada territorio en los titulos del BOE (sin tildes, en minusculas).
+region_aliases:
+  ES-AN: [andalucia]
+  ES-AR: [aragon]
+  ES-AS: [asturias, principado]
+  ES-IB: [illes balears, islas baleares, balears]
+  ES-CN: [canarias]
+  ES-CB: [cantabria]
+  ES-CM: [castilla-la mancha, castilla la mancha]
+  ES-CL: [castilla y leon]
+  ES-CT: [cataluna, catalunya]
+  ES-VC: [comunitat valenciana, comunidad valenciana, corts valencianes]
+  ES-EX: [extremadura]
+  ES-GA: [galicia]
+  ES-MD: [comunidad de madrid, asamblea de madrid]
+  ES-MC: [region de murcia, asamblea regional de murcia]
+  ES-NC: [navarra]
+  ES-PV: [pais vasco, parlamento vasco, euskadi]
+  ES-RI: [la rioja]
+  ES-CE: [ceuta]
+  ES-ML: [melilla]
