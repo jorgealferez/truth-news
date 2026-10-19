@@ -178,9 +178,28 @@ def next_cycle_at(settings: Settings, now: datetime | None = None) -> datetime |
     return due if due > now else None
 
 
-def add_jobs(scheduler, settings: Settings, first_cycle: datetime | None = None) -> None:
+def next_breaking_at(settings: Settings, now: datetime | None = None) -> datetime:
+    """Siguiente vuelta del carril rapido: fin del ultimo rastreo (de cualquier carril) + intervalo, o ya.
+
+    Anclado a la base como el ciclo completo: con redespliegues cada pocos minutos, un temporizador que
+    empieza en +10 min desde el arranque no llegaba a dispararse nunca (medido en produccion 2026-10-19)."""
+    now = now or datetime.now(UTC)
+    engine = get_engine(settings.database_url)
+    with session_scope(engine) as session:
+        last = session.scalar(
+            select(CrawlRun.finished_at).where(CrawlRun.finished_at.is_not(None)).order_by(CrawlRun.id.desc())
+        )
+    if last is None:
+        return now
+    last = last if last.tzinfo else last.replace(tzinfo=UTC)
+    return max(now, last + timedelta(minutes=settings.breaking_interval_minutes))
+
+
+def add_jobs(
+    scheduler, settings: Settings, first_cycle: datetime | None = None, first_breaking: datetime | None = None
+) -> None:
     """Ciclo completo cada crawl_interval_minutes (el primero en `first_cycle`, si se da) y carril de
-    ultimo minuto cada breaking_interval_minutes."""
+    ultimo minuto cada breaking_interval_minutes (el primero en `first_breaking`, si se da)."""
     extra = {"next_run_time": first_cycle} if first_cycle else {}
     scheduler.add_job(
         run_cycle,
@@ -203,6 +222,8 @@ def add_jobs(scheduler, settings: Settings, first_cycle: datetime | None = None)
             id="breaking",
             max_instances=1,
             coalesce=True,
+            misfire_grace_time=120,  # "ya" se calcula antes de start(): que no se pierda por milisegundos
+            **({"next_run_time": first_breaking} if first_breaking else {}),
         )
 
 
@@ -210,7 +231,6 @@ def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle 
     settings = settings or get_settings()
     scheduler = BlockingScheduler(timezone="UTC")
     due = next_cycle_at(settings)
-    add_jobs(scheduler, settings, first_cycle=due)
     if due:
         log.info("worker: el ultimo ciclo completo es reciente; el siguiente, a las %s", f"{due:%H:%M} UTC")
     else:
@@ -219,4 +239,9 @@ def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle 
             run_cycle(settings)
         except Exception:
             log.exception("el primer ciclo fallo; el planificador lo reintentara")
+    # El carril rapido se calcula despues del ciclo del arranque: si ese ciclo acaba de rastrear, espera.
+    breaking = next_breaking_at(settings) if settings.breaking_interval_minutes > 0 else None
+    add_jobs(scheduler, settings, first_cycle=due, first_breaking=breaking)
+    if breaking:
+        log.info("worker: ultimo minuto, siguiente vuelta a las %s", f"{breaking:%H:%M} UTC")
     scheduler.start()

@@ -149,3 +149,38 @@ def test_breaking_lane_crawls_national_outlets_and_never_overlaps(tmp_path, monk
     worker.add_jobs(sched, Settings(database_url=url, breaking_interval_minutes=0))
     assert [j.id for j in sched.get_jobs()] == ["crawl"]
     get_engine.cache_clear()
+
+
+def test_breaking_lane_is_anchored_to_the_last_crawl(tmp_path):
+    """Con redespliegues cada pocos minutos, el carril rapido no puede empezar a +10 min de cada arranque:
+    toca al terminar el ultimo rastreo + intervalo, o ya (medido en produccion 2026-10-19)."""
+    from datetime import UTC, datetime, timedelta
+
+    from apscheduler.schedulers.background import BackgroundScheduler
+
+    from truthnews.config import Settings
+    from truthnews.db import session_scope
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun
+
+    url = f"sqlite:///{tmp_path / 'a.db'}"
+    upgrade(url)
+    get_engine.cache_clear()
+    settings = Settings(database_url=url, breaking_interval_minutes=10)
+    now = datetime.now(UTC)
+    assert worker.next_breaking_at(settings, now=now) == now  # sin rastreos: ya
+    with session_scope(get_engine(url)) as s:
+        s.add(CrawlRun(started_at=now - timedelta(minutes=4), finished_at=now - timedelta(minutes=3)))
+        s.add(CrawlRun(started_at=now - timedelta(minutes=1)))  # cortado por un redespliegue: no cuenta
+    assert worker.next_breaking_at(settings, now=now) == now + timedelta(minutes=7)
+    assert worker.next_breaking_at(settings, now=now + timedelta(minutes=30)) == now + timedelta(minutes=30)
+
+    sched = BackgroundScheduler(timezone="UTC")
+    first = now + timedelta(minutes=7)
+    worker.add_jobs(sched, settings, first_breaking=first)
+    sched.start(paused=True)
+    try:
+        assert sched.get_job("breaking").next_run_time == first
+    finally:
+        sched.shutdown(wait=False)
+    get_engine.cache_clear()
