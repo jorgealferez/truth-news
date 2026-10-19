@@ -1,6 +1,6 @@
 """Quien dice la verdad: historial de veredictos por partido y por persona (estilo PolitiFact, sin bandos).
 
-Mismo metodo que la fiabilidad por medio (ADR 0023, `truthnews.analysis.reliability`): exactitud =
+Mismo metodo que la fiabilidad por medio (ADR 0021, `truthnews.analysis.reliability`): exactitud =
 afirmaciones verdaderas sobre comprobadas, orden por el limite inferior de Wilson al 95 % y minimo de
 MIN_CHECKS comprobaciones para entrar. Cuentan las afirmaciones que el texto atribuye a quien habla
 (`claim.speaker_entity_id`, ADR 0028) y que el juez de siempre (`verify.py`) ha comprobado, mas las

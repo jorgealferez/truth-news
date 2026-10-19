@@ -1,4 +1,4 @@
-"""Fiabilidad por medio: historial de veredictos, ranking por exactitud comprobada y puntos ciegos (ADR 0023).
+"""Fiabilidad por medio: historial de veredictos, ranking por exactitud comprobada y puntos ciegos (ADR 0021).
 
 Mismo metodo para todos los medios y sin etiquetas de ideologia. La exactitud es la proporcion de sus
 afirmaciones comprobadas contra un dato oficial que resultan verdaderas; los veredictos "sin-datos" no
