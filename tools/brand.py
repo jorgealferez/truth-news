@@ -4,11 +4,13 @@ Uso: python tools/brand.py  (necesita fontTools, cairosvg, Pillow y la fuente In
 desarrollo). Escribe en truthnews/web/static/:
 - mark.svg: el simbolo, la "n medida" (el arco de la n baja hasta una vara graduada); favicon.svg: la
   misma n sin graduacion, sobre papel, para 16-32 px;
-- logo.svg: simbolo + "nos" (Inter Medium) + "mienten" (Inter ExtraBold) + ".com" en ambar oscuro, en
-  contornos para que no dependa de las fuentes del lector;
+- logo.svg: simbolo + "nos" (Inter Medium) + "mienten" (Inter ExtraBold, con el punto de la i hecho una
+  marca cuadrada ambar) + ".com" en ambar oscuro, en contornos para que no dependa de las fuentes;
 - favicon.ico (16/32/48), icon-180.png (apple-touch, opaco), icon-192.png, icon-512.png,
   icon-maskable-512.png (zona segura del 80 %) y avatar-400.png (foto de perfil en redes);
-- og-default.png (1200x630, imagen por defecto para redes sociales).
+- og-default.png (1200x630, imagen por defecto para redes sociales) y banner-1500x500.png (cabecera de
+  perfil), con la regla graduada como recurso grafico.
+Y anade la i sin punto (U+0131) al subconjunto Inter ExtraBold de truthnews/web/fonts/.
 """
 
 from __future__ import annotations
@@ -17,15 +19,20 @@ from io import BytesIO
 from pathlib import Path
 
 import cairosvg
+from fontTools import subset
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.ttLib import TTFont
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image
 
 STATIC = Path(__file__).resolve().parents[1] / "truthnews" / "web" / "static"
 INK, PAPER, AMBER, AMBER_TEXT = "#14161b", "#fbfaf6", "#e8a317", "#8a5a00"
 FONTS = Path("/usr/share/fonts/opentype/inter")
 # Graduacion de la vara: (y, largo) en la rejilla de 64; larga-corta-larga-corta-larga, como una regla.
 TICKS = ((35.6, 5.2), (39.4, 3), (43.2, 5.2), (47, 3), (50.8, 5.2))
+# Punto de la i de Inter ExtraBold sustituido por un cuadrado: (x del tallo, techo del punto, lado), en em.
+I_DOT = (115, 1585, 349)
+LEMA = ("Comparamos lo que cuentan los medios", "con lo que dicen los datos.")
+SOURCES = "INE · Eurostat · Banco Mundial · BOE · GDELT"
 
 
 def glyph(ink: str = INK, amber: str = AMBER, cut: str = PAPER, ticks: bool = True) -> str:
@@ -46,18 +53,18 @@ def svg(body: str, w: float, h: float, label: str | None = None) -> str:
     return f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w:g} {h:g}"{a11y}{body}</svg>\n'
 
 
-def font(weight: str, size: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(str(FONTS / f"Inter-{weight}.otf"), size)
-
-
-def outline(text: str, weight: str, x: float, baseline: float, size: float, fill: str) -> tuple[str, float]:
-    """Texto convertido a trazados SVG con la fuente Inter; devuelve (svg, avance en px)."""
+def outline(
+    text: str, weight: str, x: float, baseline: float, size: float, fill: str, mark_i: bool = False
+) -> tuple[str, float]:
+    """Texto convertido a trazados SVG con la fuente Inter; devuelve (svg, avance en px). Con `mark_i` (solo
+    "mienten" del logotipo) la i pierde su punto y gana una marca cuadrada ambar: la medida en el nombre."""
     f = TTFont(str(FONTS / f"Inter-{weight}.otf"))
     glyphs, cmap, hmtx = f.getGlyphSet(), f.getBestCmap(), f["hmtx"]
     scale = size / f["head"].unitsPerEm
-    parts = []
+    parts, dots = [], []
     for ch in text:
-        name = cmap[ord(ch)]
+        dotted = mark_i and ch == "i"
+        name = cmap[0x131 if dotted else ord(ch)]
         pen = SVGPathPen(glyphs)
         glyphs[name].draw(pen)
         d = pen.getCommands()
@@ -65,15 +72,21 @@ def outline(text: str, weight: str, x: float, baseline: float, size: float, fill
             parts.append(
                 f'<path transform="translate({x:.2f} {baseline}) scale({scale:.5f} {-scale:.5f})" d="{d}"/>'
             )
+        if dotted:
+            x0, top, side = I_DOT
+            dots.append(
+                f'<rect x="{x + x0 * scale:.2f}" y="{baseline - top * scale:.2f}" width="{side * scale:.2f}" '
+                f'height="{side * scale:.2f}" fill="{AMBER}"/>'
+            )
         x += hmtx[name][0] * scale
-    return f'<g fill="{fill}">{"".join(parts)}</g>', x
+    return f'<g fill="{fill}">{"".join(parts)}</g>{"".join(dots)}', x
 
 
 def logo_svg() -> str:
     """El simbolo ocupa x 12-52 de su rejilla; el nombre arranca tras un hueco y apoya en el pie de la n."""
     size, baseline = 56, 54
     a, x = outline("nos", "Medium", 62, baseline, size, INK)
-    b, x = outline("mienten", "ExtraBold", x, baseline, size, INK)
+    b, x = outline("mienten", "ExtraBold", x, baseline, size, INK, mark_i=True)
     c, x = outline(".com", "Medium", x, baseline, size, AMBER_TEXT)
     return svg(f'<g transform="translate(-12 0)">{glyph()}</g>{a}{b}{c}', round(x + 2), 64, "nosmienten.com")
 
@@ -91,29 +104,74 @@ def raster(source: str, w: int, h: int | None = None) -> Image.Image:
     return Image.open(BytesIO(raw))
 
 
-def og() -> Image.Image:
-    img = Image.new("RGB", (1200, 630), PAPER)
-    d = ImageDraw.Draw(img)
-    sym = raster(svg(glyph(), 64, 64), 200)
-    img.paste(sym, (52, 118), sym)
-    x = 272
-    nos, mienten = font("Medium", 96), font("ExtraBold", 96)
-    d.text((x, 150), "nos", font=nos, fill=INK)
-    x2 = x + d.textlength("nos", font=nos)
-    d.text((x2, 150), "mienten", font=mienten, fill=INK)
-    x3 = x2 + d.textlength("mienten", font=mienten)
-    d.text((x3, 150), ".com", font=nos, fill=AMBER_TEXT)
-    assert x3 + d.textlength(".com", font=nos) < 1140, "la marca no cabe en la imagen"
-    d.text((x + 4, 300), "Comparamos lo que cuentan los medios", font=font("Medium", 42), fill=INK)
-    d.text((x + 4, 352), "con lo que dicen los datos.", font=font("Medium", 42), fill=INK)
-    d.rectangle((0, 560, 1200, 630), fill=INK)
-    d.text(
-        (90, 578),
-        "Sin bandos. Con datos: INE · Eurostat · Banco Mundial · BOE · GDELT",
-        font=font("SemiBold", 28),
-        fill=PAPER,
+def ruler(x0: float, x1: float, y: float, step: float) -> str:
+    """Recurso grafico de la marca: una regla con marcas cortas cada `step` y largas cada cinco."""
+    marks = [f'<rect x="{x0:g}" y="{y:g}" width="{x1 - x0:g}" height="2" fill="{INK}"/>']
+    i = 0
+    while (x := x0 + i * step) <= x1 - 1:
+        tall = 14 if i % 5 == 0 else 7
+        marks.append(f'<rect x="{x:.1f}" y="{y + 2:g}" width="2" height="{tall}" fill="{INK}"/>')
+        i += 1
+    return "".join(marks)
+
+
+def logo_inner(x: float, y: float, scale: float) -> str:
+    body = logo_svg()
+    inner = body[body.index("</title>") + 8 : body.rindex("</svg>")]
+    return f'<g transform="translate({x:g} {y:g}) scale({scale:g})">{inner}</g>'
+
+
+def text(t: str, weight: str, x: float, baseline: float, size: float, fill: str) -> str:
+    return outline(t, weight, x, baseline, size, fill)[0]
+
+
+def centered(t: str, weight: str, cx: float, baseline: float, size: float, fill: str) -> str:
+    width = outline(t, weight, 0, baseline, size, fill)[1]
+    return text(t, weight, cx - width / 2, baseline, size, fill)
+
+
+def og() -> str:
+    """Imagen social por defecto: logotipo, que hacemos, la regla y la banda de tinta con las fuentes."""
+    width = float(logo_svg().split('viewBox="0 0 ')[1].split()[0])
+    assert 90 + width * 1.75 < 1110, "la marca no cabe en la imagen"
+    return svg(
+        f'<rect width="1200" height="630" fill="{PAPER}"/>'
+        + logo_inner(90, 100, 1.75)
+        + text(LEMA[0], "Medium", 90, 300, 44, INK)
+        + text(LEMA[1], "Medium", 90, 356, 44, INK)
+        + ruler(90, 1110, 440, 17)
+        + f'<rect y="560" width="1200" height="70" fill="{INK}"/>'
+        + text(f"Sin bandos. Con datos: {SOURCES}", "SemiBold", 90, 605, 28, PAPER),
+        1200,
+        630,
     )
-    return img
+
+
+def banner() -> str:
+    """Cabecera de perfil 1500x500 (X, Bluesky, LinkedIn). Las redes tapan la esquina inferior izquierda con
+    la foto: el logotipo va centrado y la regla corre por debajo de lado a lado."""
+    width = float(logo_svg().split('viewBox="0 0 ')[1].split()[0]) * 1.5
+    x = (1500 - width) / 2
+    return svg(
+        f'<rect width="1500" height="500" fill="{PAPER}"/>'
+        + logo_inner(x, 150, 1.5)
+        + centered(f"{LEMA[0]} {LEMA[1]}", "Medium", 750, 300, 30, INK)
+        + ruler(0, 1500, 380, 20),
+        1500,
+        500,
+    )
+
+
+def dotless_subset() -> None:
+    """La imagen por historia dibuja "mienten" con la i sin punto: el subconjunto necesita U+0131."""
+    fonts = STATIC.parent / "fonts"
+    path = fonts / "Inter-ExtraBold.otf"
+    chars = set(TTFont(str(path)).getBestCmap()) | {0x131}
+    sub = subset.Subsetter(subset.Options())
+    font = TTFont(str(FONTS / "Inter-ExtraBold.otf"))
+    sub.populate(unicodes=sorted(chars))
+    sub.subset(font)
+    font.save(str(path))
 
 
 def main() -> None:
@@ -128,7 +186,9 @@ def main() -> None:
     raster(icon(0.24, rounded=False), 400).save(STATIC / "avatar-400.png", optimize=True)
     frames = [raster(small, s) for s in (16, 32, 48)]
     frames[-1].save(STATIC / "favicon.ico", sizes=[(16, 16), (32, 32), (48, 48)], append_images=frames[:-1])
-    og().save(STATIC / "og-default.png", optimize=True)
+    raster(og(), 1200, 630).save(STATIC / "og-default.png", optimize=True)
+    raster(banner(), 1500, 500).save(STATIC / "banner-1500x500.png", optimize=True)
+    dotless_subset()
 
 
 if __name__ == "__main__":
