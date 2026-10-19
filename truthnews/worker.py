@@ -13,7 +13,7 @@ from sqlalchemy import select
 
 from truthnews import archive
 from truthnews.ai import claims as ai_claims
-from truthnews.ai import threads
+from truthnews.ai import cost, threads
 from truthnews.ai.client import AIClient
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis import statement_checks
@@ -89,16 +89,40 @@ class _Timed(dict):
         self._clock = clock
         self._last = clock()
         self.seconds: dict[str, float] = {}
+        self.cost: dict[str, float] = {}  # USD de IA por paso, igual que los segundos (ADR 0054)
+        self._spent = cost.METER.spent
 
     def __setitem__(self, key, value):
         now = self._clock()
         self.seconds.setdefault(key, round(now - self._last, 1))
         self._last = now
+        spent = cost.METER.spent
+        if spent > self._spent:
+            self.cost.setdefault(key, round(spent - self._spent, 4))
+        self._spent = spent
         super().__setitem__(key, value)
+
+
+def spent_today(session, now: datetime | None = None) -> tuple[float, float]:
+    """USD de IA gastados hoy (dia UTC) en los ciclos ya guardados: (bolsa general, bolsa de verificacion).
+    Un ciclo cortado antes de guardar sus estadisticas no cuenta: el tope puede quedarse algo corto, nunca
+    bloquear de mas."""
+    now = now or datetime.now(UTC)
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    general = verify = 0.0
+    for st in session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day)):
+        ai_cost = (st or {}).get("ai_cost") or {}
+        v = float(ai_cost.get("verificacion_usd") or 0)
+        general += float(ai_cost.get("usd") or 0) - v
+        verify += v
+    return general, verify
 
 
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
+    with session_scope(engine) as session:
+        general, verify = spent_today(session)
+        cost.start_cycle(general, settings.ai_daily_budget_usd, verify, settings.ai_daily_budget_verify_usd)
     summary = _Timed()
     with session_scope(engine) as session:
         sync_registry(session)
@@ -129,7 +153,7 @@ def _run_cycle(settings: Settings) -> dict:
             "declaraciones juzgadas con IA",
             lambda s: statement_checks.run_ai(
                 s,
-                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000),
+                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000, pool=cost.VERIFY),
                 summary["run"],
                 max_calls=settings.statement_ai_max_calls,
             ),
@@ -145,7 +169,7 @@ def _run_cycle(settings: Settings) -> dict:
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
 
         def _claims(session):
-            ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
+            ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000, pool=cost.VERIFY)
             out = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
             return {**out, "scores": score_stories(session, started)}
 
@@ -202,8 +226,10 @@ def _run_cycle(settings: Settings) -> dict:
                 "cycle": FULL_CYCLE,
                 "cycle_finished": utcnow().isoformat(),
                 "seconds": summary.seconds,
+                "ai_cost": {**cost.METER.summary(), "por_paso": summary.cost},
             }
     dict.__setitem__(summary, "seconds", summary.seconds)  # duracion por paso, para ver el mas lento
+    dict.__setitem__(summary, "ai_cost", {**cost.METER.summary(), "por_paso": summary.cost})
     log.info("ciclo terminado: %s", summary)
     return summary
 

@@ -18,7 +18,8 @@ from truthnews.registry import REGISTRY_DIR, countries
 
 META_KEYS = ("geo_names", "eu_geos", "foreign_markers", "region_names")
 _SENTENCE = re.compile(r"(?<=[.!?;])\s+|\n+")
-_PCT = r"(?P<num>\d{1,3}(?:[.,]\d{1,2})?)\s*(?:%|por ciento|percent|por cento)"
+# Hasta 3 decimales: el Euribor se publica asi ("3,247 %").
+_PCT = r"(?P<num>\d{1,3}(?:[.,]\d{1,3})?)\s*(?:%|por ciento|percent|por cento)"
 _ABS = re.compile(r"(\d{1,3}(?:[.,]\d{1,3})?)\s*(millones|million|milhoes|milhões)")
 _YEAR = re.compile(r"\b(19[5-9]\d|20[0-4]\d)\b")
 _UP = re.compile(
@@ -50,7 +51,9 @@ _VARIATION = re.compile(
     r"|resta|restan|resto|restado|quita|quitan|quito|recorta|recortan|reduce|reducen|redujo|merma|mermo"
     r"|erosiona|erosionan|descuenta|lastra|lastro|se come|se comen|se comio|suma|suman|sumo|anade|anadio"
     r"|aporta|aportan|aporto)"
-    r"\s+(?:(?:de|en|del|hasta)\s+)?(?:un|una|um|uma|by)\s*$"
+    # Con el mes entre medias tambien: "el paro baja en septiembre un 2 %".
+    r"\s+(?:(?:en\s+|el\s+mes\s+de\s+)?(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre"
+    r"|octubre|noviembre|diciembre)(?:\s+de\s+\d{4})?\s+)?(?:(?:de|en|del|hasta)\s+)?(?:un|una|um|uma|by)\s*$"
 )
 
 
@@ -218,8 +221,10 @@ class ClaimCandidate:
     period: str | None = None  # periodo citado: se compara con el dato de ese periodo, no con el ultimo
 
 
-def _number(raw: str) -> float:
+def _number(raw: str, pct: bool = False) -> float:
     raw = raw.replace(",", ".")
+    if pct:
+        return float(raw)  # un porcentaje no lleva millares: "3,247 %" es 3,247
     if raw.count(".") == 1 and len(raw.split(".")[1]) == 3:  # 1.234 (millares) en abs
         raw = raw.replace(".", "")
     return float(raw)
@@ -354,7 +359,9 @@ def extract(
             for p in pats:
                 pn = re.escape(normalize(p))
                 if ind["unit"] == "pct":
-                    link = rf"(?:(?P<verb>{_VERBS})\s+(?:{_CONNECT}\s+)?|{_CONNECT}\s+)"
+                    # Periodo entre verbo y cifra: "el Euribor cerro septiembre en el 3,247 %".
+                    after = rf"(?:(?:el\s+mes\s+de\s+|en\s+)?(?:{'|'.join(_MONTHS)})(?:\s+de\s+\d{{4}})?\s+)?"
+                    link = rf"(?:(?P<verb>{_VERBS})\s+{after}(?:{_CONNECT}\s+)?|{_CONNECT}\s+)"
                     # Periodo entre indicador y verbo: "la inflacion de agosto se situo en el 4,3 %".
                     gap = (
                         rf"(?:(?:de|en|del mes de|in)\s+(?:{'|'.join(_MONTHS)})(?:\s+(?:de\s+)?\d{{4}})?\s+)?"
@@ -364,7 +371,7 @@ def extract(
                     if m and not ind.get("change_is_level") and is_variation(sn[: m.start("num")]):
                         m = None  # "baja un 2 %": variacion, no nivel
                     if m and (ind.get("of_gdp") or "del pib" not in sn[m.end() : m.end() + 8]):
-                        value = _number(m.group("num"))
+                        value = _number(m.group("num"), pct=True)
                         verb = m.group("verb") or ""
                         figure = m.start("num")
                 else:
@@ -429,7 +436,7 @@ def _number_positions(sn: str, unit: str, value: float) -> list[int]:
     out = []
     if unit == "pct":
         for m in re.finditer(_PCT, sn):
-            if abs(_number(m.group("num")) - value) < 1e-9:
+            if abs(_number(m.group("num"), pct=True) - value) < 1e-9:
                 out.append(m.start())
         return out
     for m in _ABS.finditer(sn):

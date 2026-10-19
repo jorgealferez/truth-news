@@ -460,7 +460,7 @@ class Thread(Base):
 SOCIAL_NETWORKS = ("x", "bluesky", "mastodon", "telegram")
 # Cuentas en ingles (cuentas distintas, misma red): solo historias con titular traducido (ADR 0017).
 SOCIAL_NETWORKS_EN = ("x_en", "bluesky_en", "mastodon_en", "telegram_en")
-SOCIAL_KINDS = ("historia", "hilo", "verificacion")
+SOCIAL_KINDS = ("historia", "hilo", "verificacion", "hoy")  # hoy: pieza diaria, ref_id = AAAAMMDD (ADR 0048)
 SOCIAL_STATUSES = ("prueba", "enviado", "error")
 
 

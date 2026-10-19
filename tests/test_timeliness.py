@@ -36,6 +36,13 @@ def test_timings_first_right_and_first_wrong():
     assert s2.first_right is None and s2.outlets[0].first_wrong
 
 
+def test_story_without_articles_starts_at_its_first_claim():
+    # Produccion 2026-10-19: /historia/1912 daba 500 (KeyError) porque sus articulos estaban en otra historia.
+    (st,) = timings([c(7, "A", 2, "verdadero"), c(7, "B", 4, "falso")], {})
+    assert st.start == T0 + timedelta(hours=2)
+    assert [(o.outlet, o.right_after_h) for o in st.outlets] == [("A", 0.0), ("B", None)]
+
+
 def test_by_outlet_needs_a_sample():
     stories = []
     for i in range(MIN_STORIES):

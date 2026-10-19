@@ -291,7 +291,7 @@ def test_ai_pipeline(session, topic_world):
     _, stories = topic_world
     ids = [stories[0].id, stories[1].id]
     assert "desactivada" in ai_pipeline.run(session, Settings())["ai"]
-    settings = Settings()
+    settings = Settings(ai_piece_refresh_minutes=0)  # la cadencia minima se prueba aparte
     out = ai_pipeline.run(
         session,
         settings,
@@ -345,3 +345,128 @@ def test_ai_pipeline_writes_pieces_in_parallel(session, monkeypatch):
     written, revision, failed = ai_pipeline.write_batch(session, None, topics, None, 3, 3)
     assert peak[0] == 3 and stored == [0, 2]  # el tope de piezas (3) se respeta: el tema 3 no entra
     assert (written, revision, failed) == (2, 2, 1)
+
+
+# --- Coste (ADR 0054) ---------------------------------------------------------------------------------
+def test_call_cost_uses_model_prices_and_charges_unknown_at_the_top():
+    from truthnews.ai import cost
+
+    usage = {"input_tokens": 1_000_000, "output_tokens": 100_000, "cache_read_input_tokens": 0}
+    assert cost.call_cost("claude-opus-5-5", usage) == pytest.approx(4.0 + 2.0)
+    assert cost.call_cost("claude-opus-5", usage) == pytest.approx(5.0 + 2.5)  # no se confunde con 5-5
+    assert cost.call_cost("claude-haiku-5-5", usage) == pytest.approx(0.1 + 0.05)
+    assert cost.call_cost("modelo-nuevo", usage) == pytest.approx(5.0 + 2.5)
+
+
+def test_client_charges_every_call_and_stops_at_the_daily_budget(monkeypatch):
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=0.0, daily_budget=0.0001)
+    monkeypatch.setattr(cost, "METER", meter)
+    with pytest.raises(AIError, match="rechazo"):  # un rechazo tambien se paga
+        AIClient(client=fake_sdk(message(stop="refusal"), [])).structured("s", "u", {})
+    assert meter.calls == 1 and meter.spent > 0
+    calls = []
+    meter.spent_before = 1.0
+    with pytest.raises(AIError, match="presupuesto diario"):
+        AIClient(client=fake_sdk(message(), calls)).structured("s", "u", {})
+    assert calls == []  # pasado el tope no se llama
+    summary = meter.summary()
+    assert summary["llamadas"] == 1 and summary["por_modelo"]["claude-opus-5-5"] > 0
+
+
+def test_unlimited_budget_never_blocks():
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=1e6, daily_budget=0)
+    meter.check()
+
+
+def test_topic_with_recent_piece_gives_its_slot_to_the_next(session, monkeypatch):
+    from datetime import timedelta
+
+    from truthnews.models import utcnow
+
+    old, fresh, empty = (
+        Topic(title=t, category="internacional", country="ES", first_seen=NOW, last_seen=NOW)
+        for t in ("a", "b", "c")
+    )
+    session.add_all([old, fresh, empty])
+    session.flush()
+    for tp, age in ((old, timedelta(hours=5)), (fresh, timedelta(minutes=10))):
+        session.add(
+            Piece(
+                topic_id=tp.id,
+                kind="analisis",
+                status="publicada",
+                title="t",
+                dek="d",
+                model="m",
+                input_hash="x",
+                created_at=utcnow() - age,
+            )
+        )
+    session.flush()
+    refresh = timedelta(minutes=120)
+    assert not ai_pipeline.recent_piece(session, old, refresh)
+    assert ai_pipeline.recent_piece(session, fresh, refresh)
+    assert not ai_pipeline.recent_piece(session, empty, refresh)
+    asked = []
+    monkeypatch.setattr(ai_pipeline, "prepare_piece", lambda s, t, v: asked.append(t.id) or None)
+    ai_pipeline.write_batch(session, None, [old, fresh, empty], None, 6, 1, refresh)
+    assert asked == [old.id, empty.id]
+
+
+def test_worker_sums_todays_ai_cost(session):
+    from truthnews.models import CrawlRun
+    from truthnews.worker import spent_today
+
+    session.add_all(
+        [
+            CrawlRun(started_at=NOW, stats={"ai_cost": {"usd": 1.5, "verificacion_usd": 0.5}}),
+            CrawlRun(started_at=NOW, stats={"seconds": {}}),
+            CrawlRun(started_at=NOW - timedelta(days=2), stats={"ai_cost": {"usd": 9}}),
+        ]
+    )
+    session.flush()
+    assert spent_today(session, NOW) == pytest.approx((1.0, 0.5))
+
+
+def test_ai_step_reports_cost_per_part(session, topic_world, monkeypatch):
+    from truthnews.ai import cost
+
+    _, stories = topic_world
+    ids = [stories[0].id, stories[1].id]
+
+    class Paying(FakeAI):
+        def structured(self, system, user, schema):
+            cost.METER.charge("claude-opus-5-5", {"output_tokens": 1_000_000})  # 20 USD por llamada
+            return super().structured(system, user, schema)
+
+    out = ai_pipeline.run(
+        session,
+        Settings(ai_piece_refresh_minutes=0),
+        ai=Paying([topics_reply(ids), good_piece(ids, ["aa", "bb"])]),
+        verifier=Verifier(lambda s, g, label: None),
+    )
+    assert out["coste_usd"] == {"traducciones": 0, "declaraciones": 0, "temas": 20.0, "piezas": 20.0}
+
+
+def test_verification_pool_keeps_judging_when_the_general_budget_is_spent(monkeypatch):
+    """Decision del usuario (2026-10-19): agotar el tope general no para las verificaciones."""
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=10.0, daily_budget=10.0, verify_spent_before=0.0, verify_budget=1.5)
+    monkeypatch.setattr(cost, "METER", meter)
+    with pytest.raises(AIError, match="presupuesto diario de IA agotado"):
+        AIClient(client=fake_sdk(message(), [])).structured("s", "u", {})
+    judge = AIClient(client=fake_sdk(message(), []), pool=cost.VERIFY)
+    assert judge.structured("s", "u", {}).data == {"ok": 1}
+    assert meter.verify_spent > 0 and meter.summary()["hoy_usd"] == 10.0
+    meter.verify_spent_before = 1.5
+    with pytest.raises(AIError, match="de verificacion agotado"):
+        judge.structured("s", "u", {})
+    shared = cost.Meter(spent_before=10.0, daily_budget=10.0)  # sin bolsa propia: comparten el tope general
+    monkeypatch.setattr(cost, "METER", shared)
+    with pytest.raises(AIError, match="presupuesto diario de IA agotado"):
+        judge.structured("s", "u", {})

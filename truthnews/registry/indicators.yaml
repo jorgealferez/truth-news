@@ -162,6 +162,21 @@ precio_vivienda:
   directional: false
   sources:
     - {connector: eurostat, dataset: prc_hpi_q, params: {purchase: TOTAL, unit: RCH_A}, geos: EU}
+euribor:
+  name: {es: Euríbor a 12 meses, en: 12-month Euribor}
+  unit: pct
+  directional: false  # "el Euribor sube" puede ser diario y la serie es la media mensual: solo el nivel
+  patterns:
+    es: ["euríbor", "euribor"]
+    en: ["euribor"]
+    pt: ["euribor", "euríbor"]
+  # Otros plazos y el €STR son otras series: no se comparan con el de 12 meses.
+  excludes: ["a un mes", "a 1 mes", "a tres meses", "a 3 meses", "a seis meses", "a 6 meses", "semanal", "€str",
+    "estr", "1-month", "3-month", "6-month"]
+  sources:
+    # BCE, media mensual del Euribor a 12 meses. La prensa tambien cita el valor diario ("hoy cotiza a..."):
+    # en la franja que puede explicar la diferencia diaria/mensual no se juzga.
+    - {connector: ecb, flow: FM, key: M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA, geos: EU, other_measure: valor diario}
 poblacion:
   name: {es: Población, en: Population}
   unit: abs
@@ -196,6 +211,47 @@ geo_names:
   AR: [argentina]
   MX: [méxico, mexico]
   IL: [israel]
+  # Lote global (2026-10-19): paises del registro de medios. Solo nombres inequivocos; los ambiguos se
+  # dejan fuera (la frase que los nombra se descarta, no se atribuye). Banco Mundial: series anuales.
+  AE: [emiratos árabes unidos, emiratos árabes, united arab emirates, emirados árabes unidos]
+  AU: [australia, austrália]
+  BO: [bolivia, bolívia]
+  BR: [brasil, brazil]
+  CA: [canadá, canada]
+  CH: [suiza, switzerland, suíça]
+  CL: [república de chile]  # "chile" a secas tambien es el pimiento: fuera
+  CO: [colombia, colômbia]
+  CR: [costa rica]
+  CZ: [república checa, chequia, czech republic, czechia, república tcheca, tchéquia]
+  DK: [dinamarca, denmark]
+  DO: [república dominicana, dominican republic]
+  DZ: [argelia, algeria, argélia]
+  EC: [república del ecuador]  # "ecuador" tambien es la linea del ecuador: fuera
+  EG: [egipto, egypt, egito]
+  FI: [finlandia, finland, finlândia]
+  GT: [guatemala]
+  HU: [hungría, hungary, hungria]
+  IN: [india, índia]
+  JP: [japón, japan, japão]
+  KE: [kenia, kenya, quênia, quénia]
+  KR: [corea del sur, south korea, coreia do sul]
+  NG: [nigeria, nigéria]
+  "NO": [noruega, norway]  # entre comillas: YAML lee NO como false
+  PA: [república de panamá]  # "panamá" a secas: papeles de Panamá, canal de Panamá
+  PE: [perú, peru]
+  PH: [filipinas, philippines]
+  PK: [pakistán, pakistan, paquistão]
+  PY: [paraguay, paraguai]
+  QA: [catar, qatar]
+  RO: [rumanía, rumania, romania, roménia, romênia]
+  SA: [arabia saudí, arabia saudita, saudi arabia, arábia saudita]
+  SG: [singapur, singapore, singapura]
+  SN: [senegal]
+  TN: [túnez, tunisia, tunísia]
+  TR: [turquía, türkiye]  # "turkey" en ingles tambien es el pavo
+  UY: [uruguay, uruguai]
+  VE: [venezuela]
+  ZA: [sudáfrica, south africa, áfrica do sul]
   EU: [unión europea, european union, união europeia]
   EA: [eurozona, zona euro, euro area, eurozone, zona do euro]
 eu_geos: [AT, BE, BG, CY, CZ, DE, DK, EE, ES, FI, FR, GR, HR, HU, IE, IT, LT, LU, LV, MT, NL, PL, PT, RO, SE, SI, SK, EU, EA]

@@ -377,8 +377,8 @@ es:
     alguno omite, y qué palabras valorativas usa cada medio. Solo comparamos cifras del mismo hecho: de cada
     artículo cuenta la del titular, y dos cifras que se diferencian en más de tres veces son hechos distintos
     salvo que ambas se atribuyan a una fuente («según…»). 4) Extraemos solo afirmaciones numéricas
-    explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, déficit, pobreza, vivienda, población) y las comparamos
-    con la serie publicada por Eurostat, el INE o el Banco Mundial para el periodo que cita la frase. Para
+    explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, déficit, pobreza, vivienda, población, Euríbor) y las comparamos
+    con la serie publicada por Eurostat, el INE, el BCE o el Banco Mundial para el periodo que cita la frase. Para
     encontrar más, una IA lee las frases con cifras y propone indicador, territorio y periodo; nuestras reglas
     comprueban que la frase y la cifra están en el texto y que territorio y periodo cuadran, y si no, no se
     juzga. El veredicto lo da siempre el código con el dato oficial, nunca la IA. 5) Veredictos: Verdadero (diferencia
@@ -1049,7 +1049,7 @@ en:
     and the loaded words each outlet uses. We only compare figures about the same fact: the headline figure
     counts, and two figures more than three times apart are different facts unless both are attributed
     ("according to…"). 4) We extract only explicit numeric claims about official indicators
-    and compare them with the Eurostat, INE or World Bank series for the period the sentence cites. To find
+    and compare them with the Eurostat, INE, ECB or World Bank series for the period the sentence cites. To find
     more, an AI reads sentences with figures and proposes indicator, territory and period; our rules check that
     the sentence and figure are in the text and that territory and period fit, or it is not judged. The verdict
     is always given by code against the official data, never by the AI. 5) Verdicts: True (up to 0.2 points or

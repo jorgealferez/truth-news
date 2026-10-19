@@ -6,6 +6,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from truthnews.ai import cost
+
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 
 
@@ -27,6 +29,7 @@ class AIClient:
         effort: str = "high",
         client: Any = None,
         max_tokens: int = 64000,
+        pool: str = "general",
     ):
         if client is None:  # pragma: no cover - requiere ANTHROPIC_API_KEY
             import anthropic
@@ -36,9 +39,17 @@ class AIClient:
         self.model = model
         self.effort = effort
         self.max_tokens = max_tokens
+        self.pool = pool  # bolsa del tope diario a la que se cargan sus llamadas (ADR 0054)
 
     def structured(self, system: str, user: str, schema: dict) -> AIResult:
-        """Una llamada con salida JSON validada por esquema. El prompt de sistema es estable y se cachea."""
+        """Una llamada con salida JSON validada por esquema. El prompt de sistema es estable y se cachea.
+
+        Antes de llamar mira el tope diario y, con la respuesta, apunta su coste aunque luego no se pueda usar
+        (rechazo, truncada): esos tokens tambien se pagan (ADR 0054)."""
+        try:
+            cost.METER.check(getattr(self, "pool", "general"))
+        except cost.BudgetExceeded as exc:
+            raise AIError(str(exc)) from exc
         with self._client.beta.messages.stream(
             model=self.model,
             max_tokens=self.max_tokens,
@@ -50,6 +61,18 @@ class AIClient:
             fallbacks="default",
         ) as stream:
             msg = stream.get_final_message()
+        u = msg.usage
+        usage = {
+            k: getattr(u, k, None)
+            for k in (
+                "input_tokens",
+                "output_tokens",
+                "cache_read_input_tokens",
+                "cache_creation_input_tokens",
+            )
+        }
+        model = getattr(msg, "model", self.model)
+        cost.METER.charge(model, usage, getattr(self, "pool", "general"))
         if msg.stop_reason == "refusal":
             raise AIError(f"rechazo del modelo ({getattr(msg.stop_details, 'category', None)})")
         if msg.stop_reason == "max_tokens":
@@ -61,14 +84,4 @@ class AIClient:
             data = json.loads(text)
         except json.JSONDecodeError as exc:
             raise AIError(f"JSON invalido: {exc}") from exc
-        u = msg.usage
-        usage = {
-            k: getattr(u, k, None)
-            for k in (
-                "input_tokens",
-                "output_tokens",
-                "cache_read_input_tokens",
-                "cache_creation_input_tokens",
-            )
-        }
-        return AIResult(data=data, model=getattr(msg, "model", self.model), usage=usage)
+        return AIResult(data=data, model=model, usage=usage)
