@@ -9,11 +9,14 @@ cuando cambia el metodo (`METHOD_VERSION`) se vuelve a juzgar dejando escrita la
 Con IA (`run_ai`), las frases con cifra que las reglas no recogen se proponen a `ai.claims.propose` (la misma
 validacion por codigo que en las noticias) con un tope de llamadas por ciclo. Para no repetir lo ya enviado
 sin necesidad de tabla, el ultimo id de declaracion enviado se guarda en `CrawlRun.stats` (AI_CURSOR).
+Cuando una declaracion ya enviada recibe despues el cuerpo de su comunicado (ADR 0051), se vuelve a
+enviar una vez: la fecha del ultimo cuerpo enviado va en AI_BODY_CURSOR.
 """
 
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
+from itertools import chain
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -33,6 +36,8 @@ DUPLICATE_HOURS = 6
 # no los da no se juzga (no se dice nada de ella). Sin columna de idioma en political_statement (ADR 0024).
 LANGUAGE = "es"
 AI_CURSOR = "statement_ai_cursor"
+AI_BODY_CURSOR = "statement_ai_body_cursor"
+EPOCH = datetime(1970, 1, 1, tzinfo=UTC)
 
 
 def _aware(dt: datetime) -> datetime:
@@ -153,15 +158,28 @@ def _add(session, st, speaker, cand: ClaimCandidate, result: Result, extractor: 
 
 
 def _body(st: PoliticalStatement) -> str:
+    """El comunicado entero si se descargo (titular y cuerpo, ADR 0051); si no, el extracto del canal."""
+    if st.body:
+        return f"{(st.text or '').strip().rstrip('.')}. {st.body.strip()}".lstrip(". ")
     return (st.summary or st.text or "").strip()
+
+
+def _cursor(session: Session, key: str):
+    for stats in session.scalars(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(50)):
+        if stats and key in stats:
+            return stats[key]
+    return None
 
 
 def ai_cursor(session: Session) -> int:
     """Ultimo id de declaracion ya enviado a la IA (0 si nunca)."""
-    for stats in session.scalars(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(50)):
-        if stats and AI_CURSOR in stats:
-            return int(stats[AI_CURSOR])
-    return 0
+    return int(_cursor(session, AI_CURSOR) or 0)
+
+
+def ai_body_cursor(session: Session) -> datetime:
+    """Fecha del ultimo cuerpo de comunicado ya enviado a la IA (EPOCH si nunca)."""
+    value = _cursor(session, AI_BODY_CURSOR)
+    return _aware(datetime.fromisoformat(value)) if value else EPOCH
 
 
 def run_ai(
@@ -176,19 +194,28 @@ def run_ai(
     """Frases con cifra de declaraciones aun no enviadas, propuestas a la IA, validadas y juzgadas."""
     now = now or datetime.now(UTC)
     verifier = verifier or Verifier()
-    cursor = ai_cursor(session)
-    rows = session.scalars(
+    cursor, body_cursor = ai_cursor(session), ai_body_cursor(session)
+    window = PoliticalStatement.published_at >= now - timedelta(days=WINDOW_DAYS)
+    new = session.scalars(
+        select(PoliticalStatement)
+        .where(PoliticalStatement.id > cursor, window)
+        .order_by(PoliticalStatement.id)
+    )
+    # Ya enviadas sin cuerpo y que lo recibieron despues: se envian otra vez, por orden de descarga.
+    late = session.scalars(
         select(PoliticalStatement)
         .where(
-            PoliticalStatement.id > cursor,
-            PoliticalStatement.published_at >= now - timedelta(days=WINDOW_DAYS),
+            PoliticalStatement.id <= cursor,
+            PoliticalStatement.body_status == "ok",
+            PoliticalStatement.body_fetched_at > body_cursor,
+            window,
         )
-        .order_by(PoliticalStatement.id)
+        .order_by(PoliticalStatement.body_fetched_at, PoliticalStatement.id)
     )
     room = ai_claims.BATCH * max_calls
     items: list[ai_claims.Item] = []
-    last, seen_text = cursor, set()
-    for st in rows:
+    last, last_body, seen_text = cursor, body_cursor, set()
+    for st in chain(new, late):
         body = _body(st)
         key = (st.actor, normalize(body))
         sentences = ai_claims.candidate_sentences(body) if key not in seen_text else []
@@ -199,7 +226,10 @@ def run_ai(
         seen_text.add(key)
         geo = st.country or "XX"
         items += [ai_claims.Item(s, body, geo, _aware(st.published_at), st) for s in sentences]
-        last = st.id
+        if st.id > cursor:
+            last = st.id
+        else:
+            last_body = _aware(st.body_fetched_at)
     accepted, stats = ai_claims.propose(ai, items, max_calls) if items else ([], {"frases_candidatas": 0})
     if items and not stats.get("llamadas"):
         return {**stats, "claims": 0}  # la IA no respondio: el cursor no avanza y se reintenta
@@ -221,7 +251,7 @@ def run_ai(
             claims += 1
     row = session.get(CrawlRun, run_id) if run_id is not None else None
     if row is not None:
-        row.stats = {**(row.stats or {}), AI_CURSOR: last}
+        row.stats = {**(row.stats or {}), AI_CURSOR: last, AI_BODY_CURSOR: last_body.isoformat()}
     session.flush()
     return {**stats, "claims": claims, "cursor": last}
 
