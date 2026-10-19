@@ -45,9 +45,13 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] Paginas `/entidades` y `/entidad/<id>-<slug>` (noticias por mes rastreadas/archivo, con quien aparece, medios, lo que dice, afirmaciones comprobadas)
   - [ ] Medir en produccion: entidades extraidas, afirmaciones atribuidas y noticias importadas por ciclo (logs "entidades:" y "archivo:")
 - [ ] Verificaciones a escala (prioridad del usuario 2026-10-19: "lo mas importante las verificaciones, sintetizar datos y dar mascado al publico"): extraccion de afirmaciones comprobables con IA (el veredicto lo decide el codigo con datos, ADR 0007), mas indicadores y fuentes oficiales (INE por comunidad, EPA, IPC, BOE, Eurostat, Banco de Espana), veredicto en una frase con grafico del dato, ficha de verificacion para compartir. Carril: Verificaciones (docs/equipo.md) — EN CURSO (session_01JFjThAepJmvn9ndTW2bdeH, 2026-10-19)
-  - [ ] Extraccion con IA validada por el codigo (ADR 0019, migracion 0010); antes medido en produccion: 0,17 afirmaciones juzgadas por ciclo (18 ciclos); despues: medir en el log tras desplegar
+  - [x] Extraccion con IA validada por el codigo (ADR 0019, migracion 0010) — #41; antes medido en produccion: 0,17 afirmaciones juzgadas por ciclo (18 ciclos); despues: NO VERIFICADO hasta que el worker complete un ciclo (se redespliega cada 1,5 min, #69)
   - [ ] Ampliar indicadores y fuentes (medido: 472 frases con % en 2 782 articulos, solo 42 tocan el catalogo): pobreza, deficit, vivienda/alquiler, tipos, INE por comunidad y EPA
-  - [ ] Veredicto en una frase con grafico de la serie oficial y la cifra del medio marcada; pagina de verificacion para compartir
+    - [x] Deficit, riesgo de pobreza y AROPE (Eurostat) — #44
+    - [x] Una variacion no se juzga como nivel (metodo v4) — #57
+    - [ ] Paro EPA por comunidad y sin atribuir a Espana noticias de otro pais (metodo v5) — #67
+    - [ ] Precio de portales y tasadoras fuera del indice oficial — #73
+  - [ ] Veredicto en una frase con grafico de la serie oficial y la cifra del medio marcada; pagina de verificacion para compartir — #53 abierto
 - [ ] Autopublicacion en redes (peticion del usuario 2026-10-19): seleccion de lo mas relevante, contrastado o mediatico; piezas por red dentro de sus limites con imagen; adaptadores Bluesky, Mastodon, Telegram y X; cola con registro y sin duplicados; modo prueba sin credenciales; pedir al usuario las cuentas y claves para Railway. Carril: Redes (docs/equipo.md) — EN CURSO (session_01XKtMQ5i5KmEUZeifKfix5k, 2026-10-19)
   - [x] ADR 0018 (Tipo: datos) y migracion 0008: tabla `social_post`, unica por red y contenido
   - [x] `truthnews/social/`: seleccion (sin revision, sin fuente ni lenguaje cargado), piezas X 280 / Bluesky 300 / Mastodon 500 / Telegram 1.024 con imagen y enlace, adaptadores y cola con cupo diario y reintentos; paso al final del ciclo del worker; modo prueba sin credenciales
