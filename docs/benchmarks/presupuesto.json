@@ -307,6 +307,27 @@
       "unidad": "paginas",
       "direccion": "max",
       "objetivo": 0
+    },
+    {
+      "id": "promesas_a_ia_pct",
+      "descripcion": "C15/18c: % de promesas de quien goberno que el codigo deja para la IA (las que tienen normas candidatas del BOE)",
+      "unidad": "%",
+      "direccion": "max",
+      "objetivo": 20
+    },
+    {
+      "id": "promesas_ia_publicadas_sin_revision",
+      "descripcion": "C15/18c: propuestas de la IA publicadas sin revision humana",
+      "unidad": "propuestas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "promesas_reglas_segundos_por_promesa",
+      "descripcion": "C15/18c: segundos del paso de reglas por promesa (busqueda en la legislacion consolidada del BOE)",
+      "unidad": "s",
+      "direccion": "max",
+      "objetivo": 5
     }
   ]
 }

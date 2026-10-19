@@ -656,7 +656,19 @@ es:
   el_phase_proxima: Próxima
   el_dates_other: Calendario
   el_context: lo dijo a propósito de
-  el_method_more: "La sección aparece desde la convocatoria y se retira 30 días después de votar. Los partidos salen en orden alfabético y con el mismo formato. Las promesas se citan literalmente con su página y su fuente; un programa solo se descarga si el robots.txt del partido lo permite. Entre dos programas del mismo partido se señalan las promesas repetidas, nuevas y que desaparecen, y en sus declaraciones las cifras que cambia para el mismo dato y periodo. Que una promesa se cumpliera no se decide automáticamente mientras no haya un método fiable con datos oficiales."
+  el_method_more: "La sección aparece desde la convocatoria y se retira 30 días después de votar. Los partidos salen en orden alfabético y con el mismo formato. Las promesas se citan literalmente con su página y su fuente; un programa solo se descarga si el robots.txt del partido lo permite. Entre dos programas del mismo partido se señalan las promesas repetidas, nuevas y que desaparecen, y en sus declaraciones las cifras que cambia para el mismo dato y periodo. El cumplimiento solo se mide a quien gobernó: primero con datos oficiales; si no los hay, el código busca normas del BOE sobre lo prometido y la IA, solo con esas normas, propone si se cumplió; una persona lo revisa antes de publicarlo. Sin norma ni dato se dice «sin dato comprobable», nunca que alguien mintió."
+  pf_title: Lo prometido y lo hecho
+  pf_asymmetry: "Solo se mide a quien gobernó: {gov}, del {from} al {to}, con el programa de las elecciones de {year}. Los demás partidos no tuvieron el Gobierno para cumplir el suyo, así que sus promesas se citan pero no se miden."
+  pf_method: "Primero los datos oficiales: si una promesa fija una meta medible, se compara con el último dato. Si no, el código busca en el BOE normas aprobadas en ese periodo sobre lo prometido y, solo con esas normas, la IA propone si la cumplen; una persona lo revisa antes de publicarlo. Que no conste una norma no prueba que no se cumpliera: se dice «sin dato comprobable»."
+  pf_counts: "· sin dato comprobable {nd} · revisadas {rev} de {total} promesas"
+  pf_no_program: "Su programa de {year} no se ha podido importar (su web no lo permite al rastreador o no lo enlaza): sin medir."
+  pf_all: "Todas sus promesas de {year}"
+  pf_cumplida: Cumplida
+  pf_parcial: Cumplida en parte
+  pf_en-curso: En curso
+  pf_no-cumplida: No cumplida
+  pf_method_dato_v1: Con dato oficial
+  pf_method_ia_boe_v1: Norma del BOE (análisis asistido por IA, revisado)
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1309,4 +1321,16 @@ en:
   el_phase_proxima: Upcoming
   el_dates_other: Calendar
   el_context: said in connection with
-  el_method_more: "The section appears from the call and is withdrawn 30 days after polling day. Parties are listed alphabetically and in the same format. Promises are quoted verbatim with their page and source; a manifesto is downloaded only if the party's robots.txt allows it. Between two manifestos of the same party we flag repeated, new and dropped promises, and in its statements the figures it changes for the same indicator and period. Whether a promise was kept is not decided automatically until there is a reliable method based on official data."
+  el_method_more: "The section appears from the call and is withdrawn 30 days after polling day. Parties are listed alphabetically and in the same format. Promises are quoted verbatim with their page and source; a manifesto is downloaded only if the party's robots.txt allows it. Between two manifestos of the same party we flag repeated, new and dropped promises, and in its statements the figures it changes for the same indicator and period. Fulfilment is measured only for those who governed: first with official data; failing that, the code looks for BOE laws on the promise and the AI, using only those laws, proposes whether it was kept; a person reviews it before publication. With no law or data we say \"no verifiable data\", never that someone lied."
+  pf_title: Promised and done
+  pf_asymmetry: "Only those who governed are measured: {gov}, from {from} to {to}, against the manifesto for the {year} election. The other parties did not hold government to fulfil theirs, so their promises are quoted but not measured."
+  pf_method: "Official data first: if a promise sets a measurable target, it is compared with the latest figure. Otherwise the code looks in the BOE for laws passed in that period about the promise and, only with those laws, the AI proposes whether they fulfil it; a person reviews it before publication. A missing law does not prove the promise was not kept: we say \"no verifiable data\"."
+  pf_counts: "· no verifiable data {nd} · reviewed {rev} of {total} promises"
+  pf_no_program: "Its {year} manifesto could not be imported (its website blocks the crawler or does not link it): not measured."
+  pf_all: "All its {year} promises"
+  pf_cumplida: Kept
+  pf_parcial: Partly kept
+  pf_en-curso: In progress
+  pf_no-cumplida: Not kept
+  pf_method_dato_v1: With official data
+  pf_method_ia_boe_v1: BOE law (AI-assisted analysis, reviewed)

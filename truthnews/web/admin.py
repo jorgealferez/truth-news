@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 
 from truthnews.analysis import pipeline
 from truthnews.config import Settings
+from truthnews.elections import fulfilment
 from truthnews.models import (
     AdminAction,
     Article,
@@ -130,6 +131,7 @@ def make_router(settings: Settings, get_session, templates, render, on_change=la
             "admin.html",
             b=balance(session),
             social=social_queue.status(session),
+            promises=fulfilment.pending(session),
             csrf=csrf_token(settings),
         )
 
@@ -179,6 +181,22 @@ def make_router(settings: Settings, get_session, templates, render, on_change=la
         session.commit()
         on_change()
         return RedirectResponse(f"/verificacion/{ver.claim_id}", status_code=303)
+
+    @router.post("/promesa/{check_id}/{decision}")
+    def review_promise(
+        check_id: int, decision: str, user: Admin, session: SessionDep, csrf: Annotated[str, Form()]
+    ):
+        """Aprueba (se publica como asistida por IA) o rechaza una propuesta de cumplimiento (ADR 0040)."""
+        if not hmac.compare_digest(csrf, csrf_token(settings)):
+            raise HTTPException(403, "Token CSRF invalido")
+        if decision not in ("aprobar", "rechazar"):
+            raise HTTPException(404)
+        try:
+            fulfilment.review(session, check_id, decision == "aprobar", user)
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        session.commit()
+        return RedirectResponse("/admin#promesas", status_code=303)
 
     @router.post("/investigaciones")
     def create_investigation(

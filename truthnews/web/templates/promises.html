@@ -16,6 +16,6 @@
     {% else %}{% set pr = it %}<li>«{{ pr.text }}» {% include "_promise_cite.html" %}</li>{% endif %}{% endfor %}</ul></details>{% endif %}{% endfor %}
 </section>{% endif %}
 {% if not v.rows %}<p class="empty">{{ t(lang, 'el_no_promises') }}</p>{% else %}
-<ul class="compact">{% for pr in v.rows %}<li>{% if not actor %}<strong>{{ names.get(pr.actor, pr.actor) }}</strong>: {% endif %}«{{ pr.text }}» {% include "_promise_cite.html" %}</li>{% endfor %}</ul>{% endif %}
+<ul class="compact">{% for pr in v.rows %}<li>{% if not actor %}<strong>{{ names.get(pr.actor, pr.actor) }}</strong>: {% endif %}«{{ pr.text }}» {% include "_promise_cite.html" %}{% with chks = v.checks.get(pr.id, []) %}{% include "_promise_check.html" %}{% endwith %}</li>{% endfor %}</ul>{% endif %}
 <p class="meta">{{ t(lang, 'el_promises_method') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
 {% endblock %}
