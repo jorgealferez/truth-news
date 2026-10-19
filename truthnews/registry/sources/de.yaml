@@ -1,0 +1,22 @@
+# Medios de Alemania (DW en espanol esta en xx.yaml).
+country: DE
+default_language: de
+outlets:
+  - {slug: der-spiegel, name: Der Spiegel, homepage: "https://www.spiegel.de", scope: national,
+     feeds: [{url: "https://www.spiegel.de/schlagzeilen/index.rss"}, {url: "https://www.spiegel.de/ausland/index.rss", category: internacional},
+             {url: "https://www.spiegel.de/politik/index.rss", category: politica}]}
+  - {slug: faz, name: Frankfurter Allgemeine Zeitung, homepage: "https://www.faz.net", scope: national,
+     feeds: [{url: "https://www.faz.net/rss/aktuell/"}, {url: "https://www.faz.net/rss/aktuell/politik/ausland/", category: internacional}]}
+  - {slug: sueddeutsche, name: Süddeutsche Zeitung, homepage: "https://www.sueddeutsche.de", scope: national,
+     feeds: [{url: "https://rss.sueddeutsche.de/rss/Topthemen"}, {url: "https://rss.sueddeutsche.de/rss/Politik", category: politica}]}
+  - {slug: tagesschau, name: tagesschau, homepage: "https://www.tagesschau.de", scope: national, kind: tv, owner: ARD (pública),
+     feeds: [{url: "https://www.tagesschau.de/xml/rss2/"}, {url: "https://www.tagesschau.de/ausland/index~rss2.xml", category: internacional}]}
+  - {slug: die-zeit, name: Die Zeit, homepage: "https://www.zeit.de", scope: national, feeds: [{url: "https://newsfeed.zeit.de/index"}]}
+  - {slug: die-welt, name: Die Welt, homepage: "https://www.welt.de", scope: national, feeds: [{url: "https://www.welt.de/feeds/latest.rss"}]}
+  - {slug: dw-de, name: Deutsche Welle, homepage: "https://www.dw.com/de/", scope: national, kind: tv, owner: Deutsche Welle (pública),
+     feeds: [{url: "https://rss.dw.com/rdf/rss-de-all"}]}
+  - {slug: dw-en, name: DW English, homepage: "https://www.dw.com/en/", scope: national, kind: tv, language: en, owner: Deutsche Welle (pública),
+     feeds: [{url: "https://rss.dw.com/rdf/rss-en-all"}]}
+  - {slug: taz, name: taz, homepage: "https://taz.de", scope: national, feeds: [{url: "https://taz.de/!p4608;rss/"}]}
+  - {slug: handelsblatt, name: Handelsblatt, homepage: "https://www.handelsblatt.com", scope: national,
+     feeds: [{url: "https://www.handelsblatt.com/contentexport/feed/schlagzeilen", category: economia}]}

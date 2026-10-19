@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): efecto-cocuyo (HTTP 403).
+country: VE
+default_language: es
+outlets:
+  - {slug: el-nacional-ve, name: El Nacional, homepage: "https://www.elnacional.com", scope: national, feeds: [{url: "https://www.elnacional.com/feed/"}]}
+  - {slug: el-pitazo, name: El Pitazo, homepage: "https://elpitazo.net", scope: national, feeds: [{url: "https://elpitazo.net/feed/"}]}

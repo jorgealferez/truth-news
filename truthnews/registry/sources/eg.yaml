@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): ahram-online (HTTP 403).
+country: EG
+default_language: en
+outlets:
+  - {slug: egypt-independent, name: Egypt Independent, homepage: "https://egyptindependent.com", scope: national, feeds: [{url: "https://egyptindependent.com/feed/"}]}
+  - {slug: mada-masr, name: Mada Masr, homepage: "https://www.madamasr.com", scope: national, feeds: [{url: "https://www.madamasr.com/en/feed/"}]}
+  - {slug: youm7, name: اليوم السابع, homepage: "https://www.youm7.com", scope: national, language: ar, feeds: [{url: "https://www.youm7.com/rss/SectionRss?SectionID=65"}]}

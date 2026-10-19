@@ -40,3 +40,112 @@ XX:
   default_language: en
   regions: {}
   autonomous_communities: []
+# Cobertura global (peticion del usuario 2026-10-19). Sin regiones: el territorio se atribuye por world.yaml.
+GB:
+  name: {es: Reino Unido, en: United Kingdom, pt: Reino Unido}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+US:
+  name: {es: Estados Unidos, en: United States, pt: Estados Unidos}
+  languages: [en, es]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+FR:
+  name: {es: Francia, en: France, pt: França}
+  languages: [fr]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+DE:
+  name: {es: Alemania, en: Germany, pt: Alemanha}
+  languages: [de]
+  default_language: de
+  regions: {}
+  autonomous_communities: []
+IT:
+  name: {es: Italia, en: Italy, pt: Itália}
+  languages: [it]
+  default_language: it
+  regions: {}
+  autonomous_communities: []
+MA:
+  name: {es: Marruecos, en: Morocco, pt: Marrocos}
+  languages: [ar, fr, es, en]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+DZ:
+  name: {es: Argelia, en: Algeria, pt: Argélia}
+  languages: [ar, fr]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+QA:
+  name: {es: Catar, en: Qatar, pt: Catar}
+  languages: [ar, en]
+  default_language: ar
+  regions: {}
+  autonomous_communities: []
+AE:
+  name: {es: Emiratos Árabes Unidos, en: United Arab Emirates, pt: Emirados Árabes Unidos}
+  languages: [ar, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+SA:
+  name: {es: Arabia Saudí, en: Saudi Arabia, pt: Arábia Saudita}
+  languages: [ar, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+EG:
+  name: {es: Egipto, en: Egypt, pt: Egito}
+  languages: [ar, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+MX:
+  name: {es: México, en: Mexico, pt: México}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+AR:
+  name: {es: Argentina, en: Argentina, pt: Argentina}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+CO:
+  name: {es: Colombia, en: Colombia, pt: Colômbia}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+CL:
+  name: {es: Chile, en: Chile, pt: Chile}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+PE:
+  name: {es: Perú, en: Peru, pt: Peru}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+VE:
+  name: {es: Venezuela, en: Venezuela, pt: Venezuela}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+BR:
+  name: {es: Brasil, en: Brazil, pt: Brasil}
+  languages: [pt]
+  default_language: pt
+  regions: {}
+  autonomous_communities: []

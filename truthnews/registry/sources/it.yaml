@@ -1,0 +1,17 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): il-fatto-quotidiano (robots.txt lo prohibe), il-giornale (HTTP 404).
+country: IT
+default_language: it
+outlets:
+  - {slug: corriere-della-sera, name: Corriere della Sera, homepage: "https://www.corriere.it", scope: national,
+     feeds: [{url: "https://xml2.corriereobjects.it/rss/homepage.xml"}, {url: "https://xml2.corriereobjects.it/rss/esteri.xml", category: internacional}]}
+  - {slug: la-repubblica, name: la Repubblica, homepage: "https://www.repubblica.it", scope: national,
+     feeds: [{url: "https://www.repubblica.it/rss/homepage/rss2.0.xml"}, {url: "https://www.repubblica.it/rss/esteri/rss2.0.xml", category: internacional}]}
+  - {slug: ansa, name: ANSA, homepage: "https://www.ansa.it", scope: national, kind: agency,
+     feeds: [{url: "https://www.ansa.it/sito/ansait_rss.xml"}, {url: "https://www.ansa.it/sito/notizie/mondo/mondo_rss.xml", category: internacional},
+             {url: "https://www.ansa.it/sito/notizie/politica/politica_rss.xml", category: politica}]}
+  - {slug: la-stampa, name: La Stampa, homepage: "https://www.lastampa.it", scope: national, feeds: [{url: "https://www.lastampa.it/rss"}]}
+  - {slug: il-sole-24-ore, name: Il Sole 24 Ore, homepage: "https://www.ilsole24ore.com", scope: national,
+     feeds: [{url: "https://www.ilsole24ore.com/rss/italia.xml"}, {url: "https://www.ilsole24ore.com/rss/mondo.xml", category: internacional},
+             {url: "https://www.ilsole24ore.com/rss/economia.xml", category: economia}]}
+  - {slug: rainews, name: RaiNews, homepage: "https://www.rainews.it", scope: national, kind: tv, owner: RAI (pública), feeds: [{url: "https://www.rainews.it/rss/tutti"}]}
