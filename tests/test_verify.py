@@ -166,3 +166,15 @@ def test_public_debt_is_never_judged_against_central_government_debt():
         claim(123.0, indicator="deuda_publica", geo="US")
     )
     assert calls == [] and res.verdict == "sin-datos" and res.method == "sin-fuente/v10"
+
+
+def test_approximate_figure_within_the_wide_band_is_true():
+    v = Verifier(lambda s, g, label: obs(41_500_000))
+
+    def pop(text, value):
+        return ClaimCandidate(text, "poblacion", "CA", value, "abs", None)
+
+    approx = v.judge(pop("Canadá tiene unos 40 millones de habitantes.", 40e6))
+    assert approx.verdict == "verdadero" and approx.method == "aproximado/v10"
+    assert v.judge(pop("Canadá tiene 40 millones de habitantes.", 40e6)).verdict == "impreciso"
+    assert v.judge(pop("Canadá tiene unos 30 millones de habitantes.", 30e6)).verdict == "falso"
