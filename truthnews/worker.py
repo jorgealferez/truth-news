@@ -18,6 +18,7 @@ from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.investigate import process_pending, seed_defaults
 from truthnews.models import CrawlRun
+from truthnews.social import queue as social
 
 log = logging.getLogger(__name__)
 RECENT_CYCLE_MIN = 25  # los agentes despliegan a menudo; cada arranque no debe pagar un ciclo completo
@@ -57,6 +58,13 @@ def run_cycle(settings: Settings | None = None) -> dict:
         seed_defaults(session)
         ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
         summary["investigations"] = process_pending(session, ai=ai)
+    with session_scope(engine) as session:  # redes al final: publica lo que este ciclo dejo listo (ADR 0018)
+        try:
+            summary["social"] = social.run(session, settings.site_url, lang=settings.default_language)
+        except Exception as exc:  # una red caida no tumba el ciclo
+            log.exception("redes: el paso fallo")
+            session.rollback()
+            summary["social"] = {"error": str(exc)[:300]}
     log.info("ciclo terminado: %s", summary)
     return summary
 

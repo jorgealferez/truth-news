@@ -31,6 +31,23 @@ Una imagen (`Dockerfile`), dos servicios desde el mismo repositorio y un Postgre
 `bin/start` aplica las migraciones y arranca el rol. Para un despliegue mínimo, `TRUTHNEWS_ROLE=all`
 arranca web y worker en un solo servicio. El healthcheck es `/healthz`.
 
+### Redes sociales (worker, ADR 0018)
+
+El worker publica en cada ciclo lo más contrastado (historias, hilos publicados y verificaciones con
+fuente) en las redes que tengan credenciales; las demás quedan en modo prueba: la pieza se genera y se
+registra en `social_post`, pero no se envía. Las claves solo van en las variables del servicio `worker`:
+
+| Red | Variables |
+|---|---|
+| Bluesky | `BLUESKY_HANDLE`, `BLUESKY_APP_PASSWORD` (contraseña de aplicación), opcional `BLUESKY_PDS` |
+| Mastodon | `MASTODON_URL` (instancia), `MASTODON_TOKEN` (permiso `write:statuses` y `write:media`) |
+| Telegram | `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID` (`@canal`, con el bot como administrador) |
+| X | `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (OAuth 1.0a, lectura y escritura) |
+
+Ajustes: `SOCIAL_ENABLED` (1), `SOCIAL_DRY_RUN` (0; 1 fuerza el modo prueba), `SOCIAL_DAILY_QUOTA`
+(`x:4,bluesky:6,mastodon:6,telegram:8`), `SOCIAL_PER_CYCLE` (2), `SOCIAL_MIN_SCORE` (2),
+`SOCIAL_WINDOW_HOURS` (72).
+
 ## Añadir un país o un idioma (sin código)
 
 - País: una entrada en `truthnews/registry/countries.yaml` y un `truthnews/registry/sources/<iso>.yaml`.

@@ -26,6 +26,7 @@ from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
+from truthnews.social import images
 from truthnews.web import admin, citations, queries, seo, social, topicview
 
 HERE = Path(__file__).resolve().parent
@@ -290,18 +291,9 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             raise HTTPException(404)
         key = (st.id, st.updated_at, st.title)
         if key not in image_cache:
-            arts = queries.story_articles(session, st.id)
-            comp = compare(arts)
-            verdicts = queries.verdict_counts(session, [st.id]).get(st.id, {})
-            kicker = (
-                f"{registry.category_name(st.category, settings.default_language)} · {st.n_outlets} medios"
-            )
-            disputes = [(d.noun, d.low, d.high, d.n_outlets) for d in comp.dispute_summaries()]
             if len(image_cache) > 500:
                 image_cache.clear()
-            image_cache[key] = social.story_image(
-                st.title, kicker, disputes, verdicts, registry.t(settings.default_language, "tagline")
-            )
+            image_cache[key] = images.story_png(session, st, settings.default_language)
         return Response(
             image_cache[key], media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
         )
