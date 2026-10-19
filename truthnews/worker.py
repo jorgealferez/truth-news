@@ -14,7 +14,7 @@ from sqlalchemy import select
 from truthnews import archive
 from truthnews.ai import claims as ai_claims
 from truthnews.ai import threads
-from truthnews.ai.client import AIClient, AIError
+from truthnews.ai.client import AIClient
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis import statement_checks
 from truthnews.analysis.pipeline import run as analyze
@@ -143,10 +143,15 @@ def _run_cycle(settings: Settings) -> dict:
         ]
         summary["programs"] = _guarded(engine, "programas", lambda s: programs.run(s, settings, windows))
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
-        with session_scope(engine) as session:
+
+        def _claims(session):
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
-            summary["ai_claims"] = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
-            summary["ai_claims"]["scores"] = score_stories(session, started)
+            out = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
+            return {**out, "scores": score_stories(session, started)}
+
+        # Sin credito en la API (2026-10-19 11:07) este paso cortaba el ciclo y se perdian entidades,
+        # archivo, investigaciones y redes: los pasos de IA van guardados como los demas.
+        summary["ai_claims"] = _guarded(engine, "afirmaciones con IA", _claims)
     # Entidades tras el analisis (las afirmaciones ya existen y se les atribuye quien las dice) y, despues,
     # archivo de las entidades; lo importado se extrae en el ciclo siguiente (ADR 0028).
     summary["entities"] = _guarded(
@@ -164,22 +169,24 @@ def _run_cycle(settings: Settings) -> dict:
             ),
         )
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
-        with session_scope(engine) as session:
-            try:
-                summary["threads"] = threads.run(
-                    session,
-                    AIClient(settings.ai_model, settings.ai_effort),
-                    settings.default_country,
-                    settings.ai_max_threads_per_cycle,
-                )
-            except AIError as exc:
-                summary["threads"] = {"error": str(exc)}
-    with session_scope(engine) as session:
-        summary["ai"] = ai_step(session, settings)
-    with session_scope(engine) as session:
+        summary["threads"] = _guarded(
+            engine,
+            "hilos",
+            lambda s: threads.run(
+                s,
+                AIClient(settings.ai_model, settings.ai_effort),
+                settings.default_country,
+                settings.ai_max_threads_per_cycle,
+            ),
+        )
+    summary["ai"] = _guarded(engine, "ia", lambda s: ai_step(s, settings))
+
+    def _investigations(session):
         seed_defaults(session)
         ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
-        summary["investigations"] = process_pending(session, ai=ai)
+        return process_pending(session, ai=ai)
+
+    summary["investigations"] = _guarded(engine, "investigaciones", _investigations)
     with session_scope(engine) as session:  # redes al final: publica lo que este ciclo dejo listo (ADR 0018)
         try:
             summary["social"] = social.run(session, settings.site_url, lang=settings.default_language)
