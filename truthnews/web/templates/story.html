@@ -37,7 +37,7 @@
     {% if claims %}{% set total = claims|length %}
     <a class="card-v" href="#datos">
       <p class="card-k">{{ t(lang, 'data_check') }}</p>
-      <div class="meter">{% for k, n in vc.items() %}<span class="v-{{ k }}" style="width:{{ (100 * n / total)|round|int }}%"></span>{% endfor %}</div>
+      <div class="meter bar">{% for k, n in vc.items() %}<span class="v-{{ k }}" style="width:{{ (100 * n / total)|round|int }}%"></span>{% endfor %}</div>
       <p class="legend">{% for k, n in vc.items() %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }} {{ n }}</span> {% endfor %}</p>
     </a>{% endif %}
     {% if accused %}
@@ -117,6 +117,7 @@
       <p class="chips">{% for name, n in comp.shared_names %}<span>{{ name }} <b>{{ n }}/{{ n_out }}</b></span>{% endfor %}</p>{% endif %}
   </details>{% endif %}
 
+  {% if missing %}{% include "_missing.html" %}{% endif %}
   <details class="block fold" id="cobertura"><summary><h2>{{ t(lang, 'coverage') }}</h2> <span class="meta">{{ arts|length }} {{ t(lang, 'articles_count') }}</span></summary>
     <ol class="coverage">
     {% for a in arts %}<li><span class="who"><a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a> {{ a.published_at.strftime('%d/%m %H:%M') }} · {{ t(lang, 'scope_' ~ a.outlet.scope) }}</span>

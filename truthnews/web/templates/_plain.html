@@ -4,7 +4,7 @@
     <p class="pt-k">{{ t(lang, 'plain_truth') }}</p>
     <p class="pt-v"><b>{{ tr.official_text }}</b> <span>{{ tr.label }}{% if tr.period %} · {{ tr.period }}{% endif %}</span></p>
     {% set n = tr.right|length + tr.wrong|length %}
-    <div class="meter" role="img" aria-label="{{ tr.right|length }}/{{ n }}"><span class="v-verdadero" style="width:{{ (100 * tr.right|length / n)|round|int }}%"></span><span class="v-falso" style="width:{{ (100 * tr.wrong|length / n)|round|int }}%"></span></div>
+    <div class="meter bar" role="img" aria-label="{{ tr.right|length }}/{{ n }}"><span class="v-verdadero" style="width:{{ (100 * tr.right|length / n)|round|int }}%"></span><span class="v-falso" style="width:{{ (100 * tr.wrong|length / n)|round|int }}%"></span></div>
     {% if tr.right %}<p class="meta">✓ {{ tr.right|length }}/{{ n }} {{ t(lang, 'plain_truth_ok') }} {{ tr.right|join(', ') }}</p>{% endif %}
     {% if tr.wrong %}<p class="meta">✗ {{ tr.wrong|length }}/{{ n }} {{ t(lang, 'plain_truth_wrong') }} {% for o, said, verdict in tr.wrong %}{{ o }} ({{ said }}, {{ t(lang, 'verdict_' ~ verdict)|lower }}){% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
     <p class="meta"><a href="{{ tr.url }}" rel="nofollow noopener" target="_blank">{{ tr.source }} ↗</a></p>

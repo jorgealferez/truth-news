@@ -21,6 +21,20 @@ es:
   plain_agree: "{noun}: {v}, la misma cifra en {n} medios."
   plain_blame: No coinciden en a quién señalan.
   plain_note: Calculado con el mismo método para todos los medios. Una cifra distinta puede ser un balance actualizado; un veredicto exige un dato oficial.
+  rank_title: Quién acierta con los datos
+  rank_note: "Proporción de afirmaciones de cada medio que resultan verdaderas al compararlas con el dato oficial. Ordenado por el límite inferior del intervalo de confianza del 95 %: pocas comprobaciones no bastan para encabezar. Mínimo {n} comprobaciones para entrar."
+  rank_empty: "Aún ningún medio tiene {n} afirmaciones comprobadas: el ranking se llenará a medida que verifiquemos."
+  rank_few: "Medios con pocas verificaciones todavía ({n})"
+  rel_title: Fiabilidad comprobada
+  rel_right: "de sus afirmaciones comprobadas son verdaderas ({k} de {n})"
+  rel_few: "Pocas verificaciones todavía: con menos de {n} no entra en el ranking."
+  rel_none: "Aún no hemos comprobado ninguna afirmación de este medio contra un dato oficial."
+  rel_history: Historial de veredictos
+  blind_title: Quién no lo cuenta
+  blind_share: "Contó el {p} % de las {n} historias grandes de su país en los últimos 7 días (las que cuentan al menos 5 medios)."
+  blind_missed: "Las que no contó ({n})"
+  missing_title: Quién no lo cuenta
+  missing_note: "Medios nacionales del mismo país que publicaron esos días y no tienen ninguna pieza en esta historia. No es una acusación: puede ser una decisión editorial."
   nothing_differs: Nada que marcar
   nothing_differs_text: "Los {n} medios cuentan lo mismo en cifras y protagonistas, y no hay afirmaciones con datos oficiales que comprobar. Cuando algo cambie, la historia volverá a portada."
   does_not_mention: no menciona
@@ -341,6 +355,20 @@ en:
   plain_agree: "{noun}: {v}, the same figure in {n} outlets."
   plain_blame: They disagree on whom they point at.
   plain_note: Same method for every outlet. A different figure may be an updated toll; a verdict needs an official figure.
+  rank_title: Who gets the data right
+  rank_note: "Share of each outlet's claims found true against the official figure. Sorted by the lower bound of the 95% confidence interval: a handful of checks is not enough to top the list. At least {n} checks to enter."
+  rank_empty: "No outlet has {n} checked claims yet: the ranking fills up as we verify."
+  rank_few: "Outlets with few checks so far ({n})"
+  rel_title: Checked reliability
+  rel_right: "of its checked claims are true ({k} of {n})"
+  rel_few: "Few checks so far: fewer than {n} keeps it out of the ranking."
+  rel_none: "We have not checked any claim from this outlet against an official figure yet."
+  rel_history: Verdict history
+  blind_title: Who does not report it
+  blind_share: "Reported {p}% of the {n} big stories in its country over the last 7 days (those reported by at least 5 outlets)."
+  blind_missed: "The ones it missed ({n})"
+  missing_title: Who does not report it
+  missing_note: "National outlets from the same country that published those days and have no piece in this story. Not an accusation: it may be an editorial choice."
   nothing_differs: Nothing to flag
   nothing_differs_text: "All {n} outlets report the same figures and names, and there are no claims to check against official data. If that changes, the story comes back to the front page."
   does_not_mention: does not mention

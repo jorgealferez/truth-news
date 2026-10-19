@@ -73,8 +73,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [ ] Canales verificados de PSOE, PNV, Podemos y Vox (Wikidata en produccion o confirmacion del usuario; nunca saltar el 403) y sitemap de noticias de PP y PNV
 - [ ] Comparativas mejores: que dice cada medio lado a lado, cifras por medio, coincidencias y diferencias legibles, y la verdad segun los datos cuando la hay (peticion del usuario 2026-10-18) — Caso medido 2026-10-19: '12 migrantes' (autobus) frente a '500' (desalojo) sale como disputa y son hechos distintos: comparar solo cifras del mismo hecho — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19), carril Comparativas
   - [x] Solo cifras del mismo hecho (ADR 0016): precision de disputas sobre 15 historias reales etiquetadas 0,50 -> 1,00, exhaustividad 1,00 -> 1,00 (`tests/fixtures/disputes.json`) — #29
-  - [ ] "En claro" arriba de la historia: la verdad segun los datos (dato oficial, quien lo cuenta bien y quien no, con medidor), en que difieren (rango, cifra mas repetida, ultima publicada) y en que coinciden
+  - [x] "En claro" arriba de la historia: la verdad segun los datos (dato oficial, quien lo cuenta bien y quien no, con medidor), en que difieren (rango, cifra mas repetida, ultima publicada) y en que coinciden — #30
 - [ ] Reposicionar el producto en "quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos": ficha de fiabilidad por medio con historial de veredictos, ranking de medios por exactitud comprobada, portada que lo destaca (peticion del usuario 2026-10-18) — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19), carril Comparativas: datos y componentes; plantillas outlets.html/list.html de la sesion "Railway project"
+  - [ ] Ranking por exactitud con muestra minima (Wilson 95 %, >= 5 comprobaciones), ficha de fiabilidad con historial de veredictos, quien no lo cuenta (historia y medio) y portada (ADR 0023)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
 - [ ] Fase 5 — Despliegue en Railway medido en produccion
 

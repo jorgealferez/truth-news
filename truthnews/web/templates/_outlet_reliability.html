@@ -1,0 +1,19 @@
+{# Ficha de fiabilidad de un medio (carril Comparativas). Entrada: rel (Record o None), checks, blind, min_checks. #}
+<section class="reliability" aria-label="{{ t(lang, 'rel_title') }}">
+  <h2>{{ t(lang, 'rel_title') }}</h2>
+  {% if rel and rel.checked %}
+    <p class="rel-big"><b>{{ (100 * rel.accuracy)|round|int }} %</b> {{ t(lang, 'rel_right')|replace('{k}', rel.right|string)|replace('{n}', rel.checked|string) }}</p>
+    <div class="meter bar" role="img" aria-label="{{ rel.right }}/{{ rel.checked }}">{% for v, n, pct in rel.shares() %}<span class="v-{{ v }}" style="width:{{ pct }}%"></span>{% endfor %}</div>
+    <p class="legend">{% for v, n, pct in rel.shares() %}<span class="badge v-{{ v }}">{{ t(lang, 'verdict_' ~ v) }} {{ n }}</span> {% endfor %}</p>
+    {% if not rel.ranked %}<p class="meta">{{ t(lang, 'rel_few')|replace('{n}', min_checks|string) }}</p>{% endif %}
+  {% else %}<p class="meta">{{ t(lang, 'rel_none') }}</p>{% endif %}
+  {% if checks %}<details class="who-more"><summary>{{ t(lang, 'rel_history') }} ({{ checks|length }})</summary>
+    <ul class="who-omits">{% for c in checks %}{% set v = c.verification %}<li><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> «{{ c.text }}» <span class="meta">{{ v.checked_at.strftime('%d/%m/%Y') }}{% for e in v.evidence[:1] %} · <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} {{ e.period or '' }}</a>{% endfor %}</span></li>{% endfor %}</ul></details>{% endif %}
+  {% if blind and blind.big %}<div class="blind">
+    <p class="card-k">{{ t(lang, 'blind_title') }}</p>
+    <p>{{ t(lang, 'blind_share')|replace('{p}', blind.covered_share|string)|replace('{n}', blind.big|string) }}</p>
+    <div class="meter bar" role="img" aria-label="{{ blind.covered_share }} %"><span class="v-verdadero" style="width:{{ blind.covered_share }}%"></span></div>
+    {% if blind.missed %}<details class="who-more"><summary>{{ t(lang, 'blind_missed')|replace('{n}', blind.missed|length|string) }}</summary>
+      <ul class="who-omits">{% for s in blind.missed[:10] %}<li><a href="{{ url('historia', s.id, s.title) }}">{{ s.title }}</a> <span class="meta">{{ s.n_outlets }} {{ t(lang, 'n_outlets') }}</span></li>{% endfor %}</ul></details>{% endif %}
+  </div>{% endif %}
+</section>
