@@ -27,6 +27,16 @@
       "relleno_de_textos": "0-10 rellenados de 80-95 candidatas por rastreo (muros de pago y 403): el texto completo llega sobre todo al entrar la noticia",
       "revisiones_de_cuerpo": "no existian: content_hash se calculaba y no se comparaba"
     },
-    "produccion_despues": "NO VERIFICADO (pendiente del despliegue en la ventana de las 16:00 UTC): textos releidos por rastreo, revisiones content y duracion del paso, de run.stats (texts_rechecked, content_revisions)"
+    "produccion_despues": {
+      "fuente": "registros del worker en Railway, despliegue de #209 (squash ed14f52, 19:22 UTC); rastreo de las 19:27:37 UTC",
+      "textos_releidos": 60,
+      "textos_cambiados": 2,
+      "revisiones_content": 0,
+      "entradillas_descartadas": 0,
+      "rechazos_403_429": {},
+      "segundos_del_paso": 6.1,
+      "tope_de_la_direccion_segundos": 60,
+      "nota": "primera medida: 60 relecturas (el tope por rastreo) en 6,1 s, sin 403 ni 429; de los 2 textos cambiados ninguno cambio una cifra en la misma frase, asi que no hubo revision. La migracion 0023 esta aplicada (el paso lee y escribe content_checks sin error)"
+    }
   }
 }
