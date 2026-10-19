@@ -6,6 +6,7 @@ Este archivo es el **estado de trabajo compartido entre agentes y sesiones** del
 `truth-news`, y solo de el. Lo lee el hook `Stop` de continuidad: mientras haya un item sin marcar en
 `## Activo`, ningun agente puede cerrar el turno. Protocolo: skill `continuidad`.
 
+- [ ] Revision de los Falsos e Impreciso publicados (encargo de la direccion 2026-10-19 19:52, sin IA): cuando #246 (metodo v12 de Verificaciones) este en main, recorrer TODOS los veredictos Falso e Impreciso publicados en produccion (/verificacion/<id>) y clasificarlos con la tabla de v12 (territorio, periodo, medida, unidad, objetivo); pasar los dudosos a Verificaciones (session_01JFjThAepJmvn9ndTW2bdeH) con URL y motivo; solo lectura, sin tocar /admin; recuento en docs/benchmarks. Carril: Entidades — EN CURSO (session_01Juk7hZcsWaeHLeGwUxFzuh, 2026-10-19)
 Reglas de edicion (resumen; la version completa esta en la skill):
 
 - **Un ledger por repositorio, nombrado por repositorio.** Aqui solo entran items cuyo cambio vive en
