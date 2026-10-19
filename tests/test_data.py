@@ -162,3 +162,36 @@ def test_ine_level_reads_quarters():
     assert (o.period, o.value, o.previous.period) == ("2026-Q2", 14.56, "2026-Q1")
     assert list(o.history) == ["2025-Q4", "2026-Q1", "2026-Q2"] and o.extra["serie"] == "EPA452440"
     assert ine.level("X", transport=transport({})) is None
+
+
+def test_ecb_euribor_monthly_series():
+    import httpx
+
+    from truthnews.data import ecb
+
+    body = {
+        "dataSets": [
+            {"series": {"0:0:0:0:0:0:0": {"observations": {"0": [2.855], "1": [2.954], "2": [3.247]}}}}
+        ],
+        "structure": {
+            "dimensions": {
+                "observation": [{"values": [{"id": "2026-07"}, {"id": "2026-08"}, {"id": "2026-09"}]}]
+            }
+        },
+    }
+    seen = []
+
+    def handler(request):
+        seen.append(str(request.url))
+        return httpx.Response(200, json=body)
+
+    obs = ecb.latest(
+        "FM", "M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA", "Euríbor", transport=httpx.MockTransport(handler)
+    )
+    assert (obs.source, obs.period, obs.value) == ("ecb", "2026-09", 3.247)
+    assert obs.previous.period == "2026-08" and obs.history["2026-07"] == 2.855
+    assert "lastNObservations=14" in seen[0] and obs.url.startswith("https://data.ecb.europa.eu/")
+    fail = httpx.MockTransport(lambda r: httpx.Response(500))
+    assert ecb.latest("FM", "X", "", transport=fail) is None
+    empty = httpx.MockTransport(lambda r: httpx.Response(200, json={"dataSets": []}))
+    assert ecb.latest("FM", "X", "", transport=empty) is None

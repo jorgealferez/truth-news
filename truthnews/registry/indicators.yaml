@@ -162,6 +162,21 @@ precio_vivienda:
   directional: false
   sources:
     - {connector: eurostat, dataset: prc_hpi_q, params: {purchase: TOTAL, unit: RCH_A}, geos: EU}
+euribor:
+  name: {es: Euríbor a 12 meses, en: 12-month Euribor}
+  unit: pct
+  directional: false  # "el Euribor sube" puede ser diario y la serie es la media mensual: solo el nivel
+  patterns:
+    es: ["euríbor", "euribor"]
+    en: ["euribor"]
+    pt: ["euribor", "euríbor"]
+  # Otros plazos y el €STR son otras series: no se comparan con el de 12 meses.
+  excludes: ["a un mes", "a 1 mes", "a tres meses", "a 3 meses", "a seis meses", "a 6 meses", "semanal", "€str",
+    "estr", "1-month", "3-month", "6-month"]
+  sources:
+    # BCE, media mensual del Euribor a 12 meses. La prensa tambien cita el valor diario ("hoy cotiza a..."):
+    # en la franja que puede explicar la diferencia diaria/mensual no se juzga.
+    - {connector: ecb, flow: FM, key: M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA, geos: EU, other_measure: valor diario}
 poblacion:
   name: {es: Población, en: Population}
   unit: abs

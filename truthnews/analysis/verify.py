@@ -8,7 +8,7 @@ from dataclasses import dataclass, field, replace
 
 from truthnews.analysis.claims import ClaimCandidate, indicator_name, indicators
 from truthnews.classify import normalize
-from truthnews.data import Observation, eurostat, ine, worldbank
+from truthnews.data import Observation, ecb, eurostat, ine, worldbank
 
 # Version del metodo: un veredicto guardado con otra version se vuelve a juzgar en el siguiente ciclo.
 # v2: compara con el periodo citado en la frase (mes o trimestre), no con el ultimo dato.
@@ -67,6 +67,11 @@ def negated(obs: Observation | None) -> Observation | None:
 
 def default_fetch(source: dict, geo: str, label: str) -> Observation | None:
     conn = source["connector"]
+    if conn == "ecb":
+        obs = ecb.latest(source["flow"], source["key"], label)
+        if obs is not None and source.get("other_measure"):
+            obs.extra = {**obs.extra, "otra_medida": source["other_measure"]}
+        return obs
     if conn == "eurostat":
         obs = eurostat.latest(source["dataset"], geo, source["params"], label)
         obs = negated(obs) if source.get("negate") else obs

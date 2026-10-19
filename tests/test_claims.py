@@ -151,3 +151,16 @@ def test_registry_countries_are_attributed_when_named_unambiguously():
     assert extract("Inflation in Turkey stands at 33 %.", "en", "XX", 2026) == []
     got = extract("La inflación en Turquía se sitúa en el 33 %.", "es", "ES", 2026)
     assert [(c.indicator, c.geo) for c in got] == [("inflacion", "TR")]
+
+
+def test_month_between_verb_and_figure_and_three_decimals():
+    """Euribor (2026-10-19): "cerro septiembre en el 3,247 %" (mes tras el verbo, tres decimales)."""
+    got = extract("El Euríbor cerró septiembre en el 3,247 % de media.", "es", "ES", 2026, 10)
+    assert [(c.indicator, c.value, c.period) for c in got] == [("euribor", 3.247, "2026-09")]
+    got = extract("La tasa de paro se situó en agosto en el 10,5 %.", "es", "ES", 2026, 10)
+    assert [(c.indicator, c.value, c.period) for c in got] == [("paro", 10.5, "2026-08")]
+    # Una variacion sigue sin ser el nivel aunque lleve el mes entre medias.
+    assert extract("El paro baja en septiembre un 2 %.", "es", "ES", 2026, 10) == []
+    # Las cantidades conservan los millares: "48,6 millones" no cambia.
+    pop = extract("España tiene 48,6 millones de habitantes.", "es", "ES", 2026)
+    assert [c.value for c in pop] == [48.6e6]
