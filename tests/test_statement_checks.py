@@ -1,4 +1,4 @@
-"""Declaraciones de los partidos juzgadas con el juez de siempre y guardadas aparte (ADR 0030)."""
+"""Declaraciones de los partidos juzgadas con el juez de siempre y guardadas aparte (ADR 0031)."""
 
 import hashlib
 from datetime import UTC, datetime, timedelta

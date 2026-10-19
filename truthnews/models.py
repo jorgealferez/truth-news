@@ -559,7 +559,7 @@ class Mention(Base):
 
 
 class StatementCheck(Base):
-    """Afirmacion comprobable de una declaracion de partido, juzgada con el juez de siempre (ADR 0030)."""
+    """Afirmacion comprobable de una declaracion de partido, juzgada con el juez de siempre (ADR 0031)."""
 
     __tablename__ = "statement_check"
     __table_args__ = (

@@ -1,4 +1,4 @@
-"""Declaraciones de los partidos juzgadas con el juez de siempre y guardadas aparte (ADR 0030).
+"""Declaraciones de los partidos juzgadas con el juez de siempre y guardadas aparte (ADR 0031).
 
 Lee `political_statement` (carril Global, ADR 0024), busca afirmaciones comprobables con
 `analysis.judge.judge_text` (reglas + `verify.py`, carril Verificaciones) y guarda cada una con su

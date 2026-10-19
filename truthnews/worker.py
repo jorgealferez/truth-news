@@ -100,7 +100,7 @@ def _run_cycle(settings: Settings) -> dict:
             log.exception("declaraciones politicas: el paso fallo")
             session.rollback()
             summary["political"] = {"error": str(exc)[:300]}
-    # Lo que dicen los partidos en sus canales, juzgado con el mismo juez que las noticias (ADR 0030).
+    # Lo que dicen los partidos en sus canales, juzgado con el mismo juez que las noticias (ADR 0031).
     summary["statement_checks"] = _guarded(engine, "declaraciones juzgadas", statement_checks.run)
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
         with session_scope(engine) as session:

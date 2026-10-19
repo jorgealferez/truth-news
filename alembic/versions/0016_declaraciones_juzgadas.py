@@ -1,4 +1,4 @@
-"""declaraciones juzgadas: afirmaciones de los partidos con su veredicto, aparte de las noticias (ADR 0030)
+"""declaraciones juzgadas: afirmaciones de los partidos con su veredicto, aparte de las noticias (ADR 0031)
 
 Revision ID: 0016
 Revises: 0015

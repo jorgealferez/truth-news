@@ -1,4 +1,4 @@
-# ADR 0030 — Las declaraciones de los partidos se juzgan con el mismo juez y se guardan en su propia tabla
+# ADR 0031 — Las declaraciones de los partidos se juzgan con el mismo juez y se guardan en su propia tabla
 
 - **Estado:** aceptado
 - **Tipo:** datos

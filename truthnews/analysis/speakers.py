@@ -4,7 +4,7 @@ Mismo metodo que la fiabilidad por medio (ADR 0023, `truthnews.analysis.reliabil
 afirmaciones verdaderas sobre comprobadas, orden por el limite inferior de Wilson al 95 % y minimo de
 MIN_CHECKS comprobaciones para entrar. Cuentan las afirmaciones que el texto atribuye a quien habla
 (`claim.speaker_entity_id`, ADR 0028) y que el juez de siempre (`verify.py`) ha comprobado, mas las
-afirmaciones de sus propias declaraciones en canales oficiales verificados (`statement_check`, ADR 0030).
+afirmaciones de sus propias declaraciones en canales oficiales verificados (`statement_check`, ADR 0031).
 No se deduce la afiliacion de nadie: un partido suma solo lo que se atribuye al partido.
 """
 
@@ -28,7 +28,7 @@ class SpeakerRecord(Record):
 
     entity: Entity | None = None
     counts: Counter = field(default_factory=Counter)
-    own: int = 0  # de ellas, las que salen de sus propias declaraciones (ADR 0030)
+    own: int = 0  # de ellas, las que salen de sus propias declaraciones (ADR 0031)
 
 
 def records(session: Session, kind: str | None = None, entity_id: int | None = None) -> list[SpeakerRecord]:
