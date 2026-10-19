@@ -47,6 +47,25 @@ Ficheros compartidos: `story.html`, `base.html`, `home.html`, `site.css`, `app.p
 rebase sobre `origin/main` justo antes de abrir el PR, nunca reformatear bloques ajenos, y si dos carriles
 necesitan el mismo bloque, avisar a la direccion.
 
+## Registro de numeros (ADR y migraciones)
+
+Para no chocar, los numeros se reservan **antes** de usarlos pidiendolos a la direccion
+(`send_message` a `session_012mRsejPRjvr7vC2Aq3edZ4`), que actualiza esta tabla. Si al hacer rebase el
+numero ya esta en `main`, se renumera y se reengancha `down_revision` al head de `main` (nunca dos heads;
+ida y vuelta y `alembic check` antes del PR).
+
+| Numero | Tipo | Estado | Carril |
+|---|---|---|---|
+| ADR 0016 | diseno | en main | Comparativas (mismo hecho) |
+| ADR 0017 + migracion 0009 | datos | en main | Global (traducciones) |
+| ADR 0018 + migracion 0008 | datos | en main | Redes (cola de publicaciones) |
+| ADR 0019 + migracion 0010 | datos | reservado | Verificaciones |
+| ADR 0020 + migracion 0011 | datos | reservado | Temas, SEO y sintesis (pieza por hilo) |
+| ADR 0021 + migracion 0012 | datos | reservado | Comparativas (fiabilidad por medio) |
+| ADR 0022 + migracion 0013 | datos | reservado | Global (fuentes politicas) |
+| ADR 0023 | diseno | reservado | Verificaciones (consulta puntual de interes publico) |
+| siguiente libre | — | — | pedir a la direccion |
+
 ## Como se trabaja
 
 - Reservar el item del ledger antes de empezar (`EN CURSO (<sesion>, <fecha>)`).
