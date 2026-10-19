@@ -124,8 +124,8 @@ def test_pipeline_translates_first_and_survives_ai_errors(session, story):
     settings = Settings(database_url="sqlite://", default_country="ZZ")
     out = ai_pipeline.run(session, settings, ai=FakeAI([{"temas": []}]), translator=FakeAI([AIError("x")]))
     assert "translations" not in out and "topics" in out
-    out = ai_pipeline.run(session, settings, ai=FakeAI([{"temas": []}]), translator=FakeAI([echo]))
-    assert out["translations"] == {"es": 3}
+    out = ai_pipeline.run(session, settings, ai=FakeAI([{"temas": []}]), translator=FakeAI([echo, echo]))
+    assert out["translations"] == {"es": 3, "en": 4}  # luego el ingles, con su propio tope
 
 
 def test_story_shows_translation_marked_under_original(engine, session, story):
@@ -138,3 +138,20 @@ def test_story_shows_translation_marked_under_original(engine, session, story):
     assert "Titular de1" in page and "ES: Titular de1" in page
     assert "traducción automática con IA del original (de)" in page
     assert "ES: Titular es1" not in page  # lo que ya esta en espanol no se traduce
+
+
+def test_english_reader_sees_headline_translated_under_h1(engine, session, story):
+    story.title = "Titular es1"
+    session.commit()
+
+    def to_en(user):
+        rows = [line.split("\t", 1) for line in user.splitlines()[2:]]
+        return {"items": [{"id": int(i), "title": "EN: " + t.split("] ", 1)[1]} for i, t in rows]}
+
+    assert translate.run(session, FakeAI([to_en]), ["en"], max_per_cycle=10) == {"en": 4}
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    page = client.get(f"/historia/{story.id}?lang=en").text
+    h1 = page.split("<h1>", 1)[1].split("</section>", 1)[0]
+    assert "EN: Titular es1" in h1 and "AI machine translation of the original (es)" in h1
+    fresh = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    assert "EN: Titular es1" not in fresh.get(f"/historia/{story.id}").text  # en espanol no se muestra

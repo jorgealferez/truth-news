@@ -31,22 +31,29 @@ def run(
     injected = ai is not None
     ai = ai or AIClient(settings.ai_model, settings.ai_effort)
     out: dict = {}
-    try:  # titulares de otros idiomas al de la portada, con esfuerzo bajo: traducir no razona (ADR 0017)
-        translator = translator or (ai if injected else AIClient(settings.ai_model, "low", max_tokens=16000))
-        out["translations"] = translate.run(
-            session, translator, [settings.default_language], settings.ai_max_translations_per_cycle
-        )
-    except AIError as exc:
-        session.rollback()
-        log.warning("traducciones no generadas: %s", exc)
+    # Traducir y enlazar declaraciones no razona: esfuerzo bajo y cliente propio, no el de temas (ADR 0017).
+    translator = translator or (None if injected else AIClient(settings.ai_model, "low", max_tokens=16000))
+    if translator is not None:
+        try:  # titulares de otros idiomas al de la portada; despues al ingles, con su propio tope
+            out["translations"] = translate.run(
+                session, translator, [settings.default_language], settings.ai_max_translations_per_cycle
+            )
+            if settings.default_language != "en":
+                out["translations"].update(
+                    translate.run(session, translator, ["en"], settings.ai_max_translations_en_per_cycle)
+                )
+        except AIError as exc:
+            session.rollback()
+            log.warning("traducciones no generadas: %s", exc)
     # La misma historia en otros paises, con los titulares ya traducidos (ADR 0022).
     out["abroad"] = abroad.link(session, settings.default_country, settings.default_language)
     session.commit()
-    try:  # que dicen los partidos: la IA propone la historia y el codigo valida los ids (ADR 0024)
-        out["statements"] = statements.run(session, translator, settings.default_country)
-    except AIError as exc:
-        session.rollback()
-        log.warning("declaraciones no enlazadas: %s", exc)
+    if translator is not None:
+        try:  # que dicen los partidos: la IA propone la historia y el codigo valida los ids (ADR 0024)
+            out["statements"] = statements.run(session, translator, settings.default_country)
+        except AIError as exc:
+            session.rollback()
+            log.warning("declaraciones no enlazadas: %s", exc)
     try:
         out["topics"] = build_topics(session, ai, settings.default_country)
         session.commit()
