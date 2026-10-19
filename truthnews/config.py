@@ -75,6 +75,9 @@ class Settings:
     ai_max_pieces_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_PIECES_PER_CYCLE", "6"))
     )
+    ai_piece_concurrency: int = field(  # llamadas de piezas a la vez; 1 = en serie
+        default_factory=lambda: int(os.environ.get("AI_PIECE_CONCURRENCY", "3"))
+    )
     ai_max_threads_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_THREADS_PER_CYCLE", "2"))
     )
