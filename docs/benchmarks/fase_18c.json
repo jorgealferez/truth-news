@@ -1,0 +1,31 @@
+{
+  "fase": "18c",
+  "titulo": "Elecciones: cumplimiento de lo prometido por quien goberno, datos primero e IA solo lo justo y revisada (ADR 0040)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local, programa real de Sumar 2023 y API de legislacion consolidada del BOE en vivo; sin clave de IA en este entorno",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "promesas_a_ia_pct": 8.3,
+    "promesas_ia_publicadas_sin_revision": 0,
+    "promesas_reglas_segundos_por_promesa": 2.29,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "muestra": "60 promesas al azar de las 687 del programa de Sumar 2023 frente al Gobierno PSOE-Sumar (17/11/2023-06/10/2026): 5 con normas candidatas (8.3 %), 1.2 candidatas de media; el resto queda en 'sin dato comprobable' sin gastar IA",
+    "coste_ia_estimado": "~57 de 687 promesas a la IA en ~6 llamadas de 10 (frente a ~69 llamadas si la IA viera todas: -92 %); esfuerzo bajo y prompt de sistema cacheado; tope 2 llamadas por ciclo",
+    "ejemplo": "'Promoveremos la regulacion de los grupos de interes...' -> candidata Real Decreto-ley 21/2026, de 25 de agosto, de transparencia e integridad de las actividades de los grupos de interes",
+    "tests": "tests/test_fulfilment.py (9): reglas, cola y tope, validacion de citas, revision en /admin y paginas"
+  },
+  "criterios_de_salida": {
+    "C15": "18c hecho en codigo: datos y candidatas sin IA; propuestas de la IA solo publicadas tras revision"
+  },
+  "no_verificable": [
+    "Precision de las propuestas de la IA: no hay clave de IA en este entorno; se mide en produccion con las primeras revisiones en /admin",
+    "PSOE: programa de 2023 no importable (su web bloquea al rastreador): sin medir"
+  ]
+}

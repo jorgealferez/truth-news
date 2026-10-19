@@ -21,6 +21,13 @@
     <p><button class="button" type="submit">Restituir</button></p></form>
   <table class="table"><tbody>{% for a in b.admin_actions %}<tr><td>{{ a.at.strftime('%d/%m %H:%M') }}</td><td>{{ a.action }}</td><td>{{ a.user }}</td><td>{{ a.target }} ({{ a.before }})</td><td>{{ a.reason }}</td></tr>{% endfor %}</tbody></table>
 </section>
+<section class="block" id="promesas"><h2>Cumplimiento de promesas: propuestas de la IA pendientes</h2>
+  <p class="meta">La IA solo ve los títulos de normas del BOE que el código ya encontró y propone «cumplida», «parcial» o «sin dato comprobable» (ADR 0040). Nada se publica sin aprobarlo aquí. Comprueba la norma citada antes de aprobar.</p>
+  {% if not promises %}<p class="meta">No hay propuestas pendientes.</p>{% endif %}
+  <table class="table"><tbody>{% for chk, pr in promises %}<tr><td><b>{{ pr.actor }}</b> ({{ pr.election_year }}{% if pr.page %}, pág. {{ pr.page }}{% endif %}): «{{ pr.text }}»</td>
+    <td><span class="tag">{{ chk.status }}</span> {{ chk.explanation }}{% for ev in chk.evidence %}<br><a href="{{ ev.url }}" rel="noopener" target="_blank">{{ ev.id }}</a> {{ ev.label }}{% endfor %}</td>
+    <td>{% for d in ['aprobar', 'rechazar'] %}<form method="post" action="/admin/promesa/{{ chk.id }}/{{ d }}"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="button" type="submit">{{ d|capitalize }}</button></form>{% endfor %}</td></tr>{% endfor %}</tbody></table>
+</section>
 <section class="block"><h2>Redes</h2>
   <p class="meta">{% if not social.enabled %}Desactivado (SOCIAL_ENABLED=0). {% endif %}{% for n in social.networks %}<b>{{ n.network }}</b>: {{ 'envío' if n.mode == 'envio' else 'modo prueba (sin credenciales)' }}, hoy {{ n.today }}/{{ n.quota }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
   {% set eq = social.balance %}<p class="meta">Equilibrio (24 h, ADR 0043): {{ eq.piezas }} piezas, {{ eq.negativas }} con veredicto negativo{% if eq.por_actor %} · {% for a, sh in eq.por_actor.items() %}{{ a }} {{ (sh * 100)|round|int }} %{% if not loop.last %}, {% endif %}{% endfor %} (en los datos: {% for a, sh in eq.por_actor_en_los_datos.items() %}{{ a }} {{ (sh * 100)|round|int }} %{% if not loop.last %}, {% endif %}{% endfor %}){% endif %}{% if eq.marcados %} · <b>diversificando: {{ eq.marcados|join(', ') }}</b>{% endif %}</p>

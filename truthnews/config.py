@@ -124,6 +124,16 @@ class Settings:
     )
     # Programas electorales (ADR 0037): descubrir e importar en las webs de los partidos; 0 = apagado.
     programs_enabled: bool = field(default_factory=lambda: os.environ.get("PROGRAMS_ENABLED", "1") == "1")
+    # Cumplimiento de promesas (18c, ADR 0040): promesas revisadas por las reglas en cada ciclo (BOE y datos)
+    # y, de lo que el codigo no decide, como mucho N llamadas de IA por ciclo con lotes de M promesas.
+    promises_check_per_run: int = field(
+        default_factory=lambda: int(os.environ.get("PROMISES_CHECK_PER_RUN", "20"))
+    )
+    promises_ai_max_calls: int = field(
+        default_factory=lambda: int(os.environ.get("PROMISES_AI_MAX_CALLS", "2"))
+    )
+    promises_ai_batch: int = field(default_factory=lambda: int(os.environ.get("PROMISES_AI_BATCH", "10")))
+    promises_ai_effort: str = field(default_factory=lambda: os.environ.get("PROMISES_AI_EFFORT", "low"))
     # Entidades y archivo (ADR 0028/0030): noticias por tanda; tramos GKG de 15 min por ciclo (0 = apagado),
     # cada cuanto se toma un tramo hacia atras y de que paises son los medios que se importan.
     entities_batch: int = field(default_factory=lambda: int(os.environ.get("ENTITIES_BATCH", "2000")))

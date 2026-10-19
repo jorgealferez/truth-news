@@ -66,3 +66,18 @@ promise_topics:
 # permite). El descubrimiento las visita ademas de las que encuentra solo.
 program_pages:
   sumar: [https://movimientosumar.es/programa-electoral-23j/]
+
+# Gobiernos: para medir lo que cumplio quien goberno (18c, ADR 0040). `election` es la eleccion de la que
+# salio y `parties`, los partidos que lo formaron (dato comprobado a mano; la fuente oficial citada es el
+# nombramiento). Mismo trato para todos: se anade cada gobierno, central o autonomico, de cualquier partido.
+governments:
+  - country: ES
+    name: Gobierno de España (XV legislatura)
+    from: 2023-11-17
+    to: 2026-10-06
+    parties: [psoe, sumar]
+    election: {kind: generales, year: 2023}
+    source:
+      label: "Real Decreto 828/2023, de 16 de noviembre, por el que se nombra Presidente del Gobierno a don Pedro Sánchez Pérez-Castejón (BOE-A-2023-23302)"
+      url: https://www.boe.es/diario_boe/txt.php?id=BOE-A-2023-23302
+    note: "Gobierno de coalición PSOE y Sumar; las Cortes se disolvieron el 6 de octubre de 2026 (Real Decreto 806/2026) y el Gobierno sigue en funciones"

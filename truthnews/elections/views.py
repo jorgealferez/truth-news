@@ -13,9 +13,17 @@ from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from truthnews.classify import normalize
-from truthnews.elections import changes
+from truthnews.elections import changes, fulfilment
 from truthnews.elections.calendar import Election, _aliases, _world_names
-from truthnews.models import VERDICTS, PoliticalStatement, Program, Promise, StatementCheck, Story
+from truthnews.models import (
+    VERDICTS,
+    PoliticalStatement,
+    Program,
+    Promise,
+    PromiseCheck,
+    StatementCheck,
+    Story,
+)
 from truthnews.registry import load_political
 
 HOME = "ES"  # pais por omision del sitio: su cobertura se busca por el pais de la historia
@@ -181,7 +189,12 @@ def promises_page(
     by_topic: dict[str | None, int] = {}
     for p in rows:
         by_topic[p.topic] = by_topic.get(p.topic, 0) + 1
-    return {"rows": rows, "by_topic": sorted(by_topic.items(), key=lambda kv: -kv[1]), "year": year}
+    return {
+        "rows": rows,
+        "by_topic": sorted(by_topic.items(), key=lambda kv: -kv[1]),
+        "year": year,
+        "checks": public_checks(session, (p.id for p in rows)),
+    }
 
 
 def program_pair(session: Session, e: Election, actor: str) -> tuple[Program, Program] | None:
@@ -249,6 +262,80 @@ def figure_changes(session: Session, e: Election, slugs: list[str], now: datetim
     return out
 
 
+FULFILMENT_ORDER = ("cumplida", "parcial", "en-curso", "no-cumplida")
+FULFILMENT_EXAMPLES = 6
+
+
+def public_checks(session: Session, promise_ids) -> dict[int, list[PromiseCheck]]:
+    """Comprobaciones publicables por promesa: dato oficial o propuesta de la IA ya revisada (ADR 0040)."""
+    ids = list(promise_ids)
+    if not ids:
+        return {}
+    out: dict[int, list[PromiseCheck]] = {}
+    for chk in session.scalars(
+        select(PromiseCheck).where(
+            PromiseCheck.promise_id.in_(ids), PromiseCheck.method.in_(fulfilment.PUBLIC_METHODS)
+        )
+    ):
+        out.setdefault(chk.promise_id, []).append(chk)
+    return out
+
+
+def fulfilment_view(session: Session, e: Election) -> list[dict]:
+    """Por Gobierno salido de una eleccion anterior del mismo tipo: lo que cumplio cada partido que lo formo.
+
+    Solo quien goberno: los demas no tuvieron el Gobierno para cumplir su programa (se explica en la pagina).
+    """
+    out = []
+    for g in fulfilment.governments():
+        if g.country != e.country or g.election_kind != e.kind or g.election_year >= e.date.year:
+            continue
+        names = {a.slug: a.name for a in load_political() if a.country == e.country}
+        parties = []
+        for slug in g.parties:
+            promises = list(
+                session.scalars(
+                    select(Promise).where(
+                        Promise.actor == slug,
+                        Promise.country == g.country,
+                        Promise.program_id.is_not(None),
+                        Promise.election_kind == g.election_kind,
+                        Promise.election_year == g.election_year,
+                    )
+                )
+            )
+            ids = [p.id for p in promises]
+            reviewed = set(
+                session.scalars(
+                    select(PromiseCheck.promise_id).where(
+                        PromiseCheck.promise_id.in_(ids), PromiseCheck.method == fulfilment.METHOD_CANDIDATES
+                    )
+                )
+            ) if ids else set()
+            checks = public_checks(session, ids)
+            decided: dict[int, PromiseCheck] = {}
+            for pid, chks in checks.items():
+                best = [c for c in chks if c.status != "sin-datos"]
+                if best:  # el dato oficial manda sobre la propuesta revisada
+                    decided[pid] = sorted(best, key=lambda c: c.method != fulfilment.METHOD_DATA)[0]
+            counts = {s: sum(1 for c in decided.values() if c.status == s) for s in FULFILMENT_ORDER}
+            by_id = {p.id: p for p in promises}
+            examples = sorted(decided.items(), key=lambda kv: FULFILMENT_ORDER.index(kv[1].status))
+            parties.append(
+                {
+                    "slug": slug,
+                    "name": names.get(slug, slug),
+                    "total": len(promises),
+                    "reviewed": len(reviewed),
+                    "no_data": len(reviewed) - len(decided),
+                    "counts": counts,
+                    "examples": [(by_id[pid], chk) for pid, chk in examples[:FULFILMENT_EXAMPLES]],
+                }
+            )
+        out.append({"g": g, "parties": parties})
+    return out
+
+
 def coverage(session: Session, e: Election, now: datetime) -> list[Story]:
     """Historias desde que se abrio la ventana que hablan de elecciones o campana: del pais si es Espana;
     de cualquier medio si es otro pais, siempre que el titular lo nombre."""
@@ -286,6 +373,7 @@ def page(session: Session, e: Election, now: datetime, candidacies: dict | None 
     today = now.date()
     return {
         "candidacies": candidacy_rows(candidacies, e),
+        "fulfilment": fulfilment_view(session, e),
         "e": e,
         "phase": e.phase(today),
         "days_left": e.days_left(today),

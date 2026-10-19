@@ -24,7 +24,7 @@ from truthnews.crawler import political
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.elections import calendar as el_calendar
-from truthnews.elections import programs
+from truthnews.elections import fulfilment, programs
 from truthnews.entities import store as entities
 from truthnews.investigate import process_pending, seed_defaults
 from truthnews.models import CrawlRun, Outlet, utcnow
@@ -166,6 +166,14 @@ def _run_cycle(settings: Settings) -> dict:
             for e in _elections(settings).active()
         ]
         summary["programs"] = _guarded(engine, "programas", lambda s: programs.run(s, settings, windows))
+        # Lo prometido frente a lo hecho por quien goberno (18c, ADR 0040): reglas siempre, IA solo con lo que
+        # el codigo no decide, esfuerzo bajo y tope de llamadas; sus propuestas esperan revision en /admin.
+        ai = (
+            AIClient(settings.ai_model, settings.promises_ai_effort, max_tokens=8000)
+            if settings.ai_enabled
+            else None
+        )
+        summary["fulfilment"] = _guarded(engine, "cumplimiento", lambda s: fulfilment.run(s, settings, ai=ai))
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
 
         def _claims(session):

@@ -41,6 +41,17 @@
   </details>{% endfor %}
 </section>{% endif %}
 
+{% for fv in v.fulfilment %}<section class="block" id="cumplimiento"><h2>{{ t(lang, 'pf_title') }}</h2>
+  <p class="meta">{{ t(lang, 'pf_asymmetry')|replace('{gov}', fv.g.name)|replace('{from}', fv.g.start.strftime('%d/%m/%Y'))|replace('{to}', fv.g.end.strftime('%d/%m/%Y') if fv.g.end else '—')|replace('{year}', fv.g.election_year|string) }} <a href="{{ fv.g.source_url }}" rel="noopener" target="_blank">{{ t(lang, 'el_source') }} BOE</a></p>
+  <p class="meta">{{ t(lang, 'pf_method') }}</p>
+  {% for pt in fv.parties %}<div class="el-party"><h3>{{ pt.name }}</h3>
+    {% if not pt.total %}<p class="meta">{{ t(lang, 'pf_no_program')|replace('{year}', fv.g.election_year|string) }}</p>
+    {% else %}<p>{% for st in ['cumplida', 'parcial', 'en-curso', 'no-cumplida'] %}{% if pt.counts[st] %}<span class="tag f-{{ st }}">{{ t(lang, 'pf_' ~ st) }} {{ pt.counts[st] }}</span> {% endif %}{% endfor %}<span class="meta">{{ t(lang, 'pf_counts')|replace('{nd}', pt.no_data|string)|replace('{rev}', pt.reviewed|string)|replace('{total}', pt.total|string) }}</span></p>
+      {% if pt.examples %}<ul class="compact">{% for pr, chk in pt.examples %}<li>«{{ pr.text }}» {% include "_promise_cite.html" %}{% with chks = [chk] %}{% include "_promise_check.html" %}{% endwith %}</li>{% endfor %}</ul>{% endif %}
+      <p class="meta"><a href="/elecciones/{{ e.slug }}/promesas?partido={{ pt.slug }}&amp;anio={{ fv.g.election_year }}">{{ t(lang, 'pf_all')|replace('{year}', fv.g.election_year|string) }}</a></p>{% endif %}
+  </div>{% endfor %}
+</section>{% endfor %}
+
 <section class="block" id="cobertura"><h2>{{ t(lang, 'el_coverage') }}</h2>
   {% if v.stories %}<ul class="compact">{% for st in v.stories %}<li><a href="{{ url('historia', st.id, st.title) }}">{{ st_tr.get(st.id, st.title) }}</a> <span class="meta">{{ st.n_outlets }} {{ t(lang, 'outlets')|lower }} · {{ st.last_seen|ago(lang) }}</span></li>{% endfor %}</ul>
   {% else %}<p class="meta">{{ t(lang, 'el_no_coverage') }}</p>{% endif %}

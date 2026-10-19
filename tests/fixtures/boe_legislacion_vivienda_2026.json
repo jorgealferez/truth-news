@@ -1,0 +1,158 @@
+{
+ "status": {
+  "code": "200",
+  "text": "ok"
+ },
+ "data": [
+  {
+   "fecha_actualizacion": "20261007T123908Z",
+   "identificador": "BOE-A-2026-20823",
+   "ambito": {
+    "codigo": "1",
+    "texto": "Estatal"
+   },
+   "departamento": {
+    "codigo": "7723",
+    "texto": "Jefatura del Estado"
+   },
+   "rango": {
+    "codigo": "1320",
+    "texto": "Real Decreto-ley"
+   },
+   "fecha_disposicion": "20261006",
+   "numero_oficial": "29/2026",
+   "titulo": "Real Decreto-ley 29/2026, de 6 de octubre, por el que se adoptan medidas urgentes para la protección de la función social de la vivienda y la ampliación de la oferta de vivienda asequible.",
+   "diario": "Boletín Oficial del Estado",
+   "fecha_publicacion": "20261007",
+   "diario_numero": "249",
+   "fecha_vigencia": "20261008",
+   "vigencia_agotada": "N",
+   "estado_consolidacion": {
+    "codigo": "3",
+    "texto": "Finalizado"
+   },
+   "url_eli": "https://www.boe.es/eli/es/rdl/2026/10/06/29",
+   "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20823"
+  },
+  {
+   "fecha_actualizacion": "20261007T094756Z",
+   "identificador": "BOE-A-2026-20822",
+   "ambito": {
+    "codigo": "1",
+    "texto": "Estatal"
+   },
+   "departamento": {
+    "codigo": "7723",
+    "texto": "Jefatura del Estado"
+   },
+   "rango": {
+    "codigo": "1320",
+    "texto": "Real Decreto-ley"
+   },
+   "fecha_disposicion": "20261006",
+   "numero_oficial": "28/2026",
+   "titulo": "Real Decreto-ley 28/2026, de 6 de octubre, por el que se adoptan medidas urgentes para reforzar la estabilidad de los contratos de arrendamiento de vivienda habitual.",
+   "diario": "Boletín Oficial del Estado",
+   "fecha_publicacion": "20261007",
+   "diario_numero": "249",
+   "fecha_vigencia": "20261115",
+   "vigencia_agotada": "N",
+   "estado_consolidacion": {
+    "codigo": "3",
+    "texto": "Finalizado"
+   },
+   "url_eli": "https://www.boe.es/eli/es/rdl/2026/10/06/28",
+   "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20822"
+  },
+  {
+   "fecha_actualizacion": "20261002T152450Z",
+   "identificador": "BOE-A-2026-20385",
+   "ambito": {
+    "codigo": "1",
+    "texto": "Estatal"
+   },
+   "departamento": {
+    "codigo": "7723",
+    "texto": "Jefatura del Estado"
+   },
+   "rango": {
+    "codigo": "1320",
+    "texto": "Real Decreto-ley"
+   },
+   "fecha_disposicion": "20260929",
+   "numero_oficial": "27/2026",
+   "titulo": "Real Decreto-ley 27/2026, de 29 de septiembre, por el que se adoptan medidas urgentes para reforzar la estabilidad de los contratos de arrendamiento de vivienda habitual.",
+   "diario": "Boletín Oficial del Estado",
+   "fecha_publicacion": "20261001",
+   "diario_numero": "243",
+   "fecha_vigencia": "20261002",
+   "vigencia_agotada": "S",
+   "estado_consolidacion": {
+    "codigo": "3",
+    "texto": "Finalizado"
+   },
+   "url_eli": "https://www.boe.es/eli/es/rdl/2026/09/29/27",
+   "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20385"
+  },
+  {
+   "fecha_actualizacion": "20261002T154351Z",
+   "identificador": "BOE-A-2026-20266",
+   "ambito": {
+    "codigo": "1",
+    "texto": "Estatal"
+   },
+   "departamento": {
+    "codigo": "7723",
+    "texto": "Jefatura del Estado"
+   },
+   "rango": {
+    "codigo": "1320",
+    "texto": "Real Decreto-ley"
+   },
+   "fecha_disposicion": "20260929",
+   "numero_oficial": "26/2026",
+   "titulo": "Real Decreto-ley 26/2026, de 29 de septiembre, por el que se adoptan medidas urgentes para la protección de la función social de la vivienda y la ampliación de la oferta de vivienda asequible.",
+   "diario": "Boletín Oficial del Estado",
+   "fecha_publicacion": "20260930",
+   "diario_numero": "241",
+   "fecha_vigencia": "20261001",
+   "vigencia_agotada": "S",
+   "estado_consolidacion": {
+    "codigo": "3",
+    "texto": "Finalizado"
+   },
+   "url_eli": "https://www.boe.es/eli/es/rdl/2026/09/29/26",
+   "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-20266"
+  },
+  {
+   "fecha_actualizacion": "20260918T125701Z",
+   "identificador": "BOE-A-2026-19429",
+   "ambito": {
+    "codigo": "2",
+    "texto": "Autonómico"
+   },
+   "departamento": {
+    "codigo": "8080",
+    "texto": "Comunidad Autónoma de Extremadura"
+   },
+   "rango": {
+    "codigo": "1500",
+    "texto": "Decreto-ley"
+   },
+   "fecha_disposicion": "20260728",
+   "numero_oficial": "4/2026",
+   "titulo": "Decreto-ley 4/2026, de 28 de julio, de actuaciones urgentes en materia de urbanismo para la agilización de la aprobación del planeamiento y su ejecución para el impulso a la promoción de vivienda.",
+   "diario": "Boletín Oficial del Estado",
+   "fecha_publicacion": "20260918",
+   "diario_numero": "231",
+   "fecha_vigencia": "20260805",
+   "vigencia_agotada": "N",
+   "estado_consolidacion": {
+    "codigo": "3",
+    "texto": "Finalizado"
+   },
+   "url_eli": "https://www.boe.es/eli/es-ex/dl/2026/07/28/4",
+   "url_html_consolidada": "https://www.boe.es/buscar/act.php?id=BOE-A-2026-19429"
+  }
+ ]
+}
