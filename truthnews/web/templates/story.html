@@ -2,16 +2,16 @@
 {% block title %}{{ st.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ st.title }}{% endblock %}
 {% block og_image %}{{ site.site_url }}/og/historia/{{ st.id }}.png{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/historia/{{ st.id }}">{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('historia', st.id, st.title) }}">{% endblock %}
 {% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/contrastes">{{ t(lang, 'contrasts') }}</a> › <a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a></p>{% endblock %}
 {% block content %}
 {% set n_out = comp.outlets|length %}
 {% set vc = {} %}{% for c in claims %}{% set _ = vc.update({c.verification.verdict: vc.get(c.verification.verdict, 0) + 1}) %}{% endfor %}
 {% set accused = {} %}{% for o, targets in comp.blame.items() %}{% for x in targets %}{% set _ = accused.update({x: accused.get(x, 0) + 1}) %}{% endfor %}{% endfor %}
 {% set differs = comp.disputes or comp.omissions or claims or comp.blame_differs %}
-{% set art_of = {} %}{% for o in outlets_view %}{% set _ = art_of.update({o.outlet.name: o.article.id}) %}{% endfor %}
+{% set art_of = {} %}{% for o in outlets_view %}{% set _ = art_of.update({o.outlet.name: url('noticia', o.article.id, o.article.title)}) %}{% endfor %}
 {% set accusers = {} %}{% for o, targets in comp.blame.items() %}{% for x in targets %}{% set _ = accusers.update({x: accusers.get(x, []) + [o]}) %}{% endfor %}{% endfor %}
-{% macro who(name, extra='') %}{% if name in art_of %}<a href="/noticia/{{ art_of[name] }}">{{ name }}</a>{% else %}<span>{{ name }}</span>{% endif %}{{ extra }}{% endmacro %}
+{% macro who(name, extra='') %}{% if name in art_of %}<a href="{{ art_of[name] }}">{{ name }}</a>{% else %}<span>{{ name }}</span>{% endif %}{{ extra }}{% endmacro %}
 <article class="story wide">
   <p class="kicker">{{ category_name(st.category, lang) }} · {{ n_out }} {{ t(lang, 'n_outlets') }}</p>
   <h1>{{ st.title }}</h1>
@@ -63,7 +63,7 @@
     <div class="outlet-cards">{% for o in outlets_view %}{% if loop.index == 7 %}</div><details class="more"><summary>{{ t(lang, 'see_all') }} ({{ outlets_view|length }})</summary><div class="outlet-cards">{% endif %}
       <div class="ocard" id="m-{{ o.outlet.slug }}">
         <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}</p>
-        <p class="headline"><a href="{{ o.article.url }}" rel="noopener nofollow" target="_blank">{{ o.article.title }}</a> <a class="meta" href="/noticia/{{ o.article.id }}?ficha=1">{{ t(lang, 'capture_record')|lower }}</a></p>
+        <p class="headline"><a href="{{ o.article.url }}" rel="noopener nofollow" target="_blank">{{ o.article.title }}</a> <a class="meta" href="{{ url('noticia', o.article.id, o.article.title) }}?ficha=1">{{ t(lang, 'capture_record')|lower }}</a></p>
         <p class="tags">{% for v in o.verdicts %}<span class="badge v-{{ v }}">{{ t(lang, 'verdict_' ~ v) }}</span>{% endfor %}
           {% for n, f in o.figures.items() %}<span class="tag">{{ n }} <b>{{ f.value|num }}</b></span>{% endfor %}
           {% for x in o.blame %}<span class="tag point">→ {{ x }}</span>{% endfor %}
@@ -101,12 +101,12 @@
   <details class="block fold" id="cobertura"><summary><h2>{{ t(lang, 'coverage') }}</h2> <span class="meta">{{ arts|length }} {{ t(lang, 'articles_count') }}</span></summary>
     <ol class="coverage">
     {% for a in arts %}<li><span class="who"><a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a> {{ a.published_at.strftime('%d/%m %H:%M') }} · {{ t(lang, 'scope_' ~ a.outlet.scope) }}</span>
-      <span class="what"><a href="/noticia/{{ a.id }}">{{ a.title }}</a></span></li>{% endfor %}
+      <span class="what"><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a></span></li>{% endfor %}
     </ol>
   </details>
 
   {% if related %}<section class="block"><h2>{{ t(lang, 'more_contrasts_in') }} {{ category_name(st.category, lang)|lower }}</h2>
-    <ul class="related">{% for r in related %}<li><a href="/historia/{{ r.id }}">{{ r.title }}</a> <span class="meta">{{ r.n_outlets }} {{ t(lang, 'n_outlets') }}{% if r.contrast and r.contrast.disputas %} · {{ t(lang, 'disputed_figures')|lower }}: {{ r.contrast.disputas|join(', ') }}{% endif %}</span></li>{% endfor %}</ul>
+    <ul class="related">{% for r in related %}<li><a href="{{ url('historia', r.id, r.title) }}">{{ r.title }}</a> <span class="meta">{{ r.n_outlets }} {{ t(lang, 'n_outlets') }}{% if r.contrast and r.contrast.disputas %} · {{ t(lang, 'disputed_figures')|lower }}: {{ r.contrast.disputas|join(', ') }}{% endif %}</span></li>{% endfor %}</ul>
   </section>{% endif %}
   <p class="meta">{{ st.first_seen.strftime('%d/%m/%Y %H:%M') }} – {{ st.last_seen.strftime('%d/%m/%Y %H:%M') }} UTC · {{ t(lang, 'basis') }}: {{ comp.basis }} · <a href="/metodologia">{{ t(lang, 'methodology') }}</a> · {{ t(lang, 'ai_note') }} {{ t(lang, 'copyright_note') }}</p>
 </article>

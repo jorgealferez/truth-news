@@ -7,7 +7,7 @@
   <form method="post" action="/admin/investigaciones"><input type="hidden" name="csrf" value="{{ csrf }}">
     <input name="question" required minlength="10" maxlength="500" style="width:100%;padding:8px" placeholder="¿Qué quieres investigar?">
     <p><button class="button" type="submit">Investigar</button></p></form>
-  <table class="table"><tbody>{% for inv in b.investigations %}<tr><td>{{ inv.status }}</td><td>{% if inv.status == 'publicada' %}<a href="/investigacion/{{ inv.id }}">{{ inv.question }}</a>{% else %}{{ inv.question }}{% endif %}</td><td class="meta">{{ inv.error or '' }}</td></tr>{% endfor %}</tbody></table>
+  <table class="table"><tbody>{% for inv in b.investigations %}<tr><td>{{ inv.status }}</td><td>{% if inv.status == 'publicada' %}<a href="{{ url('investigacion', inv.id, investigation_title(inv)) }}">{{ inv.question }}</a>{% else %}{{ inv.question }}{% endif %}</td><td class="meta">{{ inv.error or '' }}</td></tr>{% endfor %}</tbody></table>
 </section>
 <section class="block"><h2>Últimos rastreos</h2><table class="table"><thead><tr><th>#</th><th>Inicio</th><th>Feeds OK</th><th>Fallidos</th><th>Nuevos</th><th>Bloqueados robots</th></tr></thead><tbody>
   {% for r in b.runs %}<tr><td>{{ r.id }}</td><td>{{ r.started_at.strftime('%d/%m %H:%M') }}</td><td>{{ r.feeds_ok }}</td><td>{{ r.feeds_failed }}</td><td>{{ r.articles_new }}</td><td>{{ r.robots_blocked }}</td></tr>{% endfor %}</tbody></table></section>
@@ -16,5 +16,5 @@
   <div><h2>Medios sin artículos en 7 días</h2><p>{% for o in b.silent %}<a href="/medio/{{ o.slug }}">{{ o.name }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p></div>
 </section>
 <section class="block"><h2>Fiabilidad comprobada por medio</h2><table class="table"><tbody>{% for name, rec in b.record.items() %}<tr><td>{{ name }}</td><td>{% for k, n in rec.items() %}<span class="badge v-{{ k }}">{{ t(lang, 'verdict_' ~ k) }} {{ n }}</span> {% endfor %}</td></tr>{% endfor %}</tbody></table></section>
-<section class="block"><h2>Piezas en revisión (no publicadas)</h2><ul>{% for p in b.pieces_revision %}<li><a href="/tema/{{ p.topic_id }}">{{ p.title }}</a> — {{ p.grounding }}</li>{% endfor %}</ul></section>
+<section class="block"><h2>Piezas en revisión (no publicadas)</h2><ul>{% for p in b.pieces_revision %}<li><a href="{{ url('tema', p.topic_id, p.title) }}">{{ p.title }}</a> — {{ p.grounding }}</li>{% endfor %}</ul></section>
 {% endblock %}

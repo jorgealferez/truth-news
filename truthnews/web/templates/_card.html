@@ -1,7 +1,7 @@
 <article class="card{{ ' lead' if lead }}">
   <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a>
     · <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>
-  <h3><a href="/noticia/{{ a.id }}">{{ a.title }}</a></h3>
+  <h3><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a></h3>
   {% if lead and a.summary %}<p class="dek">{{ a.summary[:280] }}</p>{% endif %}
   <p class="meta">{{ a.published_at|ago(lang) }}</p>
 </article>
