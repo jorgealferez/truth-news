@@ -14,6 +14,15 @@
   <p class="meta">{{ t(lang, 'el_source') }} {% for s in e.sources %}<a href="{{ s.url }}" rel="noopener" target="_blank">{{ s.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>
 </section>
 
+{% if v.candidacies %}<section class="block" id="candidaturas"><h2>{{ t(lang, 'el_candidacies_' ~ v.candidacies.kind) }}</h2>
+  <p class="meta">{{ t(lang, 'el_candidacies_note')|replace('{n}', v.candidacies.rows|length|string) }} <a href="{{ v.candidacies.url }}" rel="noopener" target="_blank">{{ v.candidacies.id }}</a> ({{ v.candidacies.published.strftime('%d/%m/%Y') }})</p>
+  <table class="table"><thead><tr><th>{{ t(lang, 'el_formation') }}</th><th class="num">{{ t(lang, 'el_congress') }}</th><th class="num">{{ t(lang, 'el_senate') }}</th></tr></thead><tbody>
+  {% for r in v.candidacies.rows %}<tr><td>{% if r.slug %}<a href="#partido-{{ r.slug }}"><strong>{{ r.f.acronym }}</strong></a>{% else %}<strong>{{ r.f.acronym }}</strong>{% endif %} <span class="meta">{{ r.f.name }}</span>
+    {% if r.f.heads %}<details class="who-more"><summary>{{ t(lang, 'el_heads') }}</summary><ul class="who-omits">{% for circ, who in r.f.heads.items() %}<li>{{ circ }}: {{ who }}</li>{% endfor %}</ul></details>{% endif %}</td>
+    <td class="num">{{ r.f.congreso|length }}</td><td class="num">{{ r.f.senado|length }}</td></tr>{% endfor %}
+  </tbody></table>
+</section>{% endif %}
+
 {% if v.parties %}<section class="block" id="partidos"><h2>{{ t(lang, 'el_parties') }}</h2>
   <p class="meta">{{ t(lang, 'el_parties_note') }}</p>
   {% for p in v.parties %}<details class="block fold el-party" id="partido-{{ p.actor.slug }}"><summary><h3>{{ p.actor.name }}</h3> <span class="meta">{{ t(lang, 'el_n_statements')|replace('{n}', p.n_statements|string) }} · {{ t(lang, 'el_n_checked')|replace('{n}', p.n_checked|string) }}</span></summary>

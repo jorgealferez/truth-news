@@ -274,3 +274,79 @@ def test_regional_election_filters_by_territory(session):
     rows = {p["actor"].slug: p for p in views.parties(session, e)}
     assert [s.text for s in rows["pp"]["statements"]] == ["Propuestas para Andalucía"]
     assert [d["key"] for d in views.key_dates(e, now.date())] == ["el_convened", "el_poll"]
+
+
+CANDS = (FIX / "boe_candidaturas_2023_extracto.html").read_text()
+
+
+def test_candidacies_from_the_real_2023_boe():
+    from truthnews.elections import candidacies
+
+    fs = candidacies.parse(CANDS)
+    by = {f.acronym: f for f in fs}
+    assert len(fs) == 12 and fs[0].acronym == "PP"  # de la que mas circunscripciones cubre a la que menos
+    assert by["PP"].congreso == ["Albacete", "Las Palmas", "Ceuta"]
+    assert by["PP"].senado == ["Albacete", "Fuerteventura", "Gran Canaria", "Lanzarote", "Ceuta"]
+    assert by["PSOE"].heads["Albacete"] == "Emilio Sáez Cruz"
+    # Siglas con minusculas y candidatos con apodo entre parentesis no se confunden.
+    assert by["NC-bc"].name == "NUEVA CANARIAS - BLOQUE CANARISTA" and by["CCa"].congreso == ["Las Palmas"]
+    assert not any("Menchi" in f.name for f in fs)
+    assert by["FO"].senado == []
+    t = "Candidaturas proclamadas para las elecciones al Congreso ... convocadas por Real Decreto 400/2023."
+    assert candidacies.kind_of(t) == "proclamadas" and candidacies.kind_of("Otra cosa") is None
+
+
+def test_calendar_reads_candidacies_and_page_lists_every_party(engine):
+    item = {
+        "identificador": "BOE-A-2026-99999",
+        "titulo": "Candidaturas proclamadas para las elecciones al Congreso de los Diputados y al Senado, "
+        "convocadas por Real Decreto 806/2026, de 5 de octubre.",
+        "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-99999",
+    }
+    sumario = {
+        "data": {
+            "sumario": {
+                "diario": [
+                    {
+                        "seccion": [
+                            {"departamento": [{"nombre": "JUNTAS ELECTORALES PROVINCIALES", "item": item}]}
+                        ]
+                    }
+                ]
+            }
+        }
+    }
+
+    def handler(request):
+        url = str(request.url)
+        if "sumario" in url:  # cualquier dia (los domingos no se piden): el mismo documento una vez
+            return httpx.Response(200, json=sumario)
+        if "BOE-A-2026-99999" in url:
+            return httpx.Response(200, text=CANDS)
+        return httpx.Response(404)
+
+    today = datetime.now(UTC).date()
+    reg = {
+        "elections": [
+            {
+                "country": "ES",
+                "kind": "generales",
+                "date": str(today + timedelta(days=20)),
+                "convened": str(today - timedelta(days=10)),
+                "source": {"label": "Real Decreto 806/2026, de 5 de octubre (BOE-A-2026-20742)", "url": "u"},
+            }
+        ]
+    }
+    calls = []
+    transport = httpx.MockTransport(lambda r: calls.append(str(r.url)) or handler(r))
+    c = cal.Calendar(3, transport=transport, background=False, registry_raw=reg)
+    e = c.active()[0]
+    data = c.candidacies(e)
+    assert data["kind"] == "proclamadas" and data["id"] == "BOE-A-2026-99999"
+    assert len(data["formations"]) == 12
+    assert sum("BOE-A-2026-99999" in u for u in calls) == 1  # el documento se lee una sola vez
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, elections=c))
+    page = client.get(f"/elecciones/{e.slug}").text
+    assert "Candidaturas proclamadas" in page and "12 formaciones" in page
+    assert 'href="#partido-pp"' in page and "NUEVA CANARIAS - BLOQUE CANARISTA" in page
+    assert "Emilio Sáez Cruz" in page

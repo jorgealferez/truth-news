@@ -866,7 +866,9 @@ def create_app(
         if e is None:
             raise HTTPException(404)
         # Sin publicidad en paginas de elecciones (ads.py): ni se llama al servicio.
-        return render(request, "election.html", v=el_views.page(session, e, now))
+        return render(
+            request, "election.html", v=el_views.page(session, e, now, elections.candidacies(e))
+        )
 
     @app.get("/elecciones/{slug}/promesas", response_class=HTMLResponse)
     def election_promises(

@@ -547,6 +547,13 @@ es:
   pt_exterior_defensa: Exterior y defensa
   pt_social: Política social
   pt_cultura_digital: Cultura y digital
+  el_candidacies_proclamadas: Candidaturas proclamadas
+  el_candidacies_presentadas: Candidaturas presentadas
+  el_candidacies_note: "{n} formaciones, con las circunscripciones en las que se presentan al Congreso y al Senado y quién encabeza cada lista, según el BOE:"
+  el_formation: Formación
+  el_congress: Congreso
+  el_senate: Senado
+  el_heads: Cabezas de lista
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1090,3 +1097,10 @@ en:
   pt_exterior_defensa: Foreign affairs and defence
   pt_social: Social policy
   pt_cultura_digital: Culture and digital
+  el_candidacies_proclamadas: Proclaimed candidacies
+  el_candidacies_presentadas: Submitted candidacies
+  el_candidacies_note: "{n} parties and coalitions, with the constituencies where they stand for Congress and the Senate and who heads each list, according to the BOE:"
+  el_formation: Party or coalition
+  el_congress: Congress
+  el_senate: Senate
+  el_heads: Heads of list

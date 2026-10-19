@@ -1,0 +1,27 @@
+{
+  "fase": "18e",
+  "titulo": "Elecciones: candidaturas presentadas y proclamadas desde el BOE (todas las formaciones que concurren)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local, documento real del BOE",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "documento": "BOE-A-2023-15066, candidaturas proclamadas para las generales del 23-J de 2023 (1,1 MB)",
+    "resultado": "95 formaciones en 52 circunscripciones del Congreso; 581 listas al Congreso con su cabeza de lista (546 leidas); 0.08 s de analisis",
+    "comprobacion": "PP y VOX en las 52 circunscripciones; PSOE en 40 y SUMAR en 42 porque en Cataluna, Galicia o Euskadi concurren con otras siglas (PSC, PSdeG...), tal como las publica el BOE",
+    "tests": "tests/test_elections.py: parser con un extracto real (Albacete, Las Palmas con circunscripciones insulares del Senado, Ceuta) e integracion calendario-pagina"
+  },
+  "criterios_de_salida": {
+    "C15": "la lista completa de formaciones de cada eleccion convocada sale del BOE en cuanto se publica (presentadas ~28/10/2026, proclamadas despues)"
+  },
+  "no_verificable": [
+    "Candidaturas del 29-N: el BOE las publica a partir del 28/10/2026; se mide entonces en produccion"
+  ]
+}

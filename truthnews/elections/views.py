@@ -186,9 +186,19 @@ def coverage(session: Session, e: Election, now: datetime) -> list[Story]:
     return [s for s in rows if _regional(e, s.title)][:COVERAGE]
 
 
-def page(session: Session, e: Election, now: datetime) -> dict:
+def candidacy_rows(data: dict | None, e: Election) -> dict | None:
+    """Formaciones de las candidaturas del BOE, enlazadas a la ficha del partido si esta en el registro."""
+    if not data:
+        return None
+    known = {normalize(a.name).replace(" ", ""): a.slug for a in load_political() if a.country == e.country}
+    rows = [{"f": f, "slug": known.get(f.key)} for f in data["formations"]]
+    return {**data, "rows": rows}
+
+
+def page(session: Session, e: Election, now: datetime, candidacies: dict | None = None) -> dict:
     today = now.date()
     return {
+        "candidacies": candidacy_rows(candidacies, e),
         "e": e,
         "phase": e.phase(today),
         "days_left": e.days_left(today),

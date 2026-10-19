@@ -32,6 +32,7 @@ from sqlalchemy.orm import Session, joinedload
 from truthnews import registry
 from truthnews.classify import normalize
 from truthnews.data import client
+from truthnews.elections import candidacies as cands
 from truthnews.models import Article
 
 SUMARIO = "https://www.boe.es/datosabiertos/api/boe/sumario/{:%Y%m%d}"
@@ -62,6 +63,7 @@ _SCOPE = (
     ),
 )
 # "...nuevas elecciones locales en el municipio de Villanueva..." (parciales); las generales no tienen sitio.
+_DECREE = re.compile(r"Real Decreto (\d+/\d{4})")
 _LOCAL_PLACE = re.compile(r"\ben (?:el municipio de |la entidad local menor de )([A-ZÁÉÍÓÚÑ][^,.()]+)")
 _POLL_DAY = re.compile(
     rf"celebrar[a-z]*\s+el\s+(?:dia\s+)?(?:[a-z]+\s+)?(?:dia\s+)?(\d{{1,2}})\s+de\s+{_MONTH}(?:\s+de\s+(\d{{4}}))?"
@@ -446,6 +448,8 @@ class Calendar:
         self._background = background
         self._registry = load_registry(registry_raw)
         self._days: dict[date, tuple[float, list[Election]]] = {}
+        # Candidaturas por decreto de convocatoria ("806/2026"): {kind, id, url, published, formations}.
+        self._candidacies: dict[str, dict] = {}
         self._press: tuple[float, list[Election]] = (-1e18, [])
         self._warmed_at = -1e18
         self._running = False
@@ -461,7 +465,9 @@ class Calendar:
             with client(self._transport) as c:
                 resp = c.get(SUMARIO.format(d), headers={"Accept": "application/json"})
                 if resp.status_code == 200:
-                    for item in convocations(resp.json()):
+                    payload = resp.json()
+                    self._read_candidacies(c, payload, d)
+                    for item in convocations(payload):
                         doc = c.get(TEXT.format(item["id"]))
                         if doc.status_code == 200:
                             e = from_boe(item, doc.text, d)
@@ -476,6 +482,42 @@ class Calendar:
         with self._lock:
             self._days[d] = (self._clock(), found)
         return found
+
+    def _read_candidacies(self, c: httpx.Client, payload: dict, published: date) -> None:
+        """Si el sumario publica candidaturas de una convocatoria, se leen (las proclamadas mandan)."""
+        for it in sumario_items(payload):
+            kind = cands.kind_of(it["titulo"])
+            decree = _DECREE.search(it["titulo"])
+            if not kind or not decree:
+                continue
+            with self._lock:
+                prev = self._candidacies.get(decree.group(1))
+            if prev and (prev["kind"] == "proclamadas" or prev["id"] == it["id"]):
+                continue
+            doc = c.get(TEXT.format(it["id"]))
+            if doc.status_code != 200:
+                continue
+            formations = cands.parse(doc.text)
+            if formations:
+                with self._lock:
+                    self._candidacies[decree.group(1)] = {
+                        "kind": kind,
+                        "id": it["id"],
+                        "url": it["url"],
+                        "published": published,
+                        "formations": formations,
+                    }
+
+    def candidacies(self, e: Election) -> dict | None:
+        """Candidaturas publicadas en el BOE para la convocatoria de esta eleccion (o None)."""
+        for src in e.sources:
+            m = _DECREE.search(src.label)
+            if m:
+                with self._lock:
+                    hit = self._candidacies.get(m.group(1))
+                if hit:
+                    return hit
+        return None
 
     def warm(self, today: date, pause: float = 0.3) -> None:
         for back in range(self.lookback + 1):
