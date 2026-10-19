@@ -20,6 +20,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] Modulo `repeated` (ADR 0035): misma cifra sobre el mismo indicador, territorio y periodo en >= 2 articulos; pagina /repetidas y bloque en la historia con medios, dias y veredicto; produccion hoy sin repetidas (13 verificadas) — #144
   - [ ] Clave con hablante o fuente citada (condicion de la direccion): la cifra de un ministro y la de una ONG no se funden
 - [ ] Quien informa primero y bien (encargo de la direccion 2026-10-19, ADR 0041): en historias con dato oficial, tiempo desde el primer articulo hasta que cada medio publica la cifra que coincide con el dato, y quien da antes una cifra que no cuadra; muestra minima por medio como en la fiabilidad. Carril: Comparativas — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19)
+  - [ ] Modulo `timeliness` (ADR 0041): tabla en el ranking de /medios (acierta, mediana de horas, se adelanta con cifra que no cuadra; minimo 5 historias) y linea en 'En claro'; produccion hoy sin muestra suficiente
 - [ ] Quien cambio su cifra tambien en el texto completo (content_hash), no solo titular y extracto. Carril: Comparativas
 
 ## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el

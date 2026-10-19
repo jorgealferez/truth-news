@@ -84,7 +84,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
 | ADR 0038 | diseno | reservado | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
-| ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
+| ADR 0041 | diseno | PR (este) | Comparativas (quien informa primero y bien) |
 | siguiente libre | — | — | ADR 0040 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
 
 ## Como se trabaja
