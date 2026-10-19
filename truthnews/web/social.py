@@ -64,6 +64,27 @@ def _mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
         draw.rectangle(box(42, ty, 42 + w, ty + 1.5), fill=PAPER)
 
 
+def _wordmark(draw: ImageDraw.ImageDraw, x: float, baseline: float, size: int) -> None:
+    """"nos" + "mienten" + ".com" como en `logo.svg`, en papel sobre tinta: la i de "mienten" lleva una marca
+    cuadrada ambar en lugar del punto (ADR 0014)."""
+    nos, bold = _font("Medium", size), _font("ExtraBold", size)
+    draw.text((x, baseline), "nos", font=nos, fill=PAPER, anchor="ls")
+    x += draw.textlength("nos", font=nos)
+    draw.text((x, baseline), "m\u0131enten", font=bold, fill=PAPER, anchor="ls")
+    dot_x, top, side = (v * size / 2048 for v in (115, 1585, 349))
+    left = x + draw.textlength("m", font=bold) + dot_x
+    draw.rectangle((left, baseline - top, left + side, baseline - top + side), fill=AMBER)
+    x += draw.textlength("m\u0131enten", font=bold)
+    draw.text((x, baseline), ".com", font=nos, fill=AMBER, anchor="ls")
+
+
+def _ruler(draw: ImageDraw.ImageDraw, x0: int, x1: int, y: int, step: int) -> None:
+    """La regla de la marca: marcas cortas cada `step` y largas cada cinco."""
+    draw.rectangle((x0, y, x1, y + 1), fill=INK)
+    for i, x in enumerate(range(x0, x1 + 1, step)):
+        draw.rectangle((x, y + 2, x + 1, y + (13 if i % 5 == 0 else 7)), fill=INK)
+
+
 def story_image(
     title: str,
     kicker: str,
@@ -76,11 +97,7 @@ def story_image(
     d = ImageDraw.Draw(img)
     d.rectangle((0, 0, 1200, 84), fill=INK)
     _mark(d, 48, 18, 48)
-    nos, bold = _font("Medium", 34), _font("ExtraBold", 34)
-    d.text((112, 22), "nos", font=nos, fill=PAPER)
-    x = 112 + d.textlength("nos", font=nos)
-    d.text((x, 22), "mienten", font=bold, fill=PAPER)
-    d.text((x + d.textlength("mienten", font=bold), 22), ".com", font=nos, fill=AMBER)
+    _wordmark(d, 112, 54, 34)
     d.text((48, 112), kicker.upper(), font=_font("ExtraBold", 22), fill="#8a5a00")
     y = 146
     has_marks = bool(disputes or verdicts)
@@ -109,6 +126,7 @@ def story_image(
             d.rectangle((x, y, x + w, y + 22), fill=VERDICT_COLORS.get(k, MUTED))
             x += w
         y += 34
+    _ruler(d, 48, 1152, 548, 16)
     d.rectangle((0, 576, 1200, 630), fill=INK)
     d.text((48, 590), footer, font=_font("Medium", 24), fill=PAPER)
     buf = io.BytesIO()
