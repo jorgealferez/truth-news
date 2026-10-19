@@ -99,6 +99,44 @@ class Article(Base):
 
     outlet: Mapped[Outlet] = relationship()
     story: Mapped[Story | None] = relationship(back_populates="articles")
+    revisions: Mapped[list[ArticleRevision]] = relationship(
+        back_populates="article", order_by="ArticleRevision.detected_at", cascade="all, delete-orphan"
+    )
+
+
+REVISION_FIELDS = ("title", "summary")
+REVISION_MAX_CHARS = 600  # lo mismo que ya se publica del extracto (derecho de cita, ADR 0003)
+
+
+class ArticleRevision(Base):
+    """Un cambio de titular o extracto detectado entre dos rastreos (ADR 0015)."""
+
+    __tablename__ = "article_revision"
+    __table_args__ = (
+        CheckConstraint(f"field IN {REVISION_FIELDS!r}", name="ck_article_revision_field"),
+        Index("ix_article_revision_article_detected", "article_id", "detected_at"),
+        Index("ix_article_revision_outlet_detected", "outlet_id", "detected_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey("article.id", ondelete="CASCADE", name="fk_article_revision_article_id")
+    )
+    outlet_id: Mapped[int] = mapped_column(
+        ForeignKey("outlet.id", ondelete="CASCADE", name="fk_article_revision_outlet_id")
+    )
+    crawl_run_id: Mapped[int | None] = mapped_column(
+        ForeignKey("crawl_run.id", ondelete="SET NULL", name="fk_article_revision_crawl_run_id"),
+        nullable=True,
+    )
+    field: Mapped[str] = mapped_column(String(16))
+    before: Mapped[str] = mapped_column(Text)
+    after: Mapped[str] = mapped_column(Text)
+    before_hash: Mapped[str] = mapped_column(String(64))
+    after_hash: Mapped[str] = mapped_column(String(64))
+    detected_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    article: Mapped[Article] = relationship(back_populates="revisions")
 
 
 class CrawlRun(Base):

@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 from truthnews.config import Settings
 from truthnews.crawler.http import PoliteClient
 from truthnews.crawler.ingest import MAX_FEED_ERRORS, crawl, sync_registry
-from truthnews.models import Article, Feed, Outlet
+from truthnews.models import Article, ArticleRevision, Feed, Outlet
 from truthnews.registry import FeedSpec, OutletSpec
 
 FEED = (Path(__file__).parent / "fixtures" / "feed.xml").read_bytes()
@@ -111,8 +111,38 @@ def test_crawl_end_to_end(session):
 
     # Segundo rastreo: 304 para medio, sin duplicados.
     run2 = asyncio.run(crawl(session, settings(fetch_full_text=False), transport=httpx.MockTransport(server)))
-    assert run2.articles_new == 0
+    assert run2.articles_new == 0 and run2.stats["revisions"] == 0
     assert session.scalar(select(func.count(Article.id))) == 6
+
+
+def test_crawl_tracks_title_and_summary_changes(session):
+    """ADR 0015: si el medio cambia titular o extracto se guarda el antes y el despues con su huella."""
+    sync_registry(session, SPECS[1:2])  # descubre.test: feed sin etag, se relee entero en cada ciclo
+    server = Server()
+    asyncio.run(crawl(session, settings(fetch_full_text=False), transport=httpx.MockTransport(server)))
+    changed = FEED.replace(
+        b"El IPC sube al 3,1 % en septiembre", b"El IPC sube al 3,4 % en septiembre"
+    ).replace(b"La inflaci\xc3\xb3n repunta.", b"La inflaci\xc3\xb3n repunta con fuerza.")
+
+    def edited(request):
+        if str(request.url) == "https://descubre.test/feed":
+            return httpx.Response(200, content=changed.replace(b"medio.test", b"descubre.test"))
+        return server(request)
+
+    run = asyncio.run(crawl(session, settings(fetch_full_text=False), transport=httpx.MockTransport(edited)))
+    assert run.articles_new == 0 and run.stats["revisions"] == 2
+    ipc = session.scalars(select(Article).where(Article.url == "https://descubre.test/economia/ipc")).one()
+    assert ipc.title == "El IPC sube al 3,4 % en septiembre"  # la noticia muestra la version vigente
+    revs = {r.field: r for r in session.scalars(select(ArticleRevision))}
+    assert revs["title"].before == "El IPC sube al 3,1 % en septiembre"
+    assert revs["title"].after == ipc.title and revs["title"].outlet_id == ipc.outlet_id
+    assert revs["title"].crawl_run_id == run.id and len(revs["title"].before_hash) == 64
+    assert revs["summary"].after == "La inflación repunta con fuerza."
+    # Un tercer ciclo igual no repite revisiones.
+    again = asyncio.run(
+        crawl(session, settings(fetch_full_text=False), transport=httpx.MockTransport(edited))
+    )
+    assert again.stats["revisions"] == 0
 
 
 def test_text_fetch_cap_prefers_newest(session):

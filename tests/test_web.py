@@ -4,8 +4,20 @@ import pytest
 from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
-from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Piece, Story, Topic, Verification
+from truthnews.models import (
+    Article,
+    ArticleRevision,
+    Claim,
+    CrawlRun,
+    Evidence,
+    Outlet,
+    Piece,
+    Story,
+    Topic,
+    Verification,
+)
 from truthnews.web.app import _ago, create_app
+from truthnews.web.citations import cited_figures, word_diff
 
 
 @pytest.fixture()
@@ -69,6 +81,58 @@ def test_article_and_related(client, session):
     assert r.status_code == 200
     assert "Leer en el medio original" in r.text and 'href="https://m.es/1"' in r.text
     assert "Titular 3" in r.text  # relacionada de la misma seccion
+
+
+def test_article_cites_figures_tracks_changes_and_outlet_profile(client, session):
+    """Peticion 2026-10-19: datos citados por fragmentos, prueba de captura y cambios del medio (ADR 0015)."""
+    a = session.query(Article).filter_by(url="https://m.es/2").one()
+    a.title = "La policía detiene a 22 personas en Irún"
+    a.content_text = (
+        "Los agentes detuvieron a 22 personas tras los disturbios. "
+        + "Texto largo sin cifras que no se cita. " * 30
+        + "Más de 300 manifestantes se concentraron en la plaza."
+    )
+    a.content_hash = "a" * 64
+    a.word_count = 230
+    session.add(
+        ArticleRevision(
+            article_id=a.id,
+            outlet_id=a.outlet_id,
+            field="title",
+            before="La policía detiene a 2 personas en Irún",
+            after=a.title,
+            before_hash="b" * 64,
+            after_hash="c" * 64,
+        )
+    )
+    session.commit()
+    page = client.get(f"/noticia/{a.id}").text
+    assert "Datos citados" in page and "«Más de 300 manifestantes se concentraron en la plaza.»" in page
+    assert "Texto largo sin cifras" not in page  # se cita por fragmentos, no el texto completo
+    assert "Cambios detectados" in page and "<del>2</del>" in page and "<ins>22</ins>" in page
+    assert (
+        "Ficha de captura" in page and "https://web.archive.org/web/" in page and "aaaaaaaaaaaaaaaa" in page
+    )
+    outlet = client.get("/medio/medio").text
+    assert "Noticias rastreadas" in outlet and "en 1 noticias" in outlet
+    assert f'href="/noticia/{a.id}#cambios"' in outlet
+    # Un medio sin cambios lo dice en vez de mostrar una lista vacia.
+    session.query(ArticleRevision).delete()
+    session.commit()
+    assert "Aún no hemos detectado cambios" in client.get("/medio/medio").text
+
+
+def test_citation_helpers():
+    assert word_diff("detiene a 2 personas", "detiene a 22 personas") == [
+        ("=", "detiene a"),
+        ("-", "2"),
+        ("+", "22"),
+        ("=", "personas"),
+    ]
+    art = Article(title="Sin cifras", summary="Hubo 40 heridos. Hubo 40 heridos.", content_text=None)
+    cites = cited_figures(art)
+    assert [c["quote"] for c in cites] == ["Hubo 40 heridos."]  # sin repetir la misma frase
+    assert cites[0]["figures"][0][:2] == ("heridos", 40.0)
 
 
 @pytest.mark.parametrize(
