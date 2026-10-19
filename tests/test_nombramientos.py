@@ -1,7 +1,7 @@
 """Nombramientos y ceses del BOE: sumarios reales (seccion II.A del 7 y 8 de octubre de 2026)."""
 
 import json
-from datetime import date
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import httpx
@@ -140,13 +140,46 @@ def test_boe_days_network_error_is_empty():
     assert BoeDays(httpx.MockTransport(boom)).day(date(2026, 10, 7), date(2026, 10, 9)) == []
 
 
-def test_appointments_page(engine):
+def test_name_keys():
+    from truthnews.web.appointments import _name_keys
+
+    assert _name_keys("María Dolores Rial de la Calle") == ("María", "Rial")
+    assert _name_keys("Josu Aranbarri Erkiaga") == ("Josu", "Aranbarri")
+    assert _name_keys("Ana Pérez") == ("Ana", "Pérez") and _name_keys("Ana") is None
+
+
+def test_appointments_page(engine, session):
     from fastapi.testclient import TestClient
 
     from truthnews.config import Settings
+    from truthnews.models import Article, Outlet
     from truthnews.web.app import create_app
     from truthnews.web.appointments import BoeDays
 
+    o = Outlet(slug="m", name="Medio", homepage="https://m.es", country="ES", language="es", scope="nacional")
+    session.add(o)
+    session.flush()
+    for i, title in enumerate(
+        [
+            "Maria Dolores Rial, nueva teniente fiscal de Baleares",  # sin tilde: se normaliza
+            "Rial, el apellido de otra persona",  # mismo apellido, otro nombre: no cuenta
+            "María compra material escolar",  # 'rial' dentro de otra palabra: no cuenta
+        ]
+    ):
+        session.add(
+            Article(
+                outlet_id=o.id,
+                url=f"https://m.es/{i}",
+                url_hash=f"r{i:063d}",
+                title=title,
+                published_at=datetime(2026, 10, 8, 9, tzinfo=UTC),
+                language="es",
+                country="ES",
+                category="politica",
+                topics=[],
+            )
+        )
+    session.commit()
     calls = []
     tc = TestClient(
         create_app(Settings(database_url="sqlite://"), engine=engine, boe_days=BoeDays(boe_transport(calls)))
@@ -156,6 +189,8 @@ def test_appointments_page(engine):
     assert "María Dolores Rial de la Calle" in page and "Teniente Fiscal de la Fiscalía" in page
     assert 'href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-' in page and "Día siguiente" in page
     assert "Destinos, ascensos y nombramientos colectivos" in page and ">ceses<" in page
+    assert "En los medios (1)" in page and "nueva teniente fiscal de Baleares" in page
+    assert "el apellido de otra persona" not in page and "material escolar" not in page
     assert "Ministerio de la Presidencia, Justicia y Relaciones con las Cortes" in page
     assert "fecha=2026-10-07" in page and 'href="/nombramientos"' in page  # pie
     empty = tc.get("/nombramientos?fecha=2026-10-11").text

@@ -641,7 +641,7 @@ def create_app(
         )
 
     @app.get("/nombramientos", response_class=HTMLResponse)
-    def appointments_page(request: Request, fecha: str | None = None):
+    def appointments_page(request: Request, session: SessionDep, fecha: str | None = None):
         today = datetime.now(UTC).date()
         if fecha:
             try:
@@ -658,6 +658,11 @@ def create_app(
             "appointments.html",
             day=day,
             v=appointments.view(items),
+            press=appointments.mentions(
+                session,
+                [i.persona for i in items if i.tipo in ("nombramiento", "cese") and i.persona],
+                datetime.combine(day, datetime.min.time(), UTC) + timedelta(days=1),
+            ),
             prev_day=day - timedelta(days=1),
             next_day=day + timedelta(days=1) if day < today else None,
         )

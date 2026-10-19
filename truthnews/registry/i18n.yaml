@@ -280,6 +280,7 @@ es:
   appt_total: disposiciones de personal
   appt_n_nombramiento: nombramientos
   appt_n_cese: ceses
+  appt_in_press: En los medios
   appt_other: Destinos, ascensos y nombramientos colectivos
   appt_source: Fuente, sección II.A del Boletín Oficial del Estado (API de datos abiertos)
   no_appointments: Ese día el BOE no publicó nombramientos ni ceses (o aún no está disponible).
@@ -563,6 +564,7 @@ en:
   appt_total: staff provisions
   appt_n_nombramiento: appointments
   appt_n_cese: dismissals
+  appt_in_press: In the media
   appt_other: Postings, promotions and collective appointments
   appt_source: Source, section II.A of the Spanish Official Gazette (open data API)
   no_appointments: That day the BOE published no appointments or dismissals (or it is not available yet).
