@@ -17,7 +17,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from truthnews.models import SOCIAL_NETWORKS, SOCIAL_NETWORKS_EN, SocialPost, utcnow
-from truthnews.social import adapters
+from truthnews.social import adapters, balance
 from truthnews.social.compose import fit
 from truthnews.social.config import SocialSettings, base_network
 from truthnews.social.images import image_for
@@ -63,6 +63,10 @@ def run(
     now = now or utcnow()
     day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     found = candidates(session, site_url, settings.min_score, settings.window_hours, lang, now)
+    equilibrium = balance.measure(
+        session, now
+    )  # ADR 0043: nadie acapara lo negativo sin que los datos lo digan
+    found = balance.diversify(session, found, equilibrium["marcados"])
     since = now - timedelta(hours=settings.window_hours)
     found_en = stories_en(session, site_url.rstrip("/"), since, settings.min_score)
     by_lang = {
@@ -80,7 +84,11 @@ def run(
 
     own_client = client is None
     client = client or adapters.make_client()
-    summary: dict = {"candidatas": len(found), "candidatas_en": len(found_en)}
+    summary: dict = {
+        "candidatas": len(found),
+        "candidatas_en": len(found_en),
+        "equilibrio": {k: equilibrium[k] for k in ("piezas", "negativas", "por_actor", "marcados")},
+    }
     try:
         for network in SOCIAL_NETWORKS + SOCIAL_NETWORKS_EN:
             english = network in SOCIAL_NETWORKS_EN
@@ -170,4 +178,9 @@ def status(session: Session, settings: SocialSettings | None = None, now: dateti
         for n in SOCIAL_NETWORKS + SOCIAL_NETWORKS_EN
     ]
     recent = list(session.scalars(select(SocialPost).order_by(SocialPost.id.desc()).limit(40)))
-    return {"enabled": settings.enabled, "networks": networks, "recent": recent}
+    return {
+        "enabled": settings.enabled,
+        "networks": networks,
+        "recent": recent,
+        "balance": balance.measure(session, now),
+    }

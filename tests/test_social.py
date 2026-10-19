@@ -454,3 +454,115 @@ def test_english_accounts_use_their_own_credentials():
         "TELEGRAM_BOT_TOKEN": "1:a",
         "TELEGRAM_CHAT_ID": "@nosmienten_en",
     }
+
+
+def _party(session, name):
+    from truthnews.models import Entity
+
+    e = Entity(key=f"partido:{name.lower()}", kind="partido", name=name, country="ES")
+    session.add(e)
+    session.flush()
+    return e
+
+
+def _about(session, story, party):
+    """La historia menciona al partido (Entidades, ADR 0028)."""
+    from truthnews.models import Mention
+
+    for a in session.query(Article).filter_by(story_id=story.id):
+        session.add(
+            Mention(
+                entity_id=party.id,
+                article_id=a.id,
+                outlet_id=a.outlet_id,
+                story_id=story.id,
+                published_at=a.published_at,
+            )
+        )
+    session.flush()
+
+
+def _negative_about(session, party, n, published=0):
+    """`n` historias con una verificacion falsa sobre `party`; las `published` primeras ya publicadas."""
+    out = []
+    for i in range(n):
+        st = _story(session, f"{party.name} historia {i}", [400, 1000])
+        _about(session, st, party)
+        v = _verification(session, st, verdict="falso")
+        if i < published:
+            session.add(
+                SocialPost(
+                    network="telegram",
+                    kind="verificacion",
+                    ref_id=v.id,
+                    text="t",
+                    link="l",
+                    status="prueba",
+                    attempts=0,
+                    created_at=NOW - timedelta(hours=2),
+                )
+            )
+        out.append((st, v))
+    session.flush()
+    return out
+
+
+def test_balance_flags_an_actor_over_represented_beyond_the_data(session):
+    from truthnews.social import balance
+
+    a, b = _party(session, "Partido A"), _party(session, "Partido B")
+    _negative_about(session, a, 4, published=4)
+    pending_b = _negative_about(session, b, 4)
+    session.commit()
+    m = balance.measure(session, NOW)
+    assert m["negativas"] == 4 and m["por_actor"] == {"Partido A": 1.0}
+    assert m["por_actor_en_los_datos"] == {"Partido A": 0.5, "Partido B": 0.5}
+    assert m["marcados"] == ["Partido A"]
+    # Diversifica: lo negativo de A pasa detras, pero no desaparece
+    found = candidates(session, SITE, now=NOW)
+    ordered = balance.diversify(session, found, m["marcados"])
+    assert sorted(c.ref_id for c in ordered) == sorted(c.ref_id for c in found)
+    first_neg = next(c for c in ordered if c.kind == "verificacion")
+    assert first_neg.ref_id in {v.id for _, v in pending_b}
+    out = run(session, SITE, settings(per_cycle=1), now=NOW)
+    assert out["equilibrio"]["marcados"] == ["Partido A"]
+
+
+def test_balance_leaves_alone_what_the_data_justify(session):
+    from truthnews.social import balance
+
+    a = _party(session, "Partido A")
+    _negative_about(session, a, 4, published=4)
+    session.commit()
+    m = balance.measure(session, NOW)
+    assert m["por_actor"] == {"Partido A": 1.0} and m["por_actor_en_los_datos"] == {"Partido A": 1.0}
+    assert m["marcados"] == []  # todas las falsedades del periodo son de A: se publican igual
+
+
+def test_balance_speaker_is_the_actor_and_few_pieces_never_flag(session):
+    from truthnews.social import balance
+
+    a, b = _party(session, "Partido A"), _party(session, "Partido B")
+    ((st, v),) = _negative_about(session, a, 1, published=1)
+    v.claim.speaker_entity_id = b.id
+    session.commit()
+    assert balance.piece(session, "verificacion", v.id) == ({"Partido B"}, True)
+    m = balance.measure(session, NOW)
+    assert m["por_actor"] == {"Partido B": 1.0} and m["marcados"] == []  # menos de 3 negativas
+    assert balance.piece(session, "historia", st.id) == ({"Partido A"}, True)
+    assert balance.piece(session, "verificacion", 99999) == (set(), False)
+    assert balance.diversify(session, ["x"], []) == ["x"]
+
+
+def test_cli_balance(db_url, engine, session, content, monkeypatch, capsys):
+    from truthnews import cli
+    from truthnews.db import get_engine
+
+    monkeypatch.setenv("DATABASE_URL", db_url)
+    get_engine.cache_clear()
+    try:
+        assert cli.main(["social", "balance", "--hours", "48"]) == 0
+        out = json.loads(capsys.readouterr().out)
+        assert out["horas"] == 48 and out["marcados"] == []
+    finally:
+        get_engine.cache_clear()

@@ -87,7 +87,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno frente al BOE; sin migracion) |
 | ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
 | ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
-| ADR 0043 | diseno | reservado | Redes (equilibrio de lo que se publica, solo si cambia la regla) |
+| ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
 | ADR 0045 | diseno | PR #151 | Rastreo (piezas publicitarias de los medios; sin migracion) |
 | siguiente libre | — | — | ADR 0046 + migracion 0020; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
