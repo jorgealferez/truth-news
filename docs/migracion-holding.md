@@ -101,7 +101,11 @@ orquestador.
 Sin estas claves, todo se construye y se prueba en local contra el BFF en docker compose. Lo de
 produccion se declara `NO VERIFICADO (falta credencial)` y no se corta ningun dominio.
 
-## Regla para los demas carriles mientras dura la migracion
+## Regla para los demas carriles mientras dura la migracion (PROPUESTA)
+
+Sin efecto hasta que la direccion la revise y la publique en docs/equipo.md (respuesta de la direccion
+2026-10-19: hay cuatro carriles con cambios de esquema en vuelo y no se frenan). La linea "Durante la
+migracion" de las consecuencias del ADR 0025 se lee con este alcance. Propuesta:
 
 - Una tabla nueva o una columna nueva se anota en la seccion "Esquema pendiente para newsroom" de este
   documento, en el mismo PR que la crea (nombre, clave natural, ADR).
