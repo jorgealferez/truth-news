@@ -31,6 +31,13 @@ class Settings:
     site_domain: str = field(default_factory=lambda: os.environ.get("SITE_DOMAIN", "nosmienten.com"))
     default_language: str = field(default_factory=lambda: os.environ.get("DEFAULT_LANGUAGE", "es"))
     default_country: str = field(default_factory=lambda: os.environ.get("DEFAULT_COUNTRY", "ES"))
+    # Idiomas que se ofrecen a buscadores (hreflang, sitemap, index). Los demas se sirven con noindex
+    # mientras su contenido siga sin traducir (decision del usuario 2026-10-19).
+    indexed_languages: tuple[str, ...] = field(
+        default_factory=lambda: tuple(
+            x.strip() for x in os.environ.get("INDEXED_LANGUAGES", "es").split(",") if x.strip()
+        )
+    )
     user_agent: str = field(
         default_factory=lambda: os.environ.get(
             "CRAWLER_USER_AGENT",
