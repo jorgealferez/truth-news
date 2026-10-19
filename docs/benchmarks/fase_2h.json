@@ -1,0 +1,185 @@
+{
+  "fase": "2h",
+  "titulo": "Comparativas: fixture de disputas crecido con produccion; territorio, partido y dinero",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "disputas_precision": 1.0,
+    "disputas_exhaustividad": 1.0,
+    "disputas_agrupacion": 0.993
+  },
+  "detalle": {
+    "muestra": "28 historias reales de produccion etiquetadas a mano en tests/fixtures/disputes.json: las 15 del 17-18/10 (152 articulos, titular y resumen) y 13 nuevas del 18-19/10 (197 articulos) elegidas porque los medios daban cifras distintas; cada articulo con la URL del medio, la ficha de nosmienten.com, la fecha y las frases del texto completo citadas en la ficha. Cifra oficial cuando los textos la citan: detenidos en Francia 2.397 (balance provisional) y 997 policias heridos; renta media por persona 15.948 euros (INE, Atlas de Distribucion de la Renta 2024); precio medio de la luz 215,12 euros/MWh. Sin cifra oficial: migrantes que siguen en Ceuta (10.000 frente a 15.000) y muertos de la dana Adam (balance de 2 a 4)",
+    "deteccion_de_discrepancias": "Disputa correcta si todas sus cifras hablan del mismo hecho segun la etiqueta; exhaustividad sobre los hechos contados con cifras distintas (> 10 %) por al menos dos medios. Sin IA: solo reglas",
+    "agrupacion": "Por cada par de medios con el mismo sustantivo: acierto si el comparador los pone en el mismo hecho y la etiqueta dice que lo son, o los separa y no lo son",
+    "antes": {
+      "commit": "origin/main cec5516: reglas del ADR 0016 en compare.py, con el evaluador ya leyendo las frases del texto",
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 352,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
+      },
+      "produccion_19_oct": {
+        "disputas": 13,
+        "precision": 0.462,
+        "precision_pares": 0.138,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos ·2",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.593,
+        "juntos_por_error": 143,
+        "separados_por_error": 0
+      },
+      "total": {
+        "disputas": 18,
+        "precision": 0.611,
+        "precision_pares": 0.514,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos ·2",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 703,
+        "agrupacion_aciertos": 0.797,
+        "juntos_por_error": 143,
+        "separados_por_error": 0
+      }
+    },
+    "despues": {
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 352,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
+      },
+      "produccion_19_oct": {
+        "disputas": 6,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.986,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "total": {
+        "disputas": 11,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [],
+        "agrupacion_pares": 703,
+        "agrupacion_aciertos": 0.993,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "errores_de_agrupacion": [
+        "12084:escanos:Diario de Sevilla=53+El Mundo=53",
+        "12084:escanos:El Plural=53+El Mundo=53",
+        "12084:escanos:20minutos=53+El Mundo=53",
+        "12084:escanos:Canal Sur Noticias=53+El Mundo=53",
+        "12084:escanos:El Mundo=53+Diario Sur=53"
+      ],
+      "lectura": "Los 5 pares juntados por error son el 53 de El Mundo (escanos del PP en las elecciones de mayo) junto al 53 de la encuesta: misma cifra, coinciden, no abre disputa"
+    },
+    "cada_regla_por_separado_produccion_19_oct": {
+      "solo_dinero_sin_disputa": {
+        "disputas": 9,
+        "precision": 0.667,
+        "precision_pares": 0.5,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [
+          "11626:muertos ·2",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.92,
+        "juntos_por_error": 28,
+        "separados_por_error": 0
+      },
+      "solo_territorio": {
+        "disputas": 12,
+        "precision": 0.5,
+        "precision_pares": 0.147,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.621,
+        "juntos_por_error": 133,
+        "separados_por_error": 0
+      },
+      "solo_partido": {
+        "disputas": 11,
+        "precision": 0.545,
+        "precision_pares": 0.151,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos ·2"
+        ],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.63,
+        "juntos_por_error": 130,
+        "separados_por_error": 0
+      }
+    },
+    "comando": "python -c \"import json; from truthnews.analysis.evaluate import dispute_quality, grouping_quality; f=json.load(open('tests/fixtures/disputes.json')); print(dispute_quality(f)); print(grouping_quality(f))\"",
+    "advertencia": "Las 13 historias nuevas se usaron tambien para disenar las reglas: es una medida dentro de la muestra y en datos nuevos la precision puede ser menor. La mejora de 'antes' a 'despues' en esas 13 no prueba que generalice; el fixture del 17-18/10 no empeora (1,00). Cada caso nuevo detectado en produccion se anade al fixture."
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [],
+  "fuera_de_alcance": [
+    "Dos casos distintos con cifras parecidas del mismo sustantivo y sin territorio ni partido (8448: dos mujeres que devuelven 16.365 y 8.500 euros) solo se separan porque son dinero; con detenidos o muertos seguirian juntos"
+  ],
+  "pendientes": []
+}

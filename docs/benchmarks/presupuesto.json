@@ -162,6 +162,13 @@
       "objetivo": 0.95
     },
     {
+      "id": "disputas_agrupacion",
+      "descripcion": "Comparativas (ADR 0051): pares de cifras del mismo sustantivo que se agrupan (mismo hecho o hechos distintos) como dice la etiqueta, sobre tests/fixtures/disputes.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.95
+    },
+    {
       "id": "entidades_precision",
       "descripcion": "Entidades (ADR 0027): entidades extraidas que son correctas, sobre tests/fixtures/entities.json",
       "unidad": "proporcion",

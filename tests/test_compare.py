@@ -137,13 +137,49 @@ def test_dispute_precision_on_real_labeled_stories():
     import json
     from pathlib import Path
 
-    from truthnews.analysis.evaluate import dispute_quality
+    from truthnews.analysis.evaluate import dispute_quality, grouping_quality
 
     fixture = json.loads((Path(__file__).parent / "fixtures" / "disputes.json").read_text(encoding="utf-8"))
     q = dispute_quality(fixture)
     # Medido 2026-10-19 (ADR 0016): antes 0,50 de precision (4 de 8 disputas mezclaban hechos distintos).
+    # Con las 13 historias de produccion del 18-19/10 (ADR 0051): antes 0,611 (7 de 18 mal), despues 1,00.
     assert q["precision"] >= 0.95 and q["precision_pares"] >= 0.95, q["errores"]
-    assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 5
+    assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 11
+    g = grouping_quality(fixture)
+    # Pares de cifras puestos en el mismo hecho o separados como dice la etiqueta: antes 0,797, despues 0,993.
+    assert g["aciertos"] >= 0.99 and g["separados_por_error"] == 0, g["errores"]
+
+
+def test_territory_party_and_money_keep_facts_apart():
+    from truthnews.analysis.compare import _figures
+    from truthnews.classify import normalize
+
+    # Casos reales del 19/10: el ozono por comunidad, el CIS andaluz por partido, el alquiler en euros.
+    arts = [
+        art("A", "El ozono causa cada año hasta 300 muertes en Aragón"),
+        art("B", "El aire tóxico de Navarra: un exceso de 190 muertes en verano"),
+        art("C", "La dana deja dos muertos en Cataluña y la Comunidad Valenciana"),
+        art("D", "La dana deja tres muertos en la Comunidad Valenciana"),
+    ]
+    assert [[f.outlet for f in figs] for figs in compare(arts).disputes.values()] == [["C", "D"]]
+    arts = [
+        art("A", "Vox, con el 16,1 %, lograría entre 16 y 20 escaños"),
+        art("B", "Vox sube, mientras Adelante Andalucía alcanzaría hasta diez escaños"),
+        art("C", "El PP lograría entre 52 y 53 escaños"),
+        art("D", "Los populares obtendrían 47 escaños, según otra encuesta"),
+    ]
+    disputes = compare(arts).disputes
+    assert [[f.outlet for f in figs] for figs in disputes.values()] == [["C", "D"]]
+    arts = [
+        art("A", "Solo trece provincias siguen por debajo de los 700 euros de alquiler"),
+        art("B", "Los alquileres superan los 1.000 euros en doce provincias"),
+        art("C", "Los alquileres superan los 1.000 euros en doce provincias"),
+    ]
+    comp = compare(arts)
+    assert comp.disputes == {} and comp.agreed_figures == [("euros", 1000, 2)]
+    # El lugar de la data ("Madrid, 19 oct (EFE).-") no es el territorio de la cifra.
+    ((*_, territory, party),) = _figures(normalize("Madrid, 19 oct (EFE).- Detenidas 40 personas en Sevilla"))
+    assert territory == {"andalucia"} and party is None
 
 
 def test_personas_context_stays_in_its_sentence():
