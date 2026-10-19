@@ -73,6 +73,7 @@ es:
   official_figure: Dato oficial
   verification_page: Verificación
   see_verification: Ver la verificación y el gráfico
+  retired_by_newsroom: "Retirado por la redacción"
   see_story: Ver la historia
   official_short: oficial
   points_unit: puntos
@@ -722,6 +723,7 @@ en:
   official_figure: Official figure
   verification_page: Fact check
   see_verification: See the fact check and the chart
+  retired_by_newsroom: "Withdrawn by the newsroom"
   see_story: See the story
   official_short: official
   points_unit: points

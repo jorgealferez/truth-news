@@ -18,8 +18,10 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from truthnews.analysis import pipeline
 from truthnews.config import Settings
 from truthnews.models import (
+    AdminAction,
     Article,
     Claim,
     CrawlRun,
@@ -95,6 +97,7 @@ def balance(session: Session) -> dict:
         "pieces_revision": [p for p in pieces if p.status == "revision"],
         "pieces_published": sum(1 for p in pieces if p.status == "publicada"),
         "ai_output_tokens": tokens_out,
+        "admin_actions": list(session.scalars(select(AdminAction).order_by(AdminAction.at.desc()).limit(20))),
         "investigations": list(
             session.scalars(select(Investigation).order_by(Investigation.created_at.desc()).limit(30))
         ),
@@ -128,6 +131,51 @@ def make_router(settings: Settings, get_session, templates, render) -> APIRouter
             social=social_queue.status(session),
             csrf=csrf_token(settings),
         )
+
+    @router.post("/verificacion/{verification_id}/retirar")
+    def retire_verdict(
+        verification_id: int,
+        user: Admin,
+        session: SessionDep,
+        reason: Annotated[str, Form()],
+        csrf: Annotated[str, Form()],
+    ):
+        """Retira un veredicto con nota publica y registra quien, cuando y por que (ADR 0049)."""
+        if not hmac.compare_digest(csrf, csrf_token(settings)):
+            raise HTTPException(403, "Token CSRF invalido")
+        reason = " ".join(reason.split())
+        if not 10 <= len(reason) <= 500:
+            raise HTTPException(422, "El motivo debe tener entre 10 y 500 caracteres")
+        ver = session.get(Verification, verification_id)
+        if ver is None:
+            raise HTTPException(404, "Veredicto no encontrado")
+        pipeline.retire(session, ver, user, reason)
+        session.commit()
+        return RedirectResponse(f"/verificacion/{ver.claim_id}", status_code=303)
+
+    @router.post("/verificacion/{verification_id}/restituir")
+    def restore_verdict(
+        verification_id: int,
+        user: Admin,
+        session: SessionDep,
+        reason: Annotated[str, Form()],
+        csrf: Annotated[str, Form()],
+    ):
+        """Deshace una retirada manual con su propio registro; el siguiente ciclo lo vuelve a juzgar."""
+        if not hmac.compare_digest(csrf, csrf_token(settings)):
+            raise HTTPException(403, "Token CSRF invalido")
+        reason = " ".join(reason.split())
+        if not 10 <= len(reason) <= 500:
+            raise HTTPException(422, "El motivo debe tener entre 10 y 500 caracteres")
+        ver = session.get(Verification, verification_id)
+        if ver is None:
+            raise HTTPException(404, "Veredicto no encontrado")
+        try:
+            pipeline.restore(session, ver, user, reason)
+        except ValueError as exc:
+            raise HTTPException(409, str(exc)) from exc
+        session.commit()
+        return RedirectResponse(f"/verificacion/{ver.claim_id}", status_code=303)
 
     @router.post("/investigaciones")
     def create_investigation(

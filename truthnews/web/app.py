@@ -201,6 +201,7 @@ def create_app(
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
         verdict_line=vview.sentence,
+        retired_note=vview.retired_note,
         # Seccion temporal (ADR 0036): solo hay enlace mientras alguna eleccion este en ventana.
         elections_nav=lambda: elections.active(),
         ld=ld,

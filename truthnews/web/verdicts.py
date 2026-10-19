@@ -7,6 +7,8 @@ La serie oficial va en tinta (referencia neutra) y la cifra del medio en ambar c
 
 from __future__ import annotations
 
+import re
+
 from markupsafe import Markup, escape
 
 from truthnews.analysis.claims import indicator_name
@@ -20,6 +22,17 @@ SOURCE_NAMES = {
     "worldbank": {"es": "Banco Mundial", "en": "World Bank"},
 }
 INK, CLAIM, GRID = "#14161b", "#8a5a00", "#e3e0d8"
+
+
+_RETIRED = re.compile(r"\[Retirado el (\d{2}/\d{2}/\d{4}): (.*?)\]")
+
+
+def retired_note(v) -> tuple[str, str] | None:
+    """(fecha, motivo) si la redaccion retiro el veredicto a mano y sigue retirado (ADR 0049)."""
+    if v is None or not (v.method or "").startswith("retirada-manual"):
+        return None
+    found = _RETIRED.findall(v.explanation or "")
+    return found[-1] if found else None
 
 
 def dato(value: float | None, unit: str | None = None, lang: str = "es") -> str:

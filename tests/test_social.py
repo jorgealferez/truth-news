@@ -39,6 +39,8 @@ ALL_CREDS = {
 
 
 def settings(env=None, **kw):
+    """Sin reparto horario salvo que el test lo pida: los demas no deben depender de la hora real."""
+    kw.setdefault("spread", False)
     return SocialSettings(env=env or {}, **kw)
 
 
@@ -370,6 +372,7 @@ def test_cli_preview_writes_nothing_and_run_dry(db_url, engine, session, content
 
     monkeypatch.setenv("DATABASE_URL", db_url)
     monkeypatch.setenv("X_API_KEY", "k")  # credenciales incompletas: X sigue en prueba
+    monkeypatch.setenv("SOCIAL_SPREAD", "0")  # sin depender de la hora real
     get_engine.cache_clear()
     try:
         assert cli.main(["social", "preview", "--limit", "1"]) == 0
@@ -566,3 +569,33 @@ def test_cli_balance(db_url, engine, session, content, monkeypatch, capsys):
         assert out["horas"] == 48 and out["marcados"] == []
     finally:
         get_engine.cache_clear()
+
+
+def test_spread_over_the_day_in_madrid_hours(session, content):
+    from datetime import datetime as dt
+
+    from truthnews.social.config import madrid_hour
+
+    assert madrid_hour(dt(2026, 10, 19, 8, 20, tzinfo=UTC)) == 10  # verano: UTC+2
+    assert madrid_hour(dt(2026, 10, 25, 1, 0, tzinfo=UTC)) == 2  # cambio de hora de octubre
+    assert madrid_hour(dt(2026, 3, 29, 1, 0, tzinfo=UTC)) == 3  # cambio de hora de marzo
+    assert madrid_hour(dt(2026, 12, 31, 23, 30)) == 0  # invierno: UTC+1, fecha sin zona
+    cfg = settings(spread=True, active_hours=(8, 23))
+    night = dt(2026, 10, 19, 3, 0, tzinfo=UTC)  # 05:00 en Madrid
+    out = run(session, SITE, cfg, now=night)
+    assert out["horario"] == {"hora_madrid": 5, "activo": False} and out["telegram"]["nuevas"] == 0
+    morning = dt(2026, 10, 19, 7, 0, tzinfo=UTC)  # 09:00 en Madrid
+    assert run(session, SITE, cfg, now=morning)["telegram"]["nuevas"] == 1  # una, aunque el tope sea 2
+    assert cfg.gap_minutes("telegram") == 15 * 60 / 8
+    soon = morning + timedelta(minutes=60)
+    assert run(session, SITE, cfg, now=soon)["telegram"]["nuevas"] == 0  # aun no han pasado 112 min
+    later = morning + timedelta(minutes=120)
+    assert run(session, SITE, cfg, now=later)["telegram"]["nuevas"] == 1
+
+
+def test_active_hours_setting(monkeypatch):
+    monkeypatch.setenv("SOCIAL_ACTIVE_HOURS", "7-22")
+    assert SocialSettings().active_hours == (7, 22)
+    monkeypatch.setenv("SOCIAL_ACTIVE_HOURS", "22-7")
+    assert SocialSettings().active_hours == (8, 23)
+    assert SocialSettings(quota={"x": 0}).gap_minutes("x") == float("inf")
