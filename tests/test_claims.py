@@ -25,9 +25,13 @@ CASES = [
     ("La tasa de paro baja 0,3 puntos hasta el 10 %.", []),
     ("El desempleo de agosto se situó en el 6,4% en la eurozona y el 6,1% en la Unión Europea.", []),
     ("El desempleo de agosto se situó en el 6,4% en la eurozona.", [("paro", "EA", 6.4, None)]),
-    # Caso real (El Mundo, 18/10/2026): poblacion de Canada atribuida a Espana por la v2.
-    ("Canadá es el segundo más extenso del planeta, con solo unos 40 millones de habitantes.", []),
-    ("En Japón la tasa de paro se sitúa en el 2,5 %.", []),
+    # Caso real (El Mundo, 18/10/2026): poblacion de Canada atribuida a Espana por la v2; con Canada en
+    # geo_names (lote global) se atribuye a Canada, nunca a Espana.
+    (
+        "Canadá es el segundo más extenso del planeta, con solo unos 40 millones de habitantes.",
+        [("poblacion", "CA", 40_000_000.0, None)],
+    ),
+    ("En Japón la tasa de paro se sitúa en el 2,5 %.", [("paro", "JP", 2.5, None)]),  # Japon ya en geo_names
     ("La tasa de paro se sitúa en el 10 % mientras Turquía sufre.", []),
     # v10: un pais separado de la cifra por un contraste no es el de la cifra (revision de #157).
     ("La tasa de paro se sitúa en el 10 % mientras Francia sufre.", []),
@@ -134,3 +138,16 @@ def test_public_spending_and_revenue_over_gdp():
     assert got == [("ingresos_publicos", 42.9)]
     assert extract("El gasto público en sanidad es del 6,5 % del PIB en el país.", "es", "ES", 2026) == []
     assert extract("El gasto público es del 20 % del presupuesto en el país.", "es", "ES", 2026) == []
+
+
+def test_registry_countries_are_attributed_when_named_unambiguously():
+    """Lote global de geo_names (2026-10-19): el pais nombrado da el territorio; un nombre ambiguo no."""
+    got = extract("La tasa de paro de Colombia se sitúa en el 9,1 %.", "es", "ES", 2026)
+    assert [(c.indicator, c.geo, c.value) for c in got] == [("paro", "CO", 9.1)]
+    got = extract("Japan's unemployment rate stands at 2.5 %.", "en", "XX", 2026)
+    assert [(c.indicator, c.geo) for c in got] == [("paro", "JP")]
+    # "chile" (tambien el pimiento) y "turkey" (tambien el pavo) quedan fuera: la frase no se atribuye
+    assert extract("La tasa de paro en Chile se sitúa en el 8,9 %.", "es", "ES", 2026) == []
+    assert extract("Inflation in Turkey stands at 33 %.", "en", "XX", 2026) == []
+    got = extract("La inflación en Turquía se sitúa en el 33 %.", "es", "ES", 2026)
+    assert [(c.indicator, c.geo) for c in got] == [("inflacion", "TR")]
