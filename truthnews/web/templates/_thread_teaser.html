@@ -1,0 +1,7 @@
+<a class="thread-teaser" href="/hilo/{{ th.id }}">
+  <p class="label">{{ t(lang, 'thread') }}</p>
+  <h3>{{ th.title }}</h3>
+  <p class="why">{{ th.content.por_que_ahora or th.content.resumen }}</p>
+  {% set ev = th.content.cronologia or [] %}{% if ev %}<ol class="mini-tl">{% for e in ev[:1] + ev[-2:] if ev|length > 3 %}<li><b>{{ e.fecha[:7] }}</b> {{ e.hecho[:90] }}{% if e.hecho|length > 90 %}…{% endif %}</li>{% else %}{% for e in ev %}<li><b>{{ e.fecha[:7] }}</b> {{ e.hecho[:90] }}</li>{% endfor %}{% endfor %}</ol>{% endif %}
+  <p class="more">{{ t(lang, 'thread_cta') }} →{% if th.content.conexiones %} · {{ th.content.conexiones|length }} {{ t(lang, 'connections')|lower }}{% endif %}</p>
+</a>

@@ -7,7 +7,7 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.models import Article, Claim, CrawlRun, Outlet, Piece, Story, Topic, Verification
+from truthnews.models import Article, Claim, CrawlRun, Outlet, Piece, Story, Thread, Topic, Verification
 
 PAGE_SIZE = 30
 
@@ -190,3 +190,22 @@ def all_verifications(session: Session, limit: int = 200) -> list[Claim]:
         .limit(limit)
     )
     return list(session.scalars(q).unique())
+
+
+def thread_for_story(session: Session, story_id: int) -> Thread | None:
+    return session.scalars(
+        select(Thread).where(Thread.anchor_story_id == story_id, Thread.status == "publicado")
+    ).first()
+
+
+def front_threads(session: Session, story_ids: list[int], limit: int = 3) -> list[Thread]:
+    """Hilos publicados de las historias de cabecera, en el orden de la portada."""
+    if not story_ids:
+        return []
+    by_story = {
+        t.anchor_story_id: t
+        for t in session.scalars(
+            select(Thread).where(Thread.anchor_story_id.in_(story_ids), Thread.status == "publicado")
+        )
+    }
+    return [by_story[s] for s in story_ids if s in by_story][:limit]

@@ -1,0 +1,33 @@
+{
+  "fase": "10a",
+  "titulo": "Hilos: de la noticia de hoy a lo que se dijo y paso antes, con conexiones citadas",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "piezas_sin_fundamento_publicadas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "hemeroteca": "GDELT DOC artlist probado en vivo el 2026-10-19 con 'ceuta morocco' entre el 15 y el 25/05/2021: articulos fechados de Reuters, Antena 3, DW, Le Monde, Euronews y prensa arabe; desde este entorno GDELT y Wikipedia limitan la IP compartida (429), en produccion la IP es propia",
+    "fundamento": "tests/test_threads.py: un hecho que cita una fuente inexistente se descarta; una cifra que no esta en el corpus manda el hilo a revision; se exigen al menos 2 hechos citados; una fuente externa caida no tumba el hilo",
+    "presupuesto_ia": "2 hilos por ciclo (AI_MAX_THREADS_PER_CYCLE), refresco cada 12 h, solo para las historias de cabecera; 2 llamadas por hilo; hasta 6 consultas a GDELT y 3 a Wikipedia",
+    "vista": "Pagina /hilo/{id}: por que ahora, conexiones con su solidez (probada/probable/especulativa), cronologia vertical, quien dijo que, lo que no sabemos y fuentes; bloque destacado en la historia y franja 'Por que esta pasando' en portada; revisado a 375 px"
+  },
+  "criterios_de_salida": {
+    "C13": "hilos con IA marcados como tales y con fuentes citadas; generacion real pendiente de medir en produccion (la clave esta en el worker desde el 2026-10-19)"
+  },
+  "no_verificable": [
+    "Generacion real de hilos con la API: se mide en produccion tras el despliegue; desde este entorno la orden con la clave fue bloqueada por el control de credenciales"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Medir en produccion: tiempo y tokens por hilo, % publicados frente a revision, numero de fuentes por hilo",
+    "Comparador: '12 migrantes' frente a '500 desalojados' sale como disputa y son hechos distintos (item de comparativas)"
+  ]
+}
