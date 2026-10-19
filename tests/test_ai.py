@@ -423,10 +423,50 @@ def test_worker_sums_todays_ai_cost(session):
 
     session.add_all(
         [
-            CrawlRun(started_at=NOW, stats={"ai_cost": {"usd": 1.5}}),
+            CrawlRun(started_at=NOW, stats={"ai_cost": {"usd": 1.5, "verificacion_usd": 0.5}}),
             CrawlRun(started_at=NOW, stats={"seconds": {}}),
             CrawlRun(started_at=NOW - timedelta(days=2), stats={"ai_cost": {"usd": 9}}),
         ]
     )
     session.flush()
-    assert spent_today(session, NOW) == pytest.approx(1.5)
+    assert spent_today(session, NOW) == pytest.approx((1.0, 0.5))
+
+
+def test_ai_step_reports_cost_per_part(session, topic_world, monkeypatch):
+    from truthnews.ai import cost
+
+    _, stories = topic_world
+    ids = [stories[0].id, stories[1].id]
+
+    class Paying(FakeAI):
+        def structured(self, system, user, schema):
+            cost.METER.charge("claude-opus-5-5", {"output_tokens": 1_000_000})  # 20 USD por llamada
+            return super().structured(system, user, schema)
+
+    out = ai_pipeline.run(
+        session,
+        Settings(ai_piece_refresh_minutes=0),
+        ai=Paying([topics_reply(ids), good_piece(ids, ["aa", "bb"])]),
+        verifier=Verifier(lambda s, g, label: None),
+    )
+    assert out["coste_usd"] == {"traducciones": 0, "declaraciones": 0, "temas": 20.0, "piezas": 20.0}
+
+
+def test_verification_pool_keeps_judging_when_the_general_budget_is_spent(monkeypatch):
+    """Decision del usuario (2026-10-19): agotar el tope general no para las verificaciones."""
+    from truthnews.ai import cost
+
+    meter = cost.Meter(spent_before=10.0, daily_budget=10.0, verify_spent_before=0.0, verify_budget=1.5)
+    monkeypatch.setattr(cost, "METER", meter)
+    with pytest.raises(AIError, match="presupuesto diario de IA agotado"):
+        AIClient(client=fake_sdk(message(), [])).structured("s", "u", {})
+    judge = AIClient(client=fake_sdk(message(), []), pool=cost.VERIFY)
+    assert judge.structured("s", "u", {}).data == {"ok": 1}
+    assert meter.verify_spent > 0 and meter.summary()["hoy_usd"] == 10.0
+    meter.verify_spent_before = 1.5
+    with pytest.raises(AIError, match="de verificacion agotado"):
+        judge.structured("s", "u", {})
+    shared = cost.Meter(spent_before=10.0, daily_budget=10.0)  # sin bolsa propia: comparten el tope general
+    monkeypatch.setattr(cost, "METER", shared)
+    with pytest.raises(AIError, match="presupuesto diario de IA agotado"):
+        judge.structured("s", "u", {})

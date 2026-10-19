@@ -71,3 +71,17 @@ esta medida produzca.
 - Un ciclo cortado por un redespliegue antes de guardar sus estadisticas no suma su gasto al del dia: el
   tope puede quedarse algo corto, pero nunca bloquea de mas.
 - Ningun cambio de esquema: `ai_cost` va en el JSON `stats` que ya existe.
+
+## Decision del usuario (2026-10-19 15:07 UTC)
+Con el primer ciclo medido tras el despliegue (run 138: 2,48 USD en 17 llamadas Opus; ai 2,03, threads 0,43,
+ai_claims 0,02; unos 119 USD/dia a 48 ciclos), el usuario fija en el worker de produccion:
+- `AI_DAILY_BUDGET_USD=10` (sustituye a la suposicion de 40);
+- `AI_MAX_PIECES_PER_CYCLE=3`: analisis solo para los ~6 temas de cabecera (candidatos = 2 x 3), cada uno
+  como mucho cada 2 h; los temas 7 en adelante se quedan sin analisis.
+Rechaza por ahora traducir con un modelo mas barato y limitar los hilos. Las verificaciones no se tocan.
+
+Ademas, para que agotar los 10 USD no pare las verificaciones, el usuario aprueba (15:2x UTC) una **bolsa aparte
+de 1,5 USD/dia** (`AI_DAILY_BUDGET_VERIFY_USD`, 0 = sin bolsa propia): las llamadas que juzgan afirmaciones
+(`ai_claims` y `statement_checks_ai`, `AIClient(pool="verificacion")`) se cargan a ella y siguen todo el dia
+(~0,02 USD por ciclo, ~1 USD/dia medido). Tope total maximo: 11,5 USD/dia. `stats.ai_cost` separa
+`verificacion_usd` y `hoy_verificacion_usd`.

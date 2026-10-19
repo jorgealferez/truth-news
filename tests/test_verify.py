@@ -178,3 +178,26 @@ def test_approximate_figure_within_the_wide_band_is_true():
     assert approx.verdict == "verdadero" and approx.method == "aproximado/v11"
     assert v.judge(pop("Canadá tiene 40 millones de habitantes.", 40e6)).verdict == "impreciso"
     assert v.judge(pop("Canadá tiene unos 30 millones de habitantes.", 30e6)).verdict == "falso"
+
+
+def test_euribor_is_judged_against_the_ecb_monthly_average(monkeypatch):
+    from truthnews.analysis import verify as v
+    from truthnews.analysis.claims import extract
+
+    def fake_latest(flow, key, label=""):
+        assert (flow, key) == ("FM", "M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA")
+        return Observation(
+            "ecb", label, "https://data.ecb.europa.eu/x", RECENT, 3.247, history={RECENT: 3.247}
+        )
+
+    monkeypatch.setattr(v.ecb, "latest", fake_latest)
+    judge = v.Verifier().judge
+    assert judge(claim(3.2, indicator="euribor")).verdict == "verdadero"
+    # Sin periodo puede ser el valor diario: la franja dudosa no se juzga (otra medida).
+    daily = judge(claim(2.9, indicator="euribor"))
+    assert daily.verdict == "sin-datos" and "valor diario" in daily.explanation
+    assert judge(claim(1.5, indicator="euribor")).verdict == "falso"
+    # Extraccion (fechas fijas: no depende del dia en que se ejecuta el test).
+    sep = extract("El Euríbor de septiembre se situó en el 3,2 %.", "es", "ES", 2026, 10)
+    assert [(c.indicator, c.period) for c in sep] == [("euribor", "2026-09")]
+    assert extract("El Euríbor a tres meses se sitúa en el 2,1 %.", "es", "ES", 2026, 10) == []

@@ -32,28 +32,56 @@ def call_cost(model: str, usage: dict) -> float:
     return sum(t * p for t, p in zip(tokens, price, strict=True)) / 1_000_000
 
 
-class Meter:
-    """Contador del ciclo. Las piezas se piden en paralelo, asi que suma con candado."""
+VERIFY = (
+    "verificacion"  # bolsa de las llamadas que juzgan afirmaciones: su propio tope (decision del usuario)
+)
 
-    def __init__(self, spent_before: float = 0.0, daily_budget: float = 0.0):
-        self.spent_before = spent_before  # lo gastado hoy en ciclos anteriores
+
+class Meter:
+    """Contador del ciclo. Las piezas se piden en paralelo, asi que suma con candado.
+
+    Dos bolsas: la general (piezas, hilos, temas, traducciones...) y la de verificacion (juzgar afirmaciones),
+    con topes separados para que agotar la general no pare las verificaciones. Con `verify_budget` = 0 las
+    verificaciones gastan de la general, como antes."""
+
+    def __init__(
+        self,
+        spent_before: float = 0.0,
+        daily_budget: float = 0.0,
+        verify_spent_before: float = 0.0,
+        verify_budget: float = 0.0,
+    ):
+        self.spent_before = spent_before  # lo gastado hoy en ciclos anteriores (bolsa general)
         self.daily_budget = daily_budget  # 0 = sin tope
-        self.spent = 0.0
+        self.verify_spent_before = verify_spent_before
+        self.verify_budget = verify_budget  # 0 = sin bolsa propia
+        self.spent = 0.0  # todo lo de este ciclo, las dos bolsas
+        self.verify_spent = 0.0  # lo de este ciclo cargado a la bolsa de verificacion
         self.calls = 0
         self.by_model: Counter = Counter()
         self._lock = threading.Lock()
 
-    def check(self) -> None:
-        if self.daily_budget > 0 and self.spent_before + self.spent >= self.daily_budget:
-            total = self.spent_before + self.spent
-            raise BudgetExceeded(
-                f"presupuesto diario de IA agotado ({total:.2f} de {self.daily_budget:.2f} USD)"
-            )
+    def _own_pool(self, pool: str) -> bool:
+        return pool == VERIFY and self.verify_budget > 0
 
-    def charge(self, model: str, usage: dict) -> float:
+    def check(self, pool: str = "general") -> None:
+        if self._own_pool(pool):
+            total, budget, name = (
+                self.verify_spent_before + self.verify_spent,
+                self.verify_budget,
+                " de verificacion",
+            )
+        else:
+            total, budget, name = self.spent_before + self.spent - self.verify_spent, self.daily_budget, ""
+        if budget > 0 and total >= budget:
+            raise BudgetExceeded(f"presupuesto diario de IA{name} agotado ({total:.2f} de {budget:.2f} USD)")
+
+    def charge(self, model: str, usage: dict, pool: str = "general") -> float:
         cost = call_cost(model, usage)
         with self._lock:
             self.spent += cost
+            if self._own_pool(pool):
+                self.verify_spent += cost
             self.calls += 1
             self.by_model[model] += cost
         return cost
@@ -61,10 +89,13 @@ class Meter:
     def summary(self) -> dict:
         return {
             "usd": round(self.spent, 4),
+            "verificacion_usd": round(self.verify_spent, 4),
             "llamadas": self.calls,
             "por_modelo": {m: round(v, 4) for m, v in self.by_model.items()},
-            "hoy_usd": round(self.spent_before + self.spent, 4),
+            "hoy_usd": round(self.spent_before + self.spent - self.verify_spent, 4),
+            "hoy_verificacion_usd": round(self.verify_spent_before + self.verify_spent, 4),
             "tope_diario_usd": self.daily_budget,
+            "tope_verificacion_usd": self.verify_budget,
         }
 
 
@@ -73,7 +104,9 @@ class Meter:
 METER = Meter()
 
 
-def start_cycle(spent_before: float, daily_budget: float) -> Meter:
+def start_cycle(
+    spent_before: float, daily_budget: float, verify_spent_before: float = 0.0, verify_budget: float = 0.0
+) -> Meter:
     global METER
-    METER = Meter(spent_before, daily_budget)
+    METER = Meter(spent_before, daily_budget, verify_spent_before, verify_budget)
     return METER
