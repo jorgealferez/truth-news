@@ -26,11 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Sitemap, robots.txt, RSS y botones de compartir en redes con imagen social por historia (peticion del usuario 2026-10-18; parte de la Fase 4) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19)
-  - [x] /robots.txt, /sitemap.xml (90 dias) y /rss.xml
-  - [x] Compartir: WhatsApp, X, Telegram, Facebook, Bluesky, LinkedIn, email, copiar y Web Share nativo, sin scripts de terceros
-  - [x] Imagen social por historia con titular, cifras en disputa y veredictos (Pillow + Inter OFL)
-- [ ] Hilo y consecuencias: archivo historico (GDELT, hemerotecas y sitemaps de los medios, anos atras) cruzado con la actualidad; linea temporal por tema (que se decia, que paso, que hubo por el camino, quien dijo que, que vino despues); conexiones entre hechos aparentemente sueltos con su evidencia (p. ej. Ceuta, presion diplomatica de Marruecos, EEUU/OTAN y Espana); analisis profundo con IA sin dar nada por sentado; en portada lo que ocurre ahora con su porque y su antes/despues (peticion del usuario 2026-10-19)
+- [ ] Hilo y consecuencias: archivo historico (GDELT, hemerotecas y sitemaps de los medios, anos atras) cruzado con la actualidad; linea temporal por tema (que se decia, que paso, que hubo por el camino, quien dijo que, que vino despues); conexiones entre hechos aparentemente sueltos con su evidencia (p. ej. Ceuta, presion diplomatica de Marruecos, EEUU/OTAN y Espana); analisis profundo con IA sin dar nada por sentado; en portada lo que ocurre ahora con su porque y su antes/despues (peticion del usuario 2026-10-19) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19)
 - [ ] Comparativas mejores: que dice cada medio lado a lado, cifras por medio, coincidencias y diferencias legibles, y la verdad segun los datos cuando la hay (peticion del usuario 2026-10-18)
 - [ ] Reposicionar el producto en "quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos": ficha de fiabilidad por medio con historial de veredictos, ranking de medios por exactitud comprobada, portada que lo destaca (peticion del usuario 2026-10-18)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
@@ -74,3 +70,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] Barra de secciones fija, menu completo sin JS, pestanas inferiores en movil, migas de pan
   - [x] Historia visual: origen con linea de tiempo, barras de cifras en disputa, medidor de veredictos, a quien senala cada version, omisiones
   - [x] Ficha por medio (titular, propietario, cifra, senalados, omisiones, lenguaje cargado); keywords y piezas en desplegables (peticion del usuario 2026-10-19: "muy visual, no tan lineal")
+- [x] Fase 4a — Sitemap, robots, RSS, compartir e imagen social por historia (#12)
+  - [x] /robots.txt, /sitemap.xml (90 dias) y /rss.xml
+  - [x] Compartir: WhatsApp, X, Telegram, Facebook, Bluesky, LinkedIn, email, copiar y Web Share nativo, sin scripts de terceros
+  - [x] Imagen social por historia con titular, cifras en disputa y veredictos (Pillow + Inter OFL)
