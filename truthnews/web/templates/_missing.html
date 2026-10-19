@@ -1,0 +1,5 @@
+{# Quien no lo cuenta (carril Comparativas): medios nacionales del pais que publicaron esos dias. #}
+<details class="block fold" id="no-lo-cuentan"><summary><h2>{{ t(lang, 'missing_title') }}</h2> <span class="meta">{{ missing|length }} {{ t(lang, 'n_outlets') }}</span></summary>
+  <p class="meta">{{ t(lang, 'missing_note') }}</p>
+  <p class="chips">{% for o in missing %}<a href="/medio/{{ o.slug }}">{{ o.name }}</a>{% endfor %}</p>
+</details>

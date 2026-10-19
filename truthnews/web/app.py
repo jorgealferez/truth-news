@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad
+from truthnews.analysis import abroad, reliability
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
@@ -402,6 +402,8 @@ def create_app(
                 [s.title for s in stories[:12]],
                 home_country,
             ),
+            top_outlets=reliability.ranking(reliability.records(session, home_country))[0][:5],
+            min_checks=reliability.MIN_CHECKS,
         )
 
     @app.get("/analisis", response_class=HTMLResponse)
@@ -480,6 +482,7 @@ def create_app(
             thread=queries.thread_for_story(session, st.id),
             outlets_view=outlets_view,
             plain=in_plain_words(comp, claims),
+            missing=reliability.missing_outlets(session, st),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -595,7 +598,16 @@ def create_app(
 
     @app.get("/medios", response_class=HTMLResponse)
     def outlets(request: Request, session: SessionDep, pais: str | None = None):
-        return render(request, "outlets.html", rows=queries.outlets(session, pais.upper() if pais else None))
+        country = pais.upper() if pais else None
+        ranked, few = reliability.ranking(reliability.records(session, country))
+        return render(
+            request,
+            "outlets.html",
+            rows=queries.outlets(session, country),
+            ranked=ranked,
+            few=few,
+            min_checks=reliability.MIN_CHECKS,
+        )
 
     @app.get("/medio/{slug}", response_class=HTMLResponse)
     def outlet(request: Request, slug: str, session: SessionDep, page: PageQ = 1):
@@ -615,6 +627,10 @@ def create_app(
             record=record,
             profile=profile,
             ads=list_ads(request, o.name, items, o.country),
+            rel=next(iter(reliability.records(session, outlet_id=o.id)), None),
+            checks=reliability.history(session, o.id),
+            blind=reliability.blind_spots(session, o),
+            min_checks=reliability.MIN_CHECKS,
         )
 
     @app.get("/noticia/{ref}", response_class=HTMLResponse)

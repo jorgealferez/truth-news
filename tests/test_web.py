@@ -288,7 +288,7 @@ def test_comparator_pages(client, session):
         "https://ec.europa.eu/x",
         "Cómo lo cuenta cada medio",
         "Origen",
-        'class="meter"',
+        'class="meter bar"',
         'class="bars"',
         "Portada</a> › ",
         "En claro",

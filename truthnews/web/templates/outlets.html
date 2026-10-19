@@ -2,6 +2,7 @@
 {% block title %}{{ t(lang, 'outlets') }} — {{ site.site_name }}{% endblock %}
 {% block content %}
 <h1 class="page-title">{{ t(lang, 'outlets') }}</h1>
+{% if ranked is defined %}{% include "_ranking.html" %}{% endif %}
 <nav class="chips">{% for c in countries %}<a href="/medios?pais={{ c }}">{{ country_name(c, lang) }}</a>{% endfor %}</nav>
 <table class="table">
   <thead><tr><th>{{ t(lang, 'outlet') }}</th><th>{{ t(lang, 'countries') }}</th><th></th><th>{{ t(lang, 'regions') }}</th><th>{{ t(lang, 'articles_count') }}</th></tr></thead>
