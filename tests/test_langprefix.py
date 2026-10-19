@@ -116,3 +116,18 @@ def test_sitemaps_robots_and_language_switch(client):
         r.status_code == 303 and r.headers["location"] == "/medios" and "lang=es" in r.headers["set-cookie"]
     )
     assert c.get("/idioma/es?to=//evil.com", follow_redirects=False).headers["location"] == "/"
+
+
+def test_english_pages_use_marked_headline_translations(client, session):
+    from truthnews.models import ArticleTranslation
+
+    c, st = client
+    art = session.query(Article).filter_by(story_id=st.id).one()
+    session.add(ArticleTranslation(article_id=art.id, lang="en", title="Riots in France", model="m"))
+    session.commit()
+    home = c.get("/en/contrastes").text
+    assert '<a href="/en' in home and 'lang="en">Riots in France</a>' in home
+    assert "AI machine translation of the original" in home
+    page = c.get("/en" + seo.path("historia", st.id, st.title)).text
+    assert "<title>Riots in France — " in page
+    assert "Riots in France" not in c.get("/contrastes").text  # en espanol, el titular original

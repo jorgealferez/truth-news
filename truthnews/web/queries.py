@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import and_, func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
 from truthnews.models import (
     Article,
     ArticleRevision,
+    ArticleTranslation,
     Claim,
     CrawlRun,
     Outlet,
@@ -285,6 +286,19 @@ def thread_for_story(session: Session, story_id: int) -> Thread | None:
     return session.scalars(
         select(Thread).where(Thread.anchor_story_id == story_id, Thread.status == "publicado")
     ).first()
+
+
+def story_title_translations(session: Session, story_ids: list[int], lang: str) -> dict[int, str]:
+    """Titular traducido de cada historia: el de su articulo cabecera (mismo titular), ADR 0017."""
+    if not story_ids:
+        return {}
+    q = (
+        select(Story.id, ArticleTranslation.title)
+        .join(Article, and_(Article.story_id == Story.id, Article.title == Story.title))
+        .join(ArticleTranslation, ArticleTranslation.article_id == Article.id)
+        .where(Story.id.in_(story_ids), ArticleTranslation.lang == lang, Article.language != lang)
+    )
+    return dict(session.execute(q).all())
 
 
 def thread_piece(session: Session, thread_id: int) -> Piece | None:
