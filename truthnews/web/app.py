@@ -166,6 +166,12 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
                 "icons": [
                     {"src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png"},
                     {"src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png"},
+                    {
+                        "src": "/static/icon-maskable-512.png",
+                        "sizes": "512x512",
+                        "type": "image/png",
+                        "purpose": "maskable",
+                    },
                 ],
             },
             media_type="application/manifest+json",

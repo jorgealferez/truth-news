@@ -369,7 +369,17 @@ def test_brand_assets_and_social_meta(client):
     assert ico.status_code == 200 and ico.headers["content-type"] == "image/x-icon"
     manifest = client.get("/site.webmanifest").json()
     assert manifest["name"] == "NosMienten" and manifest["icons"][1]["sizes"] == "512x512"
-    for path in ("/static/logo.svg", "/static/mark.svg", "/static/og-default.png", "/static/icon-180.png"):
+    assert manifest["icons"][2]["purpose"] == "maskable"
+    assert 'href="/static/favicon.svg" type="image/svg+xml"' in home
+    for path in (
+        "/static/logo.svg",
+        "/static/mark.svg",
+        "/static/favicon.svg",
+        "/static/og-default.png",
+        "/static/icon-180.png",
+        "/static/icon-maskable-512.png",
+        "/static/avatar-400.png",
+    ):
         assert client.get(path).status_code == 200, path
     en = client.get("/acerca?lang=en").text
     assert "No sides. Just data." in en and 'content="en_GB"' in en
