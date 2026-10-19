@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -10,7 +11,7 @@ from sqlalchemy.orm import Session
 from truthnews.ai import statements, translate
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.topics import build_topics
-from truthnews.ai.writer import write_pieces
+from truthnews.ai.writer import ask_piece, prepare_piece, store_pieces
 from truthnews.analysis import abroad
 from truthnews.analysis.verify import Verifier
 from truthnews.config import Settings
@@ -66,20 +67,41 @@ def run(
         .order_by(Topic.n_outlets.desc(), Topic.last_seen.desc())
         .limit(settings.ai_max_pieces_per_cycle * 2)
     )
-    written = revision = failed = 0
-    for topic in topics:
-        if written >= settings.ai_max_pieces_per_cycle:
-            break
-        try:
-            pieces = write_pieces(session, topic, ai, verifier or Verifier())
-        except AIError as exc:
-            log.warning("pieza del tema %s no generada: %s", topic.id, exc)
-            failed += 1
-            continue
-        if pieces:
-            session.commit()  # cada pieza queda guardada aunque el ciclo se corte (p. ej. un redespliegue)
-            written += 1
-            revision += pieces[0].status == "revision"
+    written, revision, failed = write_batch(
+        session,
+        ai,
+        topics,
+        verifier or Verifier(),
+        settings.ai_max_pieces_per_cycle,
+        settings.ai_piece_concurrency,
+    )
     out.update({"pieces_written": written, "pieces_in_revision": revision, "failed": failed})
     log.info("IA: %s", out)
     return out
+
+
+def write_batch(session, ai, topics, verifier, max_pieces: int, concurrency: int) -> tuple[int, int, int]:
+    """(escritas, en revision, fallidas). Las llamadas de las piezas van en paralelo (2-2,5 min cada una con
+    esfuerzo alto: en serie eran la mitad del ciclo); los dossieres se preparan y las piezas se guardan en
+    serie y en orden, porque la sesion no se comparte entre hilos."""
+    batch = []
+    for topic in topics:
+        if len(batch) >= max_pieces:
+            break
+        prepared = prepare_piece(session, topic, verifier)
+        if prepared is not None:
+            batch.append((topic, *prepared))
+    written = revision = failed = 0
+    with ThreadPoolExecutor(max_workers=max(1, concurrency)) as pool:
+        futures = [(topic, dossier, h, pool.submit(ask_piece, ai, dossier)) for topic, dossier, h in batch]
+        for topic, dossier, h, future in futures:
+            try:
+                pieces = store_pieces(session, topic, dossier, h, future.result())
+            except AIError as exc:
+                log.warning("pieza del tema %s no generada: %s", topic.id, exc)
+                failed += 1
+                continue
+            session.commit()  # cada pieza queda guardada aunque el ciclo se corte (p. ej. un redespliegue)
+            written += 1
+            revision += pieces[0].status == "revision"
+    return written, revision, failed
