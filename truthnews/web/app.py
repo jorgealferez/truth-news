@@ -1,9 +1,11 @@
 """Aplicacion FastAPI: portada, secciones, paises, comunidades, medios y noticia."""
 # Sin `from __future__ import annotations`: FastAPI resuelve los alias Annotated locales al definir.
 
+import dataclasses
 import time
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
@@ -221,6 +223,22 @@ def create_app(
         if not totals_cache or now - totals_cache["at"] > 60:
             totals_cache.update(at=now, value=queries.totals(session))
         return totals_cache["value"]
+
+    nocuadra_cache: dict = {}
+
+    def nocuadra_cached(session: Session) -> tuple[list, list]:
+        # Lo que no cuadra en portada (ADR 0027): cambia con el ciclo del worker; 5 min de cache para no
+        # recalcular comparativas en cada visita. Se guardan valores, no objetos de una sesion cerrada.
+        now = time.monotonic()
+        if not nocuadra_cache or now - nocuadra_cache["at"] > 300:
+            dis = [
+                dataclasses.replace(
+                    d, story=SimpleNamespace(id=d.story.id, title=d.story.title, last_seen=d.story.last_seen)
+                )
+                for d in ranking.discrepancies(session, country=settings.default_country, limit=3)
+            ]
+            nocuadra_cache.update(at=now, value=(ranking.falsehoods(session, limit=3), dis))
+        return nocuadra_cache["value"]
 
     def lang_of(request: Request) -> str:
         prefix = getattr(request.state, "lang_prefix", None)
@@ -491,6 +509,7 @@ def create_app(
                 home_country,
             ),
             top_outlets=reliability.ranking(reliability.records(session, home_country))[0][:5],
+            nocuadra=nocuadra_cached(session),
             min_checks=reliability.MIN_CHECKS,
         )
 

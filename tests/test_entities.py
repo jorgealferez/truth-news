@@ -244,6 +244,8 @@ def test_rankings_profile_and_web_pages(engine, session, corpus):
     assert views.profile(session, lonely.id) is None  # descubierta con un solo medio: no se publica
     session.commit()
     client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
+    home = client.get("/")
+    assert home.status_code == 200 and 'class="nocuadra"' in home.text and "14,5 %" in home.text
     r = client.get("/discrepancias")
     assert r.status_code == 200 and "Elena Martínez" in r.text and "14,5 %" in r.text and "10,5 %" in r.text
     assert client.get("/entidades").status_code == 200
