@@ -66,7 +66,9 @@ def timings(claims: list[Claim], starts: dict[int, datetime]) -> list[StoryTimin
         by_story[c.story_id][c.outlet.name].append(c)
     out = []
     for sid, per_outlet in by_story.items():
-        start = starts[sid]
+        # Si el agrupador movio todos los articulos de la historia a otra, la afirmacion conserva su
+        # story_id y la historia no tiene primer articulo: se toma el primero de sus afirmaciones.
+        start = starts.get(sid) or min(c.article.published_at for cs in per_outlet.values() for c in cs)
         rows = []
         for name, cs in sorted(per_outlet.items()):
             cs.sort(key=lambda c: (c.article.published_at, c.id))

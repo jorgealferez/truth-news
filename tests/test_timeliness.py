@@ -36,6 +36,16 @@ def test_timings_first_right_and_first_wrong():
     assert s2.first_right is None and s2.outlets[0].first_wrong
 
 
+def test_timings_story_without_articles():
+    # /medios daba 500 (KeyError) con afirmaciones de una historia cuyos articulos se movieron a otra.
+    (st,) = timings([c(7, "A", 4, "verdadero"), c(7, "B", 2, "falso")], {})
+    assert st.start == T0 + timedelta(hours=2)
+    assert [(o.outlet, o.right_after_h, o.first_wrong) for o in st.outlets] == [
+        ("A", 2.0, False),
+        ("B", None, True),
+    ]
+
+
 def test_by_outlet_needs_a_sample():
     stories = []
     for i in range(MIN_STORIES):
