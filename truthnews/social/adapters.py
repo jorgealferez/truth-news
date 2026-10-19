@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import logging
 import secrets
 import time
 from datetime import UTC, datetime
@@ -17,6 +18,7 @@ from urllib.parse import quote
 import httpx
 
 TIMEOUT = 30.0
+log = logging.getLogger(__name__)
 
 
 class SendError(Exception):
@@ -151,17 +153,38 @@ class Telegram:
 
 
 class X:
-    """API v2 `POST /2/tweets` con OAuth 1.0a de usuario. La imagen llega por la tarjeta del enlace
-    (`og:image` de la historia), sin subir medios: menos permisos y menos puntos de fallo."""
+    """API v2 con OAuth 1.0a de usuario: la imagen se sube con `POST /2/media/upload` y se adjunta al
+    post (`media.media_ids`). Si la subida falla, se publica igual y la imagen llega por la tarjeta del
+    enlace (`og:image` de la historia): una imagen no debe tumbar la publicacion."""
 
     URL = "https://api.x.com/2/tweets"
+    MEDIA_URL = "https://api.x.com/2/media/upload"
 
     def __init__(self, creds: dict[str, str], client: httpx.Client):
         self.creds, self.client = creds, client
 
+    def upload(self, image: bytes) -> str:
+        headers = {"Authorization": oauth1_header("POST", self.MEDIA_URL, self.creds)}
+        body = _check(
+            self.client.post(
+                self.MEDIA_URL,
+                files={"media": ("nosmienten.png", image, "image/png")},
+                data={"media_category": "tweet_image"},
+                headers=headers,
+            ),
+            "x imagen",
+        )
+        return str(body["data"]["id"])
+
     def send(self, text: str, link: str, image: bytes | None, title: str) -> tuple[str, str]:
+        payload: dict = {"text": text}
+        if image:
+            try:
+                payload["media"] = {"media_ids": [self.upload(image)]}
+            except (SendError, httpx.HTTPError, KeyError) as exc:
+                log.warning("x: imagen no subida, se publica con la tarjeta del enlace: %s", exc)
         headers = {"Authorization": oauth1_header("POST", self.URL, self.creds)}
-        body = _check(self.client.post(self.URL, json={"text": text}, headers=headers), "x")
+        body = _check(self.client.post(self.URL, json=payload, headers=headers), "x")
         tweet_id = str(body["data"]["id"])
         return tweet_id, f"https://x.com/i/web/status/{tweet_id}"
 
