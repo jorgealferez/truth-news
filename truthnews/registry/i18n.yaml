@@ -222,6 +222,7 @@ es:
   verdict_verdadero: Verdadero
   verdict_impreciso: Impreciso
   verdict_falso: Falso
+  methodology_rating: "Para buscadores y verificadores (ClaimReview de schema.org) cada veredicto se publica con una escala fija de 1 a 4: falso 1, engañoso 2, impreciso 3, verdadero 4. «Sin datos suficientes» no lleva valoración."
   verdict_enganoso: Engañoso
   verdict_sin-datos: Sin datos suficientes
   checked_claims: afirmaciones comprobadas
@@ -400,6 +401,20 @@ es:
   methodology_ads: >-
     La publicidad no interviene en el método: no cambia veredictos, afirmaciones comprobadas ni el orden de
     las noticias, y se elige solo por el contenido de la página, sin cookies ni perfiles.
+  council: Consejo de Ministros y BOE
+  council_lead: >-
+    Lo que el Gobierno anuncia que aprobó el Consejo de Ministros y si ya consta publicado en el BOE, con el
+    enlace a las dos fuentes. Solo reales decretos: los acuerdos de autorización no se publican como tales.
+  council_state_publicado: "Publicado en el BOE el {fecha} ({n} días después)"
+  council_state_pendiente: "Pendiente de publicación en el BOE ({n} días; el aviso llega a los 30)"
+  council_state_no_publicado: "Aún no publicado en el BOE, {n} días después"
+  council_state_sin_comprobar: "Sin comprobar: algún BOE de esos días no se pudo leer"
+  council_counts: "{a} reales decretos · {p} publicados · {r} aún no publicados a los {d} días"
+  council_reference: Referencia del Consejo
+  council_loading: "Estamos leyendo las referencias del Consejo y el BOE. Vuelve en un minuto."
+  council_method: >-
+    Un real decreto consta publicado cuando el BOE publica uno del mismo tipo, con la fecha de ese Consejo
+    y el mismo objeto ("por el que..."). A partir de {d} días sin publicar se indica, sin más calificativos.
   appointments: Nombramientos y ceses
   appointments_lead: >-
     Quién entra y quién sale de cada cargo público según el BOE de cada día, con el enlace a la disposición.
@@ -481,6 +496,94 @@ es:
   legal_registry: Inscripción registral
   legal_site: Sitio web
 
+  el_title: Elecciones
+  el_nav: "Elecciones {d}"
+  el_lead: Las elecciones convocadas o anunciadas en cualquier país y ámbito, con lo que dicen y prometen los partidos y lo que cuentan los medios. La sección aparece sola mientras hay comicios en curso y se retira un mes después de votar.
+  el_page_lead: Fechas oficiales, lo que dice cada partido en sus canales oficiales, sus programas y la cobertura de los medios, con cada dato citado.
+  el_none: Ahora mismo no hay elecciones convocadas ni anunciadas en los países que seguimos.
+  el_how: El calendario se rellena solo con los decretos de convocatoria del BOE, las elecciones en curso de la Junta Electoral Central, el calendario mundial de IFES ElectionGuide (fechas declaradas), el registro de elecciones comprobadas y las que al menos dos medios distintos sitúan en el mismo país y la misma fecha.
+  el_no_ads: Las páginas de elecciones no llevan publicidad.
+  el_status_convocada: Convocada
+  el_status_anunciada: Anunciada en medios
+  el_status_note_convocada: Consta en una fuente oficial, citada abajo.
+  el_status_note_anunciada: Aún no consta en una fuente oficial que sigamos; la citan los medios enlazados abajo.
+  el_phase_precampana: Precampaña
+  el_phase_campana: Campaña electoral
+  el_phase_reflexion: Jornada de reflexión
+  el_phase_jornada: Jornada electoral
+  el_phase_celebrada: Celebrada
+  el_days_left: "faltan {n} días"
+  el_dates: Calendario oficial
+  el_convened: Publicación del decreto de convocatoria
+  el_campaign_start: Empieza la campaña electoral
+  el_campaign_end: Termina la campaña electoral
+  el_poll: Votación
+  el_constitution: Sesión constitutiva de las Cámaras
+  el_source: "Fuente:"
+  el_parties: Qué dicen los partidos
+  el_parties_note: Partidos con escaño, en orden alfabético y con el mismo formato; sus declaraciones en canales oficiales desde la convocatoria y cómo salen las afirmaciones comprobables con datos. Las candidaturas proclamadas se añadirán cuando se publiquen.
+  el_n_statements: "{n} declaraciones"
+  el_n_checked: "{n} afirmaciones comprobadas"
+  el_program: Programa electoral
+  el_program_missing: no localizado aún en su web oficial
+  el_no_channel: Sin canal oficial que podamos leer
+  el_no_statements: Sin declaraciones en sus canales desde la convocatoria
+  el_coverage: Lo que cuentan los medios
+  el_no_coverage: Aún no hay historias sobre estas elecciones.
+  el_pages: páginas
+  el_page: pág.
+  el_doc_enlazado: enlazado, pendiente de importar
+  el_doc_importado: importado
+  el_doc_bloqueado: su web no permite descargarlo; se enlaza
+  el_doc_error: no se pudo leer; se enlaza
+  el_promises: Promesas
+  el_see_all: "ver las {n}"
+  el_previous: "Lo que prometió en {y}"
+  el_original: documento original
+  el_all_parties: Todos los partidos
+  el_no_topic: sin tema
+  el_no_promises: Aún no hay promesas importadas para esta selección.
+  el_promises_lead: Compromisos citados literalmente de los programas electorales (con su página) y de las declaraciones en canales oficiales desde la convocatoria. Mismo método para todos los partidos.
+  el_promises_method: "Se extraen por reglas las frases con un verbo de compromiso en futuro (\"bajaremos\", \"vamos a\", \"nos comprometemos a\", o el partido en tercera persona). Un programa solo se descarga si robots.txt lo permite; si no, se enlaza. El cumplimiento de lo prometido se publicará con su evidencia oficial."
+  pt_vivienda: Vivienda
+  pt_empleo: Empleo
+  pt_impuestos: Impuestos
+  pt_pensiones: Pensiones
+  pt_sanidad: Sanidad
+  pt_educacion: Educación
+  pt_inmigracion: Inmigración
+  pt_energia_clima: Energía y clima
+  pt_seguridad_justicia: Seguridad y justicia
+  pt_igualdad: Igualdad
+  pt_territorio_autogobierno: Territorio y autogobierno
+  pt_infraestructuras: Infraestructuras
+  pt_economia_empresas: Economía y empresas
+  pt_agricultura: Agricultura
+  pt_exterior_defensa: Exterior y defensa
+  pt_social: Política social
+  pt_cultura_digital: Cultura y digital
+  el_candidacies_proclamadas: Candidaturas proclamadas
+  el_candidacies_presentadas: Candidaturas presentadas
+  el_candidacies_note: "{n} formaciones, con las circunscripciones en las que se presentan al Congreso y al Senado y quién encabeza cada lista, según el BOE:"
+  el_formation: Formación
+  el_congress: Congreso
+  el_senate: Senado
+  el_heads: Cabezas de lista
+  el_changes: "Qué cambia entre su programa de {a} y el de {b}"
+  el_repeated: promesas repetidas
+  el_new: nuevas
+  el_dropped: que ya no aparecen
+  el_compare: Comparar sus dos últimos programas
+  el_changes_method: Dos promesas se cuentan como la misma si comparten la mayor parte de sus palabras de contenido (criterio conservador). Repetir una promesa no dice si se cumplió; que desaparezca, tampoco.
+  el_figure_changes: Cifras que ha cambiado
+  el_figure_change_line: "Mismo dato y mismo periodo ({period}), dos cifras"
+  el_world: Elecciones en el mundo
+  el_status_declarada: Fecha declarada
+  el_status_note_declarada: Fecha declarada según el calendario electoral internacional de IFES (ElectionGuide), citado abajo; no la hemos leído en el diario oficial del país.
+  el_phase_proxima: Próxima
+  el_dates_other: Calendario
+  el_context: lo dijo a propósito de
+  el_method_more: "La sección aparece desde la convocatoria y se retira 30 días después de votar. Los partidos salen en orden alfabético y con el mismo formato. Las promesas se citan literalmente con su página y su fuente; un programa solo se descarga si el robots.txt del partido lo permite. Entre dos programas del mismo partido se señalan las promesas repetidas, nuevas y que desaparecen, y en sus declaraciones las cifras que cambia para el mismo dato y periodo. Que una promesa se cumpliera no se decide automáticamente mientras no haya un método fiable con datos oficiales."
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -723,6 +826,7 @@ en:
   verdict_verdadero: True
   verdict_impreciso: Imprecise
   verdict_falso: False
+  methodology_rating: "For search engines and fact-checkers (schema.org ClaimReview) each verdict is published on a fixed 1 to 4 scale: false 1, misleading 2, imprecise 3, true 4. \"Not enough data\" carries no rating."
   verdict_enganoso: Misleading
   verdict_sin-datos: Not enough data
   checked_claims: checked claims
@@ -896,6 +1000,21 @@ en:
   methodology_ads: >-
     Advertising plays no part in the method: it does not change verdicts, checked claims or the order of
     the news, and it is chosen only from the page content, with no cookies or profiles.
+  council: Council of Ministers and BOE
+  council_lead: >-
+    What the Government announces the Council of Ministers approved and whether it already appears in the
+    Official Gazette (BOE), linking both sources. Royal decrees only: authorisation agreements are not
+    published as such.
+  council_state_publicado: "Published in the BOE on {fecha} ({n} days later)"
+  council_state_pendiente: "Pending publication in the BOE ({n} days; the notice comes at 30)"
+  council_state_no_publicado: "Still not published in the BOE, {n} days later"
+  council_state_sin_comprobar: "Not checked: a BOE issue from those days could not be read"
+  council_counts: "{a} royal decrees · {p} published · {r} still unpublished after {d} days"
+  council_reference: Council summary
+  council_loading: "We are reading the Council summaries and the BOE. Check back in a minute."
+  council_method: >-
+    A royal decree counts as published when the BOE publishes one of the same type, dated that Council
+    and with the same purpose ("por el que..."). After {d} days unpublished this is stated, without labels.
   appointments: Appointments and dismissals
   appointments_lead: >-
     Who takes and who leaves each public post according to each day's Spanish Official Gazette (BOE), with a
@@ -958,3 +1077,91 @@ en:
   speakers_no_channel: >-
     We also judge what each party publishes on its verified official channels. No verified channel yet (their
     direct statements cannot be judged yet; what the press attributes to them still counts): {names}.
+  el_title: Elections
+  el_nav: "Elections {d}"
+  el_lead: Elections called or announced in any country and at any level, with what parties say and promise and what the media report. The section appears on its own while elections are under way and is withdrawn a month after polling day.
+  el_page_lead: Official dates, what each party says on its official channels, its manifesto and media coverage, with every fact cited.
+  el_none: There are no elections called or announced right now in the countries we follow.
+  el_how: The calendar fills itself from the calling decrees in the Spanish Official Gazette (BOE), the ongoing elections listed by the Central Electoral Board, the IFES ElectionGuide world calendar (declared dates), the register of checked elections and those that at least two different outlets place in the same country on the same date.
+  el_no_ads: Election pages carry no advertising.
+  el_status_convocada: Called
+  el_status_anunciada: Announced in the media
+  el_status_note_convocada: Recorded in an official source, cited below.
+  el_status_note_anunciada: Not yet in an official source we follow; the outlets linked below report it.
+  el_phase_precampana: Pre-campaign
+  el_phase_campana: Election campaign
+  el_phase_reflexion: Day of reflection
+  el_phase_jornada: Polling day
+  el_phase_celebrada: Held
+  el_days_left: "{n} days to go"
+  el_dates: Official calendar
+  el_convened: Calling decree published
+  el_campaign_start: Election campaign starts
+  el_campaign_end: Election campaign ends
+  el_poll: Polling day
+  el_constitution: Inaugural session of Parliament
+  el_source: "Source:"
+  el_parties: What the parties say
+  el_parties_note: Parties with seats, in alphabetical order and in the same format; their statements on official channels since the call and how their checkable claims fare against data. Officially proclaimed candidacies will be added once published.
+  el_n_statements: "{n} statements"
+  el_n_checked: "{n} claims checked"
+  el_program: Manifesto
+  el_program_missing: not yet found on its official website
+  el_no_channel: No official channel we can read
+  el_no_statements: No statements on its channels since the call
+  el_coverage: What the media report
+  el_no_coverage: No stories about these elections yet.
+  el_pages: pages
+  el_page: p.
+  el_doc_enlazado: linked, pending import
+  el_doc_importado: imported
+  el_doc_bloqueado: its website does not allow downloading it; linked
+  el_doc_error: could not be read; linked
+  el_promises: Promises
+  el_see_all: "see all {n}"
+  el_previous: "What it promised in {y}"
+  el_original: original document
+  el_all_parties: All parties
+  el_no_topic: no topic
+  el_no_promises: No promises imported for this selection yet.
+  el_promises_lead: Commitments quoted verbatim from manifestos (with their page) and from statements on official channels since the call. Same method for every party.
+  el_promises_method: "Sentences with a future commitment verb (\"we will cut\", \"we are going to\", \"we commit to\", or the party in the third person) are extracted by rules. A manifesto is downloaded only if robots.txt allows it; otherwise it is linked. Whether promises were kept will be published with official evidence."
+  pt_vivienda: Housing
+  pt_empleo: Jobs
+  pt_impuestos: Taxes
+  pt_pensiones: Pensions
+  pt_sanidad: Health
+  pt_educacion: Education
+  pt_inmigracion: Immigration
+  pt_energia_clima: Energy and climate
+  pt_seguridad_justicia: Security and justice
+  pt_igualdad: Equality
+  pt_territorio_autogobierno: Territory and self-government
+  pt_infraestructuras: Infrastructure
+  pt_economia_empresas: Economy and business
+  pt_agricultura: Agriculture
+  pt_exterior_defensa: Foreign affairs and defence
+  pt_social: Social policy
+  pt_cultura_digital: Culture and digital
+  el_candidacies_proclamadas: Proclaimed candidacies
+  el_candidacies_presentadas: Submitted candidacies
+  el_candidacies_note: "{n} parties and coalitions, with the constituencies where they stand for Congress and the Senate and who heads each list, according to the BOE:"
+  el_formation: Party or coalition
+  el_congress: Congress
+  el_senate: Senate
+  el_heads: Heads of list
+  el_changes: "What changes between its {a} and {b} manifestos"
+  el_repeated: repeated promises
+  el_new: new
+  el_dropped: no longer present
+  el_compare: Compare its last two manifestos
+  el_changes_method: Two promises count as the same if they share most of their content words (a conservative criterion). Repeating a promise does not say whether it was kept; dropping it does not either.
+  el_figure_changes: Figures it has changed
+  el_figure_change_line: "Same indicator and period ({period}), two figures"
+  el_world: Elections worldwide
+  el_status_declarada: Declared date
+  el_status_note_declarada: Date declared in the IFES international election calendar (ElectionGuide), cited below; we have not read it in the country's official gazette.
+  el_phase_proxima: Upcoming
+  el_dates_other: Calendar
+  el_context: said in connection with
+  el_method_more: "The section appears from the call and is withdrawn 30 days after polling day. Parties are listed alphabetically and in the same format. Promises are quoted verbatim with their page and source; a manifesto is downloaded only if the party's robots.txt allows it. Between two manifestos of the same party we flag repeated, new and dropped promises, and in its statements the figures it changes for the same indicator and period. Whether a promise was kept is not decided automatically until there is a reliable method based on official data."

@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 {% block title %}{{ a.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ (a.summary or a.title)[:200] }}{% endblock %}
-{% block head %}
-<link rel="canonical" href="{{ site.site_url }}{{ url('noticia', a.id, a.title) }}">
-<meta property="og:title" content="{{ a.title }}">
-<meta property="og:type" content="article">
-{% if a.image_url %}<meta property="og:image" content="{{ a.image_url }}">{% endif %}
-{% endblock %}
+{% block canonical %}{{ site.site_url }}{{ url('noticia', a.id, a.title) }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_image %}{{ a.image_url or super() }}{% endblock %}
+{% block head %}<meta property="og:title" content="{{ a.title }}">{% endblock %}
 {% block content %}
 <article class="story">
   <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a> · <a href="/pais/{{ a.country }}">{{ country_name(a.country, lang) }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>

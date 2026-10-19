@@ -40,6 +40,21 @@ def csrf_token(settings: Settings) -> str:
     return hmac.new(settings.admin_password.encode(), b"truthnews-admin-csrf", hashlib.sha256).hexdigest()
 
 
+def text_coverage(session: Session, hours: int = 24) -> list[dict]:
+    """Articulos de las ultimas `hours` horas con texto completo, por seccion (mide el relleno de textos)."""
+    since = utcnow() - timedelta(hours=hours)
+    rows = session.execute(
+        select(Article.category, func.count(Article.id), func.count(Article.content_text))
+        .where(Article.published_at >= since)
+        .group_by(Article.category)
+    ).all()
+    out = [
+        {"category": cat, "total": n, "with_text": t, "pct": round(100 * t / n, 1) if n else 0.0}
+        for cat, n, t in rows
+    ]
+    return sorted(out, key=lambda r: (-r["total"], r["category"]))
+
+
 def balance(session: Session) -> dict:
     since = utcnow() - timedelta(days=7)
     runs = list(session.scalars(select(CrawlRun).order_by(CrawlRun.id.desc()).limit(10)))
@@ -72,6 +87,7 @@ def balance(session: Session) -> dict:
         or 0,
         "stories_multi": session.scalar(select(func.count(Story.id)).where(Story.n_outlets >= 2)) or 0,
         "claims": session.scalar(select(func.count(Claim.id))) or 0,
+        "text_coverage": text_coverage(session),
         "runs": runs,
         "failing": failing,
         "silent": silent,

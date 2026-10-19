@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'council') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'council_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/consejo-de-ministros">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'council') }}</h1>
+<p class="lead-text">{{ t(lang, 'council_lead') }}</p>
+<p class="meta">{{ t(lang, 'council_method')|replace('{d}', publish_days|string) }}</p>
+{% if councils is none %}<p class="empty">{{ t(lang, 'council_loading') }}</p>{% else %}
+{% for c in councils %}<section class="block council" id="consejo-{{ c.fecha }}">
+  <h2>{{ c.fecha[8:10] }}/{{ c.fecha[5:7] }}/{{ c.fecha[:4] }}</h2>
+  <p class="meta">{{ t(lang, 'council_counts')|replace('{a}', c.rows|length|string)|replace('{p}', c.count('publicado')|string)|replace('{r}', c.count('no_publicado')|string)|replace('{d}', publish_days|string) }} · <a href="{{ c.url }}" rel="noopener" target="_blank">{{ t(lang, 'council_reference') }}</a></p>
+  <ul class="compact">{% for r in c.rows %}<li class="council-{{ r.estado }}"><span class="meta">{{ r.decreto.ministerio }}</span><br>{{ r.decreto.texto }}<br>
+    <span class="tag">{{ t(lang, 'council_state_' ~ r.estado)|replace('{n}', r.dias|string)|replace('{fecha}', r.boe_fecha[8:10] ~ '/' ~ r.boe_fecha[5:7])|replace('(1 días', '(1 día')|replace('(1 days', '(1 day') }}</span>{% if r.boe %} <a class="meta" href="{{ r.boe.url }}" rel="noopener" target="_blank">{{ r.boe.id }}</a>{% endif %}</li>{% endfor %}</ul>
+</section>{% endfor %}{% endif %}
+<p class="meta"><a href="https://www.lamoncloa.gob.es/consejodeministros/referencias/Paginas/index.aspx" rel="noopener" target="_blank">lamoncloa.gob.es</a> · <a href="https://www.boe.es/datosabiertos/" rel="noopener" target="_blank">boe.es/datosabiertos</a> · <a href="/nombramientos">{{ t(lang, 'appointments') }}</a></p>
+{% endblock %}

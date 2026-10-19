@@ -599,3 +599,101 @@ class StatementCheck(Base):
     statement: Mapped[PoliticalStatement] = relationship()
     speaker: Mapped[Entity | None] = relationship()
 
+
+
+PROGRAM_KINDS = ("programa", "investidura", "acuerdo")
+PROGRAM_STATUSES = ("enlazado", "importado", "bloqueado", "error")
+PROMISE_STATUSES = ("cumplida", "parcial", "en-curso", "no-cumplida", "sin-datos")
+
+
+class Program(Base):
+    """Programa electoral u otro documento de compromisos de un partido para una eleccion (ADR 0037)."""
+
+    __tablename__ = "program"
+    __table_args__ = (
+        CheckConstraint(f"kind IN {PROGRAM_KINDS!r}", name="ck_program_kind"),
+        CheckConstraint(f"status IN {PROGRAM_STATUSES!r}", name="ck_program_status"),
+        UniqueConstraint("url_hash", name="uq_program_url_hash"),
+        Index("ix_program_actor_election", "country", "actor", "election_kind", "election_year"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    actor: Mapped[str] = mapped_column(String(40))
+    country: Mapped[str] = mapped_column(String(2))
+    kind: Mapped[str] = mapped_column(String(12), default="programa", server_default="programa")
+    election_kind: Mapped[str] = mapped_column(String(16))
+    election_year: Mapped[int] = mapped_column(Integer)
+    # Eleccion del calendario (ADR 0036) cuando se conoce, p. ej. "es-generales-2023-07-23".
+    election: Mapped[str | None] = mapped_column(String(60), nullable=True)
+    title: Mapped[str] = mapped_column(String(300))
+    url: Mapped[str] = mapped_column(String(1000))
+    url_hash: Mapped[str] = mapped_column(String(64))
+    found_on: Mapped[str] = mapped_column(String(1000))  # pagina del partido que lo enlaza
+    status: Mapped[str] = mapped_column(String(12), default="enlazado", server_default="enlazado")
+    content_sha256: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    n_pages: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    # Texto extraido para analizarlo (solo si robots.txt lo permite); se publica solo la cita (ADR 0003).
+    text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    note: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    found_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    fetched_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class Promise(Base):
+    """Compromiso citado literalmente de un programa (con su pagina) o de una declaracion (ADR 0037)."""
+
+    __tablename__ = "promise"
+    __table_args__ = (
+        CheckConstraint(f"extractor IN {CLAIM_EXTRACTORS!r}", name="ck_promise_extractor"),
+        CheckConstraint(
+            "(program_id IS NULL) <> (statement_id IS NULL)", name="ck_promise_one_source"
+        ),
+        UniqueConstraint("actor", "text_hash", name="uq_promise_actor_text"),
+        Index("ix_promise_actor_election", "country", "actor", "election_kind", "election_year"),
+        Index("ix_promise_topic", "topic"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    program_id: Mapped[int | None] = mapped_column(
+        ForeignKey("program.id", ondelete="CASCADE", name="fk_promise_program_id"), nullable=True
+    )
+    statement_id: Mapped[int | None] = mapped_column(
+        ForeignKey("political_statement.id", ondelete="CASCADE", name="fk_promise_statement_id"),
+        nullable=True,
+    )
+    actor: Mapped[str] = mapped_column(String(40))
+    country: Mapped[str] = mapped_column(String(2))
+    election_kind: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    election_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    text: Mapped[str] = mapped_column(Text)
+    text_hash: Mapped[str] = mapped_column(String(64))
+    page: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    topic: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    extractor: Mapped[str] = mapped_column(String(8), default="reglas", server_default="reglas")
+    made_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    program: Mapped[Program | None] = relationship()
+    statement: Mapped[PoliticalStatement | None] = relationship()
+
+
+class PromiseCheck(Base):
+    """Cumplimiento de una promesa con estado cerrado, explicacion y evidencia citada (ADR 0037, 18c)."""
+
+    __tablename__ = "promise_check"
+    __table_args__ = (
+        CheckConstraint(f"status IN {PROMISE_STATUSES!r}", name="ck_promise_check_status"),
+        UniqueConstraint("promise_id", "method", name="uq_promise_check_method"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    promise_id: Mapped[int] = mapped_column(
+        ForeignKey("promise.id", ondelete="CASCADE", name="fk_promise_check_promise_id")
+    )
+    status: Mapped[str] = mapped_column(String(12))
+    explanation: Mapped[str] = mapped_column(Text)
+    evidence: Mapped[list] = mapped_column(JSON, default=list)  # [{source, label, url, period}]
+    method: Mapped[str] = mapped_column(String(40))
+    checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    promise: Mapped[Promise] = relationship()

@@ -84,7 +84,8 @@ deuda_publica:
     pt: ["dívida pública"]
   sources:
     - {connector: eurostat, dataset: gov_10q_ggdebt, params: {unit: PC_GDP, sector: S13, na_item: GD}, geos: EU}
-    - {connector: worldbank, indicator: GC.DOD.TOTL.GD.ZS}
+    # Sin Banco Mundial: GC.DOD.TOTL.GD.ZS es la deuda del gobierno central, no la de las administraciones
+    # publicas que citan los medios (puede diferir decenas de puntos). Fuera de la UE no se juzga (v10).
 deficit_publico:
   name: {es: Déficit público (% del PIB), en: Government deficit (% of GDP)}
   unit: pct

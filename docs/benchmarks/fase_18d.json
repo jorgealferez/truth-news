@@ -1,0 +1,26 @@
+{
+  "fase": "18d",
+  "titulo": "Elecciones: que cambia entre dos programas del mismo partido (repetidas, nuevas, desaparecen)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local, programas reales descargados de la web del partido (robots.txt permitido)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "coalicion_canaria_generales_2016_a_2019": "60 promesas en 2016 y 96 en 2019: 32 repetidas (parecido Jaccard >= 0,6, p. ej. 2016 p.57 y 2019 p.13 identicas), 64 nuevas, 31 que desaparecen; las 6 primeras parejas revisadas a mano son la misma promesa",
+    "tests": "tests/test_programs.py: emparejado conservador y pagina de cambios",
+    "cifras": "cifras cambiadas en declaraciones juzgadas (statement_check) del mismo partido: mismo indicador, territorio y periodo explicito; tests con paro 2025 10,5 % -> 12,9 % (cambio) y 11,0 % -> 11,2 % (redondeo, no cuenta)"
+  },
+  "criterios_de_salida": {
+    "C15": "18d hecho para lo que hay datos: cambios entre programas y cifras cambiadas en declaraciones; produccion se mide tras el despliegue"
+  },
+  "no_verificable": [
+    "Programas del 29-N frente a los de 2023: cuando los partidos los publiquen"
+  ]
+}

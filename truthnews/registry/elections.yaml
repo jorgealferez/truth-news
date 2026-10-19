@@ -1,0 +1,68 @@
+# Elecciones conocidas y como reconocerlas (datos, no codigo; ADR 0036). La seccion /elecciones se rellena
+# sola con lo que detecta en el BOE y en los medios rastreados; aqui solo va lo que una persona ha
+# comprobado con su fuente oficial, y los alias para reconocer cada territorio en los titulos oficiales.
+#
+# Cada eleccion: country, kind (generales | autonomicas | locales | europeas | presidenciales |
+# legislativas | referendum), region (codigo de countries.yaml, opcional), place (texto, opcional), date,
+# convened (fecha del decreto), campaign [inicio, fin], constitution (opcional), name, source {label, url},
+# programs {slug_del_partido: url} solo con el enlace oficial del partido.
+elections:
+  - country: ES
+    kind: generales
+    name: Elecciones generales
+    date: 2026-11-29
+    convened: 2026-10-06
+    campaign: [2026-11-13, 2026-11-27]
+    constitution: 2026-12-23
+    source:
+      label: "Real Decreto 806/2026, de 5 de octubre, de disolución del Congreso de los Diputados y del Senado y de convocatoria de elecciones (BOE-A-2026-20742)"
+      url: https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20742
+    programs: {}
+
+# Como se llama cada territorio en los titulos del BOE (sin tildes, en minusculas).
+region_aliases:
+  ES-AN: [andalucia]
+  ES-AR: [aragon]
+  ES-AS: [asturias, principado]
+  ES-IB: [illes balears, islas baleares, balears]
+  ES-CN: [canarias]
+  ES-CB: [cantabria]
+  ES-CM: [castilla-la mancha, castilla la mancha]
+  ES-CL: [castilla y leon]
+  ES-CT: [cataluna, catalunya]
+  ES-VC: [comunitat valenciana, comunidad valenciana, corts valencianes]
+  ES-EX: [extremadura]
+  ES-GA: [galicia]
+  ES-MD: [comunidad de madrid, asamblea de madrid]
+  ES-MC: [region de murcia, asamblea regional de murcia]
+  ES-NC: [navarra]
+  ES-PV: [pais vasco, parlamento vasco, euskadi]
+  ES-RI: [la rioja]
+  ES-CE: [ceuta]
+  ES-ML: [melilla]
+
+# Temas de las promesas (palabras sin tildes, en minusculas; es, gl y ca). Una promesa toma el tema con
+# mas palabras; sin ninguna queda sin tema. Anadir un tema o un idioma = anadir palabras aqui.
+promise_topics:
+  vivienda: [vivienda, viviendas, alquiler, alquileres, hipoteca, hipotecas, vivenda, habitatge, desahucio]
+  empleo: [empleo, paro, desempleo, salario minimo, smi, contrato, contratos, trabajadores, autonomos, emprego, ocupacio, jornada laboral]
+  impuestos: [impuesto, impuestos, irpf, iva, fiscal, fiscalidad, tributo, tributos, cotizaciones, imposto, impost]
+  pensiones: [pension, pensiones, pensionistas, jubilacion, pensions, pensions]
+  sanidad: [sanidad, sanitario, sanitaria, salud, hospital, hospitales, listas de espera, atencion primaria, saude, sanitat]
+  educacion: [educacion, escuela, escuelas, universidad, universidades, becas, profesorado, alumnado, educacion infantil, ensino, educacio]
+  inmigracion: [inmigracion, inmigrantes, migrantes, migratoria, fronteras, regularizacion, asilo, immigracio]
+  energia_clima: [energia, energetica, renovables, clima, climatico, climatica, emisiones, electricidad, nuclear, transicion ecologica, enerxia]
+  seguridad_justicia: [seguridad, policia, guardia civil, delito, delitos, justicia, jueces, judicial, okupacion, terrorismo]
+  igualdad: [igualdad, violencia de genero, mujeres, lgtbi, discriminacion, conciliacion, igualdade, igualtat]
+  territorio_autogobierno: [autogobierno, financiacion autonomica, estatuto, competencias, despoblacion, rural, autodeterminacion, soberania, amnistia]
+  infraestructuras: [infraestructuras, tren, ferrocarril, cercanias, carreteras, aeropuerto, puerto, transporte publico, corredor]
+  economia_empresas: [empresas, pymes, industria, inversion, deficit, deuda, crecimiento, productividad, competitividad, innovacion]
+  agricultura: [agricultura, agricultores, ganaderia, pesca, regadio, agrario, campo, agro]
+  exterior_defensa: [union europea, europa, otan, defensa, ejercito, politica exterior, cooperacion internacional, marruecos]
+  social: [dependencia, pobreza, ingreso minimo, discapacidad, familias, infancia, mayores, servicios sociales, cuidados]
+  cultura_digital: [cultura, deporte, digital, internet, inteligencia artificial, ciberseguridad, telecomunicaciones, idioma, lengua]
+
+# Paginas de programas que la portada del partido no enlaza (comprobadas a mano, con robots.txt que las
+# permite). El descubrimiento las visita ademas de las que encuentra solo.
+program_pages:
+  sumar: [https://movimientosumar.es/programa-electoral-23j/]

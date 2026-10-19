@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from dataclasses import dataclass, field, replace
 
 from truthnews.analysis.claims import ClaimCandidate, indicator_name, indicators
+from truthnews.classify import normalize
 from truthnews.data import Observation, eurostat, ine, worldbank
 
 # Version del metodo: un veredicto guardado con otra version se vuelve a juzgar en el siguiente ciclo.
@@ -17,7 +19,16 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
 # v8: inflacion con el IPCA de Eurostat: la franja que puede explicar el IPC nacional no se juzga.
 # v9: subgrupos (colectivo, discapacidad, "entre quienes"...) no se juzgan contra la tasa general.
-METHOD_VERSION = "v9"
+# v10: deuda publica fuera de la UE sin la serie del gobierno central del Banco Mundial: no se juzga; un
+#      pais solo es el de la cifra si va ligado a ella en la misma oracion (no "mientras Turquia"); una cifra
+#      aproximada ("unos 40 millones") dentro de la franja amplia es verdadera, no imprecisa.
+METHOD_VERSION = "v10"
+# Cifra dada como aproximada ("unos 40 millones"): dentro de la franja amplia no es imprecisa. Caso de la
+# revision de #157: Canada "con solo unos 40 millones de habitantes" frente a 41,5 millones.
+_APPROX = re.compile(
+    r"\b(?:unos|unas|cerca de|alrededor de|aproximadamente|en torno a|about|around|roughly|approximately"
+    r"|some|por volta de|cerca de)\s+\d"
+)
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -173,6 +184,9 @@ class Verifier:
                 "otra-medida",
                 [obs],
             )
+        if rough and _APPROX.search(normalize(claim.text)):
+            note = " El texto da la cifra como aproximada y la diferencia cabe en esa aproximación."
+            return Result("verdadero", 0.7, base + note, "aproximado", [obs])
         if rough:
             return Result("impreciso", 0.7, base, "nivel", [obs])
         return Result("falso", 0.8, base, "nivel", [obs])
