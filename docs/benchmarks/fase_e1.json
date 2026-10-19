@@ -20,21 +20,22 @@
     "conjunto_etiquetado": {
       "fichero": "tests/fixtures/entities.json",
       "documentos": 16,
-      "entidades": 57,
-      "hablantes": 14,
+      "entidades": 58,
+      "hablantes": 15,
       "precision": 1.0,
       "exhaustividad": 1.0,
       "hablante_precision": 1.0,
       "hablante_exhaustividad": 1.0,
-      "aviso": "el conjunto se uso para ajustar las reglas: es una cota optimista; por eso se mide tambien sobre titulares reales no vistos"
+      "aviso": "el conjunto se uso para ajustar las reglas: es una cota optimista; por eso se mide tambien sobre titulares reales no vistos",
+      "correccion": "2026-10-19 (#62 siguiente): 'Inmaculada Sanz' faltaba en la etiqueta (persona que habla); se anade al ampliar los nombres de pila"
     },
     "titulares_reales": {
       "fuente": "https://nosmienten.com/rss.xml (2026-10-19)",
       "noticias": 52,
       "entidades_registro": 39,
-      "entidades_descubiertas": 2,
+      "entidades_descubiertas": 4,
       "falsos_positivos_revisados_a_mano": 0,
-      "omisiones_vistas": "personas cuyo nombre de pila no esta en la lista (p. ej. Cindy Crawford, Vito Quiles), apellidos sueltos (Colau, Albiol) y clubes (Real Madrid, Sevilla FC): se prefiere callar a inventar"
+      "omisiones_vistas": "apellidos sueltos (Colau, Albiol) y clubes (Real Madrid, Sevilla FC); Cindy Crawford y Vito Quiles se encuentran tras ampliar los nombres de pila"
     },
     "rendimiento": {
       "medida": "extract() sobre 3.120 noticias (52 reales x 60)",

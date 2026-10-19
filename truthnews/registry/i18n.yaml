@@ -192,6 +192,9 @@ es:
   analysis_lead: Piezas propias sobre cada tema, a partir de lo que publican los medios y de los datos oficiales. Cada afirmación está en nuestras fuentes; lo que no sabemos, lo decimos.
   what_each_says: Qué dice cada medio
   essentials: Lo esencial
+  conf_alta: alta
+  conf_media: media
+  conf_baja: baja
   thread_piece: el antes y el después
   related_topic: Tema
   thread_piece_method: "Pieza elaborada con IA solo con las fuentes de este hilo: cada sección cita las suyas y sus cifras se comprueban contra ellas."
@@ -266,6 +269,7 @@ es:
   nc_bad: Falsas o engañosas
   nc_checked: Comprobadas
   ent_title: Personas y entidades
+  ent_in_story: Quién aparece
   ent_lead: Quién aparece en las noticias, en cuántas y en qué medios; en cada ficha, su línea temporal (con noticias antiguas del archivo), con quién aparece, qué dice y qué afirmaciones suyas hemos comprobado.
   ent_filter: Filtrar por tipo
   ent_period: Periodo
@@ -591,6 +595,9 @@ en:
   analysis_lead: Our own pieces on each topic, built from what outlets publish and official data. Every claim is in our sources; what we do not know, we say.
   what_each_says: What each outlet says
   essentials: The essentials
+  conf_alta: high
+  conf_media: medium
+  conf_baja: low
   thread_piece: before and after
   related_topic: Topic
   thread_piece_method: "Piece written with AI only from this thread's sources: every section cites its own and its figures are checked against them."
@@ -665,6 +672,7 @@ en:
   nc_bad: False or misleading
   nc_checked: Checked
   ent_title: People and entities
+  ent_in_story: Who appears
   ent_lead: Who appears in the news, in how many stories and in which outlets; each profile has its timeline (with older stories from the archive), who they appear with, what they say and which of their claims we checked.
   ent_filter: Filter by type
   ent_period: Period

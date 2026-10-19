@@ -33,6 +33,7 @@ from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.social import images
 from truthnews.web import admin, appointments, budget, citations, queries, seo, social, topicview
+from truthnews.web.langprefix import LangPrefix, localize
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -143,6 +144,9 @@ def create_app(
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
     app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
+    # Paginas en otros idiomas bajo /<lang>/ (SEO: una URL indexable por idioma, con hreflang).
+    prefixed = [lang for lang in registry.languages() if lang != settings.default_language]
+    app.add_middleware(LangPrefix, prefixes=prefixed, site_url=settings.site_url)
     templates = Jinja2Templates(directory=HERE / "templates")
     templates.env.filters["ago"] = _ago
     templates.env.filters["epoch_ms"] = _epoch_ms
@@ -163,6 +167,7 @@ def create_app(
         countries=list(registry.countries().keys()),
         languages=registry.languages(),
         url=seo.path,
+        lang_path=lambda path, lang: path if lang == settings.default_language else localize(path, lang),
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
     )
@@ -187,6 +192,9 @@ def create_app(
         return totals_cache["value"]
 
     def lang_of(request: Request) -> str:
+        prefix = getattr(request.state, "lang_prefix", None)
+        if prefix:
+            return prefix
         lang = request.query_params.get("lang") or request.cookies.get("lang") or settings.default_language
         return lang if lang in registry.languages() else settings.default_language
 
@@ -258,11 +266,20 @@ def create_app(
     @app.get("/robots.txt", include_in_schema=False)
     def robots():
         return PlainTextResponse(
-            f"User-agent: *\nDisallow: /admin\nDisallow: /api/\nSitemap: {settings.site_url}/sitemap.xml\n"
+            "User-agent: *\nDisallow: /admin\nDisallow: /api/\n"
+            + "".join(
+                f"Sitemap: {settings.site_url}/sitemap{s}.xml\n" for s in ["", *(f"-{p}" for p in prefixed)]
+            )
         )
 
+    @app.get("/sitemap-{lang}.xml", include_in_schema=False)
+    def sitemap_lang(lang: str, session: SessionDep):
+        if lang not in prefixed:
+            raise HTTPException(404)
+        return sitemap(session, lang)
+
     @app.get("/sitemap.xml", include_in_schema=False)
-    def sitemap(session: SessionDep):
+    def sitemap(session: SessionDep, lang: str | None = None):
         base = settings.site_url
         since = datetime.now(UTC) - timedelta(days=SITEMAP_DAYS)
         urls: list[tuple[str, datetime | None]] = [
@@ -308,7 +325,14 @@ def create_app(
             (base + seo.path("investigacion", inv.id, investigation_title(inv)), inv.updated_at)
             for inv in session.scalars(select(Investigation).where(Investigation.status == "publicada"))
         ]
-        return Response(social.sitemap_xml(urls), media_type="application/xml")
+        alternates = {settings.default_language: "", **{p: f"/{p}" for p in prefixed}}
+        if lang:  # el sitemap de otro idioma lista sus URLs con prefijo (los ficheros compartidos no)
+            n = len(base)
+            urls = [(base + localize(loc[n:] or "/", lang), mod) for loc, mod in urls]
+        return Response(
+            social.sitemap_xml(urls, base=base, alternates=alternates, default=settings.default_language),
+            media_type="application/xml",
+        )
 
     @app.get("/rss.xml", include_in_schema=False)
     def rss(session: SessionDep):
@@ -519,6 +543,7 @@ def create_app(
             spread=spread(arts),
             abroad=sorted(outside, key=lambda a: a.outlet.country),
             parties=statements.for_story(session, st),
+            people=entity_views.for_story(session, st.id),
             tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
             boe=boe_index.confirmations(
                 [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()
@@ -740,8 +765,9 @@ def create_app(
         return render(request, "about.html")
 
     @app.get("/idioma/{lang}")
-    def set_lang(lang: str, request: Request):
-        target = request.headers.get("referer") or "/"
+    def set_lang(lang: str, request: Request, to: str | None = None):
+        safe = to if to and to.startswith("/") and not to.startswith("//") else None
+        target = safe or request.headers.get("referer") or "/"
         resp = RedirectResponse(target, status_code=303)
         if lang in registry.languages():
             resp.set_cookie("lang", lang, max_age=60 * 60 * 24 * 365, samesite="lax")

@@ -48,6 +48,22 @@ def ranking(
     return [(e, n, o) for e, n, o in session.execute(q)]
 
 
+def for_story(session: Session, story_id: int, limit: int = 10) -> list[tuple[Entity, int]]:
+    """Quien aparece en una historia (sin lugares): entidad y en cuantas de sus noticias."""
+    return list(
+        session.execute(
+            public(
+                select(Entity, func.count(Mention.id))
+                .join(Mention, Mention.entity_id == Entity.id)
+                .where(Mention.story_id == story_id, Entity.kind != "lugar")
+                .group_by(Entity.id)
+                .order_by(func.count(Mention.id).desc(), Entity.name)
+                .limit(limit)
+            )
+        )
+    )
+
+
 @dataclass
 class Profile:
     entity: Entity
