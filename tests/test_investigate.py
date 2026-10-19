@@ -231,5 +231,10 @@ def test_public_investigation_pages(admin_client, session):
     assert "Pendiente de investigar" not in listing.text
     page = admin_client.get(f"/investigacion/{done.id}")
     assert page.status_code == 200 and "Disturbios en Francia" in page.text
+    from truthnews.web import structured
+
+    (art,) = structured.of_type(page.text, "NewsArticle")
+    assert art["headline"] == "¿Por qué hay disturbios en Francia?" and art["datePublished"]
+    assert structured.of_type(page.text, "BreadcrumbList")[0]["itemListElement"][1]["name"]
     assert admin_client.get(f"/investigacion/{pending.id}").status_code == 404
     assert admin_client.get("/investigacion/9999").status_code == 404

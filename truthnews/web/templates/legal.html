@@ -4,7 +4,8 @@
 {% set title_key = {'aviso-legal': 'legal_notice', 'privacidad': 'privacy', 'cookies': 'cookies', 'transparencia': 'transparency'}[slug] %}
 {% block title %}{{ t(lang, title_key) }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ t(lang, title_key ~ '_lead') }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/{{ slug }}">{% endblock %}
+{% block canonical %}{{ site.site_url }}/{{ slug }}{% endblock %}
+
 {% block content %}
 <article class="story legal"><h1>{{ t(lang, title_key) }}</h1>
 <p class="lead-text">{{ t(lang, title_key ~ '_lead') }}</p>

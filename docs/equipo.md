@@ -82,7 +82,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
 | ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
 | ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
-| ADR 0038 | diseno | reservado | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList) |
+| ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
 | ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno frente al BOE; sin migracion) |
 | ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
