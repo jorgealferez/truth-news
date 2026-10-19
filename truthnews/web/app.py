@@ -24,7 +24,7 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import statements, translate
-from truthnews.analysis import abroad, ranking, reliability, speakers, statement_checks
+from truthnews.analysis import abroad, figure_changes, ranking, reliability, speakers, statement_checks
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
@@ -604,6 +604,7 @@ def create_app(
             outlets_view=outlets_view,
             plain=in_plain_words(comp, claims),
             missing=reliability.missing_outlets(session, st),
+            fig_changes=figure_changes.for_story(session, st.id),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -729,6 +730,7 @@ def create_app(
             rows=queries.outlets(session, country),
             ranked=ranked,
             few=few,
+            fig_records=figure_changes.by_outlet(session),
             min_checks=reliability.MIN_CHECKS,
         )
 
@@ -753,6 +755,7 @@ def create_app(
             rel=next(iter(reliability.records(session, outlet_id=o.id)), None),
             checks=reliability.history(session, o.id),
             blind=reliability.blind_spots(session, o),
+            fig_changes=figure_changes.for_outlet(session, o.id),
             min_checks=reliability.MIN_CHECKS,
         )
 

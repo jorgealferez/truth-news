@@ -4,7 +4,7 @@
   <p class="meta">{{ t(lang, 'rank_note')|replace('{n}', min_checks|string) }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
   {% if ranked %}<ol class="rank-list">{% for r in ranked %}
     <li><a class="rk-name" href="/medio/{{ r.outlet.slug }}">{{ r.outlet.name }}</a>
-      <span class="rk-acc"><b>{{ (100 * r.accuracy)|round|int }} %</b> <span class="meta">{{ r.right }}/{{ r.checked }}</span></span>
+      <span class="rk-acc"><b>{{ (100 * r.accuracy)|round|int }} %</b> <span class="meta">{{ r.right }}/{{ r.checked }}</span>{% set fc = fig_records.get(r.outlet.id) if fig_records is defined else none %}{% if fc %} <span class="meta">· {{ t(lang, 'fc_rank')|replace('{s}', fc.silent|string)|replace('{n}', fc.changes|string) }}</span>{% endif %}</span>
       <span class="meter bar" role="img" aria-label="{{ r.right }}/{{ r.checked }}">{% for v, n, pct in r.shares() %}<span class="v-{{ v }}" style="width:{{ pct }}%"></span>{% endfor %}</span></li>{% endfor %}
   </ol>{% else %}<p>{{ t(lang, 'rank_empty')|replace('{n}', min_checks|string) }}</p>{% endif %}
   {% if few %}<details class="who-more"><summary>{{ t(lang, 'rank_few')|replace('{n}', few|length|string) }}</summary>

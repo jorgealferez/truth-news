@@ -144,3 +144,9 @@ def test_dispute_precision_on_real_labeled_stories():
     # Medido 2026-10-19 (ADR 0016): antes 0,50 de precision (4 de 8 disputas mezclaban hechos distintos).
     assert q["precision"] >= 0.95 and q["precision_pares"] >= 0.95, q["errores"]
     assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 5
+
+
+def test_personas_context_stays_in_its_sentence():
+    # Caso real (France 24, 19/10): los 39 son heridos, no muertos.
+    text = "Carney confirmó cuatro muertos. Otras 39 personas resultaron heridas, 19 de ellas de gravedad."
+    assert [f[:2] for f in figures(text)] == [("muertos", 4.0), ("heridos", 39.0)]

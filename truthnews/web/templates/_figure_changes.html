@@ -1,0 +1,11 @@
+{# Quien cambio su cifra (carril Comparativas, ADR 0032). Entrada: fig_changes. #}
+<details class="block fold" id="cifras-cambiadas" open><summary><h2>{{ t(lang, 'fc_title') }}</h2> <span class="meta">{{ fig_changes|length }}</span></summary>
+  <ul class="fc-list">{% for c in fig_changes[:12] %}
+    <li><p><b>{{ c.outlet }}</b> · {{ c.noun }}: <del>{{ c.before|num }}</del> → <ins>{{ c.after|num }}</ins>
+      <span class="badge {{ 'fc-said' if c.announced else 'fc-silent' }}">{{ t(lang, 'fc_announced') if c.announced else t(lang, 'fc_silent') }}</span></p>
+      <blockquote class="fc-q"><span class="meta">{{ t(lang, 'fc_before') }}{% if c.before_at %} · {{ c.before_at.strftime('%d/%m/%Y %H:%M') }} UTC{% endif %}</span> «{{ c.quote_before }}»</blockquote>
+      <blockquote class="fc-q"><span class="meta">{{ t(lang, 'fc_after') }} · {{ c.detected_at.strftime('%d/%m/%Y %H:%M') }} UTC</span> «{{ c.quote_after }}»</blockquote>
+      <p class="meta">{{ t(lang, 'fc_field_' ~ c.field) }} · <a href="{{ url('noticia', c.article.id, c.article.title) }}?ficha=1#cambios">{{ t(lang, 'fc_see') }}</a></p></li>{% endfor %}
+  </ul>
+  <p class="meta">{{ t(lang, 'fc_note') }}</p>
+</details>
