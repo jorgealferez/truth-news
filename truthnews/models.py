@@ -172,6 +172,36 @@ class StoryAbroad(Base):
     linked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+POLITICAL_CHANNELS = ("web", "bluesky", "mastodon", "telegram")
+
+
+class PoliticalStatement(Base):
+    """Lo que publica un partido en un canal oficial verificado; aparte de los medios (ADR 0024)."""
+
+    __tablename__ = "political_statement"
+    __table_args__ = (
+        CheckConstraint(f"channel IN {POLITICAL_CHANNELS!r}", name="ck_political_statement_channel"),
+        UniqueConstraint("url_hash", name="uq_political_statement_url_hash"),
+        Index("ix_political_statement_country_published", "country", "published_at"),
+        Index("ix_political_statement_story_id", "story_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    actor: Mapped[str] = mapped_column(String(40))
+    country: Mapped[str] = mapped_column(String(2))
+    channel: Mapped[str] = mapped_column(String(16))
+    url: Mapped[str] = mapped_column(String(1000))
+    url_hash: Mapped[str] = mapped_column(String(64))
+    text: Mapped[str] = mapped_column(String(600))
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    # Historia de la que habla, propuesta por la IA y validada por el codigo (ADR 0007); None = ninguna.
+    story_id: Mapped[int | None] = mapped_column(
+        ForeignKey("story.id", ondelete="SET NULL", name="fk_political_statement_story_id"), nullable=True
+    )
+
+
 class CrawlRun(Base):
     __tablename__ = "crawl_run"
 

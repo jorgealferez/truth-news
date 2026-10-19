@@ -1,0 +1,65 @@
+{
+  "fase": "g4",
+  "titulo": "Fuentes politicas: lo que publica cada partido en sus canales oficiales verificados, aparte de los medios",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "rastreo_descargas_prohibidas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "partidos": "12 con escano en el Congreso (XV legislatura), orden alfabetico, mismo formato para todos (registry/political/es.yaml)",
+    "canales_verificados": {
+      "total": 14,
+      "validos_en_vivo": 14,
+      "web_rss": 5,
+      "bluesky_dominio": 3,
+      "mastodon": 1,
+      "telegram": 5
+    },
+    "declaraciones_primera_pasada": 223,
+    "duplicados_segunda_pasada": 0,
+    "por_partido": {
+      "bng": 50,
+      "cc": 10,
+      "ehbildu": 32,
+      "erc": 20,
+      "junts": 27,
+      "pp": 20,
+      "sumar": 34,
+      "upn": 30
+    },
+    "sin_canal_verificado": {
+      "psoe": "web sin RSS, sitemap ni enlaces a redes",
+      "pnv": "web sin RSS ni enlaces a redes; tiene sitemap de noticias",
+      "podemos": "web 403 (bloqueo tecnico, no se elude)",
+      "vox": "web 403 (bloqueo tecnico, no se elude)"
+    },
+    "descartado": {
+      "youtube": "robots.txt de youtube.com prohibe /feeds/videos.xml a este User-Agent",
+      "adivinar_handles": "varios handles probados llevan a canales ajenos: solo se aceptan cuentas con dominio propio o enlazadas desde la web oficial",
+      "wikidata": "429 desde la IP compartida de este entorno; se probara en produccion como via de verificacion simetrica"
+    },
+    "enlace_con_historias": "coseno de titulares medido: 15 historias de >= 3 medios frente a 223 declaraciones, 0 enlaces con umbral 0,25 (correctas 0,07-0,20, ruido hasta 0,21); el enlace lo hara la IA validada por el codigo en el siguiente paso"
+  },
+  "criterios_de_salida": {
+    "C10": "fuentes politicas anadidas como datos del registro, con un ADR de datos para su tabla"
+  },
+  "no_verificable": [
+    "Canales verificados de PSOE, PNV, Podemos y Vox: requieren una via de verificacion (Wikidata en produccion o confirmacion del usuario)"
+  ],
+  "fuera_de_alcance": [
+    "X, Facebook e Instagram: solo con API y credenciales del usuario"
+  ],
+  "pendientes": [
+    "Enlace declaracion-historia con IA validada por el codigo y bloque 'Que dicen los partidos'",
+    "Sitemap de noticias para PP y PNV",
+    "Traducir declaraciones en euskera, gallego y catalan para emparejarlas"
+  ]
+}

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from truthnews.analysis.claims import ClaimCandidate, indicator_name, indicators
 from truthnews.data import Observation, eurostat, ine, worldbank
@@ -37,10 +37,21 @@ class Result:
 Fetcher = Callable[[dict, str, str], Observation | None]
 
 
+def negated(obs: Observation | None) -> Observation | None:
+    """La serie con el signo cambiado (deficit = -capacidad de financiacion), historial incluido."""
+    if obs is None:
+        return None
+    out = replace(obs, value=-obs.value, history={k: -v for k, v in obs.history.items()})
+    out.extra = {**obs.extra, "signo": "cambiado: déficit = −(capacidad/necesidad de financiación)"}
+    out.previous = negated(obs.previous) if obs.previous else None
+    return out
+
+
 def default_fetch(source: dict, geo: str, label: str) -> Observation | None:
     conn = source["connector"]
     if conn == "eurostat":
-        return eurostat.latest(source["dataset"], geo, source["params"], label)
+        obs = eurostat.latest(source["dataset"], geo, source["params"], label)
+        return negated(obs) if source.get("negate") else obs
     if conn == "worldbank":
         return worldbank.latest(source["indicator"], geo, label)
     if conn == "ine_yoy":

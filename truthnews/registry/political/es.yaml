@@ -1,0 +1,36 @@
+# Partidos con escano en el Congreso de los Diputados (XV legislatura, elecciones del 23-J de 2023), en
+# orden alfabetico por slug y con el mismo formato para todos (peticion del usuario 2026-10-19, ADR 0024).
+# Cada canal dice como se verifico que es oficial: `dominio` (handle de Bluesky sobre el dominio del propio
+# partido, verificado por DNS) o `web` (enlazado desde la portada de su web oficial). Medido en vivo el
+# 2026-10-19 con el User-Agent del rastreador; una web que responde 403 es un bloqueo tecnico y no se elude.
+# Canales: web (RSS de su web), bluesky (API publica oficial), mastodon (RSS del perfil), telegram (vista
+# publica t.me/s/). YouTube queda fuera: su robots.txt prohibe /feeds/videos.xml a este User-Agent.
+country: ES
+actors:
+  - {slug: bng, name: BNG, full_name: Bloque Nacionalista Galego, homepage: "https://www.bng.gal",
+     channels: [{channel: web, url: "https://www.bng.gal/rss/"}, {channel: bluesky, handle: obloque.gal, verified: dominio},
+                {channel: telegram, handle: bloquenacionalistagalego, verified: web}]}
+  - {slug: cc, name: CC, full_name: Coalición Canaria, homepage: "https://coalicioncanaria.org",
+     channels: [{channel: web, url: "https://coalicioncanaria.org/feed/"}]}
+  - {slug: ehbildu, name: EH Bildu, full_name: Euskal Herria Bildu, homepage: "https://ehbildu.eus",
+     channels: [{channel: mastodon, url: "https://mastodon.social/@ehbildu.rss", verified: web}, {channel: telegram, handle: ehbildu, verified: web}]}
+  - {slug: erc, name: ERC, full_name: Esquerra Republicana de Catalunya, homepage: "https://www.esquerra.cat",
+     note: "su web responde 403 a este User-Agent (bloqueo tecnico, no se elude)",
+     channels: [{channel: bluesky, handle: esquerrarepublicana.cat, verified: dominio}]}
+  - {slug: junts, name: Junts, full_name: Junts per Catalunya, homepage: "https://junts.cat",
+     channels: [{channel: web, url: "https://junts.cat/feed/"}, {channel: telegram, handle: juntsxcat, verified: web}]}
+  - {slug: pnv, name: EAJ-PNV, full_name: Euzko Alderdi Jeltzalea - Partido Nacionalista Vasco, homepage: "https://www.eaj-pnv.eus",
+     note: "su web no publica RSS ni enlaza redes; pendiente: sitemap de noticias", channels: []}
+  - {slug: podemos, name: Podemos, full_name: Podemos, homepage: "https://podemos.info",
+     note: "su web responde 403 a este User-Agent (bloqueo tecnico, no se elude); pendiente: canal social verificado", channels: []}
+  - {slug: pp, name: PP, full_name: Partido Popular, homepage: "https://www.pp.es",
+     note: "su web no publica RSS; pendiente: sitemap de noticias",
+     channels: [{channel: telegram, handle: Partido_Popular, verified: web}]}
+  - {slug: psoe, name: PSOE, full_name: Partido Socialista Obrero Español, homepage: "https://www.psoe.es",
+     note: "su web no publica RSS, sitemap ni enlaces a redes; pendiente: canal social verificado", channels: []}
+  - {slug: sumar, name: Sumar, full_name: Movimiento Sumar, homepage: "https://movimientosumar.es",
+     channels: [{channel: web, url: "https://movimientosumar.es/feed"}, {channel: bluesky, handle: movimientosumar.es, verified: dominio}]}
+  - {slug: upn, name: UPN, full_name: Unión del Pueblo Navarro, homepage: "https://www.upn.org",
+     channels: [{channel: web, url: "https://www.upn.org/feed/"}, {channel: telegram, handle: upn_org, verified: web}]}
+  - {slug: vox, name: Vox, full_name: Vox, homepage: "https://www.voxespana.es",
+     note: "su web responde 403 a este User-Agent (bloqueo tecnico, no se elude); pendiente: canal social verificado", channels: []}

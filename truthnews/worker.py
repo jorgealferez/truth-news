@@ -17,6 +17,7 @@ from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis.pipeline import run as analyze
 from truthnews.analysis.score import score_stories
 from truthnews.config import Settings, get_settings
+from truthnews.crawler import political
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.investigate import process_pending, seed_defaults
@@ -89,6 +90,13 @@ def _run_cycle(settings: Settings) -> dict:
         started = run.started_at
     with session_scope(engine) as session:
         summary["analysis"] = analyze(session, since=started)
+    with session_scope(engine) as session:  # partidos en sus canales oficiales verificados (ADR 0024)
+        try:
+            summary["political"] = political.run(session, settings)
+        except Exception as exc:  # un canal o un partido caido no tumba el ciclo
+            log.exception("declaraciones politicas: el paso fallo")
+            session.rollback()
+            summary["political"] = {"error": str(exc)[:300]}
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
         with session_scope(engine) as session:
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
