@@ -8,6 +8,7 @@
     {% if tr.right %}<p class="meta">✓ {{ tr.right|length }}/{{ n }} {{ t(lang, 'plain_truth_ok') }} {{ tr.right|join(', ') }}</p>{% endif %}
     {% if tr.wrong %}<p class="meta">✗ {{ tr.wrong|length }}/{{ n }} {{ t(lang, 'plain_truth_wrong') }} {% for o, said, verdict in tr.wrong %}{{ o }} ({{ said }}, {{ t(lang, 'verdict_' ~ verdict)|lower }}){% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
     <p class="meta"><a href="{{ tr.url }}" rel="nofollow noopener" target="_blank">{{ tr.source }} ↗</a></p>
+    {% if timing is defined and timing and timing.first_right %}<p class="meta">⏱ {{ t(lang, 'tl_first_right')|replace('{o}', timing.first_right.outlet)|replace('{h}', timing.first_right.right_after_h|string) }}</p>{% endif %}
   </div>{% endfor %}
   <ul class="plain-list">
     {% for d in plain.differ %}<li class="pl-differ">≠ {{ t(lang, 'plain_differ')|replace('{noun}', d.noun|capitalize)|replace('{low}', d.low|num)|replace('{high}', d.high|num) }}

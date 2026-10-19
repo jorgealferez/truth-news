@@ -9,4 +9,5 @@
   </ol>{% else %}<p>{{ t(lang, 'rank_empty')|replace('{n}', min_checks|string) }}</p>{% endif %}
   {% if few %}<details class="who-more"><summary>{{ t(lang, 'rank_few')|replace('{n}', few|length|string) }}</summary>
     <ul class="who-omits">{% for r in few %}<li><a href="/medio/{{ r.outlet.slug }}">{{ r.outlet.name }}</a> <span class="meta">{{ r.checked }}/{{ min_checks }} · {% for v, n, pct in r.shares() %}{{ t(lang, 'verdict_' ~ v) }} {{ n }}{% if not loop.last %}, {% endif %}{% endfor %}</span></li>{% endfor %}</ul></details>{% endif %}
+  {% if timely is defined %}{% include "_timeliness.html" %}{% endif %}
 </section>

@@ -1,0 +1,11 @@
+{# Quien informa primero y bien (carril Comparativas, ADR 0041). Entrada: timely = (ranked, few), min_stories. #}
+{% set t_ranked, t_few = timely %}
+<div class="timely" id="primero-y-bien">
+  <h3>{{ t(lang, 'tl_title') }}</h3>
+  <p class="meta">{{ t(lang, 'tl_note')|replace('{n}', min_stories|string) }}</p>
+  {% if t_ranked %}<table class="table tl-table"><thead><tr><th>{{ t(lang, 'outlet') }}</th><th>{{ t(lang, 'tl_right') }}</th><th>{{ t(lang, 'tl_median') }}</th><th>{{ t(lang, 'tl_wrong_first') }}</th></tr></thead><tbody>
+    {% for r in t_ranked %}<tr><td>{{ r.outlet }}</td><td><b>{{ r.right }}</b>/{{ r.stories }}</td><td>{% if r.median_h is not none %}{{ r.median_h }} h{% else %}—{% endif %}</td><td>{{ r.first_wrong }}</td></tr>{% endfor %}
+  </tbody></table>{% else %}<p>{{ t(lang, 'tl_empty')|replace('{n}', min_stories|string) }}</p>{% endif %}
+  {% if t_few %}<details class="who-more"><summary>{{ t(lang, 'tl_few')|replace('{n}', t_few|length|string) }}</summary>
+    <ul class="who-omits">{% for r in t_few %}<li>{{ r.outlet }} <span class="meta">{{ r.stories }}/{{ min_stories }} · {{ t(lang, 'tl_right')|lower }} {{ r.right }} · {{ t(lang, 'tl_wrong_first')|lower }} {{ r.first_wrong }}</span></li>{% endfor %}</ul></details>{% endif %}
+</div>

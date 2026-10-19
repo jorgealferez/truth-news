@@ -7,7 +7,17 @@ from truthnews.models import Article, Claim, Evidence, Outlet, Story, Verificati
 NOW = utcnow()
 
 
-def ns_claim(article_id, outlet, value, days=0, verdict=None, checked_minutes=0, geo="ES", period="2026-09"):
+def ns_claim(
+    article_id,
+    outlet,
+    value,
+    days=0,
+    verdict=None,
+    checked_minutes=0,
+    geo="ES",
+    period="2026-09",
+    speaker=None,
+):
     v = None
     if verdict:
         v = NS(verdict=verdict, checked_at=NOW - timedelta(minutes=checked_minutes), evidence=[])
@@ -21,6 +31,7 @@ def ns_claim(article_id, outlet, value, days=0, verdict=None, checked_minutes=0,
         article=NS(published_at=NOW - timedelta(days=days)),
         outlet=NS(name=outlet),
         verification=v,
+        speaker_entity_id=speaker,
     )
 
 
@@ -38,6 +49,11 @@ def test_group_same_figure_in_two_articles():
     assert r.verdict == "impreciso"  # el mas reciente con dato
     assert r.example.article_id == 1 and r.first < r.last
     assert r.slug == slug_of(key_of(claims[0])) == "inflacion-ES-2026-09-4_9-pct"
+    # La misma cifra dicha por un ministro y por una ONG son dos afirmaciones distintas.
+    two = group(
+        [ns_claim(1, "A", 4.9, speaker=7), ns_claim(2, "B", 4.9, speaker=8), ns_claim(3, "C", 4.9, speaker=7)]
+    )
+    assert [(r.outlets, r.key[-1]) for r in two] == [(["A", "C"], 7)] and two[0].slug.endswith("-h7")
     # La misma afirmacion dos veces en el mismo articulo no es repetirse.
     assert group([ns_claim(1, "A", 4.9), ns_claim(1, "A", 4.9)]) == []
     assert group([ns_claim(1, "A", 4.9, verdict="sin-datos"), ns_claim(2, "B", 4.9)])[0].verdict is None

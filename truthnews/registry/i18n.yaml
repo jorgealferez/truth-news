@@ -40,6 +40,15 @@ es:
   rep_none: Aún no hay afirmaciones repetidas en dos o más artículos.
   rep_story: "Esta afirmación se repite en otros medios"
   rep_see_all: Ver todas las afirmaciones repetidas
+  rep_said_by: dicho por
+  tl_title: Quién informa primero y bien
+  tl_note: "En historias con dato oficial: cuántas veces cada medio publica la cifra que coincide con el dato, cuánto tarda desde el primer artículo de la historia (mediana) y cuántas veces su primera cifra comprobada no cuadra. Mínimo {n} historias para entrar en la tabla."
+  tl_right: Acierta
+  tl_median: Tarda (mediana)
+  tl_wrong_first: Se adelanta con una cifra que no cuadra
+  tl_empty: "Aún ningún medio tiene {n} historias con dato oficial comprobado."
+  tl_few: "Medios con pocas historias comprobadas todavía ({n})"
+  tl_first_right: "Primero con la cifra correcta: {o}, {h} h después del primer artículo."
   rank_title: Quién acierta con los datos
   rank_note: "Proporción de afirmaciones de cada medio que resultan verdaderas al compararlas con el dato oficial. Ordenado por el límite inferior del intervalo de confianza del 95 %: pocas comprobaciones no bastan para encabezar. Mínimo {n} comprobaciones para entrar."
   rank_empty: "Aún ningún medio tiene {n} afirmaciones comprobadas: el ranking se llenará a medida que verifiquemos."
@@ -644,6 +653,15 @@ en:
   rep_none: No claims repeated in two or more articles yet.
   rep_story: "This claim is repeated by other outlets"
   rep_see_all: See all repeated claims
+  rep_said_by: said by
+  tl_title: Who reports first and right
+  tl_note: "In stories with an official figure: how often each outlet publishes the figure that matches the data, how long it takes from the story's first article (median) and how often its first checked figure does not match. At least {n} stories to enter the table."
+  tl_right: Right
+  tl_median: Time (median)
+  tl_wrong_first: First with a figure that does not match
+  tl_empty: "No outlet has {n} stories with a checked official figure yet."
+  tl_few: "Outlets with few checked stories so far ({n})"
+  tl_first_right: "First with the right figure: {o}, {h} h after the first article."
   rank_title: Who gets the data right
   rank_note: "Share of each outlet's claims found true against the official figure. Sorted by the lower bound of the 95% confidence interval: a handful of checks is not enough to top the list. At least {n} checks to enter."
   rank_empty: "No outlet has {n} checked claims yet: the ranking fills up as we verify."

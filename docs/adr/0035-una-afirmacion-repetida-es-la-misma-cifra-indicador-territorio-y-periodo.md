@@ -46,3 +46,9 @@ Se calcula en lectura sobre `claim`, sin esquema nuevo.
 ## Verificación
 `tests/test_repeated.py`: misma cifra a una décima en dos artículos, territorio y periodo distintos,
 mismo artículo, veredicto más reciente con dato, página, bloque en la historia y página vacía.
+
+## Precisión (2026-10-19, condición de la aprobación de la dirección)
+La clave incluye también el **hablante o la fuente citada** (`claim.speaker_entity_id`). La misma cifra
+dicha por un ministro y por una ONG son dos afirmaciones distintas; las que no tienen hablante atribuido
+se agrupan entre sí. La tarjeta muestra «dicho por» cuando lo hay. Test:
+`tests/test_repeated.py::test_group_same_figure_in_two_articles`.

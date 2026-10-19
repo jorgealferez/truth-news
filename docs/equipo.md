@@ -80,13 +80,13 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
 | ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
-| ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
+| ADR 0035 | diseno | en main | Comparativas (afirmaciones que se repiten; sin migracion) |
 | ADR 0036 | diseno | PR #139 | Elecciones (seccion temporal, calendario: BOE, JEC, IFES y medios; candidaturas; sin migracion) |
 | ADR 0037 + migracion 0018 | datos | PR #139 | Elecciones (program, promise, promise_check) |
 | ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
 | ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno; 18c BLOQUEADO por decision del usuario, ledger) |
-| ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
+| ADR 0041 | diseno | PR (este) | Comparativas (quien informa primero y bien) |
 | ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
 | ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
