@@ -143,6 +143,16 @@ def claim_review(site, claim, verification, label: str, url: str, lang: str) -> 
             "datePublished": _iso(art.published_at) if art is not None else None,
             "appearance": [appearance] if appearance else None,
         },
+        # La cifra oficial con la que se juzga: el enlace a cada fuente citada.
+        "citation": [
+            {
+                "@type": "Dataset",
+                "name": " · ".join(x for x in (e.source, e.label, e.period) if x),
+                "url": e.url,
+            }
+            for e in verification.evidence
+            if e.url
+        ],
         "reviewRating": {
             "@type": "Rating",
             "ratingValue": rating,

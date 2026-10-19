@@ -41,14 +41,16 @@ from truthnews.db import get_engine, session_factory
 from truthnews.elections import calendar as el_calendar
 from truthnews.elections import views as el_views
 from truthnews.entities import views as entity_views
-from truthnews.models import Article, Investigation, Outlet, Story, Thread
+from truthnews.models import Article, ArticleRevision, Investigation, Outlet, Story, Thread
 from truthnews.social import images, today
 from truthnews.social import select as select_social
 from truthnews.web import (
     admin,
     appointments,
     budget,
+    charts,
     citations,
+    contracts,
     council,
     legal,
     queries,
@@ -154,6 +156,8 @@ def create_app(
     boe_index: appointments.BoeIndex | None = None,
     elections: el_calendar.Calendar | None = None,
     council_index: council.CouncilIndex | None = None,
+    boe_contracts: contracts.BoeContractDays | None = None,
+    ted_awards: contracts.TedAwards | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
@@ -162,6 +166,8 @@ def create_app(
     igae_extract = igae_extract or budget.LatestExtract()
     elections = elections or el_calendar.Calendar(settings.elections_lookback_days)
     council_index = council_index or council.CouncilIndex()
+    boe_contracts = boe_contracts or contracts.BoeContractDays()
+    ted_awards = ted_awards or contracts.TedAwards()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -221,6 +227,19 @@ def create_app(
         if not totals_cache or now - totals_cache["at"] > 60:
             totals_cache.update(at=now, value=queries.totals(session))
         return totals_cache["value"]
+
+    view_cache: dict = {}
+
+    def cached(key: tuple, seconds: float, build):
+        # Vistas caras que solo cambian con el ciclo del worker (/hoy, prensa de /contratos): se
+        # recalculan como mucho cada `seconds`; la primera visita tras caducar paga el calculo.
+        now = time.monotonic()
+        hit = view_cache.get(key)
+        if hit is None or now - hit[0] > seconds:
+            if len(view_cache) > 200:
+                view_cache.clear()
+            hit = view_cache[key] = (now, build())
+        return hit[1]
 
     nocuadra_cache: dict = {}
 
@@ -443,7 +462,8 @@ def create_app(
 
     def today_view(session: Session, lang: str) -> tuple[list, str]:
         now = datetime.now(UTC)
-        return today.keys(session, now, lang), now.strftime("%d/%m/%Y")
+        items = cached(("hoy", lang, now.date()), 300, lambda: today.keys(session, now, lang))
+        return items, now.strftime("%d/%m/%Y")
 
     @app.get("/hoy", response_class=HTMLResponse)
     def today_page(request: Request, session: SessionDep):
@@ -629,11 +649,19 @@ def create_app(
         lang = lang_of(request)
         line = vview.sentence(c, lang)
         url = f"{settings.site_url}/verificacion/{c.id}"
+        # Enlazado interno (ADR 0038): la historia con su titular y quien aparece, hablante primero.
+        story = session.get(Story, c.story_id) if c.story_id else None
+        people = [(c.speaker, 1)] if c.speaker else []
+        if c.story_id:
+            found = entity_views.for_story(session, c.story_id, limit=4)
+            people += [(e, n) for e, n in found if e != c.speaker]
         return render(
             request,
             "verification.html",
             c=c,
             v=c.verification,
+            story=story,
+            people=people[:4],
             line=line,
             chart=vview.chart(c, lang),
             series=vview.series_of(c),
@@ -688,7 +716,12 @@ def create_app(
             raise HTTPException(404)
         if redirect := canonical(request, "entidad", p.entity.id, p.entity.name):
             return redirect
-        return render(request, "entity.html", p=p, e=p.entity)
+        lang = lang_of(request)
+        lanes = {k: registry.t(lang, f"chart_lane_{k}") for k in charts.LANE_KEYS}
+        said = charts.said_timeline(
+            charts.said_points(p.claims, p.quotes), lanes, registry.t(lang, "chart_said_title")
+        )
+        return render(request, "entity.html", p=p, e=p.entity, said=said)
 
     @app.get("/historia/{ref}", response_class=HTMLResponse)
     def story(request: Request, ref: str, session: SessionDep, medio: str | None = None):
@@ -718,6 +751,17 @@ def create_app(
             arts=arts,
             comp=comp,
             claims=claims,
+            figure_charts=charts.story_figure_charts(
+                arts,
+                comp,
+                claims,
+                {k: registry.t(lang_of(request), f"chart_{k}") for k in ("official", "by_outlet", "changed")},
+                revisions=list(
+                    session.scalars(
+                        select(ArticleRevision).where(ArticleRevision.article_id.in_([a.id for a in arts]))
+                    )
+                ),
+            ),
             related=related,
             thread=queries.thread_for_story(session, st.id),
             outlets_view=outlets_view,
@@ -957,6 +1001,43 @@ def create_app(
             next_day=day + timedelta(days=1) if day < today else None,
         )
 
+    @app.get("/contratos", response_class=HTMLResponse)
+    def contracts_page(request: Request, session: SessionDep, fecha: str | None = None):
+        today = datetime.now(UTC).date()
+        if fecha:
+            try:
+                day = date.fromisoformat(fecha)
+            except ValueError:
+                raise HTTPException(404) from None
+            if day > today or day < date(2009, 1, 1):  # la API de datos abiertos empieza en 2009
+                raise HTTPException(404)
+            items = boe_contracts.day(day, today)
+        else:
+            day, items = boe_contracts.latest(today)
+        got = ted_awards.get(today)
+        ted = contracts.ted_view(got[2]) if got else None
+        return render(
+            request,
+            "contracts.html",
+            day=day,
+            boe=contracts.boe_view(items),
+            ted=ted,
+            ted_since=got[0] if got else None,
+            ted_until=got[1] if got else None,
+            press=cached(
+                ("prensa", tuple(f["nombre"] for f in ted["firms"]) if ted else (), today),
+                600,
+                lambda: contracts.mentions(
+                    session,
+                    [f["nombre"] for f in ted["firms"]] if ted else [],
+                    datetime.combine(today, datetime.min.time(), UTC) + timedelta(days=1),
+                ),
+            ),
+            dep_name=appointments.dept_name,
+            prev_day=day - timedelta(days=1),
+            next_day=day + timedelta(days=1) if day < today else None,
+        )
+
     @app.get("/presupuestos", response_class=HTMLResponse)
     def budget_page(request: Request):
         ex = igae_extract.get()
@@ -1093,6 +1174,9 @@ def create_app(
             return redirect
         return render(request, "investigation.html", inv=inv, r=inv.report)
 
-    app.include_router(admin.make_router(settings, get_session, templates, render))
+    # Retirar o restituir un veredicto vacia las vistas en cache: /hoy no lo sigue mostrando.
+    app.include_router(
+        admin.make_router(settings, get_session, templates, render, on_change=view_cache.clear)
+    )
 
     return app

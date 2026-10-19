@@ -329,6 +329,17 @@ es:
   nc_bad: Falsas o engañosas
   nc_checked: Comprobadas
   ent_title: Personas y entidades
+  chart_said_title: Lo que dijo y cuándo
+  chart_said_note: "Cada punto es una afirmación o una frase suya, en su fecha. La forma y el carril dicen el veredicto: cuadrado, falso o engañoso; triángulo, impreciso; círculo, verdadero; anillo, sin dato o sin comprobar. Toca un punto para ver la verificación o la noticia."
+  chart_lane_falso: Falso o engañoso
+  chart_lane_impreciso: Impreciso
+  chart_lane_verdadero: Verdadero
+  chart_lane_sin-datos: Sin comprobar
+  chart_figure_title: La cifra en el tiempo
+  chart_figure_note: "Qué cifra dio cada medio y cuándo. La línea discontinua es el dato oficial cuando lo hay; un anillo unido a un punto es una cifra que el medio cambió después de publicarla."
+  chart_official: Dato oficial
+  chart_by_outlet: cifra de cada medio
+  chart_changed: cifra cambiada
   ent_in_story: Quién aparece
   ent_lead: Quién aparece en las noticias, en cuántas y en qué medios; en cada ficha, su línea temporal (con noticias antiguas del archivo), con quién aparece, qué dice y qué afirmaciones suyas hemos comprobado.
   ent_filter: Filtrar por tipo
@@ -457,6 +468,42 @@ es:
   no_appointments: Ese día el BOE no publicó nombramientos ni ceses (o aún no está disponible).
   previous_day: Día anterior
   next_day: Día siguiente
+  contracts: Contratos públicos
+  contracts_lead: >-
+    Qué contrata la Administración, quién gana los contratos y por cuánto: anuncios de contratación del BOE y
+    adjudicaciones de España publicadas en el Diario Oficial de la UE (TED), con enlace a cada anuncio y cruzadas
+    con las noticias que rastreamos.
+  contracts_boe: Anuncios del BOE
+  contracts_ted: Adjudicaciones en el Diario Oficial de la UE
+  contracts_ted_period: Publicadas entre el
+  contracts_and: y el
+  contracts_n_awards: adjudicaciones
+  contracts_amount: adjudicados (euros)
+  contracts_with_amount: con importe publicado
+  contracts_top_firms: Empresas que más suman
+  contracts_lots_note: >-
+    Los avisos con varios adjudicatarios (lotes) no se suman a cada empresa para no inflar su total. Solo se
+    nombran personas jurídicas: los adjudicatarios que no constan como empresa se cuentan, no se nombran.
+  contracts_repeat: Empresas con varios contratos en el periodo
+  contracts_buyers: Quién contrata más
+  contracts_largest: Contratos de mayor importe
+  contracts_in_press: En los medios
+  contracts_press_note: Noticias que nombran a la empresa; la mención no implica relación con el contrato.
+  contracts_n_contracts: contratos
+  contracts_kind_licitacion: Licitación
+  contracts_kind_formalizacion: Formalización
+  contracts_kind_adjudicacion: Adjudicación
+  contracts_kind_anulacion: Anulación
+  contracts_kind_rectificacion: Rectificación
+  contracts_kind_otro: Anuncio
+  contracts_file: Expediente
+  contracts_natural_person: adjudicatario que no consta como empresa (no se nombra)
+  contracts_no_boe: Ese día el BOE no publicó anuncios de contratación (o aún no está disponible).
+  contracts_no_ted: Las adjudicaciones de TED no están disponibles ahora mismo. Vuelve a intentarlo más tarde.
+  contracts_source: >-
+    Fuentes: sección V.A del Boletín Oficial del Estado (API de datos abiertos) y API de búsqueda de TED (Oficina
+    de Publicaciones de la UE). La Plataforma de Contratación del Sector Público excluye los rastreadores en su
+    robots.txt y no se rastrea.
   budget: Presupuestos del Estado
   budget_lead: >-
     Cuánto ha gastado e invertido cada ministerio de lo presupuestado, mes a mes, según el extracto oficial de
@@ -953,6 +1000,17 @@ en:
   nc_bad: False or misleading
   nc_checked: Checked
   ent_title: People and entities
+  chart_said_title: What they said and when
+  chart_said_note: "Each point is a claim or a quote, on its date. Shape and lane give the verdict: square, false or misleading; triangle, inaccurate; circle, true; ring, no data or not checked. Tap a point to open the check or the article."
+  chart_lane_falso: False or misleading
+  chart_lane_impreciso: Inaccurate
+  chart_lane_verdadero: "True"
+  chart_lane_sin-datos: Not checked
+  chart_figure_title: The figure over time
+  chart_figure_note: "Which figure each outlet gave and when. The dashed line is the official figure when there is one; a ring joined to a point is a figure the outlet changed after publishing."
+  chart_official: Official figure
+  chart_by_outlet: figure by outlet
+  chart_changed: changed figure
   ent_in_story: Who appears
   ent_lead: Who appears in the news, in how many stories and in which outlets; each profile has its timeline (with older stories from the archive), who they appear with, what they say and which of their claims we checked.
   ent_filter: Filter by type
@@ -1078,6 +1136,41 @@ en:
   no_appointments: That day the BOE published no appointments or dismissals (or it is not available yet).
   previous_day: Previous day
   next_day: Next day
+  contracts: Public contracts
+  contracts_lead: >-
+    What the Spanish administration buys, who wins the contracts and for how much: procurement notices in the
+    Official Gazette (BOE) and Spanish contract awards published in the EU Official Journal (TED), linked to each
+    notice and cross-checked with the news we track.
+  contracts_boe: BOE notices
+  contracts_ted: Awards in the EU Official Journal
+  contracts_ted_period: Published between
+  contracts_and: and
+  contracts_n_awards: awards
+  contracts_amount: awarded (euros)
+  contracts_with_amount: with a published value
+  contracts_top_firms: Companies with the highest totals
+  contracts_lots_note: >-
+    Notices with several winners (lots) are not added to each company, so as not to inflate its total. Only legal
+    entities are named: winners not listed as a company are counted, not named.
+  contracts_repeat: Companies with several contracts in the period
+  contracts_buyers: Who buys the most
+  contracts_largest: Largest contracts
+  contracts_in_press: In the news
+  contracts_press_note: Stories that name the company; a mention does not imply a link to the contract.
+  contracts_n_contracts: contracts
+  contracts_kind_licitacion: Call for tenders
+  contracts_kind_formalizacion: Contract signed
+  contracts_kind_adjudicacion: Award
+  contracts_kind_anulacion: Cancellation
+  contracts_kind_rectificacion: Correction
+  contracts_kind_otro: Notice
+  contracts_file: File
+  contracts_natural_person: winner not listed as a company (not named)
+  contracts_no_boe: That day the BOE published no procurement notices (or it is not available yet).
+  contracts_no_ted: TED awards are not available right now. Please try again later.
+  contracts_source: >-
+    Sources: section V.A of the Spanish Official Gazette (open data API) and the TED search API (EU Publications
+    Office). The Spanish public procurement platform excludes crawlers in its robots.txt and is not crawled.
   budget: State budget
   budget_lead: >-
     How much of its budget each Spanish ministry has spent and invested, month by month, according to the

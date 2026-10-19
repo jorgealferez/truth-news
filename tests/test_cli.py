@@ -48,6 +48,84 @@ def test_db_upgrade_sync_and_crawl(tmp_path, monkeypatch, capsys):
     get_engine.cache_clear()
 
 
+def test_ai_without_credit_does_not_cut_the_cycle(tmp_path, monkeypatch):
+    """Sin credito en la API (produccion 2026-10-19): la IA falla, pero redes y la marca del ciclo siguen."""
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun, utcnow
+
+    url = f"sqlite:///{tmp_path / 'nocredit.db'}"
+    upgrade(url)
+    monkeypatch.setenv("DATABASE_URL", url)
+    get_engine.cache_clear()
+
+    async def fake_crawl(session, settings):
+        run = CrawlRun(finished_at=utcnow(), stats={})
+        session.add(run)
+        session.flush()
+        return run
+
+    def no_credit(*args, **kwargs):
+        raise RuntimeError("Your credit balance is too low to access the Anthropic API.")
+
+    monkeypatch.setattr(worker, "crawl", fake_crawl)
+    monkeypatch.setattr(worker.political, "run", lambda session, settings, **kw: {"channels": 0})
+    monkeypatch.setattr(worker, "ai_step", no_credit)
+    monkeypatch.setattr(worker, "process_pending", no_credit)
+    summary = worker.run_cycle()
+    assert "credit balance" in summary["ai"]["error"]
+    assert "credit balance" in summary["investigations"]["error"]
+    assert "social" in summary and "entities" in summary
+    assert worker.last_full_cycle(worker.get_settings()) is not None
+    get_engine.cache_clear()
+
+
+def test_daily_budget_skips_ai_and_the_cycle_still_finishes(tmp_path, monkeypatch):
+    """Con el tope diario gastado (ADR 0054) no se llama a la API, el paso de IA queda anotado y el ciclo
+    llega al final con su marca y su coste del dia."""
+    from datetime import UTC, datetime
+
+    from sqlalchemy import select
+
+    from truthnews.ai.client import AIClient
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun, utcnow
+
+    url = f"sqlite:///{tmp_path / 'budget.db'}"
+    upgrade(url)
+    monkeypatch.setenv("DATABASE_URL", url)
+    monkeypatch.setenv("AI_DAILY_BUDGET_USD", "5")
+    get_engine.cache_clear()
+    with get_engine(url).begin() as conn:  # un ciclo anterior de hoy ya gasto el tope
+        conn.execute(
+            CrawlRun.__table__.insert(),
+            {"started_at": datetime.now(UTC), "stats": {"ai_cost": {"usd": 5.0}}},
+        )
+
+    async def fake_crawl(session, settings):
+        run = CrawlRun(finished_at=utcnow(), stats={})
+        session.add(run)
+        session.flush()
+        return run
+
+    def never_called(**kw):
+        raise AssertionError("pasado el tope no se llama a la API")
+
+    sdk = type("SDK", (), {"beta": type("B", (), {"messages": type("M", (), {"stream": never_called})})})
+
+    monkeypatch.setattr(worker, "crawl", fake_crawl)
+    monkeypatch.setattr(worker.political, "run", lambda session, settings, **kw: {"channels": 0})
+    monkeypatch.setattr(worker, "ai_step", lambda s, st: AIClient(client=sdk).structured("s", "u", {}))
+    summary = worker.run_cycle()
+    assert "presupuesto diario de IA agotado" in summary["ai"]["error"]
+    assert summary["ai_cost"]["hoy_usd"] == 5.0 and summary["ai_cost"]["llamadas"] == 0
+    assert "social" in summary and "entities" in summary
+    assert worker.last_full_cycle(worker.get_settings()) is not None
+    with get_engine(url).connect() as conn:
+        stats = conn.execute(select(CrawlRun.stats).order_by(CrawlRun.id.desc())).scalar()
+    assert stats["cycle"] == worker.FULL_CYCLE and stats["ai_cost"]["tope_diario_usd"] == 5.0
+    get_engine.cache_clear()
+
+
 def test_database_url_normalization(monkeypatch):
     from truthnews.config import get_settings
 
@@ -60,7 +138,7 @@ def test_database_url_normalization(monkeypatch):
 
 
 def test_only_finished_full_cycles_defer_the_next_one(tmp_path, monkeypatch):
-    """Un ciclo cortado por un redespliegue no aplaza el siguiente; uno terminado lo fija a +intervalo."""
+    """Un ciclo cortado no aplaza el siguiente; uno terminado lo fija a su inicio + intervalo."""
     from datetime import UTC, datetime, timedelta
 
     from truthnews.config import Settings
@@ -76,12 +154,15 @@ def test_only_finished_full_cycles_defer_the_next_one(tmp_path, monkeypatch):
     with session_scope(get_engine(url)) as s:  # empezado hace 2 min y cortado: no cuenta
         s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=2)))
     assert worker.last_full_cycle(settings) is None and worker.next_cycle_at(settings) is None
-    done = datetime.now(UTC) - timedelta(minutes=10)
+    # Ciclo que empezo hace 25 min y termino hace 3: el siguiente se ancla en su inicio (+30), no en su fin
+    # (+30 desde el fin daria huecos de duracion + intervalo, ~55 min, tras cada reinicio).
+    start = datetime.now(UTC) - timedelta(minutes=25)
+    done = start + timedelta(minutes=22)
     with session_scope(get_engine(url)) as s:
-        s.add(CrawlRun(stats={"cycle": "terminado", "cycle_finished": done.isoformat()}))
+        s.add(CrawlRun(started_at=start, stats={"cycle": "terminado", "cycle_finished": done.isoformat()}))
         s.add(CrawlRun(stats={"lane": "rapido"}))  # el carril rapido tampoco cuenta
-    assert worker.next_cycle_at(settings) == done + timedelta(minutes=30)
-    assert worker.next_cycle_at(settings, now=done + timedelta(minutes=31)) is None
+    assert worker.next_cycle_at(settings) == start + timedelta(minutes=30)
+    assert worker.next_cycle_at(settings, now=start + timedelta(minutes=31)) is None
     get_engine.cache_clear()
 
 

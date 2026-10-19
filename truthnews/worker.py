@@ -13,8 +13,8 @@ from sqlalchemy import select
 
 from truthnews import archive
 from truthnews.ai import claims as ai_claims
-from truthnews.ai import threads
-from truthnews.ai.client import AIClient, AIError
+from truthnews.ai import cost, threads
+from truthnews.ai.client import AIClient
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis import statement_checks
 from truthnews.analysis.pipeline import run as analyze
@@ -89,16 +89,33 @@ class _Timed(dict):
         self._clock = clock
         self._last = clock()
         self.seconds: dict[str, float] = {}
+        self.cost: dict[str, float] = {}  # USD de IA por paso, igual que los segundos (ADR 0054)
+        self._spent = cost.METER.spent
 
     def __setitem__(self, key, value):
         now = self._clock()
         self.seconds.setdefault(key, round(now - self._last, 1))
         self._last = now
+        spent = cost.METER.spent
+        if spent > self._spent:
+            self.cost.setdefault(key, round(spent - self._spent, 4))
+        self._spent = spent
         super().__setitem__(key, value)
+
+
+def spent_today(session, now: datetime | None = None) -> float:
+    """USD de IA gastados hoy (dia UTC) en los ciclos ya guardados. Un ciclo cortado antes de guardar sus
+    estadisticas no cuenta: el tope puede quedarse algo corto, nunca bloquear de mas."""
+    now = now or datetime.now(UTC)
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    rows = session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day))
+    return sum(float(((st or {}).get("ai_cost") or {}).get("usd") or 0) for st in rows)
 
 
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
+    with session_scope(engine) as session:
+        cost.start_cycle(spent_today(session), settings.ai_daily_budget_usd)
     summary = _Timed()
     with session_scope(engine) as session:
         sync_registry(session)
@@ -143,10 +160,15 @@ def _run_cycle(settings: Settings) -> dict:
         ]
         summary["programs"] = _guarded(engine, "programas", lambda s: programs.run(s, settings, windows))
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
-        with session_scope(engine) as session:
+
+        def _claims(session):
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
-            summary["ai_claims"] = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
-            summary["ai_claims"]["scores"] = score_stories(session, started)
+            out = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
+            return {**out, "scores": score_stories(session, started)}
+
+        # Sin credito en la API (2026-10-19 11:07) este paso cortaba el ciclo y se perdian entidades,
+        # archivo, investigaciones y redes: los pasos de IA van guardados como los demas.
+        summary["ai_claims"] = _guarded(engine, "afirmaciones con IA", _claims)
     # Entidades tras el analisis (las afirmaciones ya existen y se les atribuye quien las dice) y, despues,
     # archivo de las entidades; lo importado se extrae en el ciclo siguiente (ADR 0028).
     summary["entities"] = _guarded(
@@ -164,22 +186,24 @@ def _run_cycle(settings: Settings) -> dict:
             ),
         )
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
-        with session_scope(engine) as session:
-            try:
-                summary["threads"] = threads.run(
-                    session,
-                    AIClient(settings.ai_model, settings.ai_effort),
-                    settings.default_country,
-                    settings.ai_max_threads_per_cycle,
-                )
-            except AIError as exc:
-                summary["threads"] = {"error": str(exc)}
-    with session_scope(engine) as session:
-        summary["ai"] = ai_step(session, settings)
-    with session_scope(engine) as session:
+        summary["threads"] = _guarded(
+            engine,
+            "hilos",
+            lambda s: threads.run(
+                s,
+                AIClient(settings.ai_model, settings.ai_effort),
+                settings.default_country,
+                settings.ai_max_threads_per_cycle,
+            ),
+        )
+    summary["ai"] = _guarded(engine, "ia", lambda s: ai_step(s, settings))
+
+    def _investigations(session):
         seed_defaults(session)
         ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
-        summary["investigations"] = process_pending(session, ai=ai)
+        return process_pending(session, ai=ai)
+
+    summary["investigations"] = _guarded(engine, "investigaciones", _investigations)
     with session_scope(engine) as session:  # redes al final: publica lo que este ciclo dejo listo (ADR 0018)
         try:
             summary["social"] = social.run(session, settings.site_url, lang=settings.default_language)
@@ -195,8 +219,10 @@ def _run_cycle(settings: Settings) -> dict:
                 "cycle": FULL_CYCLE,
                 "cycle_finished": utcnow().isoformat(),
                 "seconds": summary.seconds,
+                "ai_cost": {**cost.METER.summary(), "por_paso": summary.cost},
             }
     dict.__setitem__(summary, "seconds", summary.seconds)  # duracion por paso, para ver el mas lento
+    dict.__setitem__(summary, "ai_cost", {**cost.METER.summary(), "por_paso": summary.cost})
     log.info("ciclo terminado: %s", summary)
     return summary
 
@@ -223,20 +249,23 @@ def _guarded(engine, name: str, step) -> dict:
 
 
 def last_full_cycle(settings: Settings) -> datetime | None:
-    """Fin del ultimo ciclo completo terminado. Un ciclo cortado por un redespliegue no cuenta: antes se
-    contaba su inicio y, con despliegues cada pocos minutos, el ciclo se aplazaba sin terminar nunca."""
+    """Inicio del ultimo ciclo completo terminado. Un ciclo cortado por un redespliegue no cuenta: antes se
+    contaba su inicio y, con despliegues cada pocos minutos, el ciclo se aplazaba sin terminar nunca. Se ancla
+    en el inicio (no en el fin) para que tras un reinicio el hueco sea el intervalo y no duracion + intervalo
+    (medido en produccion 2026-10-19: huecos de 52 y 56 min con intervalo de 30)."""
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        rows = session.execute(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(200))
-        done = next((st for (st,) in rows if (st or {}).get("cycle") == FULL_CYCLE), None)
-    if done is None:
+        rows = session.execute(
+            select(CrawlRun.started_at, CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(200)
+        )
+        at = next((start for start, st in rows if (st or {}).get("cycle") == FULL_CYCLE), None)
+    if at is None:
         return None
-    at = datetime.fromisoformat(done["cycle_finished"])
     return at if at.tzinfo else at.replace(tzinfo=UTC)
 
 
 def next_cycle_at(settings: Settings, now: datetime | None = None) -> datetime | None:
-    """Siguiente ciclo completo: ultimo terminado + intervalo; None si ya toca (o nunca hubo uno)."""
+    """Siguiente ciclo completo: inicio del ultimo terminado + intervalo; None si ya toca (o nunca hubo)."""
     now = now or datetime.now(UTC)
     last = last_full_cycle(settings)
     if last is None:

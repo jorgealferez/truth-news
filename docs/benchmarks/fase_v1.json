@@ -1,0 +1,106 @@
+{
+  "fase": "v1",
+  "titulo": "Velocidad de las paginas nuevas: cache de vista para /hoy y la prensa de /contratos (#222)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13 (httpx)",
+      "chromium": "1194 (Playwright 1.56.1)"
+    },
+    "objetivo": "https://nosmienten.com",
+    "metodo": "TTFB: 20 peticiones seguidas por pagina con conexion reutilizada, p50 y p95; LCP: perfil movil de fase_m1 (412 px tactil, CPU 4x, 150 ms / 1,6 Mbit/s, sin cache, mediana de 3)"
+  },
+  "medidas": {
+    "paginas_ttfb_p50_mayor_600ms": 0,
+    "paginas_lcp_movil_mayor_2500ms": 0
+  },
+  "detalle": {
+    "ttfb_antes_13:28Z": {
+      "/contratos": {
+        "p50_ms": 955,
+        "p95_ms": 1338
+      },
+      "/historia/6320": {
+        "p50_ms": 214,
+        "p95_ms": 230
+      },
+      "/entidad/120-espana": {
+        "p50_ms": 233,
+        "p95_ms": 405
+      },
+      "/entidad/54-donald-trump": {
+        "p50_ms": 209,
+        "p95_ms": 231
+      },
+      "/hoy": {
+        "p50_ms": 751,
+        "p95_ms": 1304
+      },
+      "/verificacion/31": {
+        "p50_ms": 157,
+        "p95_ms": 168
+      },
+      "/": {
+        "p50_ms": 189,
+        "p95_ms": 210
+      }
+    },
+    "ttfb_despues_13:50Z": {
+      "/hoy": {
+        "p50_ms": 146,
+        "p95_ms": 163,
+        "max_ms": 209
+      },
+      "/contratos": {
+        "p50_ms": 148,
+        "p95_ms": 249,
+        "max_ms": 1001
+      },
+      "/verificacion/31": {
+        "p50_ms": 158,
+        "p95_ms": 224,
+        "max_ms": 226
+      },
+      "/": {
+        "p50_ms": 175,
+        "p95_ms": 222,
+        "max_ms": 357
+      },
+      "/historia/6320": {
+        "p50_ms": 199,
+        "p95_ms": 224,
+        "max_ms": 227
+      },
+      "/entidad/120-espana": {
+        "p50_ms": 208,
+        "p95_ms": 436,
+        "max_ms": 483
+      }
+    },
+    "lcp_movil_antes_ms": {
+      "/contratos": 1856,
+      "/historia/6320": 1016,
+      "/entidad/120-espana": 1040,
+      "/hoy": 1652,
+      "/verificacion/31": 968
+    },
+    "lcp_movil_despues_ms": {
+      "/contratos": 1076,
+      "/historia/6320": 1080,
+      "/entidad/120-espana": 1016,
+      "/hoy": 1028,
+      "/verificacion/31": 1044
+    },
+    "causa": "/hoy recalculaba en cada visita hasta 30 historias con sus articulos (today.keys); /contratos lanzaba un ILIKE por empresa sobre 60 dias de noticias (contracts.mentions)",
+    "arreglo": "cache de vista en la web (app.cached): /hoy 5 min por idioma y dia, prensa de /contratos 10 min por lista de empresas y dia; la primera visita tras caducar paga el calculo (max de /contratos 1001 ms); sin indices ni cambios de worker o esquema",
+    "no_se_publican_como_medidas": "los milisegundos dependen de la red y de la carga; el ratchet estricto los convertiria en falsos retrocesos. Se publica el numero de paginas por encima de los umbrales (600 ms de TTFB, 2,5 s de LCP)",
+    "aparte": "/historia/6320: 3 enlaces dentro de los graficos SVG siguen midiendo 11 px de alto (carril de graficos, #223 en curso de despliegue); avisado a la direccion"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Datos de campo (Chrome UX Report, Search Console): sin acceso desde este entorno"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}

@@ -86,7 +86,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
 | ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno; 18c BLOQUEADO por decision del usuario, ledger) |
-| ADR 0041 | diseno | PR (este) | Comparativas (quien informa primero y bien) |
+| ADR 0041 | diseno | en main | Comparativas (quien informa primero y bien; #159) |
 | ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
 | ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
@@ -95,8 +95,10 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0047 | diseno | PR #174 | Redes (Hoy en 1 minuto) |
 | ADR 0048 + migracion 0020 | datos | reservado | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
-| ADR 0051 + migracion 0022 | datos | PR (este) | Datos politicos (cuerpo del comunicado del canal web en `political_statement`; pedido por la direccion 10:47; numeros pendientes de confirmar) |
-| siguiente libre | — | — | ADR 0052 + migracion 0023 (ADR 0050 lo reservo Entidades en #189); pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
+| ADR 0050 | diseno | PR (este) | Entidades (graficos SVG de entidad e historia; asignado por la direccion) |
+| ADR 0051 + migracion 0022 | datos | PR #194 | Datos politicos (cuerpo del comunicado del canal web en `political_statement`; numeros confirmados por la direccion 10:58) |
+| ADR 0054 | diseno | PR #218 | Coste de la IA (medido, tope diario y cadencia minima de piezas; peticion del usuario; sin migracion) |
+| siguiente libre | — | — | ADR 0055 + migracion 0024 (0052 y 0023 son de Entidades, 0053 de Comparativas); pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 

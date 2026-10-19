@@ -5,7 +5,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
-from truthnews.models import Article, Claim, Outlet, Story, Verification
+from truthnews.models import Article, Claim, Entity, Evidence, Outlet, Story, Verification
 from truthnews.web import seo, structured
 from truthnews.web.app import create_app
 
@@ -67,10 +67,24 @@ def site(engine, session):
         )
         session.add(c)
         session.flush()
-        session.add(
-            Verification(claim_id=c.id, verdict=verdict, confidence=0.8, explanation="x", method="nivel")
-        )
+        v = Verification(claim_id=c.id, verdict=verdict, confidence=0.8, explanation="x", method="nivel")
+        if verdict == "falso":
+            v.evidence.append(
+                Evidence(
+                    source="eurostat",
+                    label="Tasa de paro",
+                    url="https://ec.europa.eu/x",
+                    period="2026-08",
+                    value=10.0,
+                    payload={},
+                )
+            )
+        session.add(v)
         claims[verdict] = c
+    speaker = Entity(key="persona:ana perez", kind="persona", name="Ana Pérez", curated=True)
+    session.add(speaker)
+    session.flush()
+    claims["falso"].speaker_entity_id = speaker.id
     session.commit()
     return TestClient(create_app(Settings(database_url="sqlite://"), engine=engine)), st, claims
 
@@ -116,6 +130,21 @@ def test_claim_review_on_verifications_with_verdict(site):
     ]
     no_data = c.get(f"/verificacion/{claims['sin-datos'].id}").text
     assert not structured.of_type(no_data, "ClaimReview")
+    assert rev["citation"] == [
+        {"@type": "Dataset", "name": "eurostat · Tasa de paro · 2026-08", "url": "https://ec.europa.eu/x"}
+    ]
+
+
+def test_internal_links_story_verification_and_entity(site):
+    c, st, claims = site
+    cl = claims["falso"]
+    page = c.get(f"/verificacion/{cl.id}").text
+    story_url = seo.path("historia", st.id, st.title)
+    assert f'<a href="{story_url}">{st.title}</a>' in page  # ancla descriptiva y URL canonica
+    assert f'href="/historia/{st.id}"' not in page  # sin el enlace sin slug (301)
+    assert 'href="/entidad/' in page and "Ana Pérez" in page
+    story = c.get(story_url).text
+    assert f'<a href="/verificacion/{cl.id}"><strong>' in story  # el veredicto en una frase es el enlace
 
 
 def test_story_breadcrumbs_and_canonical(site):

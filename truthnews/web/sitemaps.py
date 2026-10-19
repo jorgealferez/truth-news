@@ -53,6 +53,7 @@ FIXED = (
     ("/nombramientos", "daily", 0.6),
     ("/consejo-de-ministros", "daily", 0.6),
     ("/presupuestos", "monthly", 0.4),
+    ("/contratos", "daily", 0.6),
     ("/metodologia", "monthly", 0.4),
     ("/acerca", "yearly", 0.3),
     ("/publicidad", "yearly", 0.2),

@@ -101,12 +101,14 @@
     {% for c in claims %}{% set v = c.verification %}
       <div class="claim">
         <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <a href="/medio/{{ c.outlet.slug }}"><strong>{{ c.outlet.name }}</strong></a>: «{{ c.text }}»</p>
-        <p><strong>{{ verdict_line(c, lang) }}</strong> <a class="meta" href="/verificacion/{{ c.id }}">{{ t(lang, 'see_verification') }} →</a></p>
+        <p><a href="/verificacion/{{ c.id }}"><strong>{{ verdict_line(c, lang) }}</strong></a> <a class="meta" href="/verificacion/{{ c.id }}">{{ t(lang, 'see_verification') }} →</a></p>
         <p>{{ v.explanation }}</p>
         {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> <span class="vs">{{ t(lang, 'vs_said') }} {{ c.value|dato(c.unit) }}</span> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
       </div>
     {% endfor %}</details>{% endif %}
 
+  {% if figure_charts %}<section class="block figure-time"><h2>{{ t(lang, 'chart_figure_title') }}</h2>
+    <p class="meta">{{ t(lang, 'chart_figure_note') }}</p>{% for c in figure_charts %}{{ c }}{% endfor %}</section>{% endif %}
   {% if comp.disputes %}<details class="block fold" id="diferencias"><summary><h2>{{ t(lang, 'disputed') }}</h2></summary>
     <p class="meta">{{ t(lang, 'disputed_note') }}</p>
     {% for d in comp.dispute_summaries() %}<table class="table figs"><caption>{{ d.noun|capitalize }}</caption><tbody>

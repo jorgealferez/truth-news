@@ -32,3 +32,11 @@ def engine(db_url):
 def session(engine):
     with session_scope(engine) as s:
         yield s
+
+
+@pytest.fixture(autouse=True)
+def _fresh_ai_meter(monkeypatch):
+    """El contador de coste de la IA es global (ADR 0054): cada test empieza con uno nuevo y sin tope."""
+    from truthnews.ai import cost
+
+    monkeypatch.setattr(cost, "METER", cost.Meter())
