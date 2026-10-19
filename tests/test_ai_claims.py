@@ -356,3 +356,10 @@ def test_expectations_and_annual_figures_are_not_the_latest_data():
         "La inflación media de 2026 será del 3,7 %.", "inflacion", "ES", 3.7, year=2026
     )
     assert extract("La inflación se sitúa en el 3,7 % en 2026 en el país.", "es", "ES", 2026, 10) == []
+
+
+def test_subgroups_are_not_the_general_rate():
+    # Caso real (ABC, 19/10/2026), juzgado Falso por la v8: es la tasa de las personas con discapacidad.
+    s = "La tasa AROPE alcanza el 38,7% en este colectivo, frente al 30,6% entre quienes no la tienen."
+    assert "colectivo" in check(s, "pobreza_exclusion", "ES", 38.7)
+    assert extract(s, "es", "ES", 2026) == []

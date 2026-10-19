@@ -10,27 +10,28 @@ siguiente ciclo.
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import httpx
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from truthnews.models import SOCIAL_NETWORKS, SocialPost, utcnow
+from truthnews.models import SOCIAL_NETWORKS, SOCIAL_NETWORKS_EN, SocialPost, utcnow
 from truthnews.social import adapters
 from truthnews.social.compose import fit
-from truthnews.social.config import SocialSettings
+from truthnews.social.config import SocialSettings, base_network
 from truthnews.social.images import image_for
-from truthnews.social.select import Candidate, candidates
+from truthnews.social.select import Candidate, candidates, stories_en
 
 log = logging.getLogger(__name__)
 MAX_ATTEMPTS = 3
 
 
 def _adapter(network: str, creds: dict[str, str], settings: SocialSettings, client: httpx.Client):
-    if network == "bluesky":
+    base = base_network(network)
+    if base == "bluesky":
         return adapters.Bluesky(creds, client, settings.env.get("BLUESKY_PDS") or "https://bsky.social")
-    return adapters.ADAPTERS[network](creds, client)
+    return adapters.ADAPTERS[base](creds, client)
 
 
 def _deliver(session: Session, post: SocialPost, adapter, image: bytes | None, title: str) -> bool:
@@ -62,19 +63,29 @@ def run(
     now = now or utcnow()
     day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     found = candidates(session, site_url, settings.min_score, settings.window_hours, lang, now)
-    by_key = {(c.kind, c.ref_id): c for c in found}
-    pictures: dict[int | None, tuple[bytes, str]] = {}
+    since = now - timedelta(hours=settings.window_hours)
+    found_en = stories_en(session, site_url.rstrip("/"), since, settings.min_score)
+    by_lang = {
+        "es": {(c.kind, c.ref_id): c for c in found},
+        "en": {(c.kind, c.ref_id): c for c in found_en},
+    }
+    pictures: dict[tuple, tuple[bytes, str]] = {}
 
     def picture(c: Candidate) -> tuple[bytes, str]:
-        if c.image_story_id not in pictures:
-            pictures[c.image_story_id] = image_for(session, c.image_story_id, site_url, c.language)
-        return pictures[c.image_story_id]
+        title = c.draft.headline if c.language == "en" else None
+        key = (c.image_story_id, c.language, title)
+        if key not in pictures:
+            pictures[key] = image_for(session, c.image_story_id, site_url, c.language, title)
+        return pictures[key]
 
     own_client = client is None
     client = client or adapters.make_client()
-    summary: dict = {"candidatas": len(found)}
+    summary: dict = {"candidatas": len(found), "candidatas_en": len(found_en)}
     try:
-        for network in SOCIAL_NETWORKS:
+        for network in SOCIAL_NETWORKS + SOCIAL_NETWORKS_EN:
+            english = network in SOCIAL_NETWORKS_EN
+            pool = found_en if english else found
+            by_key = by_lang["en" if english else "es"]
             creds = settings.credentials(network)
             adapter = _adapter(network, creds, settings, client) if creds else None
             stats = {"modo": "envio" if adapter else "prueba", "nuevas": 0, "enviadas": 0, "errores": 0}
@@ -108,7 +119,7 @@ def run(
                     select(SocialPost.kind, SocialPost.ref_id).where(SocialPost.network == network)
                 ).all()
             )
-            for c in [c for c in found if (c.kind, c.ref_id) not in done][: max(room, 0)]:
+            for c in [c for c in pool if (c.kind, c.ref_id) not in done][: max(room, 0)]:
                 if not healthy:
                     break
                 image, image_url = picture(c)
@@ -156,7 +167,7 @@ def status(session: Session, settings: SocialSettings | None = None, now: dateti
             "today": today.get(n, 0),
             "quota": settings.quota.get(n, 0),
         }
-        for n in SOCIAL_NETWORKS
+        for n in SOCIAL_NETWORKS + SOCIAL_NETWORKS_EN
     ]
     recent = list(session.scalars(select(SocialPost).order_by(SocialPost.id.desc()).limit(40)))
     return {"enabled": settings.enabled, "networks": networks, "recent": recent}

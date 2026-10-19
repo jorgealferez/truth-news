@@ -36,11 +36,14 @@
   {% for d in discrepancies %}
     <li class="nc-item">
       <p class="nc-one"><a href="{{ url('historia', d.story.id, d.story.title) }}"><strong>{{ d.story.title }}</strong></a> <span class="meta">· {{ d.n_outlets }} {{ t(lang, 'outlets')|lower }} · {{ d.story.last_seen|ago(lang) }}</span></p>
-      <ul class="bars">
-      {% for s in d.disputes %}{% for value, figs in s.groups %}
-        <li><span class="bar{{ ' alt' if value != s.mode }}" style="width:{{ (100 * value / s.high) if s.high else 0 }}%"></span><b>{{ s.noun }}: {{ value|num }}</b><span class="n">{{ figs|map(attribute='outlet')|unique|join(', ') }}</span></li>
-      {% endfor %}{% endfor %}
-      </ul>
+      {% for s in d.disputes %}
+      <div class="nc-dispute">
+        <h3 class="nc-noun">{{ s.noun|capitalize }} <span class="range">{{ s.low|num }}–{{ s.high|num }}</span></h3>
+        <ul class="bars">{% for value, figs in s.groups %}{% set who = figs|map(attribute='outlet')|unique|list %}
+          <li><span class="bar{{ ' alt' if value != s.mode }}" style="width:{{ [2, (100 * value / s.high)|round|int]|max if s.high else 0 }}%"></span><b>{{ value|num }}</b><span class="n">{{ who|length }} {{ t(lang, 'n_outlets') if who|length != 1 else t(lang, 'outlet')|lower }}</span><span class="who">{{ who|join(', ') }}</span></li>{% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
     </li>
   {% endfor %}
   </ol>

@@ -1,4 +1,4 @@
-# ADR 0033 — Cumplimiento UE y España: sin aviso de cookies porque todo lo guardado es exento, y un test que lo vigila
+# ADR 0039 — Cumplimiento UE y España: sin aviso de cookies porque todo lo guardado es exento, y un test que lo vigila
 
 - **Estado:** aceptado
 - **Fecha:** 2026-10-19

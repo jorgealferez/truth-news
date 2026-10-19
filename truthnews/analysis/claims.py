@@ -30,7 +30,12 @@ _DOWN = re.compile(
     r"|falls|fell|drops|decreases|desce|caiu)\b"
 )
 _SUBGROUP = re.compile(
-    r"\b(juvenil|jovenes|menores de|mujeres|hombres|parados de larga|youth|women|men|jovens)\b"
+    r"\b(juvenil|jovenes|menores de|mujeres|hombres|parados de larga|youth|women|men|jovens"
+    # Caso real (ABC, 19/10/2026): "la tasa AROPE alcanza el 38,7 % en este colectivo" (personas con
+    # discapacidad) se juzgo contra la tasa general.
+    r"|colectivo|colectivos|este grupo|estos grupos|entre quienes|discapacidad|personas mayores|mayores de"
+    r"|ninos|infantil|hogares con|extranjeros|inmigrantes|migrantes|pensionistas|autonomos"
+    r"|disabled|disability|children|elderly|migrants)\b"
 )
 _CHANGE = re.compile(r"\b(puntos|points|pontos|decimas)\b")
 # "El paro baja un 2 %": es una variacion del indicador, no su nivel. Solo vale como nivel en los

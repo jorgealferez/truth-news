@@ -1,4 +1,4 @@
-/* Politica de cookies (ADR 0033): borra lo que el sitio guarda en este navegador (inventario en
+/* Politica de cookies (ADR 0039): borra lo que el sitio guarda en este navegador (inventario en
    truthnews/web/legal.py). Sin JS el boton no hace nada; el navegador sigue pudiendo borrarlo. */
 (function () {
   var btn = document.querySelector("[data-legal-clear]");

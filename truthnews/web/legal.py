@@ -1,4 +1,4 @@
-"""Cumplimiento normativo UE y Espana (peticion del usuario 2026-10-19, ADR 0033).
+"""Cumplimiento normativo UE y Espana (peticion del usuario 2026-10-19, ADR 0039).
 
 `STORAGE` es el inventario de todo lo que el sitio guarda en el navegador del lector. La politica de
 cookies se pinta desde aqui y `tests/test_legal.py` falla si el codigo escribe una cookie o una clave de

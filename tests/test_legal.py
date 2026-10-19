@@ -1,4 +1,4 @@
-"""Cumplimiento normativo UE y Espana (ADR 0033): paginas legales, pie, sitemap e inventario de cookies."""
+"""Cumplimiento normativo UE y Espana (ADR 0039): paginas legales, pie, sitemap e inventario de cookies."""
 
 import re
 from pathlib import Path
@@ -94,4 +94,4 @@ def test_everything_written_to_the_browser_is_declared():
     written = written_storage()
     assert {"lang", "nm_last_visit"} <= written  # el escaner los encuentra
     undeclared = written - {s.name for s in legal.STORAGE}
-    assert not undeclared, f"declarar en truthnews/web/legal.py STORAGE (y en ADR 0033): {undeclared}"
+    assert not undeclared, f"declarar en truthnews/web/legal.py STORAGE (y en ADR 0039): {undeclared}"
