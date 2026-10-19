@@ -1,6 +1,16 @@
 # Textos de interfaz por idioma. Anadir un idioma = anadir una clave con todas las cadenas.
 es:
   tagline: Comparamos lo que cuentan los medios con lo que dicen los datos
+  today_title: Hoy en 1 minuto
+  today_lead: Las claves del día con la cifra que circula frente al dato oficial, el veredicto y la fuente. Solo lo que ya hemos contrastado.
+  today_empty: Hoy todavía no hay nada contrastado con datos oficiales. No rellenamos.
+  today_said: Cifra que circula
+  today_official: Dato oficial
+  today_source: Fuente
+  today_more: Ver la verificación
+  today_dispute: Cifras en disputa
+  today_method: Cada frase se arma solo con los datos guardados (quién lo dijo, la cifra, el dato oficial, su periodo y su fuente); sin texto añadido.
+  today_image: Imagen para redes
   motto: Sin bandos. Con datos.
   home: Portada
   menu: Menú
@@ -416,7 +426,7 @@ es:
     Lo que el Gobierno anuncia que aprobó el Consejo de Ministros y si ya consta publicado en el BOE, con el
     enlace a las dos fuentes. Solo reales decretos: los acuerdos de autorización no se publican como tales.
   council_state_publicado: "Publicado en el BOE el {fecha} ({n} días después)"
-  council_state_pendiente: "Todavía no figura en el BOE ({n} días)"
+  council_state_pendiente: "Pendiente de publicación en el BOE ({n} días; el aviso llega a los 30)"
   council_state_no_publicado: "Aún no publicado en el BOE, {n} días después"
   council_state_sin_comprobar: "Sin comprobar: algún BOE de esos días no se pudo leer"
   council_counts: "{a} reales decretos · {p} publicados · {r} aún no publicados a los {d} días"
@@ -651,6 +661,16 @@ en:
   legal_registry: Registry entry
   legal_site: Website
   tagline: We compare what the media report with what the data say
+  today_title: Today in 1 minute
+  today_lead: The day's key points with the figure going around against the official data, the verdict and the source. Only what we have already checked.
+  today_empty: Nothing has been checked against official data yet today. We do not fill the gap.
+  today_said: Figure going around
+  today_official: Official data
+  today_source: Source
+  today_more: See the fact check
+  today_dispute: Disputed figures
+  today_method: Each sentence is built only from the stored data (who said it, the figure, the official data, its period and its source); no added text.
+  today_image: Image for social media
   motto: No sides. Just data.
   home: Home
   menu: Menu
@@ -1062,7 +1082,7 @@ en:
     Official Gazette (BOE), linking both sources. Royal decrees only: authorisation agreements are not
     published as such.
   council_state_publicado: "Published in the BOE on {fecha} ({n} days later)"
-  council_state_pendiente: "Not yet in the BOE ({n} days)"
+  council_state_pendiente: "Pending publication in the BOE ({n} days; the notice comes at 30)"
   council_state_no_publicado: "Still not published in the BOE, {n} days later"
   council_state_sin_comprobar: "Not checked: a BOE issue from those days could not be read"
   council_counts: "{a} royal decrees · {p} published · {r} still unpublished after {d} days"

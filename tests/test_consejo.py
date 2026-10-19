@@ -127,7 +127,8 @@ def test_page_shows_both_citations(engine):
     app = create_app(Settings(database_url=str(engine.url)), engine=engine, council_index=index)
     html = TestClient(app).get("/consejo-de-ministros").text
     assert "BOE-A-2026-21318" in html and "Publicado en el BOE el 14/10 (1 día después)" in html
-    assert "Todavía no figura en el BOE" in html and consejo.SITE + REF in html
+    assert "Pendiente de publicación en el BOE (6 días; el aviso llega a los 30)" in html
+    assert consejo.SITE + REF in html
 
 
 def test_page_while_loading_and_when_moncloa_fails(engine):

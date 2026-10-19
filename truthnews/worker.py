@@ -123,6 +123,17 @@ def _run_cycle(settings: Settings) -> dict:
             summary["political"] = {"error": str(exc)[:300]}
     # Lo que dicen los partidos en sus canales, juzgado con el mismo juez que las noticias (ADR 0031).
     summary["statement_checks"] = _guarded(engine, "declaraciones juzgadas", statement_checks.run)
+    if settings.ai_enabled and settings.statement_ai_max_calls > 0:
+        summary["statement_checks_ai"] = _guarded(
+            engine,
+            "declaraciones juzgadas con IA",
+            lambda s: statement_checks.run_ai(
+                s,
+                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000),
+                summary["run"],
+                max_calls=settings.statement_ai_max_calls,
+            ),
+        )
     # Programas electorales y promesas (ADR 0037): descubrir en las webs de los partidos e importar unos
     # pocos; las promesas de las declaraciones, solo dentro de la ventana de una eleccion (ADR 0036).
     if settings.programs_enabled:

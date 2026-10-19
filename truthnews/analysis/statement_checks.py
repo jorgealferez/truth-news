@@ -5,6 +5,10 @@ Lee `political_statement` (carril Global, ADR 0024), busca afirmaciones comproba
 veredicto y su evidencia en `statement_check`. No toca `claim`: una declaracion no es una noticia de un
 medio. El mismo mensaje publicado en varios canales del mismo partido en pocas horas se juzga una vez, y
 cuando cambia el metodo (`METHOD_VERSION`) se vuelve a juzgar dejando escrita la correccion.
+
+Con IA (`run_ai`), las frases con cifra que las reglas no recogen se proponen a `ai.claims.propose` (la misma
+validacion por codigo que en las noticias) con un tope de llamadas por ciclo. Para no repetir lo ya enviado
+sin necesidad de tabla, el ultimo id de declaracion enviado se guarda en `CrawlRun.stats` (AI_CURSOR).
 """
 
 from __future__ import annotations
@@ -15,17 +19,20 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from truthnews import registry
+from truthnews.ai import claims as ai_claims
+from truthnews.ai.client import AIClient
 from truthnews.analysis.claims import ClaimCandidate
 from truthnews.analysis.judge import judge_candidate, judge_text
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
 from truthnews.classify import normalize
-from truthnews.models import Entity, PoliticalStatement, StatementCheck
+from truthnews.models import CrawlRun, Entity, PoliticalStatement, StatementCheck
 
 WINDOW_DAYS = 30
 DUPLICATE_HOURS = 6
 # Las reglas son de castellano: una declaracion en euskera, gallego o catalan rara vez da candidatos, y si
 # no los da no se juzga (no se dice nada de ella). Sin columna de idioma en political_statement (ADR 0024).
 LANGUAGE = "es"
+AI_CURSOR = "statement_ai_cursor"
 
 
 def _aware(dt: datetime) -> datetime:
@@ -102,7 +109,7 @@ def run(
         .order_by(PoliticalStatement.published_at, PoliticalStatement.id)
     )
     for st in rows:
-        body = (st.summary or st.text or "").strip()
+        body = _body(st)
         published = _aware(st.published_at)
         key = (st.actor, normalize(body))
         prev = last_seen.get(key)
@@ -116,27 +123,107 @@ def run(
         speaker = entities.get(st.actor)
         seen: set[tuple] = set()
         for cand, result in judge_text(body, LANGUAGE, st.country or "XX", published, verifier):
-            uniq = (cand.indicator, cand.geo, cand.value)
-            if uniq in seen:
-                continue
-            seen.add(uniq)
-            check = StatementCheck(
-                statement_id=st.id,
-                speaker_entity_id=speaker.id if speaker else None,
-                text=cand.text,
-                indicator=cand.indicator,
-                geo=cand.geo,
-                value=cand.value,
-                unit=cand.unit,
-                direction=cand.direction,
-                period=cand.period,
-                extractor="reglas",
-            )
-            _apply(check, result)
-            session.add(check)
-            stats["claims"] += 1
+            if _add(session, st, speaker, cand, result, "reglas", seen):
+                stats["claims"] += 1
     session.flush()
     return stats
+
+
+def _add(session, st, speaker, cand: ClaimCandidate, result: Result, extractor: str, seen: set) -> bool:
+    """Guarda una afirmacion juzgada salvo que ya este (misma cifra del mismo indicador y territorio)."""
+    uniq = (st.id, cand.indicator, cand.geo, cand.value)
+    if uniq in seen:
+        return False
+    seen.add(uniq)
+    check = StatementCheck(
+        statement_id=st.id,
+        speaker_entity_id=speaker.id if speaker else None,
+        text=cand.text,
+        indicator=cand.indicator,
+        geo=cand.geo,
+        value=cand.value,
+        unit=cand.unit,
+        direction=cand.direction,
+        period=cand.period,
+        extractor=extractor,
+    )
+    _apply(check, result)
+    session.add(check)
+    return True
+
+
+def _body(st: PoliticalStatement) -> str:
+    return (st.summary or st.text or "").strip()
+
+
+def ai_cursor(session: Session) -> int:
+    """Ultimo id de declaracion ya enviado a la IA (0 si nunca)."""
+    for stats in session.scalars(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(50)):
+        if stats and AI_CURSOR in stats:
+            return int(stats[AI_CURSOR])
+    return 0
+
+
+def run_ai(
+    session: Session,
+    ai: AIClient,
+    run_id: int | None,
+    verifier: Verifier | None = None,
+    max_calls: int = 2,
+    now: datetime | None = None,
+    actors: list[registry.ActorSpec] | None = None,
+) -> dict:
+    """Frases con cifra de declaraciones aun no enviadas, propuestas a la IA, validadas y juzgadas."""
+    now = now or datetime.now(UTC)
+    verifier = verifier or Verifier()
+    cursor = ai_cursor(session)
+    rows = session.scalars(
+        select(PoliticalStatement)
+        .where(
+            PoliticalStatement.id > cursor,
+            PoliticalStatement.published_at >= now - timedelta(days=WINDOW_DAYS),
+        )
+        .order_by(PoliticalStatement.id)
+    )
+    room = ai_claims.BATCH * max_calls
+    items: list[ai_claims.Item] = []
+    last, seen_text = cursor, set()
+    for st in rows:
+        body = _body(st)
+        key = (st.actor, normalize(body))
+        sentences = ai_claims.candidate_sentences(body) if key not in seen_text else []
+        if len(items) + len(sentences) > room:
+            if items:
+                break  # la declaracion entera va en el siguiente ciclo
+            sentences = sentences[:room]  # una sola declaracion mas larga que el tope no atasca el cursor
+        seen_text.add(key)
+        geo = st.country or "XX"
+        items += [ai_claims.Item(s, body, geo, _aware(st.published_at), st) for s in sentences]
+        last = st.id
+    accepted, stats = ai_claims.propose(ai, items, max_calls) if items else ([], {"frases_candidatas": 0})
+    if items and not stats.get("llamadas"):
+        return {**stats, "claims": 0}  # la IA no respondio: el cursor no avanza y se reintenta
+    entities = actor_entities(session, actors)
+    seen = set(
+        session.execute(
+            select(
+                StatementCheck.statement_id,
+                StatementCheck.indicator,
+                StatementCheck.geo,
+                StatementCheck.value,
+            )
+        )
+    )
+    claims = 0
+    for it, cand in accepted:
+        st = it.ref
+        if _add(session, st, entities.get(st.actor), cand, judge_candidate(cand, verifier), "ia", seen):
+            claims += 1
+    row = session.get(CrawlRun, run_id) if run_id is not None else None
+    if row is not None:
+        row.stats = {**(row.stats or {}), AI_CURSOR: last}
+    session.flush()
+    return {**stats, "claims": claims, "cursor": last}
 
 
 def without_channel(actors: list[registry.ActorSpec] | None = None, country: str = "ES") -> list[str]:
