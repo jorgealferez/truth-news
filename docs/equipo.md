@@ -93,7 +93,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0045 | diseno | PR #151 | Rastreo (piezas publicitarias de los medios; sin migracion) |
 | ADR 0046 | diseno | en main | Temas, SEO y sintesis (objetivos tactiles de 44 px en movil; sin migracion) |
 | ADR 0047 | diseno | PR #174 | Redes (Hoy en 1 minuto) |
-| ADR 0048 + migracion 0020 | datos | PR #177 | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
+| ADR 0048 + migracion 0020 | datos | #177 (fa7a51e) | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
 | ADR 0050 | diseno | PR (este) | Entidades (graficos SVG de entidad e historia; asignado por la direccion) |
 | ADR 0054 | diseno | PR #218 | Coste de la IA (medido, tope diario y cadencia minima de piezas; peticion del usuario; sin migracion) |
