@@ -1,6 +1,7 @@
 import asyncio
 from dataclasses import replace
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from email.utils import format_datetime
 from pathlib import Path
 
 import httpx
@@ -160,9 +161,24 @@ def test_text_fetch_cap_prefers_newest(session):
     assert with_text == ["https://medio.test/politica/decreto"]  # la mas reciente
 
 
+class RecentServer(Server):
+    """El feed de prueba con fechas de la ultima hora: el relleno solo mira las ultimas 24 h y las fechas
+    fijas del fixture (18/10/2026) caducaban en cuanto pasaba un dia."""
+
+    def __call__(self, request: httpx.Request) -> httpx.Response:
+        resp = super().__call__(request)
+        if str(request.url) == "https://medio.test/rss.xml" and resp.status_code == 200:
+            now = datetime.now(UTC)
+            content = FEED.replace(
+                b"Sun, 18 Oct 2026 10:00:00 +0200", format_datetime(now - timedelta(hours=1)).encode()
+            ).replace(b"Sun, 18 Oct 2026 09:00:00 +0200", format_datetime(now - timedelta(hours=2)).encode())
+            return httpx.Response(200, content=content, headers={"etag": '"v1"'})
+        return resp
+
+
 def test_backfill_fills_recent_verifiable_articles_without_text(session):
     sync_registry(session, SPECS[:1])
-    server = Server()
+    server = RecentServer()
     run = asyncio.run(
         crawl(session, settings(max_text_fetch_per_run=0), transport=httpx.MockTransport(server))
     )
@@ -173,7 +189,7 @@ def test_backfill_fills_recent_verifiable_articles_without_text(session):
     assert all(arts[u].word_count > 50 and arts[u].content_hash for u in filled)
     assert "https://medio.test/privado/x" not in server.hits  # robots.txt sigue mandando
     again = asyncio.run(
-        crawl(session, settings(max_text_fetch_per_run=0), transport=httpx.MockTransport(Server()))
+        crawl(session, settings(max_text_fetch_per_run=0), transport=httpx.MockTransport(RecentServer()))
     )
     assert again.stats["texts_backfilled"] == 0  # lo que ya tiene texto no se vuelve a pedir
 
