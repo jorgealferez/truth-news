@@ -246,3 +246,15 @@ def test_political_run_survives_wikidata_errors(session, monkeypatch):
     monkeypatch.setattr(wikidata, "run_once", boom)
     out = political.run(session, Settings(database_url="sqlite://"), [], wikidata=True)
     assert out["channels"] == 0 and "wikidata" not in out
+
+
+@respx.mock
+def test_wikidata_stops_and_says_why_when_robots_forbids(monkeypatch):
+    from truthnews.crawler import wikidata
+
+    respx.get("https://www.wikidata.org/robots.txt").mock(
+        return_value=httpx.Response(200, text="User-agent: *\nDisallow: /w/\n")
+    )
+    monkeypatch.setattr(wikidata, "_DONE", False)
+    out = wikidata.run_once(Settings(database_url="sqlite://", per_domain_delay_seconds=0), [ACTORS[0]])
+    assert out == {"_parado": "a: robots.txt lo prohibe"}

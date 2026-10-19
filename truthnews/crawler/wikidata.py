@@ -29,8 +29,8 @@ PROPS = {
 }
 
 
-class Throttled(RuntimeError):
-    """Wikidata respondio 429/403: se para la consulta entera, no se reintenta."""
+class Stopped(RuntimeError):
+    """robots.txt lo prohibe o Wikidata no responde 200: se para la consulta entera, sin reintentos."""
 
 
 def host(url: str) -> str:
@@ -52,10 +52,10 @@ def claims(entity: dict, prop: str) -> list[str]:
 async def _json(client: PoliteClient, url: str) -> dict | None:
     resp = await client.get(url)
     if resp is None:
-        return None  # robots.txt lo prohibe
-    if resp.status_code in (403, 429):
-        raise Throttled(f"HTTP {resp.status_code}")
-    return resp.json() if resp.status_code == 200 else None
+        raise Stopped("robots.txt lo prohibe")  # no se elude: se deja escrito en el log
+    if resp.status_code != 200:
+        raise Stopped(f"HTTP {resp.status_code}")
+    return resp.json()
 
 
 async def channels_for(client: PoliteClient, actor: ActorSpec) -> dict | None:
@@ -83,7 +83,7 @@ async def collect(settings: Settings, actors: list[ActorSpec]) -> dict:
         for actor in actors:  # en serie y con ritmo: es una consulta de cortesia
             try:
                 out[actor.slug] = await channels_for(client, actor)
-            except Throttled as exc:
+            except Stopped as exc:
                 out["_parado"] = f"{actor.slug}: {exc}"
                 break
     return out
