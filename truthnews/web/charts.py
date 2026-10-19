@@ -91,6 +91,21 @@ class Said:
     href: str
 
 
+TOUCH = 44  # lado minimo de la zona de toque en movil (ADR 0050; WCAG 2.5.8 pide al menos 24)
+
+
+def _touch(href: str, x: float, y: float) -> str:
+    """Zona de toque invisible de TOUCH x TOUCH bajo un punto enlazado. Va en una capa debajo de los
+    marcadores, asi que tocar el marcador visible abre siempre su enlace; oculta a lectores de pantalla
+    y fuera del tabulador porque el enlace accesible es el del marcador."""
+    half = TOUCH / 2
+    return (
+        f'<a href="{escape(href)}" aria-hidden="true" tabindex="-1">'
+        f'<rect x="{x - half:.1f}" y="{y - half:.1f}" width="{TOUCH}" height="{TOUCH}" '
+        'fill="transparent"/></a>'
+    )
+
+
 def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Markup:
     """Lo que dijo y cuando: un carril por veredicto. `labels` traduce los veredictos (y 'sin-datos')."""
     if not points:
@@ -102,6 +117,7 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
     xs, lo, hi = _time_scale([_aware(p.when) for p in points], x0 + 6, x1 - 6)
     span = (hi - lo).total_seconds() / 86400
     out = []
+    touch: list[str] = []  # capa de toque, debajo de los marcadores
     counts = []
     for i, (key, members) in enumerate(lanes):
         y = top + lane_h * i + lane_h / 2
@@ -116,6 +132,7 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
             kind = p.verdict or "sin-datos"
             color = VERDICT_COLOR.get(kind, VERDICT_COLOR["sin-datos"])
             tip = f"{_aware(p.when):%d/%m/%Y} · {labels.get(kind, kind)}: {p.text[:160]}"
+            touch.append(_touch(p.href, xs(p.when), y))
             out.append(
                 f'<a href="{escape(p.href)}"><title>{escape(tip)}</title>'
                 f'<rect x="{xs(p.when) - 9:.1f}" y="{y - 11:.1f}" width="18" height="22" fill="transparent"/>'
@@ -132,7 +149,7 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
     return Markup(
         f'<svg class="chart said" viewBox="0 0 {W} {h}" role="img" aria-labelledby="st-t st-d" '
         f'xmlns="http://www.w3.org/2000/svg"><title id="st-t">{escape(title)}</title>'
-        f'<desc id="st-d">{escape(desc)}</desc>{"".join(out)}</svg>'
+        f'<desc id="st-d">{escape(desc)}</desc>{"".join(touch)}{"".join(out)}</svg>'
     )
 
 
@@ -171,6 +188,7 @@ def figure_chart(
     def ys(v: float) -> float:
         return top + (h - top - bottom) * (1 - (v - vmin) / (vmax - vmin))
 
+    touch: list[str] = []  # capa de toque, debajo de los puntos
     out = [
         f'<line x1="{x0}" y1="{h - bottom}" x2="{x1}" y2="{h - bottom}" stroke="{GRID}"/>',
         f'<text x="{x0 - 4}" y="{ys(vmax) + 4:.1f}" font-size="10" fill="{MUTED}" text-anchor="end">'
@@ -204,6 +222,8 @@ def figure_chart(
             )
         body = f"<title>{escape(tip)}</title>{mark}"
         out.append(f'<a href="{escape(p.href)}">{body}</a>' if p.href else f"<g>{body}</g>")
+        if p.href:
+            touch.append(_touch(p.href, x, y))
         if p.value in ext and p.value not in labelled:  # etiquetas solo en los extremos, sin pisar
             labelled.add(p.value)
             anchor = "end" if x > (x0 + x1) / 2 else "start"
@@ -224,7 +244,7 @@ def figure_chart(
         f'<svg class="chart fig" viewBox="0 0 {W} {h}" role="img" '
         f'aria-labelledby="{chart_id}-t {chart_id}-d" '
         f'xmlns="http://www.w3.org/2000/svg"><title id="{chart_id}-t">{escape(title)}</title>'
-        f'<desc id="{chart_id}-d">{escape(desc)}</desc>{"".join(out)}</svg>'
+        f'<desc id="{chart_id}-d">{escape(desc)}</desc>{"".join(touch)}{"".join(out)}</svg>'
     )
 
 
