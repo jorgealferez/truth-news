@@ -305,7 +305,11 @@ es:
     de hasta 0,2 puntos o 3 %), Impreciso (hasta 0,6 puntos o 10 %), Falso (más), Engañoso (la tendencia
     afirmada contradice el dato) y Sin datos suficientes (no hay serie fresca o la afirmación no es
     comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
-    tomamos partido: aplicamos las mismas reglas a todos los medios.
+    tomamos partido: aplicamos las mismas reglas a todos los medios. 6) Consulta puntual: el rastreo respeta siempre robots.txt.
+    Solo si hay dudas entre medios o faltan pruebas de la entidad y el dato no se obtiene por otra vía,
+    consultamos a mano las páginas imprescindibles para llegar a un documento público concreto (como mucho
+    cinco, del mismo sitio), identificándonos y parando ante cualquier bloqueo; cada URL, el motivo y la
+    afirmación que se verifica quedan publicados en la evidencia.
   advertising: Publicidad
   advertising_title: Publicidad en nosmienten.com
   advertising_lead: >-
@@ -698,7 +702,10 @@ en:
     is always given by code against the official data, never by the AI. 5) Verdicts: True (up to 0.2 points or
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules
-    for every outlet.
+    for every outlet. 6) One-off lookup: crawling always respects robots.txt. Only when outlets disagree or
+    the entity provides no evidence, and the figure cannot be obtained another way, we look up by hand the
+    pages needed to reach one specific public document (at most five, same site), identifying ourselves and
+    stopping at any block; every URL, the reason and the claim being checked are published in the evidence.
   advertising: Advertising
   advertising_title: Advertising on nosmienten.com
   advertising_lead: >-
