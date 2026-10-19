@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import UTC, datetime, timedelta
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from sqlalchemy import select
 
 from truthnews.ai import threads
 from truthnews.ai.client import AIClient, AIError
@@ -15,8 +17,10 @@ from truthnews.config import Settings, get_settings
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.investigate import process_pending, seed_defaults
+from truthnews.models import CrawlRun
 
 log = logging.getLogger(__name__)
+RECENT_CYCLE_MIN = 25  # los agentes despliegan a menudo; cada arranque no debe pagar un ciclo completo
 
 
 def run_cycle(settings: Settings | None = None) -> dict:
@@ -57,6 +61,18 @@ def run_cycle(settings: Settings | None = None) -> dict:
     return summary
 
 
+def recent_cycle(settings: Settings, now: datetime | None = None) -> bool:
+    """Hubo un ciclo hace menos de RECENT_CYCLE_MIN: un redespliegue no debe repetirlo (ni su coste de IA)."""
+    now = now or datetime.now(UTC)
+    engine = get_engine(settings.database_url)
+    with session_scope(engine) as session:
+        last = session.scalars(select(CrawlRun.started_at).order_by(CrawlRun.id.desc()).limit(1)).first()
+    if last is None:
+        return False
+    last = last if last.tzinfo else last.replace(tzinfo=UTC)
+    return now - last < timedelta(minutes=RECENT_CYCLE_MIN)
+
+
 def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle infinito
     settings = settings or get_settings()
     scheduler = BlockingScheduler(timezone="UTC")
@@ -70,9 +86,14 @@ def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle 
         coalesce=True,
         next_run_time=None,
     )
-    log.info("worker: primer ciclo inmediato, despues cada %s min", settings.crawl_interval_minutes)
-    try:
-        run_cycle(settings)
-    except Exception:
-        log.exception("el primer ciclo fallo; el planificador lo reintentara")
+    if recent_cycle(settings):
+        log.info(
+            "worker: ciclo reciente (redespliegue); el siguiente, en %s min", settings.crawl_interval_minutes
+        )
+    else:
+        log.info("worker: primer ciclo inmediato, despues cada %s min", settings.crawl_interval_minutes)
+        try:
+            run_cycle(settings)
+        except Exception:
+            log.exception("el primer ciclo fallo; el planificador lo reintentara")
     scheduler.start()
