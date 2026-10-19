@@ -229,7 +229,9 @@ def test_ai_only_for_what_code_did_not_decide_in_capped_batches(session):
     assert "Gobierno de prueba" in ai.calls[0] and "BOE-A-2024-1" in ai.calls[0]
     # Lo propuesto no vuelve a la cola; lo que falta, si, hasta el tope de llamadas.
     assert {p.id for p, _ in fu.ai_queue(session, GOV)} == {ps[2].id, ps[4].id}
-    assert fu.ai_step(session, FakeAI(fail=True), max_calls=5, batch_size=10, govs=GOV)["errors"] == 1
+    failing = FakeAI(fail=True)
+    assert fu.ai_step(session, failing, max_calls=5, batch_size=1, govs=GOV)["errors"] == 1
+    assert len(failing.calls) == 1  # al primer error se para
 
 
 def test_review_publishes_only_approved_proposals(session):
@@ -346,3 +348,21 @@ def test_pages_explain_asymmetry_and_show_only_reviewed(engine, session, monkeyp
     )
     page = client.get(f"/elecciones/es-generales-{poll.isoformat()}").text
     assert "Cumplida 2" in page and "BOE-A-2024-5" in page
+
+
+def test_ai_without_credit_saves_nothing_and_stops(session):
+    ps = _with_candidates(session, 25)
+
+    class NoCredit:
+        calls = 0
+
+        def structured(self, system, user, schema):
+            NoCredit.calls += 1
+            raise RuntimeError("Your credit balance is too low to access the Anthropic API.")
+
+    out = fu.ai_step(session, NoCredit(), max_calls=5, batch_size=10, govs=GOV)
+    assert NoCredit.calls == 1 and out["errors"] == 1 and out["proposals"] == 0
+    assert "credit balance" in out["last_error"]
+    ai_rows = select(PromiseCheck).where(PromiseCheck.method.startswith(fu.METHOD_AI))
+    assert session.scalars(ai_rows).all() == []
+    assert len(fu.ai_queue(session, GOV)) == len(ps)  # todo sigue en la cola para cuando vuelva el credito

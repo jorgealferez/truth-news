@@ -353,10 +353,11 @@ def ai_step(session: Session, ai, max_calls: int, batch_size: int, govs=None) ->
         summary["calls"] += 1
         try:
             result = ai.structured(AI_SYSTEM, ai_prompt(batch, g), AI_SCHEMA)
-        except Exception as exc:  # una respuesta inutil no tumba el paso; se reintenta en otro ciclo
-            log.warning("cumplimiento con IA: lote descartado (%s)", exc)
+        except Exception as exc:  # sin credito, caida o respuesta inutil: nada se guarda y se para el ciclo
+            log.warning("cumplimiento con IA: lote descartado, se para hasta el siguiente ciclo (%s)", exc)
             summary["errors"] += 1
-            continue
+            summary["last_error"] = str(exc)[:200]
+            break
         for k in ("input_tokens", "output_tokens"):
             summary[k] += result.usage.get(k) or 0
         answers = {it.get("id"): it for it in result.data.get("items") or [] if isinstance(it, dict)}
