@@ -113,6 +113,14 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .bars { list-style:none; margin:0; padding:0; } .bars li { position:relative; display:flex; align-items:center; gap:8px; height:26px; margin:4px 0; font-size:14px; }
 .bars .bar { position:absolute; left:0; top:0; bottom:0; background:#f6e2b3; border-radius:4px; z-index:0; } .bars .bar.alt { background:#e4e7ee; }
 .bars b, .bars .n { position:relative; z-index:1; } .bars b { padding-left:8px; } .bars .n { margin-left:auto; color:var(--muted); font-size:12px; padding-right:6px; }
+.bars li.x { display:block; height:auto; } .bars li.x summary { position:relative; display:flex; align-items:center; gap:8px; height:26px; cursor:pointer; list-style:none; border-radius:4px; }
+.bars li.x summary::-webkit-details-marker, .who-more summary::-webkit-details-marker { display:none; } .bars li.x .n::after { content:" ▾"; } .bars li.x details[open] .n::after { content:" ▴"; }
+.bars li.x summary:hover .bar { filter:brightness(.95); } .bars li.x summary:focus-visible, .who-more summary:focus-visible { outline:2px solid var(--ink); outline-offset:2px; }
+.who-list a { text-decoration:underline; text-underline-offset:2px; }
+.who-list { display:flex; flex-wrap:wrap; gap:4px 6px; margin:4px 0 8px 8px; font-size:13px; line-height:1.4; } .who-list > * { background:var(--soft); border-radius:3px; padding:2px 6px; }
+.who-more { margin-top:6px; font-size:13px; } .who-more summary { cursor:pointer; list-style:none; font-weight:600; color:var(--accent); } .who-more summary::after { content:" ▾"; } .who-more[open] summary::after { content:" ▴"; }
+.who-omits { list-style:none; margin:6px 0 0; padding:0; } .who-omits li { margin:4px 0; line-height:1.4; } .who-omits a { font-weight:600; }
+@media (max-width: 760px) { .bars li.x summary { height:34px; } .who-list > * { padding:5px 8px; } .who-more summary { padding:6px 0; } }
 .meter { display:flex; height:14px; border-radius:7px; overflow:hidden; margin:8px 0; background:var(--soft); }
 .meter span { display:block; height:100%; } .legend { margin:0; } .big { font:800 34px system-ui, sans-serif; margin:0; } .big small { font-size:14px; font-weight:500; color:var(--muted); }
 .flag { margin:8px 0 0; font:700 12px system-ui, sans-serif; color:#7a2a8c; }
