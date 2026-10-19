@@ -1,9 +1,10 @@
 """Afirmaciones que se repiten (como Full Fact; ADR 0035): la misma cifra sobre el mismo indicador en varios
 articulos, medios y dias, con su veredicto cuando lo hay.
 
-Dos afirmaciones son "la misma" si coinciden indicador, territorio, unidad, periodo citado y valor
-redondeado a una decima. Solo se agrupan afirmaciones extraidas por el codigo o la IA y ya guardadas
-(`claim`); el veredicto lo decide la verificacion de cada una (ADR 0007), aqui solo se agrupa y se cuenta.
+Dos afirmaciones son "la misma" si coinciden indicador, territorio, unidad, periodo citado, valor
+redondeado a una decima y hablante o fuente citada (si la hay). Solo se agrupan afirmaciones extraidas por
+el codigo o la IA y ya guardadas (`claim`); el veredicto lo decide la verificacion de cada una (ADR 0007),
+aqui solo se agrupa y se cuenta.
 """
 
 from __future__ import annotations
@@ -21,12 +22,14 @@ CHECKED = ("verdadero", "impreciso", "falso", "enganoso")
 
 
 def key_of(c: Claim) -> tuple:
-    return (c.indicator, c.geo, c.unit, c.period or "", round(c.value, 1))
+    # Con el hablante o la fuente citada: la cifra de un ministro y la de una ONG no son la misma afirmacion.
+    return (c.indicator, c.geo, c.unit, c.period or "", round(c.value, 1), c.speaker_entity_id)
 
 
 def slug_of(key: tuple) -> str:
-    indicator, geo, unit, period, value = key
-    return "-".join(str(x) for x in (indicator, geo, period or "sp", f"{value:g}", unit)).replace(".", "_")
+    indicator, geo, unit, period, value, speaker = key
+    parts = (indicator, geo, period or "sp", f"{value:g}", unit, f"h{speaker}" if speaker else "")
+    return "-".join(str(x) for x in parts if x).replace(".", "_")
 
 
 @dataclass
@@ -93,6 +96,7 @@ def _claims(session: Session, *where) -> list[Claim]:
         .options(
             joinedload(Claim.verification).joinedload(Verification.evidence),
             joinedload(Claim.outlet),
+            joinedload(Claim.speaker),
             joinedload(Claim.article).joinedload(Article.outlet),
         )
         .where(*where)

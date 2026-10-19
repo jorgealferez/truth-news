@@ -178,16 +178,36 @@ def dossier_hash(dossier: dict) -> str:
     ).hexdigest()
 
 
+def prepare_piece(
+    session: Session, topic: Topic, verifier: Verifier | None = None
+) -> tuple[dict, str] | None:
+    """(dossier, huella) del tema, o None si el dossier no ha cambiado y no hay que pagar otra llamada."""
+    dossier = build_dossier(session, topic, verifier)
+    h = dossier_hash(dossier)
+    if session.scalars(select(Piece.id).where(Piece.topic_id == topic.id, Piece.input_hash == h)).first():
+        return None
+    return dossier, h
+
+
+def ask_piece(ai: AIClient, dossier: dict):
+    """La llamada a la IA, sin tocar la sesion: se puede lanzar en paralelo con otras."""
+    user = "DOSSIER (JSON):\n" + json.dumps(dossier, ensure_ascii=False, default=str)
+    return ai.structured(WRITER_SYSTEM, user, piece_schema())
+
+
 def write_pieces(
     session: Session, topic: Topic, ai: AIClient, verifier: Verifier | None = None
 ) -> list[Piece]:
     """Genera (o no, si el dossier no ha cambiado) el analisis y la opinion de un tema."""
-    dossier = build_dossier(session, topic, verifier)
-    h = dossier_hash(dossier)
-    if session.scalars(select(Piece.id).where(Piece.topic_id == topic.id, Piece.input_hash == h)).first():
-        return []  # dossier sin cambios: no se paga otra llamada
-    user = "DOSSIER (JSON):\n" + json.dumps(dossier, ensure_ascii=False, default=str)
-    result = ai.structured(WRITER_SYSTEM, user, piece_schema())
+    prepared = prepare_piece(session, topic, verifier)
+    if prepared is None:
+        return []
+    dossier, h = prepared
+    return store_pieces(session, topic, dossier, h, ask_piece(ai, dossier))
+
+
+def store_pieces(session: Session, topic: Topic, dossier: dict, h: str, result) -> list[Piece]:
+    """Comprueba las citas de la respuesta y guarda el analisis y la opinion."""
     out = result.data
     story_ids = {s["id"] for s in dossier["historias"]}
     slugs = {a["medio_slug"] for s in dossier["historias"] for a in s["articulos"]}

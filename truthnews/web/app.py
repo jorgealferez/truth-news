@@ -32,6 +32,7 @@ from truthnews.analysis import (
     repeated,
     speakers,
     statement_checks,
+    timeliness,
 )
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
@@ -637,6 +638,7 @@ def create_app(
             missing=reliability.missing_outlets(session, st),
             fig_changes=figure_changes.for_story(session, st.id),
             repeats=repeated.repeated_for_story(session, st.id),
+            timing=next(iter(timeliness.load(session, st.id)), None),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -763,6 +765,8 @@ def create_app(
             ranked=ranked,
             few=few,
             fig_records=figure_changes.by_outlet(session),
+            timely=timeliness.by_outlet(timeliness.load(session)),
+            min_stories=timeliness.MIN_STORIES,
             min_checks=reliability.MIN_CHECKS,
         )
 

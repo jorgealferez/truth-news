@@ -22,7 +22,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v10: deuda publica fuera de la UE sin la serie del gobierno central del Banco Mundial: no se juzga; un
 #      pais solo es el de la cifra si va ligado a ella en la misma oracion (no "mientras Turquia"); una cifra
 #      aproximada ("unos 40 millones") dentro de la franja amplia es verdadera, no imprecisa.
-METHOD_VERSION = "v10"
+# v11: una frase sin pais no es del pais del medio si las frases vecinas hablan de otro pais.
+METHOD_VERSION = "v11"
 # Cifra dada como aproximada ("unos 40 millones"): dentro de la franja amplia no es imprecisa. Caso de la
 # revision de #157: Canada "con solo unos 40 millones de habitantes" frente a 41,5 millones.
 _APPROX = re.compile(
