@@ -13,6 +13,8 @@
   <p class="meta">{% if not social.enabled %}Desactivado (SOCIAL_ENABLED=0). {% endif %}{% for n in social.networks %}<b>{{ n.network }}</b>: {{ 'envío' if n.mode == 'envio' else 'modo prueba (sin credenciales)' }}, hoy {{ n.today }}/{{ n.quota }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
   <table class="table"><thead><tr><th>Red</th><th>Estado</th><th>Pieza</th><th>Texto</th></tr></thead><tbody>{% for p in social.recent %}<tr><td>{{ p.network }}</td><td>{{ p.status }}{% if p.attempts > 1 %} ({{ p.attempts }}){% endif %}</td><td><a href="{{ p.link }}">{{ p.kind }} {{ p.ref_id }}</a>{% if p.external_url %} · <a href="{{ p.external_url }}">publicada</a>{% endif %}<br><span class="meta">{{ p.created_at.strftime('%d/%m %H:%M') }}</span></td><td style="white-space:pre-line">{{ p.text }}{% if p.error %}<br><span class="meta">{{ p.error }}</span>{% endif %}</td></tr>{% endfor %}</tbody></table>
 </section>
+<section class="block"><h2>Artículos con texto completo (últimas 24 h)</h2><table class="table"><thead><tr><th>Sección</th><th>Artículos</th><th>Con texto</th><th>%</th></tr></thead><tbody>
+  {% for r in b.text_coverage %}<tr><td>{{ r.category }}</td><td>{{ r.total }}</td><td>{{ r.with_text }}</td><td>{{ r.pct }}</td></tr>{% endfor %}</tbody></table></section>
 <section class="block"><h2>Últimos rastreos</h2><table class="table"><thead><tr><th>#</th><th>Inicio</th><th>Feeds OK</th><th>Fallidos</th><th>Nuevos</th><th>Bloqueados robots</th></tr></thead><tbody>
   {% for r in b.runs %}<tr><td>{{ r.id }}</td><td>{{ r.started_at.strftime('%d/%m %H:%M') }}</td><td>{{ r.feeds_ok }}</td><td>{{ r.feeds_failed }}</td><td>{{ r.articles_new }}</td><td>{{ r.robots_blocked }}</td></tr>{% endfor %}</tbody></table></section>
 <section class="block two">
