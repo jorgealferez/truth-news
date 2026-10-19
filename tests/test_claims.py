@@ -16,7 +16,11 @@ CASES = [
     ("Según Cuerpo, el paquete amortigua el shock de la inflación en torno al 40% o al 50%.", []),
     ("Macron dice que la inflación es del 3 %.", []),
     ("El paro juvenil supera el 25 % en el país.", []),
-    ("El paro en Andalucía se sitúa en el 16 % este trimestre.", []),
+    # Paro EPA por comunidad: solo con el nombre inequivoco de la comunidad y sin otro territorio.
+    ("El paro en Andalucía se sitúa en el 16 % este trimestre.", [("paro", "ES-AN", 16.0, None)]),
+    ("El paro en Madrid se sitúa en el 9 % este trimestre.", []),
+    ("La inflación en Andalucía se sitúa en el 3 % este mes.", []),
+    ("El paro en Galicia es del 8 % y en Cataluña del 9 %.", []),
     ("En 2019 la tasa de paro era del 14 % en el país.", []),
     ("La tasa de paro baja 0,3 puntos hasta el 10 %.", []),
     ("El desempleo de agosto se situó en el 6,4% en la eurozona y el 6,1% en la Unión Europea.", []),

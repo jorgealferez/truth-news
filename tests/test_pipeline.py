@@ -89,7 +89,7 @@ def test_reverify_outdated_methods_and_note_corrections(session, world):
     pipeline.assign_stories(session)
     pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(10.0))
     ver = session.scalars(select(Verification)).one()
-    assert ver.verdict == "falso" and ver.method.endswith("/v4")
+    assert ver.verdict == "falso" and ver.method.endswith("/v5")
     assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {}  # ya en la version vigente
     ver.method = "nivel"  # veredicto de la version anterior del metodo
     session.flush()
@@ -114,3 +114,19 @@ def test_run_and_c6_invariant(session, world, monkeypatch):
     session.query(Claim).delete()
     with pytest.raises(AssertionError, match="C6"):
         pipeline.verify_claims(session, NOW - timedelta(days=1), Bad())
+
+
+def test_foreign_news_needs_an_explicit_territory(session, world):
+    # Caso real: ABC, Internacional, 19/10/2026, sobre Pakistan. La frase no nombra pais.
+    a = session.scalars(select(Article)).first()
+    a.title, a.category = "Nueva polémica en la toma de poder en Pakistán", "economia"
+    a.summary = "La inflación se situó en el 10,3 % interanual en septiembre."
+    session.flush()
+    assert pipeline.default_geo_of(a) == "XX"
+    a.title, a.category = "La economía sigue estancada", "internacional"
+    assert pipeline.default_geo_of(a) == "XX"
+    a.category = "economia"
+    assert pipeline.default_geo_of(a) == "ES"
+    a.category = "internacional"
+    out = pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(3.9))
+    assert out["claims"] == 0

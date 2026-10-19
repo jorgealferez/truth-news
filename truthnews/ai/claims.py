@@ -26,7 +26,7 @@ from truthnews.analysis.claims import (
     indicators,
     sentences,
 )
-from truthnews.analysis.pipeline import _aware, article_text, save_claim
+from truthnews.analysis.pipeline import _aware, article_text, default_geo_of, save_claim
 from truthnews.analysis.verify import Verifier, applicable
 from truthnews.classify import normalize
 from truthnews.models import Article, Claim
@@ -38,18 +38,20 @@ _HAS_FIGURE = re.compile(
 )
 
 SYSTEM = """Eres el extractor de afirmaciones comprobables de nosmienten.com, un verificador neutral.
-Recibes frases de noticias, cada una con su id, el pais del medio y la fecha de publicacion. Para cada
+Recibes frases de noticias, cada una con su id, el pais por defecto y la fecha de publicacion. Para cada
 frase decide si contiene una afirmacion que se pueda comprobar con UNA de las series oficiales de la
 lista (indicador y territorio) y, si es asi, extraela tal cual la dice el texto. No juzgas si es verdad:
 eso lo hace despues el codigo con el dato oficial.
 
 Reglas (mejor descartar que atribuir mal):
-- Solo niveles del indicador general ("el paro es del 10,5 %"), no variaciones en puntos, ni datos de
-  colectivos (jovenes, mujeres, un sector), ni regionales o de ciudades, ni previsiones o condicionales.
+- Solo niveles del indicador general ("el paro es del 10,5 %"), no variaciones ("baja un 2 %", "0,3
+  puntos"), ni datos de colectivos (jovenes, mujeres, un sector), ni de ciudades, ni previsiones o
+  condicionales. Datos de una comunidad autonoma solo si el indicador tiene serie para ella (codigo ES-XX).
 - valor: la cifra exacta escrita en la frase, en la unidad del indicador (porcentaje como 10.5;
   cantidades en unidades: "48,6 millones" es 48600000).
 - territorio: el codigo del pais o zona al que se refiere la cifra. Si la frase no nombra ninguno, es el
-  pais del medio. Si no puedes saber con seguridad a que territorio corresponde, comprobable=false.
+  pais_por_defecto; si este es "XX" (noticia de otro pais), la frase tiene que nombrar el territorio o
+  comprobable=false. Si no puedes saber con seguridad a que territorio corresponde, comprobable=false.
 - periodo: "AAAA-MM" si la frase cita un mes, "AAAA-QN" si cita un trimestre, "AAAA" si cita un ano, o
   "" si habla del dato actual sin citar periodo. No lo deduzcas de la fecha si la frase no lo dice.
 - sentido: "sube" o "baja" solo si la frase dice que el indicador sube o baja; si no, "ninguno".
@@ -78,7 +80,7 @@ def candidate_sentences(text: str) -> list[str]:
 
 
 def claims_schema() -> dict:
-    geos = list(indicators()["geo_names"])
+    geos = list(indicators()["geo_names"]) + list(indicators().get("region_names", {}))
     item = {
         "type": "object",
         "properties": {
@@ -109,11 +111,14 @@ def _catalog() -> str:
         geos = sorted({g for s in ind["sources"] for g in _source_geos(s)})
         unit = "porcentaje" if ind["unit"] == "pct" else "cantidad"
         lines.append(f"- {k}: {indicator_name(k)} ({unit}); territorios: {', '.join(geos)}")
+    regions = indicators().get("region_names", {})
+    if regions:
+        lines.append("Comunidades autonomas: " + "; ".join(f"{k} {v[0]}" for k, v in regions.items()))
     return "\n".join(lines)
 
 
 def _source_geos(source: dict) -> list[str]:
-    all_geos = list(indicators()["geo_names"])
+    all_geos = list(indicators()["geo_names"]) + list(indicators().get("region_names", {}))
     return [g for g in all_geos if applicable(source, g)]
 
 
@@ -156,7 +161,12 @@ def run(
     for start in range(0, min(len(items), BATCH * max_calls), BATCH):
         batch = items[start : start + BATCH]
         payload = [
-            {"id": i, "pais_del_medio": a.country, "fecha": f"{_aware(a.published_at):%Y-%m-%d}", "frase": s}
+            {
+                "id": i,
+                "pais_por_defecto": default_geo_of(a),
+                "fecha": f"{_aware(a.published_at):%Y-%m-%d}",
+                "frase": s,
+            }
             for i, (a, s) in enumerate(batch)
         ]
         user = (
@@ -190,7 +200,7 @@ def run(
                 float(p.get("valor", 0)),
                 p.get("periodo") or None,
                 p.get("sentido"),
-                a.country,
+                default_geo_of(a),
                 pub.year,
                 pub.month,
             )
