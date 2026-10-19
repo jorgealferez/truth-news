@@ -159,6 +159,9 @@ es:
   analysis_lead: Piezas propias sobre cada tema, a partir de lo que publican los medios y de los datos oficiales. Cada afirmación está en nuestras fuentes; lo que no sabemos, lo decimos.
   what_each_says: Qué dice cada medio
   essentials: Lo esencial
+  thread_piece: el antes y el después
+  related_topic: Tema
+  thread_piece_method: "Pieza elaborada con IA solo con las fuentes de este hilo: cada sección cita las suyas y sus cifras se comprueban contra ellas."
   key_origin: De dónde sale
   key_fails: Qué falla
   key_missing: Qué falta
@@ -416,6 +419,9 @@ en:
   analysis_lead: Our own pieces on each topic, built from what outlets publish and official data. Every claim is in our sources; what we do not know, we say.
   what_each_says: What each outlet says
   essentials: The essentials
+  thread_piece: before and after
+  related_topic: Topic
+  thread_piece_method: "Piece written with AI only from this thread's sources: every section cites its own and its figures are checked against them."
   key_origin: Where it comes from
   key_fails: What does not add up
   key_missing: What is missing

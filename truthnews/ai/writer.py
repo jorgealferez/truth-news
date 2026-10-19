@@ -11,11 +11,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from truthnews.ai.client import AIClient
-from truthnews.ai.prompts import WRITER_SYSTEM
+from truthnews.ai.prompts import THREAD_WRITER_SYSTEM, WRITER_SYSTEM
 from truthnews.ai.topics import topic_articles
 from truthnews.analysis.compare import compare
 from truthnews.analysis.verify import Verifier
-from truthnews.models import Claim, Piece, Topic, Verification
+from truthnews.models import Claim, Piece, Thread, Topic, Verification
 from truthnews.registry import t
 
 # Topes del dossier: acotan coste y contexto en temas con cientos de articulos.
@@ -234,3 +234,77 @@ def write_pieces(
     session.add_all([analysis, opinion])
     session.flush()
     return [analysis, opinion]
+
+
+def thread_piece_schema() -> dict:
+    s, arr = {"type": "string"}, lambda item: {"type": "array", "items": item}
+
+    def obj(props: dict) -> dict:
+        return {"type": "object", "properties": props, "required": list(props), "additionalProperties": False}
+
+    return obj(
+        {
+            "titular": s,
+            "entradilla": s,
+            "claves": obj({"en_una_frase": s, "origen": s, "que_falla": arr(s), "que_falta": arr(s)}),
+            "analisis": arr(obj({"subtitulo": s, "parrafos": arr(s), "fuentes": arr(s)})),
+        }
+    )
+
+
+def thread_dossier(thread: Thread) -> dict:
+    return {"titular": thread.title, "hilo": thread.content, "corpus": thread.sources}
+
+
+def ground_thread_piece(output: dict, dossier: dict) -> tuple[list[dict], dict]:
+    """Secciones con fuentes validas del corpus y cifras presentes en el hilo (vacio = fundamentado)."""
+    ids = {c["id"] for c in dossier["corpus"]}
+    sections, dropped = [], 0
+    for sec in output.get("analisis", []):
+        valid = [f for f in sec.get("fuentes", []) if f in ids]
+        if valid:
+            sections.append({**sec, "fuentes": valid})
+        else:
+            dropped += 1
+    text = json.dumps({**output, "analisis": sections}, ensure_ascii=False)
+    unsupported = sorted(
+        n
+        for n in numbers_in(text) - numbers_in(json.dumps(dossier, ensure_ascii=False, default=str))
+        if not (float(n).is_integer() and (float(n) <= 31 or 1990 <= float(n) <= 2035))
+    )
+    ok = not unsupported and len(sections) >= 2
+    return sections, {"secciones_sin_fuente": dropped, "cifras_sin_fuente": unsupported, "ok": ok}
+
+
+def write_thread_piece(session: Session, thread: Thread, ai: AIClient) -> Piece | None:
+    """La pieza propia de un hilo publicado: el antes y el despues, con sus fuentes (ADR 0020).
+
+    No genera nada si el hilo no esta publicado o si ya hay pieza para este mismo dossier.
+    """
+    if thread.status != "publicado":
+        return None
+    dossier = thread_dossier(thread)
+    h = dossier_hash(dossier)
+    if session.scalars(select(Piece.id).where(Piece.thread_id == thread.id, Piece.input_hash == h)).first():
+        return None
+    user = "HILO (JSON):\n" + json.dumps(dossier, ensure_ascii=False, default=str)
+    result = ai.structured(THREAD_WRITER_SYSTEM, user, thread_piece_schema())
+    out = result.data
+    sections, grounding = ground_thread_piece(out, dossier)
+    piece = Piece(
+        thread_id=thread.id,
+        kind="analisis",
+        status="publicada" if grounding["ok"] else "revision",
+        language=thread.language,
+        title=out["titular"][:300],
+        dek=out["entradilla"],
+        body=sections,
+        synthesis={"claves": out.get("claves") or {}},
+        grounding=grounding,
+        model=result.model,
+        input_hash=h,
+        usage=result.usage,
+    )
+    session.add(piece)
+    session.flush()
+    return piece

@@ -143,6 +143,7 @@ def create_app(
         countries=list(registry.countries().keys()),
         languages=registry.languages(),
         url=seo.path,
+        piece_url=seo.piece_path,
         investigation_title=investigation_title,
     )
 
@@ -306,7 +307,7 @@ def create_app(
         items += [
             {
                 "title": p.title,
-                "link": settings.site_url + seo.path("tema", p.topic_id, p.title),
+                "link": settings.site_url + seo.piece_path(p),
                 "description": p.dek or "",
                 "date": p.created_at if p.created_at.tzinfo else p.created_at.replace(tzinfo=UTC),
             }
@@ -404,6 +405,7 @@ def create_app(
             view=topicview.build(queries.topic_articles(session, tp.id), synth, outlets, verdicts),
             outlet_names=queries.story_outlet_names(session, ids),
             verdicts=verdicts,
+            threads=queries.front_threads(session, ids),
         )
 
     @app.get("/verificaciones", response_class=HTMLResponse)
@@ -465,7 +467,15 @@ def create_app(
         if redirect := canonical(request, "hilo", th.id, th.title):
             return redirect
         sources = {s["id"]: s for s in th.sources}
-        return render(request, "thread.html", th=th, c=th.content, sources=sources)
+        return render(
+            request,
+            "thread.html",
+            th=th,
+            c=th.content,
+            sources=sources,
+            piece=queries.thread_piece(session, th.id),
+            topic=th.anchor.topic if th.anchor else None,
+        )
 
     @app.get("/contrastes", response_class=HTMLResponse)
     def contrasts(request: Request, session: SessionDep, page: PageQ = 1, seccion: str | None = None):
