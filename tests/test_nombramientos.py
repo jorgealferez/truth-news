@@ -198,7 +198,7 @@ def test_appointments_page(engine, session):
     assert tc.get("/nombramientos").status_code == 200  # hoy o el ultimo BOE con datos
     for bad in ("2026-13-01", "2999-01-01", "2001-01-01"):
         assert tc.get(f"/nombramientos?fecha={bad}").status_code == 404
-    assert "/nombramientos" in tc.get("/sitemap.xml").text
+    assert "/nombramientos" in tc.get("/sitemaps/paginas-1.xml").text
     assert "Appointments and dismissals" in tc.get("/nombramientos?fecha=2026-10-07&lang=en").text
 
 

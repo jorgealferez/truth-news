@@ -595,11 +595,10 @@ def test_distribution_robots_sitemap_rss_and_share(client, session):
     robots = client.get("/robots.txt").text
     assert "Disallow: /admin" in robots and "Sitemap: http://localhost:8000/sitemap.xml" in robots
     sm = client.get("/sitemap.xml")
-    assert sm.headers["content-type"].startswith("application/xml")
-    assert (
-        f"<loc>http://localhost:8000{seo.path('historia', st.id, st.title)}</loc>" in sm.text
-        and "/medio/medio</loc>" in sm.text
-    )
+    assert sm.headers["content-type"].startswith("application/xml") and "<sitemapindex" in sm.text
+    stories = client.get("/sitemaps/historias-1.xml").text
+    assert f"<loc>http://localhost:8000{seo.path('historia', st.id, st.title)}</loc>" in stories
+    assert "/medio/medio</loc>" in client.get("/sitemaps/paginas-1.xml").text
     rss = client.get("/rss.xml")
     assert rss.headers["content-type"].startswith("application/rss+xml")
     assert "Disturbios con cifras distintas" in rss.text and "cifras en disputa: detenidos" in rss.text

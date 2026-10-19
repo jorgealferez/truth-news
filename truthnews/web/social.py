@@ -1,4 +1,4 @@
-"""Distribucion (Fase 4 parcial): imagen social por historia, enlaces para compartir, sitemap y RSS.
+"""Distribucion (Fase 4 parcial): imagen social por historia, enlaces para compartir y RSS.
 
 La imagen se dibuja con Pillow y la fuente Inter (subconjunto latino, OFL 1.1, en `web/fonts`), y se
 cachea en memoria por historia y fecha de actualizacion: X, Facebook, WhatsApp o Telegram la piden una
@@ -8,7 +8,6 @@ vez por enlace compartido.
 from __future__ import annotations
 
 import io
-from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
 from urllib.parse import quote
@@ -146,36 +145,6 @@ def share_links(url: str, text: str) -> list[tuple[str, str, str]]:
         ("linkedin", "LinkedIn", f"https://www.linkedin.com/sharing/share-offsite/?url={u}"),
         ("email", "Email", f"mailto:?subject={t}&body={u}"),
     ]
-
-
-def sitemap_xml(
-    urls: list[tuple[str, datetime | None]],
-    base: str = "",
-    alternates: dict[str, str] | None = None,
-    default: str = "es",
-) -> str:
-    """Sitemap; con `alternates` ({idioma: prefijo}) cada URL lleva sus versiones con xhtml:link."""
-    rows = []
-    prefixes = sorted((alternates or {}).values(), key=len, reverse=True)
-    for loc, lastmod in urls:
-        mod = f"<lastmod>{lastmod:%Y-%m-%d}</lastmod>" if lastmod else ""
-        links = ""
-        if alternates and loc.startswith(base):
-            path = loc[len(base) :] or "/"
-            for p in prefixes:  # la ruta sin prefijo de idioma
-                if p and (path == p or path.startswith(p + "/")):
-                    path = path[len(p) :] or "/"
-                    break
-            for lang, p in alternates.items():
-                href = base + (p + ("" if path == "/" else path) if p else path)
-                links += f'<xhtml:link rel="alternate" hreflang="{lang}" href="{escape(href)}"/>'
-            links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{escape(base + path)}"/>'
-        rows.append(f"<url><loc>{escape(loc)}</loc>{mod}{links}</url>")
-    return (
-        '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
-        ' xmlns:xhtml="http://www.w3.org/1999/xhtml">' + "".join(rows) + "</urlset>\n"
-    )
 
 
 def rss_xml(title: str, link: str, description: str, items: list[dict]) -> str:
