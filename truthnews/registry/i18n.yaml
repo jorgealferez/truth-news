@@ -40,6 +40,7 @@ es:
   rep_none: Aún no hay afirmaciones repetidas en dos o más artículos.
   rep_story: "Esta afirmación se repite en otros medios"
   rep_see_all: Ver todas las afirmaciones repetidas
+  rep_said_by: dicho por
   rank_title: Quién acierta con los datos
   rank_note: "Proporción de afirmaciones de cada medio que resultan verdaderas al compararlas con el dato oficial. Ordenado por el límite inferior del intervalo de confianza del 95 %: pocas comprobaciones no bastan para encabezar. Mínimo {n} comprobaciones para entrar."
   rank_empty: "Aún ningún medio tiene {n} afirmaciones comprobadas: el ranking se llenará a medida que verifiquemos."
@@ -541,6 +542,7 @@ en:
   rep_none: No claims repeated in two or more articles yet.
   rep_story: "This claim is repeated by other outlets"
   rep_see_all: See all repeated claims
+  rep_said_by: said by
   rank_title: Who gets the data right
   rank_note: "Share of each outlet's claims found true against the official figure. Sorted by the lower bound of the 95% confidence interval: a handful of checks is not enough to top the list. At least {n} checks to enter."
   rank_empty: "No outlet has {n} checked claims yet: the ranking fills up as we verify."
