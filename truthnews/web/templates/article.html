@@ -31,6 +31,7 @@
 
   {% set pending = claims|rejectattr('verification')|list %}
   {% include "_boe_confirm.html" %}
+  {% include "_contracts_cited.html" %}
   {% if cites or pending %}<section class="block" id="datos"><h2>{{ t(lang, 'cited_data') }}</h2>
     <p class="meta">{{ t(lang, 'cited_data_note') }}</p>
     {% for c in pending %}<div class="claim"><p><span class="badge v-sin-datos">{{ t(lang, 'pending_check') }}</span> «{{ c.text }}»</p></div>{% endfor %}

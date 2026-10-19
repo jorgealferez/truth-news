@@ -249,3 +249,55 @@ def test_contracts_page(engine, session):
         )
     )
     assert "no están disponibles ahora mismo" in unavailable.get("/contratos?fecha=2026-10-16").text
+
+
+def test_cited_firms_match_full_name_only():
+    awards = cw.TedAwards(lambda since, until: ct.parse_ted(ted_payload()), background=False)
+    cited = cw.CitedFirms(awards)
+    today = date(2026, 10, 19)
+    hits = cited.in_texts(["Moderna Biotech Spain amplía su planta en Madrid"], today)
+    assert [h["nombre"] for h in hits] == ["MODERNA BIOTECH SPAIN, S.L."]
+    assert hits[0]["n"] == 1 and hits[0]["importe"] == 533432
+    assert hits[0]["contratos"][0].url.endswith("692013-2026")
+    assert cited.in_texts(["La biotecnología moderna en España"], today) == []
+    assert cited.in_texts(["La UTE ECSA-TECMO gana"], today) == []  # las UTE no se buscan
+    # Una empresa que gana un aviso con lotes: no se da importe (no es solo suyo).
+    zimmer = cited.in_texts(["Zimmer Biomet Spain presenta resultados"], today)
+    assert zimmer[0]["n"] == 2 and zimmer[0]["importe"] is None
+    assert cw.CitedFirms(cw.TedAwards(lambda s, u: [], background=False)).in_texts(["x"], today) == []
+
+
+def test_article_page_shows_cited_contracts(engine, session):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.models import Article, Outlet
+    from truthnews.web.app import create_app
+
+    o = Outlet(slug="m", name="Medio", homepage="https://m.es", country="ES", language="es", scope="nacional")
+    session.add(o)
+    session.flush()
+    a = Article(
+        outlet_id=o.id,
+        url="https://m.es/moderna",
+        url_hash="d" * 64,
+        title="Moderna Biotech Spain amplía su planta",
+        published_at=datetime.now(UTC),
+        language="es",
+        country="ES",
+        category="economia",
+        topics=[],
+    )
+    session.add(a)
+    session.commit()
+    tc = TestClient(
+        create_app(
+            Settings(database_url="sqlite://"),
+            engine=engine,
+            ted_awards=cw.TedAwards(lambda since, until: ct.parse_ted(ted_payload()), background=False),
+        )
+    )
+    page = tc.get(f"/noticia/{a.id}").text
+    assert "Contratos públicos de empresas citadas" in page and "MODERNA BIOTECH SPAIN" in page
+    assert 'href="https://ted.europa.eu/es/notice/-/detail/692013-2026"' in page
+    assert "no implica relación entre la noticia y el contrato" in page
