@@ -74,6 +74,14 @@ def test_accepts_what_rules_miss():
         ("La tasa de paro es del 10,5 % según la encuesta oficial.", "paro", "FR", 10.5, None, "nombrado"),
         ("La tasa de paro en Francia es del 7,5 % según el instituto.", "paro", "ES", 7.5, None, "nombrado"),
         ("La tasa de paro en Japón es del 2,5 % según el gobierno.", "paro", "ES", 2.5, None, "sin serie"),
+        (
+            "La tasa de paro se sitúa en el 10 % mientras Francia sufre una crisis.",
+            "paro",
+            "FR",
+            10.0,
+            None,
+            "contraste",
+        ),
         ("La tasa de paro de agosto fue del 10,5 % según el INE.", "paro", "ES", 10.5, f"{Y}-07", "periodo"),
         (
             "La tasa de paro fue del 10,5 % según el INE en su balance.",

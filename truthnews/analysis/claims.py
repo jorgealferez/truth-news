@@ -229,7 +229,20 @@ def _word_in(needle: str, haystack: str) -> bool:
     return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", haystack) is not None
 
 
-def _geo(sentence_n: str, default: str, explicit_only: bool = False) -> str | None:
+# Un pais separado de la cifra por un contraste no es el de la cifra. Caso de la revision de #157 (Global):
+# "la tasa de paro se situa en el 10 % mientras Turquia sufre" no habla del paro de Turquia.
+_CONTRAST = re.compile(
+    r"\b(?:mientras|pero|aunque|sin embargo|en cambio|frente a|a diferencia de|whereas|while|but"
+    r"|compared with|enquanto|porem|embora)\b|;"
+)
+
+
+def _apart(sn: str, places: list[int], figures: list[int]) -> bool:
+    """True si ninguna mencion del pais comparte oracion con la cifra (hay un contraste entre medias)."""
+    return all(_CONTRAST.search(sn[min(p, f) : max(p, f)]) for p in places for f in figures)
+
+
+def _geo(sentence_n: str, default: str, explicit_only: bool = False, figure: int | None = None) -> str | None:
     named = {
         iso
         for iso, names in indicators()["geo_names"].items()
@@ -245,7 +258,10 @@ def _geo(sentence_n: str, default: str, explicit_only: bool = False) -> str | No
     if others:
         return None  # nombra un pais del que no tenemos serie (o ademas de otro): no se atribuye
     if named:
-        return named.pop()
+        iso = named.pop()
+        if figure is not None and _apart(sentence_n, _named_positions(sentence_n)[iso], [figure]):
+            return None  # el pais esta en otra parte de la frase: la cifra no es suya ni del medio
+        return iso
     if explicit_only:
         return None
     if any(_word_in(normalize(m), sentence_n) for m in indicators()["foreign_markers"]):
@@ -281,7 +297,7 @@ def extract(
             if any(_word_in(normalize(x), sn) for x in ind.get("excludes", [])):
                 continue  # otro indicador parecido (p. ej. pobreza o exclusion frente a riesgo de pobreza)
             pats = ind["patterns"].get(language) or ind["patterns"].get("es", [])
-            value, verb = None, ""
+            value, verb, figure = None, "", None
             for p in pats:
                 pn = re.escape(normalize(p))
                 if ind["unit"] == "pct":
@@ -297,10 +313,12 @@ def extract(
                     if m and (ind.get("of_gdp") or "del pib" not in sn[m.end() : m.end() + 8]):
                         value = _number(m.group("num"))
                         verb = m.group("verb") or ""
+                        figure = m.start("num")
                 else:
                     m = re.search(rf"{_ABS.pattern}\s+(?:de\s+)?{pn}", sn)
                     if m:
                         value = _number(m.group(1)) * 1_000_000
+                        figure = m.start()
                 if value is not None:
                     break
             if value is None:
@@ -310,7 +328,9 @@ def extract(
                     continue  # sin serie regional, o la frase nombra tambien un pais
                 geo = next(iter(regions))
             else:
-                geo = _geo(sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False))
+                geo = _geo(
+                    sn, default_geo, explicit_only=ind.get("requires_explicit_geo", False), figure=figure
+                )
             if geo is None:
                 continue
             direction = "sube" if _UP.search(verb) else "baja" if _DOWN.search(verb) else None
@@ -478,6 +498,8 @@ def check_proposal(
     elif named:
         if geo not in named:
             return "el territorio no es el nombrado en la frase"
+        if _apart(sn, named[geo], positions):
+            return "el pais nombrado esta separado de la cifra por un contraste: no es suya"
     else:
         if ind.get("requires_explicit_geo") or geo != default_geo:
             return "territorio no nombrado en la frase"

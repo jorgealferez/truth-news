@@ -17,7 +17,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
 # v8: inflacion con el IPCA de Eurostat: la franja que puede explicar el IPC nacional no se juzga.
 # v9: subgrupos (colectivo, discapacidad, "entre quienes"...) no se juzgan contra la tasa general.
-# v10: deuda publica fuera de la UE sin la serie del gobierno central del Banco Mundial: no se juzga.
+# v10: deuda publica fuera de la UE sin la serie del gobierno central del Banco Mundial: no se juzga; un
+#      pais separado de la cifra por un contraste ("mientras Turquia...") no se le atribuye.
 METHOD_VERSION = "v10"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6

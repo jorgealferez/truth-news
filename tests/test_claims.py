@@ -29,6 +29,10 @@ CASES = [
     ("Canadá es el segundo más extenso del planeta, con solo unos 40 millones de habitantes.", []),
     ("En Japón la tasa de paro se sitúa en el 2,5 %.", []),
     ("La tasa de paro se sitúa en el 10 % mientras Turquía sufre.", []),
+    # v10: un pais separado de la cifra por un contraste no es el de la cifra (revision de #157).
+    ("La tasa de paro se sitúa en el 10 % mientras Francia sufre.", []),
+    ("La tasa de paro se sitúa en el 10 %, pero en Francia sube.", []),
+    ("En Francia, la tasa de paro se sitúa en el 7,5 %.", [("paro", "FR", 7.5, None)]),
     ("Tiene 49,3 millones de habitantes.", []),
     ("El PIB crece un 0,7 % este año.", []),  # sin trimestre: no es la serie trimestral
     # Catalogo ampliado (2026-10-19): "% del PIB" es la unidad de deuda y deficit, no otro dato.
