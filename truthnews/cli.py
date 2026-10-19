@@ -117,6 +117,29 @@ def _cmd_worker(_args) -> int:  # pragma: no cover - bucle infinito
     return 0
 
 
+def _cmd_lookup(args) -> int:
+    """Consulta puntual de interes publico (ADR 0029): imprime la traza para la evidencia, en JSON."""
+    import re
+
+    from truthnews.crawler.targeted import lookup
+
+    doc, hop = re.compile(args.documento), re.compile(args.siguiente) if args.siguiente else None
+    rec = asyncio.run(
+        lookup(
+            args.url,
+            is_document=lambda url, text: bool(doc.search(text)),
+            next_hop=(lambda links: next((u for u in links if hop.search(u)), None)) if hop else None,
+            reason=args.motivo,
+            justification=args.justificacion,
+            claim=args.afirmacion,
+            alternatives_tried=args.alternativa or [],
+            user_agent=get_settings().user_agent,
+        )
+    )
+    print(json.dumps(rec.as_payload(), ensure_ascii=False, indent=2))
+    return 0 if rec.document_url else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="truthnews")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -146,6 +169,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--port", default=8000, type=int)
     s.set_defaults(func=_cmd_serve)
     sub.add_parser("worker").set_defaults(func=_cmd_worker)
+    lk = sub.add_parser("consulta-puntual", help="documento concreto para contrastar un dato (ADR 0029)")
+    lk.add_argument("url")
+    lk.add_argument("--documento", required=True, help="regex que identifica el documento buscado")
+    lk.add_argument("--siguiente", help="regex de los enlaces que acercan al documento")
+    lk.add_argument("--motivo", required=True)
+    lk.add_argument("--justificacion", required=True, choices=["dudas-entre-medios", "falta-de-pruebas"])
+    lk.add_argument("--afirmacion", required=True)
+    lk.add_argument("--alternativa", action="append", help="via alternativa ya probada (repetible)")
+    lk.set_defaults(func=_cmd_lookup)
     return p
 
 

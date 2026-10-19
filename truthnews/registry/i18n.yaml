@@ -313,6 +313,10 @@ es:
     afirmada contradice el dato) y Sin datos suficientes (no hay serie fresca o la afirmación no es
     comprobable). Nunca juzgamos con datos de hace más de 400 días. Cada veredicto enlaza su fuente. No
     tomamos partido: aplicamos las mismas reglas a todos los medios.
+    Respetamos robots.txt. Única excepción: si para contrastar un dato concreto hace falta un documento
+    concreto (por ejemplo, de un portal de transparencia) porque los medios discrepan o faltan pruebas, y no se
+    obtiene por otra vía, llegamos a ese documento con un máximo de 5 páginas, con nuestro identificador real,
+    parando ante cualquier bloqueo; cada página visitada y el motivo quedan en la evidencia.
   advertising: Publicidad
   advertising_title: Publicidad en nosmienten.com
   advertising_lead: >-
@@ -715,6 +719,10 @@ en:
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules
     for every outlet.
+    We respect robots.txt. Only exception: when checking a specific figure needs a specific document (e.g. on a
+    transparency portal) because outlets disagree or proof is missing, and it cannot be obtained otherwise, we
+    reach that document in at most 5 pages, with our real identifier, stopping at any block; every visited
+    page and the reason are kept in the evidence.
   advertising: Advertising
   advertising_title: Advertising on nosmienten.com
   advertising_lead: >-
