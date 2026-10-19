@@ -1,0 +1,1529 @@
+{
+ "$comentario": "Historias reales de produccion (nosmienten.com, rastreo del 17-18/10/2026), titular y resumen de cada articulo. 'hechos' etiqueta a mano, por sustantivo, medio y cifra, de que hecho habla cada cifra: dos cifras solo son una disputa si hablan del mismo hecho (ADR 0016). Una cifra sin etiqueta en una disputa cuenta como error.",
+ "historias": [
+  {
+   "historia": 1224,
+   "titulo": "Piden cuatro años de prisión para dos acusados de tráfico de drogas en Albacete en 2025",
+   "articulos": [
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T17:11:00+00:00",
+     "title": "Piden cuatro años de cárcel para dos acusados de vender cocaína en Albacete",
+     "summary": "La Audiencia Provincial de Albacete juzgará este martes, 20 de octubre, a dos hombres acusados de un delito de tráfico de drogas por unos hechos ocurridos en agosto de 2025. La Fiscalía solicita para cada uno de ellos cuatro años de prisión y una multa de 15.000 euros, según el escrito de acusación al que ha tenido acceso Europa Press.Los hechos se remontan al 22 de agosto de 2025, cuando ambos fueron sorprendidos durante un control rutinario de la Policía Nacional en la calle Pozo de Albacete. Según el Ministerio Fiscal, los acusados viajaban en un vehículo propiedad de uno de ellos en el que",
+     "fuente": "https://nosmienten.com/noticia/244"
+    },
+    {
+     "outlet": "Lanza Digital",
+     "published_at": "2026-10-18T16:21:00+00:00",
+     "title": "Piden cuatro años de prisión para dos acusados de tráfico de drogas en Albacete en 2025",
+     "summary": "La Audiencia provincial de Albacete celebra este martes, 20 de octubre, el juicio contra E.A.D.M. y C.C.S.G ., acusados de un delito de tráfico de drogas en agosto de 2025, por los que la Fiscalía solicita 4 años de prisión. Según el escrito de acusación, al que ha tenido acceso Europa Press, el 22 de agosto de 2025, E.A.D.M. y C.C.S.G. fueron sorprendido en un control rutinario de la Policía Nacional en la calle Pozo de Albacete , portando en el vehículo en el que iban, propiedad de E.A.D.M., 51,55 gramos de cocaína con una pureza del 88,7%. Las autoridades policiales infirieron que se tratab",
+     "fuente": "https://nosmienten.com/noticia/1669"
+    }
+   ],
+   "hechos": {
+    "euros": {
+     "ABC": {
+      "15000": "multa"
+     }
+    }
+   }
+  },
+  {
+   "historia": 1374,
+   "titulo": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+   "articulos": [
+    {
+     "outlet": "El País",
+     "published_at": "2026-10-18T18:53:00+00:00",
+     "title": "Macron acusa a la “extrema izquierda” de inflamar la calle",
+     "summary": "El presidente francés desvincula a los estudiantes de la violencia y el vandalismo, pero asegura que “quienes hayan intentado derribar la República tendrán que responder por sus actos”",
+     "fuente": "https://nosmienten.com/noticia/1"
+    },
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T21:56:00+00:00",
+     "title": "Un tibio Macron asegura que será \"implacable\" tras un fin de semana de extrema violencia en Francia",
+     "summary": "Nuevas escenas de saqueos y violencia en París, con 2.397 detenidos y 997 policías heridos en todo el país Leer",
+     "fuente": "https://nosmienten.com/noticia/100"
+    },
+    {
+     "outlet": "El Español",
+     "published_at": "2026-10-18T18:21:00+00:00",
+     "title": "Macron acusa a la extrema izquierda de la violencia en las manifestaciones y anuncia la \"prohibición de reuniones\"",
+     "summary": "Más información: Jornada de caos en Francia con 2.000 detenidos: miles de manifestantes, grupos violentos, incendios y 1.500 saqueos",
+     "fuente": "https://nosmienten.com/noticia/540"
+    },
+    {
+     "outlet": "OKDIARIO",
+     "published_at": "2026-10-18T18:36:00+00:00",
+     "title": "Macron culpa de las revueltas en Francia a radicales de «grupos de extrema izquierda»",
+     "summary": "El presidente de Francia, Emmanuel Macron, se ha dirigido a los franceses la noche de este domingo y ha culpado de las revueltas en el país a «radicales de grupos de extrema izquierda». Además, ha advertido que las investigaciones de los disturbios del sábado se llevarán a cabo con máxima firmeza y ha asegurado que: … Continuar leyendo \"Macron culpa de las revueltas en Francia a radicales de «grupos de extrema izquierda»\"",
+     "fuente": "https://nosmienten.com/noticia/580"
+    },
+    {
+     "outlet": "The Objective",
+     "published_at": "2026-10-18T18:13:00+00:00",
+     "title": "Macron culpa de los disturbios a la «extrema izquierda» y llama a un diálogo entre partidos",
+     "summary": "El presidente de Francia, Emmanuel Macron, ha comunicado que este lunes reunirá a un gabinete de crisis y comenzará la movilización de ayuda a todos los […]",
+     "fuente": "https://nosmienten.com/noticia/660"
+    },
+    {
+     "outlet": "Onda Cero",
+     "published_at": "2026-10-18T18:44:00+00:00",
+     "title": "Macron culpa a la extrema izquierda de la violencia en Francia: \"Quienes han causado daños tienen que pagar\"",
+     "summary": "El presidente francés promete firmeza tras los saqueos de comercios e incendios de edificios públicos.Las impactantes imágenes del Ayuntamiento de Limoges destruido por un incendio que fue provocado por los manifestantes en FranciaLos disturbios incendian Francia y hunden a Macron con críticas de \"vacío de poder\": \"Llegaremos a unas elecciones muy polarizadas entre Mélenchon y Le Pen\"",
+     "fuente": "https://nosmienten.com/noticia/732"
+    },
+    {
+     "outlet": "laSexta",
+     "published_at": "2026-10-18T18:14:00+00:00",
+     "title": "Macron anuncia un gabinete de crisis ante la violencia en Francia y apunta a \"la extrema izquierda\": \"Siento vergüenza\"",
+     "summary": "¿Qué ha dicho? El presidente francés separa a los manifestantes que protestan por el precio de la vida de los grupos que protagonizan disturbios y atribuye las subidas de precios a las consecuencias del conflicto en Oriente Medio.",
+     "fuente": "https://nosmienten.com/noticia/804"
+    },
+    {
+     "outlet": "Diario Sur",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1263"
+    },
+    {
+     "outlet": "Ideal",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1265"
+    },
+    {
+     "outlet": "Heraldo de Aragón",
+     "published_at": "2026-10-18T18:35:00+00:00",
+     "title": "Macron culpa a la extrema izquierda de los disturbios en Francia: \"Quienes han destruido deben pagar\"",
+     "summary": "El presidente francés denuncia una violencia \"sin precedentes\", respalda a la Policía y promete investigar los ataques a edificios y comercios",
+     "fuente": "https://nosmienten.com/noticia/1458"
+    },
+    {
+     "outlet": "El Comercio",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1508"
+    },
+    {
+     "outlet": "Canarias7",
+     "published_at": "2026-10-18T21:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1562"
+    },
+    {
+     "outlet": "El Diario Montañés",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1593"
+    },
+    {
+     "outlet": "El Norte de Castilla",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/1695"
+    },
+    {
+     "outlet": "Las Provincias",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2057"
+    },
+    {
+     "outlet": "Hoy",
+     "published_at": "2026-10-18T20:22:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2128"
+    },
+    {
+     "outlet": "La Verdad",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2309"
+    },
+    {
+     "outlet": "El Correo",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2366"
+    },
+    {
+     "outlet": "El Diario Vasco",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2396"
+    },
+    {
+     "outlet": "La Rioja",
+     "published_at": "2026-10-18T22:16:00+00:00",
+     "title": "Macron promete que los violentos que «intentaron hacer caer la República pagarán por ello»",
+     "summary": "El presidente francés culpa del caos en las principales ciudades a «grupúsculos de la extrema izquierda y a delincuentes» y pide explicaciones a los servicios de Inteligencia por su falta de previsión",
+     "fuente": "https://nosmienten.com/noticia/2477"
+    }
+   ],
+   "hechos": {
+    "detenidos": {
+     "El Español": {
+      "2000": "francia"
+     },
+     "El Mundo": {
+      "2397": "francia"
+     }
+    },
+    "heridos": {
+     "El Mundo": {
+      "997": "policias-francia"
+     }
+    }
+   }
+  },
+  {
+   "historia": 337,
+   "titulo": "Las fotos de las multitudinarias y violentas protestas en Francia",
+   "articulos": [
+    {
+     "outlet": "El País",
+     "published_at": "2026-10-18T19:34:00+00:00",
+     "title": "Italia se contagia de las protestas estudiantiles en Francia",
+     "summary": "Las movilizaciones por la educación derivan en violentos choques con la policía y saqueos de tiendas, principalmente en Milán, y causan cientos de detenidos, la mayoría menores",
+     "fuente": "https://nosmienten.com/noticia/6"
+    },
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T12:19:00+00:00",
+     "title": "Arde Francia en graves disturbios y saqueos en las protestas por el coste de la vida",
+     "summary": "La ebullición de las redes sociales se convirtió en una realidad en la calle. La llamada a manifestarse en TikTok este 17 de octubre contra la subida del precio del combustible, la vida cara y la precarización de los servicios públicos desembocó este sábado en Francia en una jornada de protestas multitudinarias y con numerosos y graves episodios de violencia urbana. Entre 800.000 personas, según los sindicatos, y 550.000, según el Ministerio del Interior, protestaron en París y otras localidades.La participación final superó con claridad las previsiones del Gobierno de Sébastien Lecornu, quien",
+     "fuente": "https://nosmienten.com/noticia/272"
+    },
+    {
+     "outlet": "elDiario.es",
+     "published_at": "2026-10-18T06:12:00+00:00",
+     "title": "Francia arde en una jornada de protestas con 2.000 detenidos",
+     "summary": "En París, una persona murió tras sufrir una parada cardiorrespiratoria. El ayuntamiento de Limoges quedó “prácticamente destruido” por un incendio. Las escenas de enfrentamientos con la policía y saqueos se han vuelto a repetir este domingo en varias ciudades antes de la comparencia de Macron Fotogalería - Las imágenes de las masivas protestas en Francia Una marea de personas mantiene la presión en las calles de Francia en una nueva jornada de tensión con la Policía Más de 2.000 personas fueron detenidas el sábado en Francia después de que manifestantes que apoyaban a las protestas de los estu",
+     "fuente": "https://nosmienten.com/noticia/436"
+    },
+    {
+     "outlet": "elDiario.es",
+     "published_at": "2026-10-18T12:50:00+00:00",
+     "title": "Las imágenes de las masivas protestas en Francia",
+     "summary": "Una marea de personas ha tomado este domingo las calles de Francia en una nueva jornada de tensión con la Policía que ha abierto una grave crisis en el país. Algunas manifestaciones se descontrolaron, con incendios en edificios, como en Limoges cuyo ayuntamiento quedó “prácticamente destruido”, y saqueos en tiendas. Calles del centro de París “han quedado devastadas”, según afirmó el alcalde de la ciudad, Emmanuel Grégoire.",
+     "fuente": "https://nosmienten.com/noticia/438"
+    },
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T16:09:00+00:00",
+     "title": "Los disturbios continúan en las calles de París y otras ciudades: un millar de agentes heridos y 2.400 detenidos en toda Francia",
+     "summary": "Última hora y todas las noticias de las multitudinarias protestas que han desembocado en violentos disturbios en París y otras ciudades de Francia.",
+     "fuente": "https://nosmienten.com/noticia/465"
+    },
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T06:50:00+00:00",
+     "title": "Caos en las protestas contra el coste de la vida en toda Francia: un muerto, 2.000 detenidos, 600 policías heridos, saqueos e incendios...",
+     "summary": "El Gobierno ha dado instrucciones a los fiscales para que pidan prisión provisional para los detenidos.",
+     "fuente": "https://nosmienten.com/noticia/469"
+    },
+    {
+     "outlet": "Europa Press",
+     "published_at": "2026-10-18T09:37:00+00:00",
+     "title": "El Gobierno francés eleva a casi 2.400 los detenidos y a 500 policías heridos durante las protestas",
+     "summary": "Las autoridades francesas han condenado el \"desorden\" y la violencia vividos en el marco de las multitudinarias protestas celebradas este sábado en las principales ciudades del país para denunciar la mala situación de la educación pública, el elevado coste de la vida y la violencia policial de las últimas semanas, una jornada que se ha saldado con 2.397 detenidos y más de 500 agentes heridos, según datos del Gobierno galo.",
+     "fuente": "https://nosmienten.com/noticia/519"
+    },
+    {
+     "outlet": "Onda Cero",
+     "published_at": "2026-10-18T08:09:00+00:00",
+     "title": "Los disturbios incendian Francia y hunden a Macron con críticas de \"vacío de poder\": \"Llegaremos a unas elecciones muy polarizadas entre Mélenchon y Le Pen\"",
+     "summary": "Tras varias semanas de enfrentamientos estudiantiles contra la Policía, este sábado se han sumado los chalecos amarillos, lo que ha derivado en violentos disturbios que han provocado la detención de más de 1.200 personas por todo el país, la mayoría de ellos, en París.Ola de protestas en Francia: incendios, medio millón de personas en las calles y más de 400 detenidos por saqueos",
+     "fuente": "https://nosmienten.com/noticia/747"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T07:54:00+00:00",
+     "title": "Caos en Francia por unos disturbios que dejan más de 2.397 arrestos y 500 policías heridos: en Limoges, arde el ayuntamiento",
+     "summary": "Lecornu ha informado de más de 2.000 detenciones y a las que ha relacionado con \"perfiles extremadamente peligrosos\" Disturbios en París, Lyon y Marsella durante las protestas contra el encarecimiento de la vida",
+     "fuente": "https://nosmienten.com/noticia/839"
+    },
+    {
+     "outlet": "El HuffPost",
+     "published_at": "2026-10-18T19:03:00+00:00",
+     "title": "Francia vive otra jornada de disturbios con 2.000 detenidos y Macron se dirige a la nación tras la ola de violencia",
+     "summary": "",
+     "fuente": "https://nosmienten.com/noticia/946"
+    },
+    {
+     "outlet": "El Independiente",
+     "published_at": "2026-10-17T15:27:00+00:00",
+     "title": "De París a Limoges: las protestas de estudiantes y la violencia incendian Francia y dejan 1.800 detenidos",
+     "summary": "Los franceses han vuelto a incendiar las calles en las protestas convocadas este 17 de octubre. A los estudiantes, que […]",
+     "fuente": "https://nosmienten.com/noticia/1061"
+    },
+    {
+     "outlet": "Diario de Sevilla",
+     "published_at": "2026-10-18T14:58:00+00:00",
+     "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+     "summary": "Las manifestaciones que se desarrollaron por todo el país convocadas por un variado conglomerado de colectivos, empezando por los estudiantes, pero también miembros de los 'chalecos amarillos' o empleados de servicios públicos. Las fotos de las multi",
+     "fuente": "https://nosmienten.com/noticia/1218"
+    },
+    {
+     "outlet": "Diario de Sevilla",
+     "published_at": "2026-10-18T15:58:00+00:00",
+     "title": "Las fotos del día después en Francia tras la ola de protestas y violencia",
+     "summary": "Las fotos de las multitudinarias y violentas protestas en Francia Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+     "fuente": "https://nosmienten.com/noticia/1219"
+    },
+    {
+     "outlet": "Diario de Sevilla",
+     "published_at": "2026-10-18T15:31:00+00:00",
+     "title": "Las fotos de las multitudinarias y violentas protestas en Francia",
+     "summary": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+     "fuente": "https://nosmienten.com/noticia/1220"
+    },
+    {
+     "outlet": "Málaga Hoy",
+     "published_at": "2026-10-18T14:58:00+00:00",
+     "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+     "summary": "Las manifestaciones que se desarrollaron por todo el país convocadas por un variado conglomerado de colectivos, empezando por los estudiantes, pero también miembros de los 'chalecos amarillos' o empleados de servicios públicos. Las fotos de las multi",
+     "fuente": "https://nosmienten.com/noticia/1335"
+    },
+    {
+     "outlet": "Huelva Información",
+     "published_at": "2026-10-18T14:58:00+00:00",
+     "title": "Detenidas 2.000 personas en las protestas en Francia, que dejan 600 policías heridos, un ayuntamiento quemado y saqueos",
+     "summary": "Las manifestaciones que se desarrollaron por todo el país convocadas por un variado conglomerado de colectivos, empezando por los estudiantes, pero también miembros de los 'chalecos amarillos' o empleados de servicios públicos. Las fotos de las multi",
+     "fuente": "https://nosmienten.com/noticia/1369"
+    },
+    {
+     "outlet": "Canal Sur Noticias",
+     "published_at": "2026-10-18T08:52:00+00:00",
+     "title": "1.800 detenidos y 500 policías heridos en la jornada de masivas protestas sociales en Francia",
+     "summary": "A las protestas estudiantiles se sumaron sindicatos y los 'chalecos amarillos' por el encarecimiento de la vida y los recortes sociales. Un incendio destruye el histórico edificio del Ayuntamiento de Limoges. Macron se dirigirá a la nación este domin",
+     "fuente": "https://nosmienten.com/noticia/1422"
+    },
+    {
+     "outlet": "Heraldo de Aragón",
+     "published_at": "2026-10-18T17:28:00+00:00",
+     "title": "París vive una nueva jornada de disturbios y saqueos tras las protestas masivas en Francia",
+     "summary": "La Policía despliega unidades antidisturbios tras nuevos asaltos a comercios. Macron prepara un discurso a la nación ante la crisis",
+     "fuente": "https://nosmienten.com/noticia/1459"
+    },
+    {
+     "outlet": "La Región",
+     "published_at": "2026-10-18T07:28:00+00:00",
+     "title": "Vídeo | Más de 1.800 detenidos y 500 policías heridos en una jornada de protestas con destrozos en Francia",
+     "summary": "Las protestas contra el coste de la vida y el deterioro de los servicios públicos reunieron a 550.000 personas, según el Gobierno, y derivaron en saqueos, incendios y enfrentamientos en varias ciudades. París registró 855 arrestos y Emmanuel Macron s",
+     "fuente": "https://nosmienten.com/noticia/2210"
+    },
+    {
+     "outlet": "BBC Mundo",
+     "published_at": "2026-10-18T14:52:00+00:00",
+     "title": "\"No hay lugar para la violencia\": vehículos quemados, edificios dañados y 2.400 detenidos tras las multitudinarias protestas en Francia",
+     "summary": "Durante la jornada de protestas en París y otras ciudades hubo choques con la policía, que enfrentó a los manifestantes con gases lacrimógenos.",
+     "fuente": "https://nosmienten.com/noticia/2657"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T17:49:00+00:00",
+     "title": "Roxane Vigneron: \"Las protestas en Francia responden a problemas crónicos\"",
+     "summary": "El 17 de octubre, Francia vivió una multitudinaria jornada de protestas. Los saqueos y destrozos dejaron afectados a unos 1.500 comerciantes y daños estimados en cientos de millones de euros, según un balance inicial del sector. El Ministerio del Interior reportó unas 1.800 personas detenidas y más de 500 policías, gendarmes y bomberos heridos, en cifras provisionales. Analizamos el tema con Roxane Vigneron, politóloga y analista francesa.",
+     "fuente": "https://nosmienten.com/noticia/2721"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T14:45:00+00:00",
+     "title": "Protestas masivas en Francia: disturbios, ayuntamiento incendiado y presión sobre el Gobierno",
+     "summary": "En la masiva jornada de manifestaciones del 17 de octubre en Francia, el país vivió escenas de caos. En París, calles enteras quedaron devastadas; en Limoges, el ayuntamiento fue incendiado y en Marsella un grupo de personas logró entrar en la alcaldía. Los alcaldes criticaron el caos y los destrozos. La oposición pidió la dimisión del ministro del Interior. Los manifestantes salieron a la calle por mejores condiciones de vida y en rechazo al Gobierno, mientras un grupo de individuos provocó disturbios.",
+     "fuente": "https://nosmienten.com/noticia/2725"
+    },
+    {
+     "outlet": "DW Español",
+     "published_at": "2026-10-18T20:43:00+00:00",
+     "title": "París registra nuevos enfrentamientos y saqueos tras multitudinaria jornada de protestas",
+     "summary": "Más de medio millón de personas manifestaron el sábado en Francia en una jornada de protesta a escala nacional contra el elevado costo de la vida. En muchas ciudades hubo saqueos, incendios y daños a la propiedad.",
+     "fuente": "https://nosmienten.com/noticia/2734"
+    },
+    {
+     "outlet": "Euronews Español",
+     "published_at": "2026-10-18T11:08:00+00:00",
+     "title": "1.800 detenidos: El Gobierno francés atribuye la violencia de las manifestaciones a la ultraizquierda",
+     "summary": "El ministro del Interior francés ha denunciado los abusos cometidos por \"individuos de la ultraizquierda\" al margen de las protestas contra el alto coste de la vida. Se ha detenido a 1.800 personas.",
+     "fuente": "https://nosmienten.com/noticia/2792"
+    },
+    {
+     "outlet": "RFI Español",
+     "published_at": "2026-10-18T18:07:00+00:00",
+     "title": "Nuevos enfrentamientos en París y saqueos tras la multitudinaria jornada de protestas",
+     "summary": "La policía de la capital francesa se enfrenta este domingo a manifestantes y a nuevos saqueos mientras las autoridades evalúan los daños causados la víspera por los disturbios derivados de las multitudinarias protestas en todo el país por el costo de la vida que dejaron cerca de 2.000 detenidos.",
+     "fuente": "https://nosmienten.com/noticia/2808"
+    },
+    {
+     "outlet": "RFI Español",
+     "published_at": "2026-10-18T10:28:00+00:00",
+     "title": "Manifestaciones en Francia : al menos 1.800 arrestos por disturbios y saqueos",
+     "summary": "Cientos de miles de personas protestaron este sábado en Francia contra el encarecimiento de la vida en una jornada clave para medir el malestar social que terminó con disturbios, saqueos e incendios, según informó el domingo el ministro del Interior, Laurent Nuñez. Al menos 1 800 personas fueron detenidas, de las cuales 855 fueron en París, un récord.",
+     "fuente": "https://nosmienten.com/noticia/2813"
+    },
+    {
+     "outlet": "La Razón",
+     "published_at": "2026-10-18T20:01:00+00:00",
+     "title": "París vuelve a sumirse en el caos en otro día de protestas",
+     "summary": "La jornada anterior deja un balance de 2.000 detenidos, más de 600 agentes y bomberos heridos, y daños cifrados en cientos de millones",
+     "fuente": "https://nosmienten.com/noticia/3035"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T23:52:00+00:00",
+     "title": "Macron se pronuncia sobre las protestas en Francia y condena la violencia",
+     "summary": "El presidente francés, Emmanuel Macron, dio un discurso a la nación este 18 de octubre, en respuesta a las multitudinarias protestas y los intensos disturbios que han sacudido a Francia durante los últimos días. “Tienen que pagar por sus crímenes”, aseguró en referencia a quienes protagonizaron saqueos y destrozos durante las manifestaciones. Mientras el mandatario intenta, junto a sus ministros, dar una respuesta a los manifestantes, analistas aseguran que su Gobierno atraviesa un momento de especial tensión.",
+     "fuente": "https://nosmienten.com/noticia/3160"
+    }
+   ],
+   "hechos": {
+    "detenidos": {
+     "El Independiente": {
+      "1800": "francia"
+     },
+     "elDiario.es": {
+      "2000": "francia"
+     },
+     "20minutos": {
+      "2400": "francia",
+      "2000": "francia"
+     },
+     "Informativos Telecinco": {
+      "2397": "francia"
+     },
+     "Canal Sur Noticias": {
+      "1800": "francia"
+     },
+     "Europa Press": {
+      "2397": "francia",
+      "2400": "francia"
+     },
+     "RFI Español": {
+      "2000": "francia",
+      "1800": "francia",
+      "1": "error-de-lectura"
+     },
+     "Euronews Español": {
+      "1800": "francia"
+     },
+     "BBC Mundo": {
+      "2400": "francia"
+     },
+     "Diario de Sevilla": {
+      "2000": "francia"
+     },
+     "Málaga Hoy": {
+      "2000": "francia"
+     },
+     "Huelva Información": {
+      "2000": "francia"
+     },
+     "France 24 Español": {
+      "1800": "francia"
+     },
+     "El HuffPost": {
+      "2000": "francia"
+     },
+     "La Razón": {
+      "2000": "francia"
+     },
+     "La Región": {
+      "1800": "francia",
+      "855": "solo-paris"
+     },
+     "Onda Cero": {
+      "1200": "francia",
+      "400": "solo-saqueos"
+     }
+    },
+    "heridos": {
+     "20minutos": {
+      "600": "policias-francia"
+     },
+     "La Región": {
+      "500": "policias-francia"
+     },
+     "Informativos Telecinco": {
+      "500": "policias-francia"
+     },
+     "Canal Sur Noticias": {
+      "500": "policias-francia"
+     },
+     "Europa Press": {
+      "500": "policias-francia"
+     },
+     "Diario de Sevilla": {
+      "600": "policias-francia"
+     },
+     "Málaga Hoy": {
+      "600": "policias-francia"
+     },
+     "Huelva Información": {
+      "600": "policias-francia"
+     }
+    },
+    "policias": {
+     "France 24 Español": {
+      "500": "heridos-francia"
+     }
+    },
+    "agentes": {
+     "La Razón": {
+      "600": "heridos-francia"
+     }
+    }
+   }
+  },
+  {
+   "historia": 389,
+   "titulo": "Dos detenidos en Irun investigados por terrorismo y vinculados a sectores “disidentes de la izquierda abertzale”",
+   "articulos": [
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-17T18:12:00+00:00",
+     "title": "Dos detenidos en Irun investigados por terrorismo y vinculados a sectores “disidentes de la izquierda abertzale”",
+     "summary": "Se trata de dos personas que cuentan con “antecedentes relevantes”, según el Departamento de Seguridad",
+     "fuente": "https://nosmienten.com/noticia/328"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-17T20:34:00+00:00",
+     "title": "Detenidos un hombre y una mujer investigados por un delito de terrorismo en Irun, Guipúzcoa: ambos tienen \"antecedentes relevantes\"",
+     "summary": "Se trata de dos personas vinculadas con sectores radicales de la izquierda abertzale Los agentes encontraron en su poder información sobre fuerzas de seguridad y sobre armas y explosivos",
+     "fuente": "https://nosmienten.com/noticia/855"
+    },
+    {
+     "outlet": "Canal Sur Noticias",
+     "published_at": "2026-10-18T13:04:00+00:00",
+     "title": "Dos detenidos en Irún acusados de terrorismo",
+     "summary": "Formarían parte de un grupo radical de ideología abertzale que ya estaba siendo investigado y se les ha encontrado información sensible. El martes se cumplen 15 años de la desaparición de la banda terrorista ETA.",
+     "fuente": "https://nosmienten.com/noticia/1420"
+    },
+    {
+     "outlet": "La Voz de Galicia",
+     "published_at": "2026-10-18T12:49:00+00:00",
+     "title": "La Ertzaintza detiene en Irún por terrorismo a dos personas con información sobre guardias civiles",
+     "summary": "Fueron interceptados en un control junto a un irlandés vinculado a los grupos de disidentes del IRA",
+     "fuente": "https://nosmienten.com/noticia/2184"
+    },
+    {
+     "outlet": "El Diario Vasco",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "Los detenidos en Irun por terrorismo pasan a la Audiencia Nacional",
+     "summary": "Jardun señala que los detenidos «no tienen relación alguna» con su grupo y denuncian una campaña de «criminalización»",
+     "fuente": "https://nosmienten.com/noticia/2414"
+    },
+    {
+     "outlet": "El Correo",
+     "published_at": "2026-10-18T22:52:00+00:00",
+     "title": "Las detenciones por terrorismo ponen el foco en los disidentes de la izquierda abertzale",
+     "summary": "Aske denuncia una «criminalización» de Jardun por los presuntos vínculos de los arrestados con esta organización",
+     "fuente": "https://nosmienten.com/noticia/2977"
+    }
+   ],
+   "hechos": {
+    "detenidos": {
+     "La Vanguardia": {
+      "2": "irun"
+     },
+     "Canal Sur Noticias": {
+      "2": "irun"
+     }
+    }
+   }
+  },
+  {
+   "historia": 762,
+   "titulo": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+   "articulos": [
+    {
+     "outlet": "El País",
+     "published_at": "2026-10-18T20:12:00+00:00",
+     "title": "Zelenski afirma que Trump busca la rendición de Ucrania ante Rusia",
+     "summary": "Kiev lanza un intenso ataque contra objetivos clave en San Petersburgo mientras el presidente estadounidense acusa al ucranio de no querer acabar la guerra",
+     "fuente": "https://nosmienten.com/noticia/24"
+    },
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T12:28:00+00:00",
+     "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+     "summary": "El gobernador, Alexander Beglov, ha confirmado el fallecimiento de una persona y el derribo de 144 aparatos no tripulados sobre la región de Leningrado Leer",
+     "fuente": "https://nosmienten.com/noticia/182"
+    },
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T11:48:00+00:00",
+     "title": "Ucrania golpea la infraestructura petrolera rusa y un centro de datos en un bombardeo contra San Petersburgo",
+     "summary": "Los drones ucranianos alcanzaron la segunda ciudad más grande de Rusia otra vez. El gobernador de la región de Leningrado, Aleksandr Drozdenko, afirma que las defensas aéreas lograron derribar hasta 144 aparatos . Pero no fue suficiente para evitar daños. Los objetivos de la esta ofensiva aérea incluyeron una terminal petrolera, centros de datos y logísticos además de varios almacenes. Según canales de monitoreo, uno de los puentes sobre el canal marítimo de la ciudad también habría sido alcanzado.Las autoridades locales rusa s informaron también de daños en edificios residenciales y vehículos",
+     "fuente": "https://nosmienten.com/noticia/218"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-18T07:17:00+00:00",
+     "title": "Ucrania responde a Trump con uno de los mayores ataques de la guerra en San Petersburgo, la ciudad de Putin",
+     "summary": "Una persona ha muerto y otras cinco han resultado heridas",
+     "fuente": "https://nosmienten.com/noticia/382"
+    },
+    {
+     "outlet": "El Confidencial",
+     "published_at": "2026-10-18T09:21:00+00:00",
+     "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+     "summary": "Una víctima mortal y cinco heridos dejó la ofensiva nocturna, que provocó incendios en depósitos de combustible y cortes de luz para 20.000 residentes",
+     "fuente": "https://nosmienten.com/noticia/423"
+    },
+    {
+     "outlet": "elDiario.es",
+     "published_at": "2026-10-18T07:55:00+00:00",
+     "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones de la guerra",
+     "summary": "La ofensiva, que se produce después de que Trump frenara la aplicación del paquete de sanciones a Rusia y autorizara la exportación de diésel ruso, mató a una persona e hirió a otras cinco Ucrania pide perdón por el dron en Lituania y Letonia que movilizó cazas de la OTAN Ucrania respondió este domingo a las últimas decisiones en favor de Rusia del presidente de Estados Unidos, Donald Trump , lanzando el mayor ataque de la guerra contra la segunda ciudad del país vecino, San Petersburgo. El ataque deja un balance de un muerto y cinco heridos. Unos 150 drones hicieron estragos durante la madrug",
+     "fuente": "https://nosmienten.com/noticia/452"
+    },
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T08:45:00+00:00",
+     "title": "Ucrania responde a Trump golpeando San Petersburgo, la ciudad de Putin, con el mayor ataque de drones de la guerra",
+     "summary": "Una persona ha fallecido y otras cinco han resultado heridas. El gobernador ha confirmado el derribo de 144 aparatos no tripulados enemigos y ha señalado que más de 20.000 personas se han quedado sin electricidad.",
+     "fuente": "https://nosmienten.com/noticia/482"
+    },
+    {
+     "outlet": "AS",
+     "published_at": "2026-10-18T10:24:00+00:00",
+     "title": "Ataque inédito de Ucrania en San Petersburgo",
+     "summary": "Drones ucranianos atacaron la ciudad durante la noche, impactando en la terminal petrolera báltica más grande de Rusia, un centro de datos de VK y una subestación eléctrica.",
+     "fuente": "https://nosmienten.com/noticia/1200"
+    },
+    {
+     "outlet": "La Voz de Galicia",
+     "published_at": "2026-10-18T17:28:00+00:00",
+     "title": "Kiev responde a la ofensiva rusa con un ataque masivo a San Petersburgo",
+     "summary": "Zelenski bombardea centros energéticos y logísticos de la ciudad natal de Putin",
+     "fuente": "https://nosmienten.com/noticia/2167"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T15:40:00+00:00",
+     "title": "En plena tensión con Trump, Ucrania apunta al diésel ruso con un ataque masivo en San Petersburgo",
+     "summary": "Kiev lanzó este 18 de octubre más de 1.000 drones contra territorio ruso, uno de sus mayores bombardeos aéreos hasta la fecha, causando incendios en dos terminales petroleras y en almacenes de datos de San Petersburgo, la ciudad natal de Vladimir Putin. Pese a las críticas de Donald Trump por los ataques ucranianos a instalaciones energéticas rusas, el presidente Volodímir Zelenski apuntó que EE. UU. \"debería ver\" que Rusia ha ignorado el llamado a una tregua energética con 76 ataques en una semana.",
+     "fuente": "https://nosmienten.com/noticia/2724"
+    },
+    {
+     "outlet": "DW Español",
+     "published_at": "2026-10-18T08:02:00+00:00",
+     "title": "Ucrania lanza contra San Petersburgo uno de los mayores ataques con drones desde que empezó la guerra",
+     "summary": "El ataque provocó un incendio en la principal terminal petrolera de la región, así como daños en infraestructuras. Más de quinientos drones fueron derribados camino a Moscú.",
+     "fuente": "https://nosmienten.com/noticia/2742"
+    },
+    {
+     "outlet": "Euronews Español",
+     "published_at": "2026-10-18T14:46:00+00:00",
+     "title": "Rusia: grandes llamas y humo sobre San Petersburgo tras ataques con drones",
+     "summary": "En San Petersburgo, enormes columnas de humo negro se elevaron tras un ataque masivo de drones ucranianos que provocó incendios; Rusia afirma haber derribado 126 aparatos.",
+     "fuente": "https://nosmienten.com/noticia/2784"
+    },
+    {
+     "outlet": "Euronews Español",
+     "published_at": "2026-10-18T10:56:00+00:00",
+     "title": "Ucrania realiza su mayor ataque con drones sobre San Petersburgo y la región de Leningrado",
+     "summary": "Un muerto y 15 heridos tras ataques de drones ucranianos en San Petersburgo y la región de Leningrado, según las autoridades locales. También fueron atacados un centro logístico de Ozon y varios edificios en uno de los mayores ataques Ucranianos desde el inicio del conflicto",
+     "fuente": "https://nosmienten.com/noticia/2794"
+    },
+    {
+     "outlet": "RFI Español",
+     "published_at": "2026-10-18T11:15:00+00:00",
+     "title": "Ucrania ataca instalaciones petroleras de San Petersburgo, la segunda ciudad más grande de Rusia",
+     "summary": "Decenas de drones ucranianos atacaron San Petersburgo, en el noroeste de Rusia, dejando al menos un muerto y provocando incendios en dos sitios petroleros. Los bomberos siguen trabajando para apagar las llamas de los depósitos al sur de la ciudad. En total, el Ministerio ruso de Defensa afirmó que 1.015 drones ucranianos fueron neutralizados el sábado por la noche y el domingo de madrugada en el sur y el oeste de Rusia, incluida la capital.",
+     "fuente": "https://nosmienten.com/noticia/2810"
+    }
+   ],
+   "hechos": {
+    "heridos": {
+     "elDiario.es": {
+      "5": "ataque"
+     },
+     "El Confidencial": {
+      "5": "ataque"
+     },
+     "Euronews Español": {
+      "15": "ataque"
+     }
+    }
+   }
+  },
+  {
+   "historia": 796,
+   "titulo": "Ceuta desaloja a unos 500 migrantes de varios asentamientos con un operativo de 350 agentes",
+   "articulos": [
+    {
+     "outlet": "El País",
+     "published_at": "2026-10-18T11:03:00+00:00",
+     "title": "Más de 350 agentes desalojan los últimos asentamientos de migrantes en Ceuta",
+     "summary": "El operativo policial se centra en barriadas de la periferia para trasladar a los adultos e identificar a los menores",
+     "fuente": "https://nosmienten.com/noticia/27"
+    },
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T17:44:00+00:00",
+     "title": "Desalojado en Ceuta un autobús con migrantes después de que uno de los ocupantes usara gas pimienta",
+     "summary": "El autobús formaba parte del operativo de traslado de personas migrantes desde los asentamientos hasta el Centro de Atención Temporal de Extranjeros Leer",
+     "fuente": "https://nosmienten.com/noticia/131"
+    },
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T17:20:00+00:00",
+     "title": "Desalojados 500 inmigrantes de zonas periféricas de Ceuta en un operativo con 350 agentes",
+     "summary": "La Policía Nacional ha desplegado este domingo un dispositivo especial en varias barriadas periféricas de Ceuta para localizar a los últimos inmigrantes que permanecen en las calles y trasladarlos al Centro de Atención Temporal para Extranjeros (CATE). Desde allí serán derivados al campamento de Loma Colmenar o podrán regresar voluntariamente a Marruecos.El operativo ha arrancado a las 7:00 horas en la barriada de Los Rosales, donde cerca de un centenar de agentes de la Unidad de Intervención Policial (UIP) se ha desplegado para localizar a las personas que aún permanecían en la zona. Los inmi",
+     "fuente": "https://nosmienten.com/noticia/242"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-18T14:02:00+00:00",
+     "title": "Ceuta desaloja a unos 500 migrantes de varios asentamientos con un operativo de 350 agentes",
+     "summary": "El dispositivo, con más de 350 agentes, se repetirá cada semana; uno de los autobuses tuvo que ser desalojado después de que un pasajero utilizara gas pimienta",
+     "fuente": "https://nosmienten.com/noticia/322"
+    },
+    {
+     "outlet": "El Confidencial",
+     "published_at": "2026-10-18T14:26:00+00:00",
+     "title": "Desalojan en Ceuta un autobús con migrantes al utilizar uno de ellos un espray de gas pimienta",
+     "summary": "Los ocupantes fueron reubicados y recibieron atención médica, mientras se busca al responsable del incidente registrado durante el trayecto al centro de identificación",
+     "fuente": "https://nosmienten.com/noticia/398"
+    },
+    {
+     "outlet": "elDiario.es",
+     "published_at": "2026-10-18T11:21:00+00:00",
+     "title": "La Policía Nacional desaloja los asentamientos de personas migrantes del Tarajal y otros puntos de Ceuta",
+     "summary": "Además de las naves del Tarajal, los agentes se han desplegado en Poblado Regulares, el barrio de Los Rosales, la parte baja de la barriada del Príncipe y la explanada próxima al Centro de Estancia Temporal de Inmigrantes. Reconstrucción de uno de los vídeos de palizas de militares a migrantes en Ceuta: “Dormíamos y nos despertaron a golpes” Eran las 9:20 de la mañana cuando el operativo policial, integrado por más de 350 agentes de la Policía Nacional, llegaba a las naves del Tarajal. Unas horas antes, un grupo de jóvenes, entre ellos menores de edad, se desperezaba mientras salía de sus tien",
+     "fuente": "https://nosmienten.com/noticia/448"
+    },
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T09:15:00+00:00",
+     "title": "La Policía despliega su primer operativo en barrios de Ceuta y desaloja cerca de 500 migrantes",
+     "summary": "El operativo ha supuesto la movilización de unos 350 funcionarios policiales para proceder al desalojo de los cerca de 500 migrantes, entre ellos en torno a 200 menores de edad.",
+     "fuente": "https://nosmienten.com/noticia/487"
+    },
+    {
+     "outlet": "El Español",
+     "published_at": "2026-10-18T11:10:00+00:00",
+     "title": "La Policía desaloja la barriada de Los Rosales y el último asentamiento de las naves de El Tarajal de Ceuta",
+     "summary": "El dispositivo se ha desarrollado sin incidentes en la barriada de Los Rosales, aunque en las naves de El Tarajal algunos de los inmigrantes al ver llegar a la policía han intentado huir. Más información: Deambulando y desamparados en las calles, así es la vida de 400 menores en Ceuta que sobreviven gracias a los vecinos",
+     "fuente": "https://nosmienten.com/noticia/532"
+    },
+    {
+     "outlet": "OKDIARIO",
+     "published_at": "2026-10-18T17:57:00+00:00",
+     "title": "Un inmigrante rocía un espray de gas pimienta en un autobús que trasladaba a invasores desalojados",
+     "summary": "La Delegación del Gobierno de Ceuta ha informado a través de un comunicado que la Policía Nacional ha desalojado uno de los autobuses que ha trasladado a los inmigrantes desalojados de Los Rosales y del Tarajal. La intervención se ha producido a la mitad del trayecto hacia el Centro de Atención Temporal de Extranjeros (CATE) … Continuar leyendo \"Un inmigrante rocía un espray de gas pimienta en un autobús que trasladaba a invasores desalojados\"",
+     "fuente": "https://nosmienten.com/noticia/585"
+    },
+    {
+     "outlet": "The Objective",
+     "published_at": "2026-10-18T19:44:00+00:00",
+     "title": "Desalojado en Ceuta un autobús de inmigrantes tras usar gas pimienta uno de ellos",
+     "summary": "La Policía Nacional ha desalojado en Ceuta uno de los autobuses destinados al operativo de traslado de personas migrantes desde los asentamientos hasta el Centro de […]",
+     "fuente": "https://nosmienten.com/noticia/657"
+    },
+    {
+     "outlet": "Antena 3 Noticias",
+     "published_at": "2026-10-18T19:47:00+00:00",
+     "title": "Ceuta intensifica los desalojos de migrantes en sus barriadas y en El Tarajal",
+     "summary": "La actuación se ha producido después de que el ministro del Interior, Fernando Grande-Marlaska, se comprometiera el viernes a completar antes del próximo 1 de noviembre el desalojo de los migrantes que permanecen en los montes de Ceuta.",
+     "fuente": "https://nosmienten.com/noticia/763"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T18:53:00+00:00",
+     "title": "Desalojado en Ceuta un autobús con migrantes después de que uno de los ocupantes usara gas pimienta",
+     "summary": "Los responsables del operativo procedieron a evacuar el vehículo afectado y a reubicar a todos los pasajeros en otros autobuses Primer operativo policial en Ceuta para localizar a migrantes en los barrios de la ciudad tras desmantelar los asentamientos",
+     "fuente": "https://nosmienten.com/noticia/837"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T08:28:00+00:00",
+     "title": "Primer operativo policial en Ceuta para localizar a migrantes en los barrios de la ciudad tras desmantelar los asentamientos",
+     "summary": "Los agentes están desplegados este domingo en la zona del Poblado de Regulares y en el entorno de la barriada de Los Rosales Condenada por ocultar a doce migrantes en su casa en Ceuta, entre ellos una embarazada",
+     "fuente": "https://nosmienten.com/noticia/850"
+    },
+    {
+     "outlet": "Canal Sur Noticias",
+     "published_at": "2026-10-18T13:12:00+00:00",
+     "title": "La policía desaloja a unos 500 migrante de el Tarajal y los barrios periféricos de Ceuta",
+     "summary": "200 de los desalojados son menores de edad. Han sido trasladados al Centro de Atención Temporal para Extranjeros (CATE). El delegado del Gobierno destaca la actuación coordinada de los agentes.",
+     "fuente": "https://nosmienten.com/noticia/1421"
+    },
+    {
+     "outlet": "Melilla Hoy",
+     "published_at": "2026-10-18T18:00:00+00:00",
+     "title": "El delegado de Ceuta cifra en 500 los migrantes desalojados de zonas periféricas en un operativo con más de 350 agentes",
+     "summary": "",
+     "fuente": "https://nosmienten.com/noticia/2535"
+    }
+   ],
+   "hechos": {
+    "migrantes": {
+     "Informativos Telecinco": {
+      "12": "ocultados-en-una-casa"
+     },
+     "20minutos": {
+      "500": "desalojo"
+     },
+     "La Vanguardia": {
+      "500": "desalojo"
+     },
+     "ABC": {
+      "500": "desalojo"
+     },
+     "Melilla Hoy": {
+      "500": "desalojo"
+     }
+    },
+    "agentes": {
+     "El País": {
+      "350": "operativo"
+     },
+     "elDiario.es": {
+      "350": "operativo"
+     },
+     "La Vanguardia": {
+      "350": "operativo"
+     },
+     "ABC": {
+      "350": "operativo"
+     },
+     "Melilla Hoy": {
+      "350": "operativo"
+     }
+    }
+   }
+  },
+  {
+   "historia": 799,
+   "titulo": "'La bola negra' supera a 'Torrente Presidente' y ya es la película más taquillera de 2026",
+   "articulos": [
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T10:56:00+00:00",
+     "title": "'La bola negra' supera a 'Torrente Presidente' y ya es la película más taquillera de 2026",
+     "summary": "El fenómeno de 'La bola negra' parece no tener techo. La película dirigida por Javier Calvo y Javier Ambrossi continúa pulverizando récords en la taquilla española, convirtiéndose en la producción nacional con mayor recaudación del año y en la cuarta de la historia.Según los datos de Rentrak, la compañía especializada en medición de audiencias y taquilla cuyos registros difunde el Ministerio de Cultura a través del Instituto de Cinematografía y de las Artes Audiovisuales (ICAA), la cinta acumula 28,6 millones de euros , lo que le permite adelantar a 'Torrente Presidente' , que alcanzó los 26,2",
+     "fuente": "https://nosmienten.com/noticia/220"
+    },
+    {
+     "outlet": "elDiario.es",
+     "published_at": "2026-10-18T08:31:00+00:00",
+     "title": "‘La bola negra’ supera a Torrente y ya es la cuarta película más taquillera de la historia del cine español",
+     "summary": "La película de Javier Calvo y Javier Ambrossi consigue el hito en solo cuatro semanas y todavía en el número 1 de las más vistas. Ahora aspira al trono que ostenta 'Ocho apellidos vascos' Javier Calvo y Javier Ambrossi: “'La bola negra' es una película que nos supera, que tiene un propósito mayor de existencia que nosotros” El fenómeno La bola negra sigue imparable. La película de Javier Calvo y Javier Ambrossi afronta su cuarto fin de semana en las salas y lo hace con un nuevo impulso en su vida comercial. Tras sumar la recaudación del viernes y el sábado el filme ha superado a Torrente, pres",
+     "fuente": "https://nosmienten.com/noticia/453"
+    },
+    {
+     "outlet": "La Voz de Galicia",
+     "published_at": "2026-10-18T13:37:00+00:00",
+     "title": "«La bola negra» destrona a «Torrente presidente» como la película más taquillera del año",
+     "summary": "La cinta dirigida por Javier Calvo y Javier Ambrossi ha recaudado 28,6 millones de euros desde su estreno",
+     "fuente": "https://nosmienten.com/noticia/2181"
+    },
+    {
+     "outlet": "El Progreso",
+     "published_at": "2026-10-18T14:18:00+00:00",
+     "title": "'La bola negra' se come a 'Torrente' y ya es la película española más taquillera del año",
+     "summary": "La película de Javier Calvo y Javier Ambrossi es el tercer film más visto de 2026 en España solo por detrás de 'La odisea' y 'Spider-man'",
+     "fuente": "https://nosmienten.com/noticia/2238"
+    }
+   ],
+   "hechos": {
+    "euros": {
+     "ABC": {
+      "28600000": "taquilla"
+     },
+     "La Voz de Galicia": {
+      "28600000": "taquilla"
+     }
+    }
+   }
+  },
+  {
+   "historia": 848,
+   "titulo": "Tres muertos y varios heridos, dos de ellos graves, en un cayuco con 132 personas en El Hierro",
+   "articulos": [
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T19:31:00+00:00",
+     "title": "Tres muertos y seis traslados al Hospital del primer cayuco que arribó en la pasada madrugada a El Hierro",
+     "summary": "La embarcación llegó a La Restinga con 131 personas a bordo Leer",
+     "fuente": "https://nosmienten.com/noticia/129"
+    },
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T09:28:00+00:00",
+     "title": "Dos personas fallecen y varias resultan heridas en la llegada de un cayuco a El Hierro con 132 ocupantes",
+     "summary": "Servicio Marítimo acompañó a la embarcación hasta el puerto a las 04:30 horas de la mañana. Dos personas están heridas de gravedad Leer",
+     "fuente": "https://nosmienten.com/noticia/134"
+    },
+    {
+     "outlet": "The Objective",
+     "published_at": "2026-10-18T15:15:00+00:00",
+     "title": "Dos inmigrantes muertos y otros 130 rescatados en un cayuco cerca de El Hierro",
+     "summary": "Dos inmigrantes han fallecido y varios han llegado a El Hierro heridos, algunos de gravedad, en un cayuco con 132 ocupantes abordo que ha sido auxiliado […]",
+     "fuente": "https://nosmienten.com/noticia/667"
+    },
+    {
+     "outlet": "Canarias7",
+     "published_at": "2026-10-18T19:39:00+00:00",
+     "title": "Tres muertos y varios heridos, dos de ellos graves, en un cayuco con 132 personas en El Hierro",
+     "summary": "Salvamento Marítimo localizó la embarcación a 2,7 kilómetros de La Restinga y la acompañó hasta el puerto",
+     "fuente": "https://nosmienten.com/noticia/1579"
+    },
+    {
+     "outlet": "Canarias7",
+     "published_at": "2026-10-18T21:53:00+00:00",
+     "title": "Salvamento Marítimo escolta hasta La Restinga a un segundo cayuco con 177 personas migrantes",
+     "summary": "La embarcación fue detectada este domingo navegando a unas 10 millas al sur de la isla",
+     "fuente": "https://nosmienten.com/noticia/2970"
+    }
+   ],
+   "hechos": {
+    "muertos": {
+     "El Mundo": {
+      "3": "cayuco-132",
+      "2": "cayuco-132"
+     },
+     "The Objective": {
+      "2": "cayuco-132"
+     },
+     "Canarias7": {
+      "3": "cayuco-132"
+     }
+    },
+    "migrantes": {
+     "The Objective": {
+      "2": "fallecidos-cayuco-132"
+     },
+     "Canarias7": {
+      "177": "a-bordo-segundo-cayuco"
+     }
+    },
+    "heridos": {
+     "El Mundo": {
+      "2": "graves-cayuco-132"
+     }
+    }
+   }
+  },
+  {
+   "historia": 974,
+   "titulo": "Protestas \"violentas\" contra el coste de la vida en Italia toman las calles de ciudades como Milán, Turín y Bolonia",
+   "articulos": [
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T15:40:00+00:00",
+     "title": "Las protestas por la inflación y la vivienda se contagian por Europa: caos en Francia, Italia y Albania y acampadas de España y Portugal",
+     "summary": "Lo peor ha ocurrido en Francia, donde al menos hay un muerto y 2.000 detenidos; ciudades como Milán y Turín registraron incidentes graves.",
+     "fuente": "https://nosmienten.com/noticia/468"
+    },
+    {
+     "outlet": "Europa Press",
+     "published_at": "2026-10-18T12:00:00+00:00",
+     "title": "Protestas \"violentas\" contra el coste de la vida en Italia toman las calles de ciudades como Milán, Turín y Bolonia",
+     "summary": "Las movilizaciones convocadas en Milán, Turín o Bolonia para protestar contra el encarecimiento de la vida en Italia han derivado en enfrentamientos violentos entre los manifestantes y las fuerzas de seguridad que se han dejado imágenes de lanzamientos de piedras, petardos y botellas en las principales calles de la ciudad, así como daños materiales y decenas de detenidos. La primera ministra italiana, Giorgia Meloni, ha condenado los ataques \"violentos\" porque \"manifestarse es un derecho\" pero \"poner a hierro y fuego nuestras ciudades no lo es\".",
+     "fuente": "https://nosmienten.com/noticia/525"
+    },
+    {
+     "outlet": "Libertad Digital",
+     "published_at": "2026-10-18T12:35:00+00:00",
+     "title": "Disturbios en Milán, Turín y Bolonia: las protestas contra la inflación en Italia acaban con decenas de detenidos",
+     "summary": "Los manifestantes terminan lanzando piedras, botellas y petardos contra las fuerzas de seguridad.",
+     "fuente": "https://nosmienten.com/noticia/610"
+    },
+    {
+     "outlet": "Antena 3 Noticias",
+     "published_at": "2026-10-18T15:18:00+00:00",
+     "title": "Milán estalla en una noche de disturbios en Europa por el coste de la vida con 50 detenidos",
+     "summary": "Los enfrentamientos sacuden también Albania, mientras miles de personas reclaman en Lisboa viviendas asequibles. Los jóvenes encabezan unas movilizaciones marcadas por el malestar económico y las demandas de mejoras en los servicios públicos.",
+     "fuente": "https://nosmienten.com/noticia/777"
+    },
+    {
+     "outlet": "Euronews Español",
+     "published_at": "2026-10-18T11:37:00+00:00",
+     "title": "Detienen a 50 personas en Milán en las manifestaciones por el coste de la vida",
+     "summary": "Decenas de personas han sido detenidas en Milán tras los enfrentamientos con la policía durante una marcha contra la crisis económica. Hubo momentos de tensión también en Turín y Bolonia, con varios manifestantes heridos.",
+     "fuente": "https://nosmienten.com/noticia/2791"
+    }
+   ],
+   "hechos": {
+    "detenidos": {
+     "Antena 3 Noticias": {
+      "50": "milan"
+     },
+     "20minutos": {
+      "2000": "francia"
+     }
+    }
+   }
+  },
+  {
+   "historia": 1350,
+   "titulo": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+   "articulos": [
+    {
+     "outlet": "El HuffPost",
+     "published_at": "2026-10-18T17:55:00+00:00",
+     "title": "Buscan voluntarios para vivir cinco meses en la Antártida con alojamiento y comida incluido y un sueldo de hasta 2.500 euros: \"Nuestros vecinos es una colonia de pingüinos\"",
+     "summary": "",
+     "fuente": "https://nosmienten.com/noticia/948"
+    },
+    {
+     "outlet": "Diario Sur",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1239"
+    },
+    {
+     "outlet": "Ideal",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1269"
+    },
+    {
+     "outlet": "El Comercio",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1510"
+    },
+    {
+     "outlet": "Canarias7",
+     "published_at": "2026-10-18T21:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1564"
+    },
+    {
+     "outlet": "El Diario Montañés",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1595"
+    },
+    {
+     "outlet": "El Norte de Castilla",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/1697"
+    },
+    {
+     "outlet": "Las Provincias",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2061"
+    },
+    {
+     "outlet": "Hoy",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2149"
+    },
+    {
+     "outlet": "La Verdad",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2312"
+    },
+    {
+     "outlet": "El Correo",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2368"
+    },
+    {
+     "outlet": "El Diario Vasco",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2409"
+    },
+    {
+     "outlet": "La Rioja",
+     "published_at": "2026-10-18T22:07:00+00:00",
+     "title": "Buscan trabajadores para contar pingüinos en la Antártida por hasta 2.500 euros al mes",
+     "summary": "El puesto incluye otras tareas como atender a los turistas y gestionar una oficina de correos, además de proporcionar alojamiento, comida y desplazamientos",
+     "fuente": "https://nosmienten.com/noticia/2479"
+    }
+   ],
+   "hechos": {
+    "euros": {
+     "El HuffPost": {
+      "2500": "sueldo"
+     },
+     "Diario Sur": {
+      "2500": "sueldo"
+     },
+     "Ideal": {
+      "2500": "sueldo"
+     },
+     "El Comercio": {
+      "2500": "sueldo"
+     },
+     "Canarias7": {
+      "2500": "sueldo"
+     },
+     "El Diario Montañés": {
+      "2500": "sueldo"
+     },
+     "El Norte de Castilla": {
+      "2500": "sueldo"
+     },
+     "Las Provincias": {
+      "2500": "sueldo"
+     },
+     "Hoy": {
+      "2500": "sueldo"
+     },
+     "La Verdad": {
+      "2500": "sueldo"
+     },
+     "El Correo": {
+      "2500": "sueldo"
+     },
+     "El Diario Vasco": {
+      "2500": "sueldo"
+     },
+     "La Rioja": {
+      "2500": "sueldo"
+     }
+    }
+   }
+  },
+  {
+   "historia": 1679,
+   "titulo": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+   "articulos": [
+    {
+     "outlet": "Diario Sur",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1243"
+    },
+    {
+     "outlet": "Ideal",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1273"
+    },
+    {
+     "outlet": "El Comercio",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1514"
+    },
+    {
+     "outlet": "Canarias7",
+     "published_at": "2026-10-18T21:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1568"
+    },
+    {
+     "outlet": "El Diario Montañés",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1599"
+    },
+    {
+     "outlet": "El Norte de Castilla",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/1701"
+    },
+    {
+     "outlet": "Las Provincias",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2065"
+    },
+    {
+     "outlet": "Hoy",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2153"
+    },
+    {
+     "outlet": "La Verdad",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2316"
+    },
+    {
+     "outlet": "El Correo",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2372"
+    },
+    {
+     "outlet": "El Diario Vasco",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2416"
+    },
+    {
+     "outlet": "La Rioja",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "El coche eléctrico se democratiza: la oferta de vehículos de menos de 25.000 euros se duplica en menos de un año",
+     "summary": "El plan Auto+ dispara las matriculaciones de estos automóviles en España y el sector espera que las ventas se multipliquen por siete respecto a 2024",
+     "fuente": "https://nosmienten.com/noticia/2483"
+    }
+   ],
+   "hechos": {
+    "euros": {
+     "Diario Sur": {
+      "25000": "precio-umbral"
+     },
+     "Ideal": {
+      "25000": "precio-umbral"
+     },
+     "El Comercio": {
+      "25000": "precio-umbral"
+     },
+     "Canarias7": {
+      "25000": "precio-umbral"
+     },
+     "El Diario Montañés": {
+      "25000": "precio-umbral"
+     },
+     "El Norte de Castilla": {
+      "25000": "precio-umbral"
+     },
+     "Las Provincias": {
+      "25000": "precio-umbral"
+     },
+     "Hoy": {
+      "25000": "precio-umbral"
+     },
+     "La Verdad": {
+      "25000": "precio-umbral"
+     },
+     "El Correo": {
+      "25000": "precio-umbral"
+     },
+     "El Diario Vasco": {
+      "25000": "precio-umbral"
+     },
+     "La Rioja": {
+      "25000": "precio-umbral"
+     }
+    }
+   }
+  },
+  {
+   "historia": 459,
+   "titulo": "Un vehículo irrumpe en un partido de fútbol en Kansas y mata a dos personas, entre ellas un niño",
+   "articulos": [
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-17T22:38:00+00:00",
+     "title": "Un vehículo irrumpe en un partido de fútbol en Kansas y causa dos muertes, incluido la de un menor",
+     "summary": "Leer",
+     "fuente": "https://nosmienten.com/noticia/185"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-17T22:29:00+00:00",
+     "title": "Un vehículo irrumpe en un partido de fútbol en Kansas y mata a dos personas, entre ellas un niño",
+     "summary": "El conductor sospechoso se encuentra bajo custodia policial",
+     "fuente": "https://nosmienten.com/noticia/388"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T16:40:00+00:00",
+     "title": "Momentos de terror cuando un coche invade un campo de fútbol en Kansas, EEUU: mueren atropellados un niño de seis años y un hombre",
+     "summary": "11 personas resultaron heridas, entre ellas cinco niños, aunque ninguna está en grave peligro La Policía ha confirmado que no está claro como consiguió traspasar la puerta ni a qué velocidad circulaba",
+     "fuente": "https://nosmienten.com/noticia/847"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T02:36:00+00:00",
+     "title": "¿Qué se sabe del atropellamiento en un campo de fútbol en Kansas que dejó dos muertos?",
+     "summary": "Una camioneta irrumpió este sábado 17 de octubre en un partido de fútbol juvenil en un complejo deportivo municipal de Wichita (Kansas) y dejó dos muertos: un niño de seis años y un hombre de 35, además de once personas heridas. La conductora del vehículo, una mujer de 34 años, fue detenida mientras la Policía investiga las circunstancias del incidente y si corresponde presentar cargos penales.",
+     "fuente": "https://nosmienten.com/noticia/2731"
+    }
+   ],
+   "hechos": {
+    "muertos": {
+     "El Mundo": {
+      "2": "kansas"
+     },
+     "La Vanguardia": {
+      "2": "kansas"
+     },
+     "France 24 Español": {
+      "2": "kansas"
+     }
+    },
+    "heridos": {
+     "Informativos Telecinco": {
+      "11": "kansas"
+     }
+    }
+   }
+  },
+  {
+   "historia": 733,
+   "titulo": "Una estampida en un festival hindú en Calcuta deja al menos 19 muertos y siete detenidos",
+   "articulos": [
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T10:22:00+00:00",
+     "title": "La fe multitudinaria que desborda (y mata) en India: una estampida durante un festival hindú en Calcuta deja al menos 19 muertos",
+     "summary": "La tragedia vuelve a poner el foco sobre las peregrinaciones masivas en el país más poblado del mundo, donde millones de fieles buscan la ayuda de los dioses para casarse, emigrar o superar los problemas cotidianos Leer",
+     "fuente": "https://nosmienten.com/noticia/172"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-18T08:35:00+00:00",
+     "title": "Al menos 19 muertos en una estampida en una fiesta hindú en Calcuta y 7 detenidos",
+     "summary": "Se investigan fallos en las medidas de seguridad para acceder al recinto",
+     "fuente": "https://nosmienten.com/noticia/381"
+    },
+    {
+     "outlet": "El Confidencial",
+     "published_at": "2026-10-18T06:06:00+00:00",
+     "title": "Una estampida en un festival hindú en Calcuta deja al menos 19 muertos y siete detenidos",
+     "summary": "La Policía detiene a varios organizadores e investiga fallos en la seguridad del recinto; un aviso pudo desatar el pánico entre los asistentes",
+     "fuente": "https://nosmienten.com/noticia/425"
+    }
+   ],
+   "hechos": {
+    "muertos": {
+     "El Mundo": {
+      "19": "calcuta"
+     },
+     "La Vanguardia": {
+      "19": "calcuta"
+     },
+     "El Confidencial": {
+      "19": "calcuta"
+     }
+    },
+    "detenidos": {
+     "La Vanguardia": {
+      "7": "calcuta"
+     },
+     "El Confidencial": {
+      "7": "calcuta"
+     }
+    }
+   }
+  },
+  {
+   "historia": 760,
+   "titulo": "El primer ministro canadiense confirma cuatro militares muertos y decenas de heridos graves en una base militar en Alberta",
+   "articulos": [
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T17:27:00+00:00",
+     "title": "El primer ministro canadiense confirma cuatro militares muertos y decenas de heridos graves en una base militar en Alberta",
+     "summary": "En una declaración televisada, Carney ha explicado que un \"incendio violento que se propagó rápidamente\" provocó \"una de las peores tragedias\" sufridas por sus Fuerzas Armadas en el territorio de Canadá Leer",
+     "fuente": "https://nosmienten.com/noticia/110"
+    },
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T07:15:00+00:00",
+     "title": "Un incendio en una base militar de Canadá deja varios muertos y numerosos heridos",
+     "summary": "Las autoridades de Canadá han informado este sábado de que un gran incendio se ha desatado en la base militar de Wainwright, en la provincia occidental de Alberta, la cual ha dejado un número indeterminado de víctimas y heridos, aún por especificar.El ministro de Defensa de Canadá, David McGuinty, ha confirmado que hubo víctimas mortales y heridos, pero no ha proporcionado más detalles por el momento y ha asegurado que el incendio está «siendo monitorizado muy de cerca», sin especificar si está bajo control, en declaraciones a la prensa recogidas por la cadena pública canadiense CBC.«Las Fuerz",
+     "fuente": "https://nosmienten.com/noticia/275"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-18T17:09:00+00:00",
+     "title": "Cuatro soldados muertos y decenas de heridos en un incendio en una base militar de Canadá",
+     "summary": "El fuego se declaró el sábado en una zona de entrenamiento; se califica como uno de los peores accidentes sufridos por las Fuerzas Armadas del país en los últimos años",
+     "fuente": "https://nosmienten.com/noticia/372"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T19:16:00+00:00",
+     "title": "Al menos cuatro muertos por un gran incendio en una base militar de Alberta, Canadá",
+     "summary": "El fuego se propagó con rapidez más allá del área de entrenamiento de las instalaciones militares El incendio se encuentra ya bajo control, según han informado fuentes oficiales del distrito municipal de Wainwright",
+     "fuente": "https://nosmienten.com/noticia/834"
+    },
+    {
+     "outlet": "3Cat Notícies",
+     "published_at": "2026-10-18T18:51:00+00:00",
+     "title": "Almenys 4 morts i desenes de ferits, 19 de crítics, en un incendi en una base militar del Canadà",
+     "summary": "El primer ministre diu que l'incident és \"una de les pitjors tragèdies\" que ha viscut l'exèrcit del Canadà en temps de pau",
+     "fuente": "https://nosmienten.com/noticia/1977"
+    },
+    {
+     "outlet": "France 24 Español",
+     "published_at": "2026-10-18T14:32:00+00:00",
+     "title": "Canadá confirma muertos y heridos en una base militar; las causas siguen sin esclarecerse",
+     "summary": "Las autoridades canadienses investigan un incidente en la base militar de Wainwright, en Alberta, que provocó un gran incendio y desbordó los servicios sanitarios locales el sábado. El domingo, el primer ministro Mark Carney confirmó cuatro muertos, pero aún no ha divulgado un balance de heridos ni esclarecido las causas de lo ocurrido.",
+     "fuente": "https://nosmienten.com/noticia/2728"
+    }
+   ],
+   "hechos": {
+    "muertos": {
+     "El Mundo": {
+      "4": "canada"
+     },
+     "La Vanguardia": {
+      "4": "canada"
+     },
+     "Informativos Telecinco": {
+      "4": "canada"
+     },
+     "France 24 Español": {
+      "4": "canada"
+     }
+    }
+   }
+  },
+  {
+   "historia": 888,
+   "titulo": "Feijóo pide \"impulsar\" el cambio desde Cataluña y encarga a Albiol una ley antiokupación",
+   "articulos": [
+    {
+     "outlet": "El País",
+     "published_at": "2026-10-18T11:26:00+00:00",
+     "title": "Feijóo pide a Albiol que lidere una “ley antiocupas” y que le ayude a obtener una “mayoría grande” el 29-N",
+     "summary": "El PP confía en el tirón popular del alcalde de Badalona para sumar los escaños que perdió por los pelos en 2023 y frenar a Vox",
+     "fuente": "https://nosmienten.com/noticia/7"
+    },
+    {
+     "outlet": "El Mundo",
+     "published_at": "2026-10-18T11:10:00+00:00",
+     "title": "Feijóo pide a Cataluña \"impulsar una gran mayoría para lograr el cambio\": \"¿Sánchez y Colau o Albiol?\"",
+     "summary": "El candidato del PP recuerda que dos de los cuatro escaños que le faltaron para ser investido en 2023 se perdieron en la autonomía catalana. El alcalde de Badalona liderará la nueva ley antiokupación si los 'populares' llegan a La Moncloa Leer",
+     "fuente": "https://nosmienten.com/noticia/98"
+    },
+    {
+     "outlet": "ABC",
+     "published_at": "2026-10-18T17:25:00+00:00",
+     "title": "Feijóo encarga a Albiol una ley 'antiokupación' y pone el foco en Cataluña para «impulsar» el cambio de Gobierno",
+     "summary": "Alberto Núñez Feijóo ha avanzado este domingo en un acto político en Barcelona que Xavier García Albiol, alcalde de Badalona y candidato de los populares por la provincia de Barcelona el 29 de noviembre, será el ponente de la ley 'antiokupación' en el Congreso si el PP gana las elecciones generales. Además, el presidente del PP y candidato a la Moncloa ha puesto el foco en la necesidad de mejorar el resultado electoral de 2023 en Cataluña para conseguir «el cambio» de gobierno al que aspira.En un mitin ante varios cientos de militantes del PP catalán, Feijóo ha presentado a Albiol como estanda",
+     "fuente": "https://nosmienten.com/noticia/209"
+    },
+    {
+     "outlet": "La Vanguardia",
+     "published_at": "2026-10-18T22:05:00+00:00",
+     "title": "Feijóo marca Catalunya como un territorio clave para llegar a la Moncloa tras las elecciones del 29-N",
+     "summary": "El líder del PP promete en el primer mitin en Barcelona una nueva ley contra las ocupaciones de la mano de Albiol",
+     "fuente": "https://nosmienten.com/noticia/320"
+    },
+    {
+     "outlet": "20minutos",
+     "published_at": "2026-10-18T12:07:00+00:00",
+     "title": "Feijóo pide \"impulsar\" el cambio desde Cataluña y encarga a Albiol una ley antiokupación",
+     "summary": "El líder del Partido Popular promete \"tolerancia cero con los okupas\": \"Fuera en 48 horas, sí o sí\".",
+     "fuente": "https://nosmienten.com/noticia/473"
+    },
+    {
+     "outlet": "Libertad Digital",
+     "published_at": "2026-10-18T13:06:00+00:00",
+     "title": "Feijóo encarga a Albiol una ley para echar a los okupas: \"Fuera en 48 horas, sí o sí\"",
+     "summary": "El líder del PP promete tolerancia cero con la okupación y la reincidencia y sitúa a Cataluña como clave para llegar a la Moncloa.",
+     "fuente": "https://nosmienten.com/noticia/591"
+    },
+    {
+     "outlet": "infoLibre",
+     "published_at": "2026-10-18T11:46:00+00:00",
+     "title": "Feijóo responde a la crisis de vivienda con la promesa de una ley antiocupación que le encargará a Albiol si gobierna",
+     "summary": "Cuando la acampada de la Puerta del Sol por el derecho a la vivienda cumple tres semanas y la movilización se extiende por toda España, Alberto Núñez Feijóo ha aprovechado uno de sus primeros actos de precampaña para anunciar una medida contra lo que el líder del PP llama \"ocupación ilegal\". \"Fuera en 48 horas, sí o sí\", ha proclamado durante un acto en Barcelona, en el que ha prometido impulsar una nueva ley antiocupación si alcanza la presidencia del Gobierno tras las elecciones generales del 29 de noviembre. Feijóo ha encargado su elaboración a Xavier García Albiol, alcalde de Badalona y ca",
+     "fuente": "https://nosmienten.com/noticia/620"
+    },
+    {
+     "outlet": "Onda Cero",
+     "published_at": "2026-10-18T11:45:00+00:00",
+     "title": "Feijóo encarga a Albiol que sea el \"ponente\" de una ley antiokupación cuando lleguen al Gobierno: \"Tolerancia cero, fuera en 48 horas sí o sí\"",
+     "summary": "El líder de los populares ha cargado también contra Pedro Sánchez, al que le acusa de \"sumisión\" a Marruecos y ha advertido que \"todo se va a saber\". Julia Otero critica la desunión de la izquierda: \"Alguno o alguna cree que con Feijóo de presidente y Abascal de vicepresidente les irá mejor\"",
+     "fuente": "https://nosmienten.com/noticia/741"
+    },
+    {
+     "outlet": "Informativos Telecinco",
+     "published_at": "2026-10-18T11:26:00+00:00",
+     "title": "Alberto Núñez Feijóo promete una ley antiocupaciones tras el 29N y se la encarga a Xavier Garcia Albiol",
+     "summary": "Feijóo ha pedido que Cataluña impulse una gran mayoría para producir un cambio de Gobierno en las próximas elecciones La proclamación de Sánchez como candidato del PSOE a las elecciones: con beso, declaración de amor a Begoña Gómez y alerta contra \"la motosierra\" a las pensiones",
+     "fuente": "https://nosmienten.com/noticia/857"
+    },
+    {
+     "outlet": "El Plural",
+     "published_at": "2026-10-18T13:18:00+00:00",
+     "title": "Feijóo encarga a Albiol liderar la ley antiokupación del PP: \"Fuera en 48 horas sí o sí\"",
+     "summary": "El líder del PP, Alberto Núñez Feijóo ha encargado al alcalde de Badalona, Xavier Garcia Albiol, que lidere en el Congreso de los Diputados la ponencia de una nueva ley antiokupación impulsada por el Partido Popular. El presidente popular ha anunciado la decisión este domingo durante un acto celebrado en el Palau de Congressos de Catalunya, en Barcelona, donde ha defendido una política de \"tolerancia cero\" frente a la ocupación ilegal de viviendas y ha prometido que los ocupantes serán desalojados \"en 48 horas sí o sí\". Feijóo ha comunicado el encargo directamente a Albiol, candidato del PP al",
+     "fuente": "https://nosmienten.com/noticia/973"
+    },
+    {
+     "outlet": "ESdiario",
+     "published_at": "2026-10-18T11:52:00+00:00",
+     "title": "Albiol recibe su primer encargo nacional de Feijóo: liderar la ley antiokupas",
+     "summary": "El líder popular aprovecha la experiencia del alcalde de Badalona contra las okupaciones para encomendarle una bandera nacional del PP y promete expulsiones en 48 horas: \"Sí o sí\"",
+     "fuente": "https://nosmienten.com/noticia/987"
+    },
+    {
+     "outlet": "El Debate",
+     "published_at": "2026-10-18T10:19:00+00:00",
+     "title": "Feijóo le encarga a Albiol liderar la ley antiokupación en España",
+     "summary": "",
+     "fuente": "https://nosmienten.com/noticia/1030"
+    },
+    {
+     "outlet": "Diario de Sevilla",
+     "published_at": "2026-10-18T11:06:00+00:00",
+     "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+     "summary": "El líder del PP encarga al candidato por Barcelona, Xavier García Albiol, abanderar una ley antiokupas",
+     "fuente": "https://nosmienten.com/noticia/1228"
+    },
+    {
+     "outlet": "Málaga Hoy",
+     "published_at": "2026-10-18T11:06:00+00:00",
+     "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+     "summary": "El líder del PP encarga al candidato por Barcelona, Xavier García Albiol, abanderar una ley antiokupas",
+     "fuente": "https://nosmienten.com/noticia/1346"
+    },
+    {
+     "outlet": "Huelva Información",
+     "published_at": "2026-10-18T11:06:00+00:00",
+     "title": "Feijóo pide que Cataluña impulse una gran mayoría y exhibe mano dura con la okupación",
+     "summary": "El líder del PP encarga al candidato por Barcelona, Xavier García Albiol, abanderar una ley antiokupas",
+     "fuente": "https://nosmienten.com/noticia/1378"
+    }
+   ],
+   "hechos": {
+    "escanos": {
+     "El Mundo": {
+      "4": "escanos-pp"
+     }
+    }
+   }
+  }
+ ]
+}

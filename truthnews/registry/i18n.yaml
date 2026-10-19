@@ -184,7 +184,9 @@ es:
     1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
     artículos que cuentan lo mismo (similitud de titulares y entradillas, medida contra un conjunto etiquetado a
     mano). 3) Comparamos: quién lo cuenta, qué cifras da cada uno y a qué hora, qué datos cuenta la mayoría y
-    alguno omite, y qué palabras valorativas usa cada medio. 4) Extraemos solo afirmaciones numéricas
+    alguno omite, y qué palabras valorativas usa cada medio. Solo comparamos cifras del mismo hecho: de cada
+    artículo cuenta la del titular, y dos cifras que se diferencian en más de tres veces son hechos distintos
+    salvo que ambas se atribuyan a una fuente («según…»). 4) Extraemos solo afirmaciones numéricas
     explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, vivienda, población) y las comparamos
     con la última serie publicada por Eurostat, el INE o el Banco Mundial. 5) Veredictos: Verdadero (diferencia
     de hasta 0,2 puntos o 3 %), Impreciso (hasta 0,6 puntos o 10 %), Falso (más), Engañoso (la tendencia
@@ -375,7 +377,9 @@ en:
   methodology_text: >-
     1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the
     same story. 3) We compare who reports it, which figures each gives and when, what most report and some omit,
-    and the loaded words each outlet uses. 4) We extract only explicit numeric claims about official indicators
+    and the loaded words each outlet uses. We only compare figures about the same fact: the headline figure
+    counts, and two figures more than three times apart are different facts unless both are attributed
+    ("according to…"). 4) We extract only explicit numeric claims about official indicators
     and compare them with the latest Eurostat, INE or World Bank series. 5) Verdicts: True (up to 0.2 points or
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules

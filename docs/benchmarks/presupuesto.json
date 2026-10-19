@@ -146,6 +146,20 @@
       "unidad": "ratio",
       "direccion": "min",
       "objetivo": 4.5
+    },
+    {
+      "id": "disputas_precision",
+      "descripcion": "Comparativas (ADR 0016): disputas de cifras cuyas cifras hablan todas del mismo hecho, sobre tests/fixtures/disputes.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.95
+    },
+    {
+      "id": "disputas_exhaustividad",
+      "descripcion": "Comparativas (ADR 0016): disputas reales etiquetadas que se detectan, sobre tests/fixtures/disputes.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.95
     }
   ]
 }

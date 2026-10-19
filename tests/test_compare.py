@@ -85,3 +85,62 @@ def test_summarize_dispute_groups_by_value():
     (d,) = compare(arts).dispute_summaries()
     assert (d.low, d.high, d.mode, d.mode_n, d.n_outlets) == (1800, 2400, 1800, 2, 3)
     assert [len(figs) for _, figs in d.groups] == [2, 1]
+
+
+def test_only_figures_of_the_same_fact_are_disputed():
+    # Caso real (historia 796): 12 migrantes ocultados en una casa frente a 500 desalojados no es disputa.
+    arts = [
+        art("A", "Ceuta desaloja a unos 500 migrantes", minutes=0),
+        art("B", "Desalojados 500 inmigrantes de zonas periféricas", minutes=10),
+        art("C", "Condenada por ocultar a doce migrantes en su casa", minutes=20),
+    ]
+    c = compare(arts)
+    assert "migrantes" not in c.disputes
+    assert c.agreed_figures == [("migrantes", 500, 2)]
+    # Un balance que se actualiza sigue siendo disputa (2 -> 3 muertos, 1.800 -> 2.400 detenidos).
+    c = compare([art("A", "Dos muertos en un cayuco"), art("B", "Tres muertos en el cayuco", minutes=60)])
+    assert [f.value for f in c.disputes["muertos"]] == [2.0, 3.0]
+    # Dos recuentos atribuidos de la misma manifestacion son disputa aunque difieran mucho.
+    c = compare(
+        [
+            art("A", "20.000 manifestantes, según la Delegación del Gobierno"),
+            art("B", "Según los organizadores, 100.000 manifestantes en Madrid", minutes=5),
+        ]
+    )
+    assert [f.value for f in c.disputes["manifestantes"]] == [20000.0, 100000.0]
+
+
+def test_headline_figure_wins_over_a_breakdown_in_the_same_article():
+    # Caso real (historia 337): "Más de 1.800 detenidos ... París registró 855 arrestos".
+    arts = [
+        art("A", "Más de 1.800 detenidos en Francia", "París registró 855 arrestos."),
+        art("B", "2.000 detenidos en Francia"),
+    ]
+    assert [f.value for f in compare(arts).disputes["detenidos"]] == [1800.0, 2000.0]
+
+
+def test_a_second_disputed_fact_keeps_its_own_key():
+    from truthnews.analysis.compare import Figure, same_facts
+
+    figs = [Figure("muertos", v, "", o, T0, "") for o, v in [("A", 2), ("B", 3), ("C", 400), ("D", 600)]]
+    assert [[f.outlet for f in fact] for fact in same_facts(figs)] == [["C", "D"], ["A", "B"]]
+    arts = [
+        art("A", "Dos muertos en el cayuco"),
+        art("B", "Tres muertos en el cayuco"),
+        art("C", "400 muertos en el terremoto"),
+        art("D", "600 muertos en el terremoto"),
+    ]
+    assert sorted(compare(arts).disputes) == ["muertos", "muertos ·2"]
+
+
+def test_dispute_precision_on_real_labeled_stories():
+    import json
+    from pathlib import Path
+
+    from truthnews.analysis.evaluate import dispute_quality
+
+    fixture = json.loads((Path(__file__).parent / "fixtures" / "disputes.json").read_text(encoding="utf-8"))
+    q = dispute_quality(fixture)
+    # Medido 2026-10-19 (ADR 0016): antes 0,50 de precision (4 de 8 disputas mezclaban hechos distintos).
+    assert q["precision"] >= 0.95 and q["precision_pares"] >= 0.95, q["errores"]
+    assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 5
