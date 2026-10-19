@@ -216,7 +216,7 @@ es:
     alguno omite, y qué palabras valorativas usa cada medio. Solo comparamos cifras del mismo hecho: de cada
     artículo cuenta la del titular, y dos cifras que se diferencian en más de tres veces son hechos distintos
     salvo que ambas se atribuyan a una fuente («según…»). 4) Extraemos solo afirmaciones numéricas
-    explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, vivienda, población) y las comparamos
+    explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, déficit, pobreza, vivienda, población) y las comparamos
     con la serie publicada por Eurostat, el INE o el Banco Mundial para el periodo que cita la frase. Para
     encontrar más, una IA lee las frases con cifras y propone indicador, territorio y periodo; nuestras reglas
     comprueban que la frase y la cifra están en el texto y que territorio y periodo cuadran, y si no, no se
