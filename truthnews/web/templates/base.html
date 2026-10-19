@@ -11,20 +11,24 @@
   <link rel="apple-touch-icon" href="/static/icon-180.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="alternate" type="application/rss+xml" title="{{ site.site_name }}" href="/rss.xml">
+  {%- set canonical_url %}{% block canonical %}{{ site.site_url }}{{ request.url.path }}{% if request.query_params.get('page', '1') != '1' %}?page={{ request.query_params.get('page')|int }}{% endif %}{% endblock %}{% endset %}
+  <link rel="canonical" href="{{ canonical_url|trim }}">
   {% if lang not in indexed_languages %}<meta name="robots" content="noindex, follow">
-  {% elif indexed_languages|length > 1 %}{% set here = request.url.path %}{% for l in indexed_languages %}<link rel="alternate" hreflang="{{ l }}" href="{{ site.site_url }}{{ lang_path(here, l) }}">
-  {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.site_url }}{{ here }}">{% endif %}
+  {% else %}<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  {% if indexed_languages|length > 1 %}{% set here = request.url.path %}{% for l in indexed_languages %}<link rel="alternate" hreflang="{{ l }}" href="{{ site.site_url }}{{ lang_path(here, l) }}">
+  {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.site_url }}{{ here }}">{% endif %}{% endif %}
   <meta name="theme-color" content="#14161b">
   <meta property="og:site_name" content="{{ site.site_name }}">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
   <meta property="og:locale" content="{{ 'es_ES' if lang == 'es' else 'en_GB' }}">
   <meta property="og:title" content="{{ self.title() }}">
   <meta property="og:description" content="{{ self.description() }}">
-  <meta property="og:url" content="{{ site.site_url }}{{ request.url.path }}">
+  <meta property="og:url" content="{{ canonical_url|trim }}">
   <meta property="og:image" content="{% block og_image %}{{ site.site_url }}/static/og-default.png{% endblock %}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  {% if request.url.path == '/' %}{{ jsonld(ld.organization(site), ld.website(site, lang)) }}{% endif %}
   {% block head %}{% endblock %}
 </head>
 <body>

@@ -45,6 +45,7 @@ from truthnews.web import (
     social,
     topicview,
 )
+from truthnews.web import structured as ld
 from truthnews.web import verdicts as vview
 from truthnews.web.langprefix import LangPrefix, localize
 
@@ -179,6 +180,8 @@ def create_app(
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
         verdict_line=vview.sentence,
+        ld=ld,
+        jsonld=ld.jsonld,
     )
 
     def get_session():

@@ -1,7 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ t(lang, 'verdict_' ~ v.verdict) }}: {{ c.outlet.name }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ line }}{% endblock %}
-{% block crumbs %}<div class="wrap"><p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/verificaciones">{{ t(lang, 'verifications') }}</a> › {{ t(lang, 'verification_page') }}</p></div>{% endblock %}
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block canonical %}{{ share_url }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block head %}<meta property="article:published_time" content="{{ ld.iso(v.checked_at) }}">
+{{ jsonld(ld.claim_review(site, c, v, t(lang, 'verdict_' ~ v.verdict), share_url, lang)) }}{% endblock %}
+{% block crumbs %}<div class="wrap">{{ breadcrumbs([(t(lang, 'home'), '/'), (t(lang, 'verifications'), '/verificaciones'), (t(lang, 'verification_page'), None)]) }}</div>{% endblock %}
 {% block content %}
 <article class="vpage">
   <p class="vhead"><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span></p>

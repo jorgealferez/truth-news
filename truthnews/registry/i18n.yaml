@@ -213,6 +213,7 @@ es:
   verdict_verdadero: Verdadero
   verdict_impreciso: Impreciso
   verdict_falso: Falso
+  methodology_rating: "Para buscadores y verificadores (ClaimReview de schema.org) cada veredicto se publica con una escala fija de 1 a 4: falso 1, engañoso 2, impreciso 3, verdadero 4. «Sin datos suficientes» no lleva valoración."
   verdict_enganoso: Engañoso
   verdict_sin-datos: Sin datos suficientes
   checked_claims: afirmaciones comprobadas
@@ -705,6 +706,7 @@ en:
   verdict_verdadero: True
   verdict_impreciso: Imprecise
   verdict_falso: False
+  methodology_rating: "For search engines and fact-checkers (schema.org ClaimReview) each verdict is published on a fixed 1 to 4 scale: false 1, misleading 2, imprecise 3, true 4. \"Not enough data\" carries no rating."
   verdict_enganoso: Misleading
   verdict_sin-datos: Not enough data
   checked_claims: checked claims

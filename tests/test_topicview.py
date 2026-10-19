@@ -162,6 +162,11 @@ def test_topic_page_visual_and_redirects(engine, session):
     ]:
         assert needle in html, needle
     assert "Síntesis Medio 2" not in html  # solo repite el texto comun: va en el grupo
+    from truthnews.web import structured
+
+    (art,) = structured.of_type(html, "NewsArticle")
+    assert art["url"] == f"http://localhost:8000{want}" and art["description"] == "Entradilla"
+    assert art["datePublished"] and art["publisher"]["name"] == "NosMienten"
     assert client.get("/tema/abc").status_code == 404
     st = session.query(Story).first()
     loc = client.get(f"/historia/{st.id}", follow_redirects=False).headers["location"]

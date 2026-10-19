@@ -1,5 +1,12 @@
 {% extends "base.html" %}
 {% block title %}{{ heading }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ heading }}: {{ t(lang, 'tagline') }}{% endblock %}
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block crumbs %}{% set p = request.url.path %}{% set parts = p.split('/') %}
+{%- if p.startswith('/medio/') %}{% set mid = [(t(lang, 'outlets'), '/medios')] %}
+{%- elif p.startswith('/region/') %}{% set iso = parts[2].split('-')[0]|upper %}{% set mid = [(country_name(iso, lang), '/pais/' ~ iso)] %}
+{%- else %}{% set mid = [] %}{% endif %}
+{{- breadcrumbs([(t(lang, 'home'), '/')] + mid + [(heading, None)]) }}{% endblock %}
 {% block content %}
 <h1 class="page-title">{{ heading }}</h1>
 {% if outlet is defined and outlet %}

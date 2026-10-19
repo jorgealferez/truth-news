@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 {% block title %}{{ th.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ c.resumen }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('hilo', th.id, th.title) }}">{% endblock %}
-{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › {{ t(lang, 'thread') }}{% if th.anchor %} › <a href="{{ url('historia', th.anchor.id, th.anchor.title) }}">{{ th.anchor.title[:60] }}{% if th.anchor.title|length > 60 %}…{% endif %}</a>{% endif %}</p>{% endblock %}
+{% block canonical %}{{ site.site_url }}{{ url('hilo', th.id, th.title) }}{% endblock %}
+
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block og_type %}article{% endblock %}
+{% block head %}<meta property="article:published_time" content="{{ ld.iso(th.created_at) }}"><meta property="article:modified_time" content="{{ ld.iso(th.updated_at) }}">
+{{ jsonld(ld.news_article(site, url=site.site_url ~ url('hilo', th.id, th.title), headline=th.title, description=c.resumen, published=th.created_at, modified=th.updated_at, lang=lang, section=t(lang, 'thread'), image=(site.site_url ~ '/og/historia/' ~ th.anchor.id ~ '.png') if th.anchor else None)) }}{% endblock %}
+{% block crumbs %}{% set title = th.anchor.title[:60] ~ ('…' if th.anchor.title|length > 60 else '') if th.anchor else '' %}{{ breadcrumbs([(t(lang, 'home'), '/')] + ([(title, url('historia', th.anchor.id, th.anchor.title))] if th.anchor else []) + [(t(lang, 'thread'), None)]) }}{% endblock %}
 {% macro cite(ids) %}{% for i in ids %}{% set s = sources.get(i) %}{% if s %}<a class="cite" href="{{ s.url }}"{% if not s.url.startswith('/') %} target="_blank" rel="noopener nofollow"{% endif %} title="{{ s.titular or s.titulo }}{% if s.medio %} — {{ s.medio }}{% endif %}{% if s.fecha %} · {{ s.fecha }}{% endif %}">{{ i }}</a>{% endif %}{% endfor %}{% endmacro %}
 {% block content %}
 <article class="story wide thread">
