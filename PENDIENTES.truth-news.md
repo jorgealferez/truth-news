@@ -54,6 +54,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
+- [x] Marca v2b: mezclar el simbolo con el logotipo formal, punto ambar en la i y la regla como recurso grafico en web e imagenes sociales; arreglar lo que falle (peticion del usuario 2026-10-19: "mezcla todo y arregla lo que falle") (#17)
 - [x] Marca v2: icono, favicon e imagen completa mas profesionales para nosmienten.com, clara y agnostica a partidos e ideologias: "solo un medio donde verificar datos" (peticion del usuario 2026-10-19) (#14)
   - [x] ADR 0014: simbolo "n medida" (arco de la n que baja hasta una vara graduada), elegido por el usuario entre nivel de burbuja y monograma; logotipo, paleta e imagen social como estaban ("mas formal")
   - [x] mark.svg, favicon.svg/ico simplificado, iconos sobre papel (apple opaco, maskable en el manifest), avatar 400 para redes, og-default e imagen por historia con el simbolo nuevo

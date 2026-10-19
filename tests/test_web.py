@@ -447,6 +447,7 @@ def test_brand_assets_and_social_meta(client):
         "/static/icon-180.png",
         "/static/icon-maskable-512.png",
         "/static/avatar-400.png",
+        "/static/banner-1500x500.png",
     ):
         assert client.get(path).status_code == 200, path
     en = client.get("/acerca?lang=en").text
