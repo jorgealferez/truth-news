@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace as NS
 
@@ -30,18 +31,30 @@ def test_said_timeline_lanes_shapes_links_and_description():
     assert "3 afirmaciones entre 19/10/2026 y 24/10/2026" in svg and "Falso o enganoso: 1" in svg
     assert "&lt;ganar&gt;" in svg and "<ganar>" not in svg  # el texto se escapa
     assert str(charts.said_timeline([], LANES, "x")) == ""
-    _touch_layer_first(svg, 3)
+    _links_have_hit_areas(svg, 3)
 
 
-def _touch_layer_first(svg: str, n: int) -> None:
-    """Cada punto enlazado tiene una zona de toque de 44x44 oculta a lectores y fuera del tabulador, y la
-    capa va antes (debajo) de los marcadores visibles: tocar el marcador abre su propio enlace."""
-    hidden = '<a href="/'
-    assert svg.count('aria-hidden="true" tabindex="-1"') == n
-    assert svg.count('width="44" height="44" fill="transparent"') == n
-    last_touch = svg.rindex('tabindex="-1"')
-    first_visible = min(i for i in (svg.find("<circle"), svg.find("<rect x", last_touch)) if i >= 0)
-    assert last_touch < first_visible and hidden in svg
+def _links_have_hit_areas(svg: str, n: int) -> None:
+    """Cada enlace lleva dentro un rect transparente (fill="transparent", que si recibe toques) como zona
+    de toque: la caja del propio <a> es la que se toca. Sin enlaces duplicados ni ocultos."""
+    links = re.findall(r"<a href=[^>]*>(.*?)</a>", svg)
+    assert len(links) == n and "aria-hidden" not in svg
+    for inner in links:
+        m = re.search(
+            r'<rect x="[^"]+" y="[^"]+" width="([^"]+)" height="([^"]+)" fill="transparent"/>', inner
+        )
+        assert m and float(m.group(1)) >= 24 and float(m.group(2)) >= 24
+
+
+def test_hit_boxes_are_44_and_never_cover_a_neighbour():
+    alone, a, b, c = charts._hit_boxes([(100, 50), (200, 50), (210, 52), (205, 80)])
+    assert alone == (78, 28, 44, 44)
+    for (x, y, w, h), (cx, cy) in ((a, (210, 52)), (b, (200, 50)), (a, (205, 80)), (c, (210, 52))):
+        assert not (x < cx < x + w and y < cy < y + h)  # el centro del vecino queda fuera
+    assert a[2] == 44 - 22 + 5 and b[0] == 205  # recortadas a medio camino en x
+    assert c == (183, 58, 44, 44)  # a 28 de sus vecinos: nada que recortar
+    up, down = charts._hit_boxes([(100, 50), (104, 66)])
+    assert up[1] + up[3] == down[1] == 58  # vecinos que se separan en y: corte a medio camino en y
 
 
 def test_figure_chart_official_line_extremes_and_changes():
@@ -57,7 +70,7 @@ def test_figure_chart_official_line_extremes_and_changes():
     assert "1.200 · Medio A" in svg and "2.400 · Medio B" in svg and "2.000 · Medio C" not in svg  # extremos
     assert "(antes 1.800)" in svg and 'aria-labelledby="t-t t-d"' in svg
     assert "Medio A 1.200 (19/10 08:00); Medio B 2.400" in svg
-    _touch_layer_first(svg, 2)  # Medio C no tiene enlace: sin zona de toque
+    _links_have_hit_areas(svg, 2)  # Medio C no tiene enlace: sin zona de toque
     pct = str(charts.figure_chart([charts.Point("X", T0, 10.5)], "Paro", unit="pct"))
     assert "10,5 %" in pct and "<g><title>" in pct  # sin enlace: grupo, no <a>
     assert str(charts.figure_chart([], "x")) == ""

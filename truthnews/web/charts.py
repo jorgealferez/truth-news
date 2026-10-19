@@ -91,19 +91,34 @@ class Said:
     href: str
 
 
-TOUCH = 44  # lado minimo de la zona de toque en movil (ADR 0050; WCAG 2.5.8 pide al menos 24)
+TOUCH = 44  # lado de la zona de toque en movil (ADR 0050; WCAG 2.5.8 pide al menos 24)
 
 
-def _touch(href: str, x: float, y: float) -> str:
-    """Zona de toque invisible de TOUCH x TOUCH bajo un punto enlazado. Va en una capa debajo de los
-    marcadores, asi que tocar el marcador visible abre siempre su enlace; oculta a lectores de pantalla
-    y fuera del tabulador porque el enlace accesible es el del marcador."""
+def _hit_boxes(centers: list[tuple[float, float]]) -> list[tuple[float, float, float, float]]:
+    """Zona de toque (x, y, ancho, alto) de cada punto: TOUCH x TOUCH centrada en el, recortada a medio
+    camino de cada punto vecino que caeria dentro, por el eje en que mas se separan. Asi ninguna zona tapa
+    el marcador de otro punto y cada toque abre el enlace del punto mas cercano."""
     half = TOUCH / 2
-    return (
-        f'<a href="{escape(href)}" aria-hidden="true" tabindex="-1">'
-        f'<rect x="{x - half:.1f}" y="{y - half:.1f}" width="{TOUCH}" height="{TOUCH}" '
-        'fill="transparent"/></a>'
-    )
+    out = []
+    for i, (x, y) in enumerate(centers):
+        left, right, top, bottom = x - half, x + half, y - half, y + half
+        for j, (xj, yj) in enumerate(centers):
+            dx, dy = xj - x, yj - y
+            if j == i or abs(dx) >= half or abs(dy) >= half or (dx == 0 and dy == 0):
+                continue
+            if abs(dx) >= abs(dy):
+                left, right = (left, min(right, x + dx / 2)) if dx > 0 else (max(left, x + dx / 2), right)
+            else:
+                top, bottom = (top, min(bottom, y + dy / 2)) if dy > 0 else (max(top, y + dy / 2), bottom)
+        out.append((left, top, right - left, bottom - top))
+    return out
+
+
+def _hit(box: tuple[float, float, float, float]) -> str:
+    """El rect transparente va dentro del <a>: la caja del enlace es la zona de toque (fill="transparent"
+    recibe toques; fill="none" no)."""
+    x, y, w, h = box
+    return f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" fill="transparent"/>'
 
 
 def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Markup:
@@ -117,8 +132,15 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
     xs, lo, hi = _time_scale([_aware(p.when) for p in points], x0 + 6, x1 - 6)
     span = (hi - lo).total_seconds() / 86400
     out = []
-    touch: list[str] = []  # capa de toque, debajo de los marcadores
     counts = []
+    rows = [(i, p) for i, (_, members) in enumerate(lanes) for p in points if p.verdict in members]
+    boxes = dict(
+        zip(
+            map(id, (p for _, p in rows)),
+            _hit_boxes([(xs(p.when), top + lane_h * i + lane_h / 2) for i, p in rows]),
+            strict=True,
+        )
+    )
     for i, (key, members) in enumerate(lanes):
         y = top + lane_h * i + lane_h / 2
         mine = [p for p in points if p.verdict in members]
@@ -132,10 +154,8 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
             kind = p.verdict or "sin-datos"
             color = VERDICT_COLOR.get(kind, VERDICT_COLOR["sin-datos"])
             tip = f"{_aware(p.when):%d/%m/%Y} · {labels.get(kind, kind)}: {p.text[:160]}"
-            touch.append(_touch(p.href, xs(p.when), y))
             out.append(
-                f'<a href="{escape(p.href)}"><title>{escape(tip)}</title>'
-                f'<rect x="{xs(p.when) - 9:.1f}" y="{y - 11:.1f}" width="18" height="22" fill="transparent"/>'
+                f'<a href="{escape(p.href)}"><title>{escape(tip)}</title>{_hit(boxes[id(p)])}'
                 f"{_marker(kind, xs(p.when), y, color)}</a>"
             )
     ya = top + lane_h * len(lanes) + 14
@@ -149,7 +169,7 @@ def said_timeline(points: list[Said], labels: dict[str, str], title: str) -> Mar
     return Markup(
         f'<svg class="chart said" viewBox="0 0 {W} {h}" role="img" aria-labelledby="st-t st-d" '
         f'xmlns="http://www.w3.org/2000/svg"><title id="st-t">{escape(title)}</title>'
-        f'<desc id="st-d">{escape(desc)}</desc>{"".join(touch)}{"".join(out)}</svg>'
+        f'<desc id="st-d">{escape(desc)}</desc>{"".join(out)}</svg>'
     )
 
 
@@ -188,7 +208,6 @@ def figure_chart(
     def ys(v: float) -> float:
         return top + (h - top - bottom) * (1 - (v - vmin) / (vmax - vmin))
 
-    touch: list[str] = []  # capa de toque, debajo de los puntos
     out = [
         f'<line x1="{x0}" y1="{h - bottom}" x2="{x1}" y2="{h - bottom}" stroke="{GRID}"/>',
         f'<text x="{x0 - 4}" y="{ys(vmax) + 4:.1f}" font-size="10" fill="{MUTED}" text-anchor="end">'
@@ -207,7 +226,10 @@ def figure_chart(
     span = (hi - lo).total_seconds() / 86400
     ext = {min(points, key=lambda p: p.value).value, max(points, key=lambda p: p.value).value}
     labelled: set[float] = set()
-    for p in sorted(points, key=lambda p: p.when):
+    ordered = sorted(points, key=lambda p: p.when)
+    linked = [p for p in ordered if p.href]
+    boxes = dict(zip(map(id, linked), _hit_boxes([(xs(p.when), ys(p.value)) for p in linked]), strict=True))
+    for p in ordered:
         x, y = xs(p.when), ys(p.value)
         tip = f"{p.who} · {_aware(p.when):%d/%m %H:%M} · {_fmt(p.value, unit)}"
         mark = f'<circle cx="{x:.1f}" cy="{y:.1f}" r="5" fill="{INK}" stroke="#fbfaf6" stroke-width="2"/>'
@@ -221,9 +243,9 @@ def figure_chart(
                 f'stroke="{MUTED}" stroke-width="2"/>{mark}'
             )
         body = f"<title>{escape(tip)}</title>{mark}"
-        out.append(f'<a href="{escape(p.href)}">{body}</a>' if p.href else f"<g>{body}</g>")
-        if p.href:
-            touch.append(_touch(p.href, x, y))
+        out.append(
+            f'<a href="{escape(p.href)}">{_hit(boxes[id(p)])}{body}</a>' if p.href else f"<g>{body}</g>"
+        )
         if p.value in ext and p.value not in labelled:  # etiquetas solo en los extremos, sin pisar
             labelled.add(p.value)
             anchor = "end" if x > (x0 + x1) / 2 else "start"
@@ -244,7 +266,7 @@ def figure_chart(
         f'<svg class="chart fig" viewBox="0 0 {W} {h}" role="img" '
         f'aria-labelledby="{chart_id}-t {chart_id}-d" '
         f'xmlns="http://www.w3.org/2000/svg"><title id="{chart_id}-t">{escape(title)}</title>'
-        f'<desc id="{chart_id}-d">{escape(desc)}</desc>{"".join(touch)}{"".join(out)}</svg>'
+        f'<desc id="{chart_id}-d">{escape(desc)}</desc>{"".join(out)}</svg>'
     )
 
 
