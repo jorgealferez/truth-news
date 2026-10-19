@@ -430,3 +430,23 @@ def test_worker_sums_todays_ai_cost(session):
     )
     session.flush()
     assert spent_today(session, NOW) == pytest.approx(1.5)
+
+
+def test_ai_step_reports_cost_per_part(session, topic_world, monkeypatch):
+    from truthnews.ai import cost
+
+    _, stories = topic_world
+    ids = [stories[0].id, stories[1].id]
+
+    class Paying(FakeAI):
+        def structured(self, system, user, schema):
+            cost.METER.charge("claude-opus-5-5", {"output_tokens": 1_000_000})  # 20 USD por llamada
+            return super().structured(system, user, schema)
+
+    out = ai_pipeline.run(
+        session,
+        Settings(ai_piece_refresh_minutes=0),
+        ai=Paying([topics_reply(ids), good_piece(ids, ["aa", "bb"])]),
+        verifier=Verifier(lambda s, g, label: None),
+    )
+    assert out["coste_usd"] == {"traducciones": 0, "declaraciones": 0, "temas": 20.0, "piezas": 20.0}
