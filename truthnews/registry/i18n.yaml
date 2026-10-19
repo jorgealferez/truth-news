@@ -560,6 +560,8 @@ es:
   el_dropped: que ya no aparecen
   el_compare: Comparar sus dos últimos programas
   el_changes_method: Dos promesas se cuentan como la misma si comparten la mayor parte de sus palabras de contenido (criterio conservador). Repetir una promesa no dice si se cumplió; que desaparezca, tampoco.
+  el_figure_changes: Cifras que ha cambiado
+  el_figure_change_line: "Mismo dato y mismo periodo ({period}), dos cifras"
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1116,3 +1118,5 @@ en:
   el_dropped: no longer present
   el_compare: Compare its last two manifestos
   el_changes_method: Two promises count as the same if they share most of their content words (a conservative criterion). Repeating a promise does not say whether it was kept; dropping it does not either.
+  el_figure_changes: Figures it has changed
+  el_figure_change_line: "Same indicator and period ({period}), two figures"

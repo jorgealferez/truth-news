@@ -21,6 +21,9 @@ from truthnews.registry import load_political
 STATEMENTS_PER_PARTY = 3
 PROMISES_PER_PARTY = 4
 PROMISES_PAGE = 300
+FIGURE_DAYS = 365
+PCT_GAP = 0.5  # puntos: por debajo es redondeo
+REL_GAP = 0.05
 COVERAGE = 12
 _STORY_WORDS = ("%elecci%", "%comicios%", "%campaña%", "%candidat%", "%electoral%", "%encuesta%", "%sondeo%")
 
@@ -82,6 +85,7 @@ def parties(session: Session, e: Election) -> list[dict]:
     ):
         verdicts.setdefault(actor, {})[verdict] = n
     docs = programs_by_actor(session, e, slugs)
+    changed = figure_changes(session, e, slugs, datetime.now(UTC))
     out = []
     for a in actors:
         said = by_actor.get(a.slug, [])
@@ -100,6 +104,7 @@ def parties(session: Session, e: Election) -> list[dict]:
                 "promises": promises_for(session, e, a.slug, current, limit=PROMISES_PER_PARTY),
                 "n_promises": count_promises(session, e, a.slug, current),
                 "comparable": program_pair(session, e, a.slug) is not None,
+                "figure_changes": changed.get(a.slug, []),
             }
         )
     return out
@@ -202,6 +207,39 @@ def compare_programs(session: Session, e: Election, actor: str) -> dict | None:
         return list(session.scalars(select(Promise).where(Promise.program_id == p.id).order_by(Promise.page)))
 
     return {"before": before, "after": after, "c": changes.compare(of(before), of(after))}
+
+
+def figure_changes(session: Session, e: Election, slugs: list[str], now: datetime) -> dict[str, list]:
+    """Por partido: mismo indicador, territorio y periodo con cifras distintas en declaraciones distintas.
+
+    Solo con el periodo explicito e igual (un paro de 2024 y otro de 2025 no se contradicen) y con una
+    diferencia que no sea redondeo; cada pareja cita las dos declaraciones con su fecha.
+    """
+    rows = session.execute(
+        select(StatementCheck, PoliticalStatement)
+        .join(PoliticalStatement, StatementCheck.statement_id == PoliticalStatement.id)
+        .where(
+            PoliticalStatement.country == e.country,
+            PoliticalStatement.actor.in_(slugs),
+            PoliticalStatement.published_at >= now - timedelta(days=FIGURE_DAYS),
+            StatementCheck.period.is_not(None),
+        )
+        .order_by(PoliticalStatement.published_at)
+    ).all()
+    groups: dict[tuple, list] = {}
+    for chk, st in rows:
+        groups.setdefault((st.actor, chk.indicator, chk.geo, chk.period, chk.unit), []).append((chk, st))
+    out: dict[str, list] = {}
+    for (actor, *_), items in groups.items():
+        first_chk, first_st = items[0]
+        for chk, st in items[1:]:
+            if st.id == first_st.id:
+                continue
+            gap = abs(chk.value - first_chk.value)
+            if gap > (PCT_GAP if chk.unit == "pct" else REL_GAP * max(abs(first_chk.value), 1e-9)):
+                out.setdefault(actor, []).append({"before": (first_chk, first_st), "after": (chk, st)})
+                break
+    return out
 
 
 def coverage(session: Session, e: Election, now: datetime) -> list[Story]:

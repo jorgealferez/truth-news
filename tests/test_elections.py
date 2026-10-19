@@ -350,3 +350,50 @@ def test_calendar_reads_candidacies_and_page_lists_every_party(engine):
     assert "Candidaturas proclamadas" in page and "12 formaciones" in page
     assert 'href="#partido-pp"' in page and "NUEVA CANARIAS - BLOQUE CANARISTA" in page
     assert "Emilio Sáez Cruz" in page
+
+
+def _check(session, st, value, period="2025", verdict="verdadero", indicator="paro"):
+    session.add(
+        StatementCheck(
+            statement_id=st.id,
+            text=f"el paro es del {value} %",
+            indicator=indicator,
+            geo="ES",
+            value=value,
+            unit="pct",
+            period=period,
+            verdict=verdict,
+            confidence=0.9,
+            explanation="x",
+            method="m",
+            evidence=[],
+        )
+    )
+
+
+def test_figure_changes_need_same_period_and_a_real_gap(engine, session):
+    now = datetime.now(UTC)
+    poll = now.date() + timedelta(days=20)
+    e = cal.Election("ES", "generales", poll, "x", "convocada", (cal.Source("d", "u"),))
+    a = _statement(session, "pp", "El paro es del 10,5 %", now - timedelta(days=40), "https://pp.example/a")
+    b = _statement(session, "pp", "El paro es del 12,9 %", now - timedelta(days=3), "https://pp.example/b")
+    c = _statement(session, "vox", "El paro es del 11,0 %", now - timedelta(days=40), "https://vox.example/a")
+    d = _statement(session, "vox", "El paro es del 11,2 %", now - timedelta(days=3), "https://vox.example/b")
+    f = _statement(session, "sumar", "El paro es del 11 %", now - timedelta(days=3), "https://sumar.example/a")
+    _check(session, a, 10.5)
+    _check(session, b, 12.9)
+    _check(session, c, 11.0)
+    _check(session, d, 11.2)  # 0,2 puntos: redondeo, no cambio
+    _check(session, f, 8.0, period="2019")
+    session.commit()
+    out = views.figure_changes(session, e, ["pp", "vox", "sumar"], now)
+    assert list(out) == ["pp"]
+    fc = out["pp"][0]
+    assert fc["before"][1].url.endswith("/a") and fc["after"][0].value == 12.9
+    reg = {"elections": [{"country": "ES", "kind": "generales", "date": str(poll),
+                          "convened": str(now.date() - timedelta(days=5)),
+                          "source": {"label": "Decreto", "url": "https://www.boe.es/x"}}]}
+    elections = cal.Calendar(0, registry_raw=reg)
+    client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, elections=elections))
+    page = client.get(f"/elecciones/es-generales-{poll.isoformat()}").text
+    assert "Cifras que ha cambiado" in page and "Mismo dato y mismo periodo (2025)" in page
