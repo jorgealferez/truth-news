@@ -87,6 +87,16 @@ class Settings:
     ai_max_translations_en_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_TRANSLATIONS_EN_PER_CYCLE", "60"))
     )
+    # Coste de la IA (ADR 0054). Un tema con pieza reciente no se reescribe hasta pasados estos minutos aunque
+    # haya entrado un articulo nuevo (antes: 6 piezas Opus en cada ciclo); un tema sin pieza se escribe ya.
+    ai_piece_refresh_minutes: int = field(
+        default_factory=lambda: int(os.environ.get("AI_PIECE_REFRESH_MINUTES", "120"))
+    )
+    # Tope de gasto de IA por dia UTC, en USD; al llegar, los pasos de IA se saltan hasta el dia siguiente.
+    # 0 = sin tope.
+    ai_daily_budget_usd: float = field(
+        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_USD", "40"))
+    )
     # Publicidad (cliente de ads-service, microservices-ecosystem). Sin URL o sin clave no se pinta nada.
     ads_service_url: str = field(default_factory=lambda: os.environ.get("ADS_SERVICE_URL", ""))
     ads_site_key: str = field(default_factory=lambda: os.environ.get("ADS_SITE_KEY", ""))

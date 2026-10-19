@@ -104,7 +104,8 @@ def balance(session: Session) -> dict:
     }
 
 
-def make_router(settings: Settings, get_session, templates, render) -> APIRouter:
+def make_router(settings: Settings, get_session, templates, render, on_change=lambda: None) -> APIRouter:
+    # on_change: se llama tras retirar o restituir un veredicto (vacia las vistas en cache, p. ej. /hoy).
     router = APIRouter(prefix="/admin")
 
     def require_admin(credentials: Annotated[HTTPBasicCredentials | None, Depends(security)]) -> str:
@@ -151,6 +152,7 @@ def make_router(settings: Settings, get_session, templates, render) -> APIRouter
             raise HTTPException(404, "Veredicto no encontrado")
         pipeline.retire(session, ver, user, reason)
         session.commit()
+        on_change()
         return RedirectResponse(f"/verificacion/{ver.claim_id}", status_code=303)
 
     @router.post("/verificacion/{verification_id}/restituir")
@@ -175,6 +177,7 @@ def make_router(settings: Settings, get_session, templates, render) -> APIRouter
         except ValueError as exc:
             raise HTTPException(409, str(exc)) from exc
         session.commit()
+        on_change()
         return RedirectResponse(f"/verificacion/{ver.claim_id}", status_code=303)
 
     @router.post("/investigaciones")

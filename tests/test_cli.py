@@ -79,6 +79,53 @@ def test_ai_without_credit_does_not_cut_the_cycle(tmp_path, monkeypatch):
     get_engine.cache_clear()
 
 
+def test_daily_budget_skips_ai_and_the_cycle_still_finishes(tmp_path, monkeypatch):
+    """Con el tope diario gastado (ADR 0054) no se llama a la API, el paso de IA queda anotado y el ciclo
+    llega al final con su marca y su coste del dia."""
+    from datetime import UTC, datetime
+
+    from sqlalchemy import select
+
+    from truthnews.ai.client import AIClient
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun, utcnow
+
+    url = f"sqlite:///{tmp_path / 'budget.db'}"
+    upgrade(url)
+    monkeypatch.setenv("DATABASE_URL", url)
+    monkeypatch.setenv("AI_DAILY_BUDGET_USD", "5")
+    get_engine.cache_clear()
+    with get_engine(url).begin() as conn:  # un ciclo anterior de hoy ya gasto el tope
+        conn.execute(
+            CrawlRun.__table__.insert(),
+            {"started_at": datetime.now(UTC), "stats": {"ai_cost": {"usd": 5.0}}},
+        )
+
+    async def fake_crawl(session, settings):
+        run = CrawlRun(finished_at=utcnow(), stats={})
+        session.add(run)
+        session.flush()
+        return run
+
+    def never_called(**kw):
+        raise AssertionError("pasado el tope no se llama a la API")
+
+    sdk = type("SDK", (), {"beta": type("B", (), {"messages": type("M", (), {"stream": never_called})})})
+
+    monkeypatch.setattr(worker, "crawl", fake_crawl)
+    monkeypatch.setattr(worker.political, "run", lambda session, settings, **kw: {"channels": 0})
+    monkeypatch.setattr(worker, "ai_step", lambda s, st: AIClient(client=sdk).structured("s", "u", {}))
+    summary = worker.run_cycle()
+    assert "presupuesto diario de IA agotado" in summary["ai"]["error"]
+    assert summary["ai_cost"]["hoy_usd"] == 5.0 and summary["ai_cost"]["llamadas"] == 0
+    assert "social" in summary and "entities" in summary
+    assert worker.last_full_cycle(worker.get_settings()) is not None
+    with get_engine(url).connect() as conn:
+        stats = conn.execute(select(CrawlRun.stats).order_by(CrawlRun.id.desc())).scalar()
+    assert stats["cycle"] == worker.FULL_CYCLE and stats["ai_cost"]["tope_diario_usd"] == 5.0
+    get_engine.cache_clear()
+
+
 def test_database_url_normalization(monkeypatch):
     from truthnews.config import get_settings
 
