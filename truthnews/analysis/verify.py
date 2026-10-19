@@ -15,7 +15,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v5: el pais del medio solo se supone si la noticia no es de otro pais; paro EPA por comunidad.
 # v6: "la inflacion le resta un 3,1 %" es un efecto, no el nivel; umbrales sin error de coma flotante.
 # v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
-METHOD_VERSION = "v7"
+# v8: inflacion con el IPCA de Eurostat: la franja que puede explicar el IPC nacional no se juzga.
+METHOD_VERSION = "v8"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -55,7 +56,10 @@ def default_fetch(source: dict, geo: str, label: str) -> Observation | None:
     conn = source["connector"]
     if conn == "eurostat":
         obs = eurostat.latest(source["dataset"], geo, source["params"], label)
-        return negated(obs) if source.get("negate") else obs
+        obs = negated(obs) if source.get("negate") else obs
+        if obs is not None and source.get("other_measure"):
+            obs.extra = {**obs.extra, "otra_medida": source["other_measure"]}
+        return obs
     if conn == "worldbank":
         return worldbank.latest(source["indicator"], geo, label)
     if conn == "ine_yoy":
@@ -157,6 +161,17 @@ class Verifier:
                 )
         if close:
             return Result("verdadero", 0.9, base, "nivel", [obs])
+        if rough and obs.extra.get("otra_medida"):
+            # Hay otra medida oficial del mismo indicador que no tenemos: la diferencia puede ser de medida.
+            return Result(
+                "sin-datos",
+                0.0,
+                base
+                + f" No lo juzgamos: el {obs.extra['otra_medida']} puede diferir unas décimas de esta serie "
+                "y el texto no dice cuál usa.",
+                "otra-medida",
+                [obs],
+            )
         if rough:
             return Result("impreciso", 0.7, base, "nivel", [obs])
         return Result("falso", 0.8, base, "nivel", [obs])
