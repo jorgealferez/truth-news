@@ -76,10 +76,14 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0029 | diseno | en main | Comparativas / Verificaciones (consulta puntual de interes publico) |
 | ADR 0030 | diseno | en main | Entidades (archivo desde los ficheros GKG de GDELT) |
 | ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
-| ADR 0032 | diseno | PR (este) | Comparativas (quien cambio su cifra; sin migracion: la 0017 pasa a Redes) |
-| ADR 0033 + migracion 0018 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
-| ADR 0034 | diseno | PR (este) | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News; sin migracion) |
-| siguiente libre | — | — | ADR 0035 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
+| ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
+| ADR 0033 + migracion 0017 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
+| ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
+| ADR 0035 | diseno | reservado | Comparativas (afirmaciones que se repiten; sin migracion) |
+| ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
+| ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
+| ADR 0038 | diseno | reservado | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList) |
+| siguiente libre | — | — | ADR 0039 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
 
 ## Como se trabaja
 
