@@ -103,19 +103,26 @@ class _Timed(dict):
         super().__setitem__(key, value)
 
 
-def spent_today(session, now: datetime | None = None) -> float:
-    """USD de IA gastados hoy (dia UTC) en los ciclos ya guardados. Un ciclo cortado antes de guardar sus
-    estadisticas no cuenta: el tope puede quedarse algo corto, nunca bloquear de mas."""
+def spent_today(session, now: datetime | None = None) -> tuple[float, float]:
+    """USD de IA gastados hoy (dia UTC) en los ciclos ya guardados: (bolsa general, bolsa de verificacion).
+    Un ciclo cortado antes de guardar sus estadisticas no cuenta: el tope puede quedarse algo corto, nunca
+    bloquear de mas."""
     now = now or datetime.now(UTC)
     day = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    rows = session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day))
-    return sum(float(((st or {}).get("ai_cost") or {}).get("usd") or 0) for st in rows)
+    general = verify = 0.0
+    for st in session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day)):
+        ai_cost = (st or {}).get("ai_cost") or {}
+        v = float(ai_cost.get("verificacion_usd") or 0)
+        general += float(ai_cost.get("usd") or 0) - v
+        verify += v
+    return general, verify
 
 
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        cost.start_cycle(spent_today(session), settings.ai_daily_budget_usd)
+        general, verify = spent_today(session)
+        cost.start_cycle(general, settings.ai_daily_budget_usd, verify, settings.ai_daily_budget_verify_usd)
     summary = _Timed()
     with session_scope(engine) as session:
         sync_registry(session)
@@ -146,7 +153,7 @@ def _run_cycle(settings: Settings) -> dict:
             "declaraciones juzgadas con IA",
             lambda s: statement_checks.run_ai(
                 s,
-                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000),
+                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000, pool=cost.VERIFY),
                 summary["run"],
                 max_calls=settings.statement_ai_max_calls,
             ),
@@ -162,7 +169,7 @@ def _run_cycle(settings: Settings) -> dict:
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
 
         def _claims(session):
-            ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
+            ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000, pool=cost.VERIFY)
             out = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
             return {**out, "scores": score_stories(session, started)}
 
