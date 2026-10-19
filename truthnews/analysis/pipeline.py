@@ -23,7 +23,7 @@ from truthnews.analysis.cluster import (
 from truthnews.analysis.score import score_stories
 from truthnews.analysis.verify import METHOD_VERSION, Result, Verifier
 from truthnews.classify import normalize
-from truthnews.models import Article, Claim, Evidence, Story, Verification, utcnow
+from truthnews.models import AdminAction, Article, Claim, Evidence, Story, Verification, utcnow
 from truthnews.promo import is_promotional
 
 log = logging.getLogger(__name__)
@@ -258,6 +258,54 @@ def verify_claims(session: Session, since: datetime, verifier: Verifier | None =
     return {"claims": n_claims, "verdicts": dict(verdicts)}
 
 
+MANUAL_RETIRED = "retirada-manual"
+RESTORED = "restituida/manual"  # no acaba en la version vigente: el re-juicio lo recoge
+
+
+def retire(session: Session, ver: Verification, user: str, reason: str) -> AdminAction:
+    """Retira un veredicto a mano (ADR 0049): sin datos, nota publica con el motivo y registro de quien."""
+    before = ver.verdict
+    _store(
+        ver,
+        Result(
+            "sin-datos",
+            0.0,
+            "Afirmación retirada por la redacción.",
+            f"{MANUAL_RETIRED}/{METHOD_VERSION}",
+        ),
+    )
+    ver.explanation += f" [Retirado el {utcnow():%d/%m/%Y}: {reason}]"
+    act = AdminAction(
+        user=user, action="retirar-veredicto", target=f"verification:{ver.id}", reason=reason, before=before
+    )
+    session.add(act)
+    session.flush()
+    return act
+
+
+def restore(session: Session, ver: Verification, user: str, reason: str) -> AdminAction:
+    """Deshace una retirada manual (ADR 0049): el siguiente re-juicio lo juzga con el metodo vigente."""
+    if not ver.method.startswith(MANUAL_RETIRED):
+        raise ValueError("solo se restituye un veredicto retirado a mano")
+    ver.method = RESTORED
+    note = f" [Restituido el {utcnow():%d/%m/%Y}: {reason} Se vuelve a juzgar con el método vigente.]"
+    ver.explanation += note
+    act = AdminAction(
+        user=user,
+        action="restituir-veredicto",
+        target=f"verification:{ver.id}",
+        reason=reason,
+        before=ver.verdict,
+    )
+    session.add(act)
+    session.flush()
+    return act
+
+
+# Notas publicas de correccion que se conservan aunque el veredicto se vuelva a juzgar (transparencia).
+_NOTES = re.compile(r" \[(?:Corregido|Retirado|Restituido) el [^\]]*\]")
+
+
 def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dict:
     """Vuelve a juzgar los veredictos de una version anterior del metodo (ADR 0004/0006/0009).
 
@@ -270,12 +318,14 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
         select(Verification)
         .options(joinedload(Verification.claim).joinedload(Claim.article))
         .where(~Verification.method.endswith(f"/{METHOD_VERSION}"))
+        .where(~Verification.method.startswith(MANUAL_RETIRED))  # una retirada a mano no se deshace
     ).unique()
     for ver in stale:
         c = ver.claim
         a = c.article
         pub = _aware(a.published_at)
         before = ver.verdict
+        notes = "".join(_NOTES.findall(ver.explanation))
         if c.extractor == "ia":
             # Sin volver a llamar a la IA: los campos guardados pasan otra vez por las reglas vigentes.
             k = check_proposal(
@@ -311,6 +361,7 @@ def reverify_outdated(session: Session, verifier: Verifier | None = None) -> dic
         else:
             c.geo, c.period = current[0].geo, current[0].period
             _store(ver, verifier.judge(current[0]))
+        ver.explanation += notes  # las notas anteriores siguen a la vista
         if before != ver.verdict:
             # Transparencia: la correccion queda escrita en el propio veredicto publicado.
             ver.explanation += (

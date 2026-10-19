@@ -600,7 +600,6 @@ class StatementCheck(Base):
     speaker: Mapped[Entity | None] = relationship()
 
 
-
 PROGRAM_KINDS = ("programa", "investidura", "acuerdo")
 PROGRAM_STATUSES = ("enlazado", "importado", "bloqueado", "error")
 PROMISE_STATUSES = ("cumplida", "parcial", "en-curso", "no-cumplida", "sin-datos")
@@ -645,9 +644,7 @@ class Promise(Base):
     __tablename__ = "promise"
     __table_args__ = (
         CheckConstraint(f"extractor IN {CLAIM_EXTRACTORS!r}", name="ck_promise_extractor"),
-        CheckConstraint(
-            "(program_id IS NULL) <> (statement_id IS NULL)", name="ck_promise_one_source"
-        ),
+        CheckConstraint("(program_id IS NULL) <> (statement_id IS NULL)", name="ck_promise_one_source"),
         UniqueConstraint("actor", "text_hash", name="uq_promise_actor_text"),
         Index("ix_promise_actor_election", "country", "actor", "election_kind", "election_year"),
         Index("ix_promise_topic", "topic"),
@@ -697,3 +694,21 @@ class PromiseCheck(Base):
     checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     promise: Mapped[Promise] = relationship()
+
+
+ADMIN_ACTIONS = ("retirar-veredicto", "restituir-veredicto")
+
+
+class AdminAction(Base):
+    """Accion manual del panel: quien, cuando, sobre que y por que (ADR 0049). Sin FK: sobrevive."""
+
+    __tablename__ = "admin_action"
+    __table_args__ = (CheckConstraint(f"action IN {ADMIN_ACTIONS!r}", name="ck_admin_action_action"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    user: Mapped[str] = mapped_column(String(60))
+    action: Mapped[str] = mapped_column(String(30))
+    target: Mapped[str] = mapped_column(String(60))
+    reason: Mapped[str] = mapped_column(Text)
+    before: Mapped[str | None] = mapped_column(String(16), nullable=True)
