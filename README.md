@@ -48,6 +48,10 @@ Ajustes: `SOCIAL_ENABLED` (1), `SOCIAL_DRY_RUN` (0; 1 fuerza el modo prueba), `S
 (`x:4,bluesky:6,mastodon:6,telegram:8`), `SOCIAL_PER_CYCLE` (2), `SOCIAL_MIN_SCORE` (2),
 `SOCIAL_WINDOW_HOURS` (72).
 
+Prueba a mano: `python -m truthnews social preview` muestra las piezas que saldrían ahora en cada
+red sin escribir nada; `python -m truthnews social run --dry` ejecuta el paso en modo prueba. La cola se
+revisa en `/admin` (sección Redes).
+
 ## Añadir un país o un idioma (sin código)
 
 - País: una entrada en `truthnews/registry/countries.yaml` y un `truthnews/registry/sources/<iso>.yaml`.

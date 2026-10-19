@@ -336,3 +336,35 @@ def test_admin_shows_social_queue_without_secrets(engine, session, content, monk
     page = client.get("/admin", auth=("admin", "clave")).text
     assert "<h2>Redes</h2>" in page and "modo prueba (sin credenciales)" in page
     assert "Verificación: Falso" in page and "secreto-del-bot" not in page
+
+
+def test_rss_includes_published_threads_and_sourced_verifications(engine, session, content):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.web.app import create_app
+
+    rss = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine)).get("/rss.xml").text
+    assert "<title>Hilo: El edificio de la calle Mayor, de 2019 a hoy</title>" in rss
+    assert "<title>Verificación: Falso</title>" in rss and "INE, Encuesta de Poblacion Activa" in rss
+    assert "Hilo en revision" not in rss and "Verificación: Engañoso" not in rss  # revision / sin fuente
+
+
+def test_cli_preview_writes_nothing_and_run_dry(db_url, engine, session, content, monkeypatch, capsys):
+    from truthnews import cli
+    from truthnews.db import get_engine
+
+    monkeypatch.setenv("DATABASE_URL", db_url)
+    monkeypatch.setenv("X_API_KEY", "k")  # credenciales incompletas: X sigue en prueba
+    get_engine.cache_clear()
+    try:
+        assert cli.main(["social", "preview", "--limit", "1"]) == 0
+        out = capsys.readouterr().out
+        assert "== verificacion" in out and "-- telegram (" in out and "3 candidatas" in out
+        assert session.query(SocialPost).count() == 0
+        assert cli.main(["social", "run", "--dry"]) == 0
+        assert json.loads(capsys.readouterr().out)["x"]["modo"] == "prueba"
+        session.expire_all()
+        assert session.query(SocialPost).count() == 8
+    finally:
+        get_engine.cache_clear()

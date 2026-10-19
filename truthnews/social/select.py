@@ -35,6 +35,7 @@ class Candidate:
     draft: Draft
     image_story_id: int | None
     language: str = "es"
+    date: datetime | None = None  # para ordenar en el RSS
 
 
 def _verdict_line(verdicts: dict[str, int], lang: str) -> str:
@@ -86,7 +87,9 @@ def stories(session: Session, site_url: str, since: datetime, min_score: float, 
             "Cómo lo cuenta cada medio:",
             site_url + seo.path("historia", st.id, st.title),
         )
-        out.append(Candidate("historia", st.id, st.priority or st.contrast_score, draft, st.id, lang))
+        out.append(
+            Candidate("historia", st.id, st.priority or st.contrast_score, draft, st.id, lang, st.last_seen)
+        )
     return out
 
 
@@ -104,7 +107,9 @@ def threads(session: Session, site_url: str, since: datetime, lang: str) -> list
             site_url + seo.path("hilo", th.id, th.title),
         )
         score = THREAD_SCORE + 0.1 * min(len(th.sources), 10)
-        out.append(Candidate("hilo", th.id, score, draft, th.anchor_story_id, th.language or lang))
+        out.append(
+            Candidate("hilo", th.id, score, draft, th.anchor_story_id, th.language or lang, th.updated_at)
+        )
     return out
 
 
@@ -139,7 +144,15 @@ def verifications(session: Session, site_url: str, since: datetime, lang: str) -
         verdict = registry.t(lang, "verdict_" + v.verdict)
         draft = Draft(f"Verificación: {verdict}", lines, "Datos y enlaces:", url)
         out.append(
-            Candidate("verificacion", v.id, PUBLISHABLE_VERDICTS[v.verdict], draft, claim.story_id, lang)
+            Candidate(
+                "verificacion",
+                v.id,
+                PUBLISHABLE_VERDICTS[v.verdict],
+                draft,
+                claim.story_id,
+                lang,
+                v.checked_at,
+            )
         )
     return out
 
