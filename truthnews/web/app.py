@@ -635,11 +635,19 @@ def create_app(
         lang = lang_of(request)
         line = vview.sentence(c, lang)
         url = f"{settings.site_url}/verificacion/{c.id}"
+        # Enlazado interno (ADR 0038): la historia con su titular y quien aparece, hablante primero.
+        story = session.get(Story, c.story_id) if c.story_id else None
+        people = [(c.speaker, 1)] if c.speaker else []
+        if c.story_id:
+            found = entity_views.for_story(session, c.story_id, limit=4)
+            people += [(e, n) for e, n in found if e != c.speaker]
         return render(
             request,
             "verification.html",
             c=c,
             v=c.verification,
+            story=story,
+            people=people[:4],
             line=line,
             chart=vview.chart(c, lang),
             series=vview.series_of(c),
