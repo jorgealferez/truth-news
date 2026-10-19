@@ -35,6 +35,16 @@ HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
 
 
+def _dato(value: float | None, unit: str | None = None) -> str:
+    """Un dato oficial legible: 10,0 % o 1.234,5 (es)."""
+    if value is None:
+        return "—"
+    if unit == "pct":
+        return f"{value:.1f}".replace(".", ",") + " %"
+    text = f"{value:,.1f}" if value % 1 else f"{value:,.0f}"
+    return text.replace(",", "_").replace(".", ",").replace("_", ".")
+
+
 def _ago(value: datetime | None, lang: str = "es") -> str:
     if value is None:
         return ""
@@ -120,6 +130,7 @@ def create_app(
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
     templates.env.filters["word_diff"] = citations.word_diff
+    templates.env.filters["dato"] = _dato
     templates.env.globals.update(
         site=settings,
         t=registry.t,
@@ -398,7 +409,7 @@ def create_app(
         return render(request, "verifications.html", claims=queries.all_verifications(session))
 
     @app.get("/historia/{ref}", response_class=HTMLResponse)
-    def story(request: Request, ref: str, session: SessionDep):
+    def story(request: Request, ref: str, session: SessionDep, medio: str | None = None):
         st = session.get(Story, ref_id(ref))
         if st is None:
             raise HTTPException(404)
@@ -412,16 +423,20 @@ def create_app(
         ][:6]
         comp = compare(arts)
         claims = queries.claims_for_story(session, st.id)
+        outlets_view = story_outlets(arts, comp, claims)
+        if medio:  # llegada desde /noticia: la ficha de ese medio va primero y destacada
+            outlets_view.sort(key=lambda o: o["outlet"].slug != medio)
         return render(
             request,
             "story.html",
+            target=medio,
             st=st,
             arts=arts,
             comp=comp,
             claims=claims,
             related=related,
             thread=queries.thread_for_story(session, st.id),
-            outlets_view=story_outlets(arts, comp, claims),
+            outlets_view=outlets_view,
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
@@ -553,11 +568,13 @@ def create_app(
             raise HTTPException(404)
         if redirect := canonical(request, "noticia", a.id, a.title):
             return redirect
-        # Una noticia suelta aporta poco: si varios medios la cuentan, se va a la comparativa
-        # (peticion del usuario 2026-10-19). La ficha de captura sigue en ?ficha=1.
-        if a.story is not None and a.story.n_outlets >= 2 and "ficha" not in request.query_params:
+        # Una noticia suelta aporta poco: si varios medios la cuentan, se va a la comparativa con su
+        # medio primero y destacado (peticion del usuario 2026-10-19). La ficha de captura sigue en ?ficha=1.
+        contrasted = a.story is not None and a.story.n_outlets >= 2
+        if contrasted and "ficha" not in request.query_params:
+            slug = a.outlet.slug
             return RedirectResponse(
-                seo.path("historia", a.story_id, a.story.title) + f"#m-{a.outlet.slug}", status_code=302
+                seo.path("historia", a.story_id, a.story.title) + f"?medio={slug}#m-{slug}", status_code=302
             )
         related = [
             s
@@ -570,6 +587,7 @@ def create_app(
             request,
             "article.html",
             a=a,
+            contrasted=contrasted,
             related=related,
             outlet_names=queries.story_outlet_names(session, [s.id for s in related]),
             verdicts=queries.verdict_counts(session, [s.id for s in related]),

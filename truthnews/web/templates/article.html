@@ -13,17 +13,28 @@
   <h1>{{ a.title }}</h1>
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
   {% if not a.story or a.story.n_outlets < 2 %}<div class="summary-box flat"><h2>{{ t(lang, 'only_one_outlet')|replace('{m}', a.outlet.name) }}</h2><p>{{ t(lang, 'only_one_outlet_text') }}</p></div>{% endif %}
+
+  {% if contrasted %}<p class="status-note"><a href="{{ url('historia', a.story_id, a.story.title) }}?medio={{ a.outlet.slug }}#m-{{ a.outlet.slug }}">{{ t(lang, 'compared_in')|replace('{n}', a.story.n_outlets|string) }} →</a></p>
+  {% endif %}
+
+  {% set checked = claims|selectattr('verification')|list %}
+  {% if checked %}<section class="verdicts" aria-label="{{ t(lang, 'what_we_checked') }}"><h2>{{ t(lang, 'what_we_checked') }}</h2>
+    {% for c in checked %}{% set v = c.verification %}<div class="vbox v-border-{{ v.verdict }}">
+      <p class="vhead"><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span></p>
+      <p class="vclaim">«{{ c.text }}»</p>
+      <p class="vexpl">{{ v.explanation }}</p>
+      {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> <span class="vs">{{ t(lang, 'vs_said') }} {{ c.value|dato(c.unit) }}</span> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+    </div>{% endfor %}
+  </section>{% endif %}
+
   {% if a.summary %}<blockquote class="excerpt">{{ a.summary[:600] }}</blockquote>{% endif %}
-  {% if a.story and a.story.n_outlets > 1 %}<p class="callout"><a href="{{ url('historia', a.story_id, a.story.title) }}">{{ a.story.n_outlets }} {{ t(lang, 'n_outlets') }} — {{ t(lang, 'compare_cta') }} →</a></p>{% endif %}
   <p><a class="button" href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'read_original') }} ↗</a></p>
   {% if a.topics %}<nav class="chips">{% for tp in a.topics %}<span>{{ tp }}</span>{% endfor %}</nav>{% endif %}
 
-  {% if cites or claims %}<section class="block" id="datos"><h2>{{ t(lang, 'cited_data') }}</h2>
+  {% set pending = claims|rejectattr('verification')|list %}
+  {% if cites or pending %}<section class="block" id="datos"><h2>{{ t(lang, 'cited_data') }}</h2>
     <p class="meta">{{ t(lang, 'cited_data_note') }}</p>
-    {% for c in claims %}{% set v = c.verification %}<div class="claim">
-      <p>{% if v %}<span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> {% endif %}«{{ c.text }}»</p>
-      {% if v %}<p>{{ v.explanation }}</p>{% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}{% endif %}
-    </div>{% endfor %}
+    {% for c in pending %}<div class="claim"><p><span class="badge v-sin-datos">{{ t(lang, 'pending_check') }}</span> «{{ c.text }}»</p></div>{% endfor %}
     {% for c in cites %}<figure class="quote-cite">
       <blockquote>«{{ c.quote }}»</blockquote>
       <figcaption><span class="tags">{% for noun, value, qual in c.figures %}<span class="tag">{{ noun }} <b>{% if qual %}{{ qual|qual }} {% endif %}{{ value|num }}</b></span>{% endfor %}</span>
