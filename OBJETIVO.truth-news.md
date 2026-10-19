@@ -109,6 +109,10 @@ Liston editorial: se guarda del articulo ajeno lo necesario para analizarlo y se
 enlace, cita breve y analisis propio (derecho de cita); todo contenido generado por IA se marca como
 tal; el crawler se identifica con su User-Agent y respeta `robots.txt` y un ritmo por dominio.
 
+Fuentes que el entorno no puede medir: votaciones y actividad del Congreso y del Senado, NO VERIFICADO
+(2026-10-19: sus servidores responden 403 a nuestro User-Agent identificado y no se elude; solicitud de
+acceso en `docs/solicitud-datos-abiertos-cortes.md`, la envia el usuario).
+
 ## Decisiones del usuario
 
 - 2026-10-18 (peticion): empezar por Espana, castellano primero, todos los temas, despliegue en Railway,
