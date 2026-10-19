@@ -24,6 +24,7 @@ import time
 from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, timedelta
 from functools import lru_cache
+from urllib.parse import urljoin
 
 import httpx
 from sqlalchemy import or_, select
@@ -36,6 +37,11 @@ from truthnews.elections import candidacies as cands
 from truthnews.models import Article
 
 SUMARIO = "https://www.boe.es/datosabiertos/api/boe/sumario/{:%Y%m%d}"
+# Junta Electoral Central: "Elecciones en curso" de todos los ambitos de Espana. Su robots.txt pide
+# visitas entre las 20:00 y las 06:59 (Visit-time) y 2 s entre peticiones: una al dia, en esa franja.
+JEC = "https://www.juntaelectoralcentral.es/cs/jec/elecciones/actuales"
+JEC_HOURS = (20, 7)
+JEC_EVERY = 12 * 3600
 TEXT = "https://www.boe.es/diario_boe/txt.php?id={}"
 POST_DAYS = 30
 PRESS_DAYS = 21
@@ -281,6 +287,53 @@ def from_boe(item: dict, decree_text: str, published: date) -> Election | None:
     )
 
 
+_JEC_ITEM = re.compile(r"<li>\s*<a[^>]*href=\"([^\"]+)\"[^>]*>([^<]+)</a>", re.S)
+_JEC_DATE = re.compile(rf"(\d{{1,2}}) de {_MONTH} de (\d{{4}})")
+
+
+def jec_in_window(hour: int) -> bool:
+    start, end = JEC_HOURS
+    return hour >= start or hour < end
+
+
+def from_jec(markup: str) -> list[Election]:
+    """Elecciones en curso segun la Junta Electoral Central (nombre del organo y fecha de votacion)."""
+    i = markup.find("Elecciones en curso</h3>")
+    out = []
+    for href, label in _JEC_ITEM.findall(markup[i:] if i >= 0 else markup):
+        label = html.unescape(re.sub(r"\s+", " ", label)).strip()
+        t = normalize(label)
+        m = _JEC_DATE.search(t)
+        if not m:
+            continue
+        when = _date(m.group(1), m.group(2), m.group(3), int(m.group(3)))
+        if "generales" in t:
+            kind = "generales"
+        elif "europe" in t:
+            kind = "europeas"
+        elif "locales" in t or "municipales" in t:
+            kind = "locales"
+        elif re.search(r"\b(parlamento|parlament|cortes|corts|asamblea|junta general)\b", t):
+            kind = "autonomicas"
+        else:
+            continue
+        region = region_of(label) if kind == "autonomicas" else None
+        if kind == "autonomicas" and not region:
+            continue
+        out.append(
+            Election(
+                country="ES",
+                kind=kind,
+                date=when,
+                name=default_name(kind, region, None, "ES"),
+                status="convocada",
+                sources=(Source(f"Junta Electoral Central: {label}", urljoin(JEC, href)),),
+                region=region,
+            )
+        )
+    return out
+
+
 def default_name(kind: str, region: str | None, place: str | None, country: str) -> str:
     base = {
         "generales": "Elecciones generales",
@@ -451,6 +504,7 @@ class Calendar:
         # Candidaturas por decreto de convocatoria ("806/2026"): {kind, id, url, published, formations}.
         self._candidacies: dict[str, dict] = {}
         self._press: tuple[float, list[Election]] = (-1e18, [])
+        self._jec: tuple[float, list[Election]] = (-1e18, [])
         self._warmed_at = -1e18
         self._running = False
         self._lock = threading.Lock()
@@ -519,7 +573,20 @@ class Calendar:
                     return hit
         return None
 
-    def warm(self, today: date, pause: float = 0.3) -> None:
+    def _read_jec(self, hour: int) -> None:
+        if not jec_in_window(hour) or self._clock() - self._jec[0] < JEC_EVERY:
+            return
+        try:
+            with client(self._transport) as c:
+                resp = c.get(JEC)
+            found = from_jec(resp.text) if resp.status_code == 200 else None
+        except httpx.HTTPError:
+            found = None
+        with self._lock:  # si falla, se conserva lo ultimo bueno y se reintenta en la siguiente franja
+            self._jec = (self._clock(), found if found is not None else self._jec[1])
+
+    def warm(self, today: date, pause: float = 0.3, hour: int | None = None) -> None:
+        self._read_jec(datetime.now(UTC).hour if hour is None else hour)
         for back in range(self.lookback + 1):
             d = today - timedelta(days=back)
             if d.weekday() == 6:  # los domingos no hay BOE
@@ -569,7 +636,7 @@ class Calendar:
     def all(self, session: Session | None = None, now: datetime | None = None) -> list[Election]:
         now = now or datetime.now(UTC)
         self.ensure_warm(now.date())
-        return merge(self.boe(), self._registry, self.press(session, now))
+        return merge(self.boe(), self._jec[1], self._registry, self.press(session, now))
 
     def active(self, session: Session | None = None, now: datetime | None = None) -> list[Election]:
         now = now or datetime.now(UTC)

@@ -22,7 +22,11 @@ para programas y promesas, 18b).
 
 Un calendario en memoria (`truthnews/elections/calendar.py`), sin tablas, une tres fuentes por orden de
 autoridad: (1) los decretos de convocatoria del **BOE**, leidos de cada sumario diario y de su texto
-(fecha de votacion, campana, sesion constitutiva), (2) el registro `registry/elections.yaml`, con lo
+(fecha de votacion, campana, sesion constitutiva) y, para lo que el BOE no publica (las convocatorias
+autonomicas van a su boletin: la gallega de 2024 no esta en el BOE, medido), la pagina "Elecciones en
+curso" de la **Junta Electoral Central**, leida una vez cada 12 h dentro de la franja que pide su
+robots.txt (Visit-time 20:00-06:59); con el BOE llegan tambien las **candidaturas** presentadas y
+proclamadas de cada convocatoria (todas las formaciones, circunscripciones y cabezas de lista), (2) el registro `registry/elections.yaml`, con lo
 comprobado a mano y los enlaces a los programas, y (3) los **medios rastreados**, solo cuando al menos dos
 medios distintos situan unas elecciones en el mismo pais y la misma fecha; estas se marcan "anunciada en
 medios" con sus titulares citados y ceden ante una convocatoria oficial del mismo dia.

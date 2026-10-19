@@ -397,3 +397,35 @@ def test_figure_changes_need_same_period_and_a_real_gap(engine, session):
     client = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, elections=elections))
     page = client.get(f"/elecciones/es-generales-{poll.isoformat()}").text
     assert "Cifras que ha cambiado" in page and "Mismo dato y mismo periodo (2025)" in page
+
+
+def test_jec_ongoing_elections_respect_visit_time():
+    markup = (FIX / "jec_elecciones_en_curso_20261019.html").read_text()
+    found = cal.from_jec(markup)
+    assert [(e.kind, e.date, e.region) for e in found] == [("generales", date(2026, 11, 29), None)]
+    assert found[0].sources[0].url.startswith("https://www.juntaelectoralcentral.es/cs/jec/eleccionesEnCurso/")
+    extra = cal.from_jec(
+        '<h3>Elecciones en curso</h3><ul>'
+        '<li><a href="/a">Parlamento de Andalucía, 17 de mayo de 2026</a></li>'
+        '<li><a href="/b">Comisión sin fecha</a></li>'
+        '<li><a href="/c">Asamblea de Ninguna, 1 de mayo de 2026</a></li>'
+    )
+    assert [(e.kind, e.region) for e in extra] == [("autonomicas", "ES-AN")]  # sin territorio no se adivina
+    assert cal.jec_in_window(21) and cal.jec_in_window(6) and not cal.jec_in_window(7)
+    calls = []
+
+    def handler(request):
+        calls.append(request.url.host)
+        if request.url.host == "www.juntaelectoralcentral.es":
+            return httpx.Response(200, text=markup)
+        return httpx.Response(404)
+
+    transport = httpx.MockTransport(handler)
+    c = cal.Calendar(1, transport=transport, background=False, registry_raw={"elections": []})
+    c.warm(date(2026, 10, 19), pause=0, hour=12)  # fuera de la franja de su robots.txt: no se pide
+    assert "www.juntaelectoralcentral.es" not in calls
+    c.warm(date(2026, 10, 19), pause=0, hour=22)
+    merged = c.all(None, datetime(2026, 10, 19, 22, tzinfo=UTC))
+    assert [e.slug for e in merged] == ["es-generales-2026-11-29"]
+    c.warm(date(2026, 10, 19), pause=0, hour=23)  # una vez cada 12 h
+    assert calls.count("www.juntaelectoralcentral.es") == 1
