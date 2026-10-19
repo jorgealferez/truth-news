@@ -1,0 +1,28 @@
+{
+  "fase": 5,
+  "titulo": "Despliegue en Railway medido en produccion (C11)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "Railway, proyecto truth-news, entorno production (europe-west4): servicios web, worker y Postgres",
+    "toolchains": {"python": "3.12 (imagen python:3.12-slim)"}
+  },
+  "medidas": {
+    "rastreo_feeds_ok": 231
+  },
+  "detalle": {
+    "healthz": "https://nosmienten.com/healthz -> 200 en 0,55 s (2026-10-19 01:4x UTC)",
+    "paginas": "/nombramientos 200 (1,1 s) y /presupuestos 200 (1,4 s) con datos vivos del BOE y de la IGAE",
+    "rastreo": "logs del worker: 'rastreo 25: 231 feeds ok, 5 fallidos, 2273 articulos nuevos' (01:22 UTC); 'rastreo 26: 230 feeds ok, 6 fallidos, 91 articulos nuevos' (01:46 UTC)",
+    "ciclo_completo": "'ciclo terminado' 10 veces entre 22:30 y 23:53 UTC del 18/10 y solo 1 (00:39 UTC) en las dos horas siguientes",
+    "redespliegues_worker": "50 despliegues del worker entre 00:02 y 01:48 UTC del 19/10: mediana 1,5 min entre despliegues, 0 huecos de 30 min"
+  },
+  "criterios_de_salida": {
+    "C11": "NO CUMPLIDO todavia: /healthz 200 y web y worker en marcha, pero el ciclo completo (analisis, verificaciones, temas, IA) casi no termina porque cada fusion en main redespliega el worker y recent_cycle() aplaza el siguiente ciclo 30 min"
+  },
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Decision de la direccion (carril worker y produccion): watch paths del servicio worker en Railway y/o recent_cycle que cuente solo ciclos terminados y programe el siguiente a ultima ejecucion + intervalo",
+    "Volver a medir 'ciclo terminado' por hora tras el arreglo; C11 se da por cumplido con >= 1 ciclo completo cada 30 min durante 2 h"
+  ]
+}
