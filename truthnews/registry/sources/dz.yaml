@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): el-watan (RemoteProtocolError), aps-dz (no es un feed o esta vacio).
+country: DZ
+default_language: fr
+outlets:
+  - {slug: tsa-algerie, name: TSA Algérie, homepage: "https://www.tsa-algerie.com", scope: national, feeds: [{url: "https://www.tsa-algerie.com/feed/"}]}
+  - {slug: echorouk, name: Echorouk, homepage: "https://www.echoroukonline.com", scope: national, language: ar, feeds: [{url: "https://www.echoroukonline.com/feed"}]}

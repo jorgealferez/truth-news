@@ -1,0 +1,6 @@
+country: SA
+default_language: en
+outlets:
+  - {slug: arab-news, name: Arab News, homepage: "https://www.arabnews.com", scope: national, feeds: [{url: "https://www.arabnews.com/rss.xml"}]}
+  - {slug: asharq-al-awsat-en, name: Asharq Al-Awsat, homepage: "https://english.aawsat.com", scope: national, feeds: [{url: "https://english.aawsat.com/feed"}]}
+  - {slug: asharq-al-awsat-ar, name: الشرق الأوسط, homepage: "https://aawsat.com", scope: national, language: ar, feeds: [{url: "https://aawsat.com/feed"}]}

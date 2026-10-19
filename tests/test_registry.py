@@ -20,6 +20,18 @@ def test_second_country_only_as_data():
     assert any(o.country == "PT" for o in registry.load_outlets())
 
 
+def test_c10_global_coverage_only_as_data():
+    outlets = registry.load_outlets()
+    with_feeds = {o.country for o in outlets if o.feeds}
+    # UE, Reino Unido, EEUU, Latinoamerica, Marruecos y mundo arabe, todos con feeds declarados
+    assert {"GB", "US", "FR", "DE", "IT", "MA", "MX", "AR", "BR", "SA", "EG"} <= with_feeds
+    for iso in registry.countries():
+        name = registry.countries()[iso]["name"]
+        assert name.get("es") and name.get("en"), iso
+        assert any(o.country == iso for o in outlets), f"{iso} sin medios"
+    assert {o.language for o in outlets} >= {"es", "en", "fr", "de", "it", "pt", "ar"}
+
+
 def test_lookups_and_translations():
     assert registry.category_name("economia", "en") == "Economy"
     assert registry.category_name("nope", "es") == "nope"

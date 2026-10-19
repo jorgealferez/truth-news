@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block title %}{{ th.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ c.resumen }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/hilo/{{ th.id }}">{% endblock %}
-{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › {{ t(lang, 'thread') }}{% if th.anchor %} › <a href="/historia/{{ th.anchor.id }}">{{ th.anchor.title[:60] }}{% if th.anchor.title|length > 60 %}…{% endif %}</a>{% endif %}</p>{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('hilo', th.id, th.title) }}">{% endblock %}
+{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › {{ t(lang, 'thread') }}{% if th.anchor %} › <a href="{{ url('historia', th.anchor.id, th.anchor.title) }}">{{ th.anchor.title[:60] }}{% if th.anchor.title|length > 60 %}…{% endif %}</a>{% endif %}</p>{% endblock %}
 {% macro cite(ids) %}{% for i in ids %}{% set s = sources.get(i) %}{% if s %}<a class="cite" href="{{ s.url }}"{% if not s.url.startswith('/') %} target="_blank" rel="noopener nofollow"{% endif %} title="{{ s.titular or s.titulo }}{% if s.medio %} — {{ s.medio }}{% endif %}{% if s.fecha %} · {{ s.fecha }}{% endif %}">{{ i }}</a>{% endif %}{% endfor %}{% endmacro %}
 {% block content %}
 <article class="story wide thread">

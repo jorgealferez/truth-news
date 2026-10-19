@@ -16,6 +16,7 @@ from truthnews.models import (
     Topic,
     Verification,
 )
+from truthnews.web import seo
 from truthnews.web.app import _ago, _dato, create_app
 from truthnews.web.citations import cited_figures, word_diff
 
@@ -95,8 +96,9 @@ def test_article_of_a_multi_outlet_story_redirects_to_the_comparison(client, ses
     a = session.query(Article).filter_by(url="https://m.es/4").one()
     a.story_id = st.id
     session.commit()
-    r = client.get(f"/noticia/{a.id}", follow_redirects=False)
-    assert r.status_code == 302 and r.headers["location"] == f"/historia/{st.id}?medio=medio#m-medio"
+    r = client.get(seo.path("noticia", a.id, a.title), follow_redirects=False)
+    assert r.status_code == 302
+    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "?medio=medio#m-medio"
     assert client.get(f"/noticia/{a.id}?ficha=1").status_code == 200
 
 
@@ -132,7 +134,7 @@ def test_article_cites_figures_tracks_changes_and_outlet_profile(client, session
     )
     outlet = client.get("/medio/medio").text
     assert "Noticias rastreadas" in outlet and "en 1 noticias" in outlet
-    assert f'href="/noticia/{a.id}#cambios"' in outlet
+    assert f'href="{seo.path("noticia", a.id, a.title)}#cambios"' in outlet
     # Un medio sin cambios lo dice en vez de mostrar una lista vacia.
     session.query(ArticleRevision).delete()
     session.commit()
@@ -292,7 +294,7 @@ def test_comparator_pages(client, session):
         assert needle in page, needle
     # Cada cifra en disputa despliega que medios la dan, con enlace a su noticia.
     who = " ".join(part.split("</p>", 1)[0] for part in page.split('class="who-list"')[1:])
-    assert f'href="/noticia/{a2.id}">Otro Medio</a>' in who and ">Medio Uno</a>" in who
+    assert f'href="{seo.path("noticia", a2.id, a2.title)}">Otro Medio</a>' in who and ">Medio Uno</a>" in who
     assert "<details><summary" in page and "ver qué medios" in page
     assert client.get("/historia/99999").status_code == 404
     assert "Historia comparada" in client.get("/contrastes?seccion=politica").text
@@ -301,16 +303,17 @@ def test_comparator_pages(client, session):
     assert "Falso 1" in client.get("/medio/otro").text
     assert "2 medios" in client.get(f"/noticia/{a2.id}").text
     # Contraste primero: la noticia de una historia comparada lleva a la historia con su medio destacado.
-    r = client.get(f"/noticia/{a2.id}", follow_redirects=False)
-    assert r.status_code == 302 and r.headers["location"] == f"/historia/{st.id}?medio=otro#m-otro"
+    r = client.get(seo.path("noticia", a2.id, a2.title), follow_redirects=False)
+    assert r.status_code == 302
+    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "?medio=otro#m-otro"
     target = client.get(r.headers["location"]).text
     first_card = target.split('class="ocard', 1)[1][:60]
     assert first_card.startswith(' target" id="m-otro"')
     # La evidencia muestra el dato oficial, no solo el enlace.
     assert "Dato oficial</span> <b>10,0 %</b>" in target and "frente a 12,0 %" in target
-    ficha = client.get(f"/noticia/{a2.id}?ficha=1").text
+    ficha = client.get(seo.path("noticia", a2.id, a2.title) + "?ficha=1").text
     assert "Esta noticia se compara en 2 medios" in ficha and "Lo que comprobamos" in ficha
-    assert "Ficha de captura" in ficha and f'href="/noticia/{a2.id}?ficha=1"' in target
+    assert "Ficha de captura" in ficha and f'href="{seo.path("noticia", a2.id, a2.title)}?ficha=1"' in target
 
 
 def test_analysis_topic_and_verifications_pages(client, session):
@@ -551,7 +554,10 @@ def test_distribution_robots_sitemap_rss_and_share(client, session):
     assert "Disallow: /admin" in robots and "Sitemap: http://localhost:8000/sitemap.xml" in robots
     sm = client.get("/sitemap.xml")
     assert sm.headers["content-type"].startswith("application/xml")
-    assert f"<loc>http://localhost:8000/historia/{st.id}</loc>" in sm.text and "/medio/medio</loc>" in sm.text
+    assert (
+        f"<loc>http://localhost:8000{seo.path('historia', st.id, st.title)}</loc>" in sm.text
+        and "/medio/medio</loc>" in sm.text
+    )
     rss = client.get("/rss.xml")
     assert rss.headers["content-type"].startswith("application/rss+xml")
     assert "Disturbios con cifras distintas" in rss.text and "cifras en disputa: detenidos" in rss.text

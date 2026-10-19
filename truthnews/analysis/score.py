@@ -24,10 +24,10 @@ BACKFILL_DAYS = 7
 
 def contrast_of(comp: Comparison, verdicts: dict[str, int]) -> tuple[float, dict]:
     """(puntuacion, resumen publico) de una historia a partir de su comparacion y sus veredictos."""
-    disputes = sorted(comp.disputes)
+    disputes = sorted({k.split(" ·")[0] for k in comp.disputes})  # "detenidos ·2": otro hecho, mismo rotulo
     checked = {k: n for k, n in verdicts.items() if k != "sin-datos" and n}
     score = (
-        2.0 * min(len(disputes), 3)
+        2.0 * min(len(comp.disputes), 3)
         + min(sum(VERDICT_WEIGHT[k] * n for k, n in checked.items()), 9.0)
         + 1.0 * min(len(comp.omissions), 3)
         + 0.5 * min(len(comp.loaded), 4)

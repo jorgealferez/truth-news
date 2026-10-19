@@ -1,0 +1,14 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): hespress-es (ProxyError), le360 (HTTP 404), le-matin-ma (no es un feed o esta vacio), medias24
+# (HTTP 403), morocco-world-news (HTTP 403).
+# Medios de Marruecos en arabe, frances, espanol e ingles.
+country: MA
+default_language: fr
+outlets:
+  - {slug: hespress-ar, name: Hespress, homepage: "https://www.hespress.com", scope: national, language: ar, feeds: [{url: "https://www.hespress.com/feed"}]}
+  - {slug: hespress-fr, name: Hespress FR, homepage: "https://fr.hespress.com", scope: national, feeds: [{url: "https://fr.hespress.com/feed"}]}
+  - {slug: hespress-en, name: Hespress English, homepage: "https://en.hespress.com", scope: national, language: en, feeds: [{url: "https://en.hespress.com/feed"}]}
+  - {slug: telquel, name: TelQuel, homepage: "https://telquel.ma", scope: national, feeds: [{url: "https://telquel.ma/feed"}]}
+  - {slug: yabiladi, name: Yabiladi, homepage: "https://www.yabiladi.com", scope: national, feeds: [{url: "https://www.yabiladi.com/rss/news.xml"}]}
+  - {slug: map-express, name: MAP Express, homepage: "https://www.mapexpress.ma", scope: national, kind: agency, owner: Maghreb Arabe Presse (pública),
+     feeds: [{url: "https://www.mapexpress.ma/feed/"}]}

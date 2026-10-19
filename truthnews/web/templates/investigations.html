@@ -6,6 +6,6 @@
 {% if not items %}<p class="empty">{{ t(lang, 'no_articles') }}</p>{% endif %}
 <div class="grid">{% for inv in items %}
 <article class="pcard"><p class="kicker">{{ t(lang, 'investigations') }} · {{ inv.report.get('historias', [])|length }} {{ t(lang, 'related_stories')|lower }}</p>
-  <h3><a href="/investigacion/{{ inv.id }}">{{ inv.report.get('analisis', {}).get('titular') or inv.question }}</a></h3>
+  <h3><a href="{{ url('investigacion', inv.id, investigation_title(inv)) }}">{{ inv.report.get('analisis', {}).get('titular') or inv.question }}</a></h3>
   <p class="meta">{{ inv.updated_at|ago(lang) }}</p></article>{% endfor %}</div>
 {% endblock %}

@@ -1,0 +1,33 @@
+{
+  "fase": "g2",
+  "titulo": "Titulares de otros idiomas traducidos con IA, guardados aparte y marcados como traduccion",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "cobertura_total": "98%",
+    "esquema": "ADR 0017 (Tipo: datos) y migracion 0009: tabla article_translation con unicidad (article_id, lang); ida y vuelta comprobada en tests/test_migrations.py",
+    "presupuesto_ia": "AI_MAX_TRANSLATIONS_PER_CYCLE=120 titulares por ciclo en lotes de 40 (3 llamadas como maximo), esfuerzo bajo, solo articulos de historias activas en las ultimas 48 h y en otro idioma que el de portada; cada titular se traduce una vez",
+    "fidelidad": "tests/test_translate.py: un id que no se dio al modelo o repetido se descarta, el original no se modifica, un lote vacio no se reintenta en bucle, un error de la API no tumba temas ni piezas",
+    "vista": "La historia muestra la traduccion debajo del titular original, en cursiva y con la marca 'traduccion automatica con IA del original (<idioma>)'; el enlace y la cita siguen siendo los del original"
+  },
+  "criterios_de_salida": {
+    "C10": "titulares de 7 lenguas legibles en espanol, marcados como traduccion"
+  },
+  "no_verificable": [
+    "Traduccion real con la API: la clave esta solo en el worker de Railway; se mide en el primer ciclo tras el despliegue (titulares traducidos por ciclo y tokens)"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Traducir al ingles para las paginas en ingles (coordinado con la sesion Railway project)",
+    "Misma historia en distintos paises lado a lado"
+  ]
+}

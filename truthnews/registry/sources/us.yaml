@@ -1,0 +1,25 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): washington-post (HTTP 502), cnbc (HTTP 403), ap-news (robots.txt lo prohibe), univision-noticias
+# (HTTP 404).
+# Medios de Estados Unidos (NPR esta en xx.yaml).
+country: US
+default_language: en
+outlets:
+  - {slug: new-york-times, name: The New York Times, homepage: "https://www.nytimes.com", scope: national,
+     feeds: [{url: "https://rss.nytimes.com/services/xml/rss/nyt/HomePage.xml"}, {url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", category: internacional},
+             {url: "https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml", category: politica}, {url: "https://rss.nytimes.com/services/xml/rss/nyt/Economy.xml", category: economia}]}
+  - {slug: wall-street-journal, name: The Wall Street Journal, homepage: "https://www.wsj.com", scope: national,
+     feeds: [{url: "https://feeds.content.dowjones.io/public/rss/RSSWorldNews", category: internacional}, {url: "https://feeds.content.dowjones.io/public/rss/RSSUSnews"}]}
+  - {slug: fox-news, name: Fox News, homepage: "https://www.foxnews.com", scope: national, kind: tv,
+     feeds: [{url: "https://moxie.foxnews.com/google-publisher/latest.xml"}, {url: "https://moxie.foxnews.com/google-publisher/world.xml", category: internacional},
+             {url: "https://moxie.foxnews.com/google-publisher/politics.xml", category: politica}]}
+  - {slug: cnn, name: CNN, homepage: "https://edition.cnn.com", scope: national, kind: tv,
+     feeds: [{url: "http://rss.cnn.com/rss/edition.rss"}, {url: "http://rss.cnn.com/rss/edition_world.rss", category: internacional}]}
+  - {slug: cbs-news, name: CBS News, homepage: "https://www.cbsnews.com", scope: national, kind: tv,
+     feeds: [{url: "https://www.cbsnews.com/latest/rss/main"}, {url: "https://www.cbsnews.com/latest/rss/world", category: internacional},
+             {url: "https://www.cbsnews.com/latest/rss/politics", category: politica}]}
+  - {slug: abc-news-us, name: ABC News, homepage: "https://abcnews.go.com", scope: national, kind: tv,
+     feeds: [{url: "https://abcnews.go.com/abcnews/topstories"}, {url: "https://abcnews.go.com/abcnews/internationalheadlines", category: internacional}]}
+  - {slug: politico, name: Politico, homepage: "https://www.politico.com", scope: national,
+     feeds: [{url: "https://rss.politico.com/politics-news.xml", category: politica}]}
+  - {slug: the-hill, name: The Hill, homepage: "https://thehill.com", scope: national, feeds: [{url: "https://thehill.com/news/feed/", category: politica}]}

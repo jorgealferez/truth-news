@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): the-peninsula-qa (no es un feed o esta vacio).
+# Al Jazeera English esta en xx.yaml.
+country: QA
+default_language: ar
+outlets:
+  - {slug: al-jazeera-ar, name: الجزيرة, homepage: "https://www.aljazeera.net", scope: national, kind: tv,
+     feeds: [{url: "https://www.aljazeera.net/aljazeerarss/a7c186be-1baa-4bd4-9d80-a84db769f779/73d0e1b4-532f-45ef-b135-bfdff8b8cab9"}]}

@@ -1,0 +1,28 @@
+{
+  "fase": "2c",
+  "titulo": "Comparativas: solo se comparan cifras del mismo hecho",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "disputas_precision": 1.0,
+    "disputas_exhaustividad": 1.0
+  },
+  "detalle": {
+    "muestra": "15 historias reales de produccion (152 articulos, titular y resumen; rastreo del 17-18/10/2026), cada cifra etiquetada a mano con el hecho del que habla: tests/fixtures/disputes.json",
+    "antes": "origin/main 76c110d: 8 disputas publicadas, precision 0,50 (4 mezclaban hechos distintos: 500/12 migrantes en Ceuta, 50 Milan/2.000 Francia, 2 fallecidos/177 a bordo, 855 Paris y 400 por saqueos frente al total de Francia), precision por pares 0,724, exhaustividad 1,00 (5/5)",
+    "despues": "5 disputas, precision 1,00, por pares 1,00, exhaustividad 1,00 (5/5)",
+    "comando": "python -c \"import json; from truthnews.analysis.evaluate import dispute_quality; print(dispute_quality(json.load(open('tests/fixtures/disputes.json'))))\"",
+    "advertencia": "La muestra se uso tambien para disenar la regla; en datos nuevos la precision puede ser menor. Cada caso nuevo detectado en produccion se anade al fixture."
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Lo que dice cada medio lado a lado, coincidencias y diferencias legibles y la verdad segun los datos (mismo item del ledger)"
+  ]
+}

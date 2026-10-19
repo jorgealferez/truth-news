@@ -34,6 +34,7 @@ es:
   before: Antes
   after: Después
   capture_record: Ficha de captura
+  machine_translation: traducción automática con IA del original
   source: Fuente
   captured_at: Capturada
   fingerprint: Huella del texto
@@ -145,6 +146,25 @@ es:
   opinion: Opinión
   analysis_lead: Piezas propias sobre cada tema, a partir de lo que publican los medios y de los datos oficiales. Cada afirmación está en nuestras fuentes; lo que no sabemos, lo decimos.
   what_each_says: Qué dice cada medio
+  essentials: Lo esencial
+  key_origin: De dónde sale
+  key_fails: Qué falla
+  key_missing: Qué falta
+  key_verdict: Nuestra valoración
+  first_published: Lo publicó primero
+  same_text_n: "{n} medios publicaron el mismo texto"
+  own_text: Texto propio
+  same_text: Mismo texto
+  coverage_by_scope: Quién lo cuenta
+  flag_one_source: "{n} de {total} medios repiten una misma fuente"
+  flag_no_official_data: Sin datos oficiales de contexto
+  flag_no_verified_claims: Ninguna afirmación verificada aún con datos oficiales
+  no_fails: Sin contradicciones entre medios
+  read_full_analysis: Leer el análisis completo
+  what_adds: Lo que añade cada uno
+  also_runs_common: además publica el texto común
+  differences_n: diferencias
+  verified_n: verificaciones
   focus: Enfoque
   data: Datos
   assessment: Valoración
@@ -170,7 +190,9 @@ es:
     1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
     artículos que cuentan lo mismo (similitud de titulares y entradillas, medida contra un conjunto etiquetado a
     mano). 3) Comparamos: quién lo cuenta, qué cifras da cada uno y a qué hora, qué datos cuenta la mayoría y
-    alguno omite, y qué palabras valorativas usa cada medio. 4) Extraemos solo afirmaciones numéricas
+    alguno omite, y qué palabras valorativas usa cada medio. Solo comparamos cifras del mismo hecho: de cada
+    artículo cuenta la del titular, y dos cifras que se diferencian en más de tres veces son hechos distintos
+    salvo que ambas se atribuyan a una fuente («según…»). 4) Extraemos solo afirmaciones numéricas
     explícitas sobre indicadores oficiales (paro, inflación, PIB, deuda, vivienda, población) y las comparamos
     con la última serie publicada por Eurostat, el INE o el Banco Mundial. 5) Veredictos: Verdadero (diferencia
     de hasta 0,2 puntos o 3 %), Impreciso (hasta 0,6 puntos o 10 %), Falso (más), Engañoso (la tendencia
@@ -212,6 +234,7 @@ en:
   before: Before
   after: After
   capture_record: Capture record
+  machine_translation: AI machine translation of the original
   source: Source
   captured_at: Captured
   fingerprint: Text fingerprint
@@ -323,6 +346,25 @@ en:
   opinion: Opinion
   analysis_lead: Our own pieces on each topic, built from what outlets publish and official data. Every claim is in our sources; what we do not know, we say.
   what_each_says: What each outlet says
+  essentials: The essentials
+  key_origin: Where it comes from
+  key_fails: What does not add up
+  key_missing: What is missing
+  key_verdict: Our assessment
+  first_published: First published by
+  same_text_n: "{n} outlets ran the same text"
+  own_text: Own reporting
+  same_text: Same text
+  coverage_by_scope: Who covers it
+  flag_one_source: "{n} of {total} outlets repeat a single source"
+  flag_no_official_data: No official data for context
+  flag_no_verified_claims: No claim verified against official data yet
+  no_fails: No contradictions between outlets
+  read_full_analysis: Read the full analysis
+  what_adds: What each one adds
+  also_runs_common: also runs the common text
+  differences_n: differences
+  verified_n: verifications
   focus: Angle
   data: Data
   assessment: Assessment
@@ -347,7 +389,9 @@ en:
   methodology_text: >-
     1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the
     same story. 3) We compare who reports it, which figures each gives and when, what most report and some omit,
-    and the loaded words each outlet uses. 4) We extract only explicit numeric claims about official indicators
+    and the loaded words each outlet uses. We only compare figures about the same fact: the headline figure
+    counts, and two figures more than three times apart are different facts unless both are attributed
+    ("according to…"). 4) We extract only explicit numeric claims about official indicators
     and compare them with the latest Eurostat, INE or World Bank series. 5) Verdicts: True (up to 0.2 points or
     3%), Imprecise (up to 0.6 points or 10%), False (more), Misleading (claimed trend contradicts the data) and
     Not enough data. We never judge with data older than 400 days. Every verdict links its source. Same rules

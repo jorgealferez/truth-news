@@ -1,0 +1,35 @@
+{
+  "fase": "4b",
+  "titulo": "Distribucion: autopublicacion en redes (seleccion, piezas por red, adaptadores y cola)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16",
+      "pillow": "12.3.0",
+      "httpx": "0.28.1"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "seleccion": "historias con contraste >= 2 contadas por >= 2 medios con enlace, hilos publicados con fuentes y verificaciones falso/enganoso/impreciso con evidencia enlazada, en 72 h; fuera lo que esta en revision, sin fuente o con titular de lenguaje cargado",
+    "piezas": "X 280 (enlace 23), Bluesky 300 (enlace con faceta y tarjeta con imagen), Mastodon 500 (enlace 23, imagen adjunta), Telegram 1.024 (foto con pie); si no cabe se quitan lineas de detalle y despues se recorta el titular, nunca el enlace",
+    "cola": "tabla social_post (ADR 0018), unica por red y contenido; cupo diario por defecto X 4, Bluesky 6, Mastodon 6, Telegram 8 y 2 por ciclo; cada pieza se confirma antes y despues de enviar; reintento hasta 3 veces; una red que falla se para hasta el siguiente ciclo",
+    "rendimiento": "200 historias y 50 verificaciones en SQLite: 250 candidatas en 84 ms y paso completo en modo prueba (8 piezas con imagen) en 263 ms; no se publican como medidas (una sola ejecucion)"
+  },
+  "criterios_de_salida": {
+    "C9": "cada verificacion publicada genera piezas para X, Bluesky, Mastodon y Telegram dentro de sus limites (tests/test_social.py::test_every_verification_fits_four_networks); adaptadores probados con transporte HTTP simulado; publicacion real NO VERIFICADO (sin credenciales)"
+  },
+  "no_verificable": [
+    "Publicacion real en X, Bluesky, Mastodon y Telegram: NO VERIFICADO hasta que el usuario cree las cuentas y ponga las claves en Railway"
+  ],
+  "fuera_de_alcance": [
+    "Subida de imagen a X: la tarjeta del enlace (og:image) la muestra sin pedir permisos de medios"
+  ],
+  "pendientes": [
+    "Medir en produccion el primer ciclo con credenciales (enviadas y errores por red)"
+  ]
+}

@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): al-arabiya (HTTP 403), khaleej-times (HTTP 404).
+country: AE
+default_language: en
+outlets:
+  - {slug: the-national-ae, name: The National, homepage: "https://www.thenationalnews.com", scope: national,
+     feeds: [{url: "https://www.thenationalnews.com/arc/outboundfeeds/rss/?outputType=xml"}]}
+  - {slug: gulf-news, name: Gulf News, homepage: "https://gulfnews.com", scope: national, feeds: [{url: "https://gulfnews.com/feed"}]}

@@ -19,3 +19,5 @@ outlets:
   - {slug: rfi-es, name: RFI Español, homepage: "https://www.rfi.fr/es/", scope: international, kind: radio, language: es, owner: France Médias Monde (pública),
      feeds: [{url: "https://www.rfi.fr/es/rss"}]}
   - {slug: npr, name: NPR, homepage: "https://www.npr.org", scope: international, kind: radio, feeds: [{url: "https://feeds.npr.org/1004/rss.xml", category: internacional}]}
+  - {slug: euronews-en, name: Euronews, homepage: "https://www.euronews.com", scope: international, kind: tv, feeds: [{url: "https://www.euronews.com/rss"}]}
+  - {slug: politico-europe, name: Politico Europe, homepage: "https://www.politico.eu", scope: international, feeds: [{url: "https://www.politico.eu/feed/", category: politica}]}

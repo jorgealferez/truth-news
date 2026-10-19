@@ -1,0 +1,214 @@
+{
+  "fase": "g1",
+  "titulo": "Cobertura global: medios de referencia de 18 paises nuevos y 7 lenguas, solo con datos del registro",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "rastreo_descargas_prohibidas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "medida": "python tools/check_feeds.py <paises>: GET con el User-Agent del rastreador, robots.txt por origen y 1 s por dominio; feed valido = HTTP 200 y RSS/Atom con entradas",
+    "primera_pasada": {
+      "feeds_candidatos": 155,
+      "feeds_validos": 118,
+      "fuera": 37,
+      "motivos": "403, 404, 429, 502, timeouts, robots.txt que lo prohibe (5 URLs, no se descargaron) o contenido que no es feed; cada medio retirado queda anotado con su motivo en su sources/<iso>.yaml"
+    },
+    "segunda_pasada": {
+      "paises": 19,
+      "medios": 84,
+      "feeds": 118,
+      "feeds_validos": 118,
+      "entradas": 2699,
+      "lenguas": [
+        "ar",
+        "de",
+        "en",
+        "es",
+        "fr",
+        "it",
+        "pt"
+      ]
+    },
+    "por_pais": {
+      "AE": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 39,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "AR": {
+        "medios": 5,
+        "feeds_validos": "5/5",
+        "entradas": 120,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "BR": {
+        "medios": 4,
+        "feeds_validos": "5/5",
+        "entradas": 120,
+        "lenguas": [
+          "pt"
+        ]
+      },
+      "CL": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 46,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "CO": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 40,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "DE": {
+        "medios": 10,
+        "feeds_validos": "15/15",
+        "entradas": 385,
+        "lenguas": [
+          "de",
+          "en"
+        ]
+      },
+      "DZ": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 20,
+        "lenguas": [
+          "ar",
+          "fr"
+        ]
+      },
+      "EG": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 40,
+        "lenguas": [
+          "ar",
+          "en"
+        ]
+      },
+      "FR": {
+        "medios": 7,
+        "feeds_validos": "13/13",
+        "entradas": 278,
+        "lenguas": [
+          "fr"
+        ]
+      },
+      "GB": {
+        "medios": 5,
+        "feeds_validos": "11/11",
+        "entradas": 239,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "IT": {
+        "medios": 6,
+        "feeds_validos": "12/12",
+        "entradas": 257,
+        "lenguas": [
+          "it"
+        ]
+      },
+      "MA": {
+        "medios": 6,
+        "feeds_validos": "6/6",
+        "entradas": 80,
+        "lenguas": [
+          "ar",
+          "en",
+          "fr"
+        ]
+      },
+      "MX": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 90,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "PE": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 60,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "QA": {
+        "medios": 1,
+        "feeds_validos": "1/1",
+        "entradas": 25,
+        "lenguas": [
+          "ar"
+        ]
+      },
+      "SA": {
+        "medios": 3,
+        "feeds_validos": "3/3",
+        "entradas": 90,
+        "lenguas": [
+          "ar",
+          "en"
+        ]
+      },
+      "US": {
+        "medios": 8,
+        "feeds_validos": "18/18",
+        "entradas": 472,
+        "lenguas": [
+          "en"
+        ]
+      },
+      "VE": {
+        "medios": 2,
+        "feeds_validos": "2/2",
+        "entradas": 40,
+        "lenguas": [
+          "es"
+        ]
+      },
+      "XX": {
+        "medios": 11,
+        "feeds_validos": "11/11",
+        "entradas": 258,
+        "lenguas": [
+          "en",
+          "es"
+        ]
+      }
+    }
+  },
+  "criterios_de_salida": {
+    "C10": "21 paises en el registro (ES, PT, XX y 18 nuevos) anadidos solo con YAML, sin tocar codigo; test test_c10_global_coverage_only_as_data"
+  },
+  "no_verificable": [
+    "Articulos ingeridos por pais en produccion: se mide en el siguiente ciclo del worker tras el despliegue"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": [
+    "Titulares traducidos con IA marcados como traduccion",
+    "La misma historia contada en distintos paises lado a lado",
+    "Paginas en ingles (coordinado con la sesion Railway project)"
+  ]
+}

@@ -1,0 +1,11 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): pagina-12 (HTTP 404).
+country: AR
+default_language: es
+outlets:
+  - {slug: clarin, name: Clarín, homepage: "https://www.clarin.com", scope: national, feeds: [{url: "https://www.clarin.com/rss/lo-ultimo/"}]}
+  - {slug: la-nacion-ar, name: La Nación, homepage: "https://www.lanacion.com.ar", scope: national,
+     feeds: [{url: "https://www.lanacion.com.ar/arc/outboundfeeds/rss/?outputType=xml"}]}
+  - {slug: infobae, name: Infobae, homepage: "https://www.infobae.com", scope: national, feeds: [{url: "https://www.infobae.com/arc/outboundfeeds/rss/"}]}
+  - {slug: perfil, name: Perfil, homepage: "https://www.perfil.com", scope: national, feeds: [{url: "https://www.perfil.com/feed"}]}
+  - {slug: ambito, name: Ámbito, homepage: "https://www.ambito.com", scope: national, feeds: [{url: "https://www.ambito.com/rss/pages/home.xml", category: economia}]}

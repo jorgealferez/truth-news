@@ -2,7 +2,7 @@
 {% block title %}{{ a.title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ (a.summary or a.title)[:200] }}{% endblock %}
 {% block head %}
-<link rel="canonical" href="{{ site.site_url }}/noticia/{{ a.id }}">
+<link rel="canonical" href="{{ site.site_url }}{{ url('noticia', a.id, a.title) }}">
 <meta property="og:title" content="{{ a.title }}">
 <meta property="og:type" content="article">
 {% if a.image_url %}<meta property="og:image" content="{{ a.image_url }}">{% endif %}
@@ -14,7 +14,7 @@
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
   {% if not a.story or a.story.n_outlets < 2 %}<div class="summary-box flat"><h2>{{ t(lang, 'only_one_outlet')|replace('{m}', a.outlet.name) }}</h2><p>{{ t(lang, 'only_one_outlet_text') }}</p></div>{% endif %}
 
-  {% if contrasted %}<p class="status-note"><a href="/historia/{{ a.story_id }}?medio={{ a.outlet.slug }}#m-{{ a.outlet.slug }}">{{ t(lang, 'compared_in')|replace('{n}', a.story.n_outlets|string) }} →</a></p>
+  {% if contrasted %}<p class="status-note"><a href="{{ url('historia', a.story_id, a.story.title) }}?medio={{ a.outlet.slug }}#m-{{ a.outlet.slug }}">{{ t(lang, 'compared_in')|replace('{n}', a.story.n_outlets|string) }} →</a></p>
   {% endif %}
 
   {% set checked = claims|selectattr('verification')|list %}

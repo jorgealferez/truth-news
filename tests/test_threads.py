@@ -6,6 +6,7 @@ from truthnews.ai import threads
 from truthnews.ai.client import AIError, AIResult
 from truthnews.config import Settings
 from truthnews.models import Article, Outlet, Story, Thread
+from truthnews.web import seo
 from truthnews.web.app import create_app
 
 NOW = datetime.now(UTC)
@@ -242,7 +243,7 @@ def test_thread_pages(engine, session):
         assert needle in page, needle
     assert client.get(f"/hilo/{hidden.id}").status_code == 404
     assert client.get("/hilo/9999").status_code == 404
-    assert f'href="/hilo/{th.id}"' in client.get(f"/historia/{st.id}").text
+    assert f'href="{seo.path("hilo", th.id, th.title)}"' in client.get(f"/historia/{st.id}").text
     home = client.get("/").text
     assert "Por qué está pasando" in home and "De Ghali a Ceuta" in home
-    assert f"/hilo/{th.id}</loc>" in client.get("/sitemap.xml").text
+    assert f"{seo.path('hilo', th.id, th.title)}</loc>" in client.get("/sitemap.xml").text

@@ -22,11 +22,13 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from truthnews import registry
+from truthnews.ai import translate
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
-from truthnews.web import admin, citations, queries, social
+from truthnews.social import images
+from truthnews.web import admin, citations, queries, seo, social, topicview
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -107,6 +109,10 @@ def share_text(st, comp) -> str:
     return f"{st.title} — cómo lo cuentan {len(comp.outlets)} medios"
 
 
+def investigation_title(inv) -> str:
+    return (inv.report or {}).get("analisis", {}).get("titular") or inv.question
+
+
 def create_app(settings: Settings | None = None, engine: Engine | None = None) -> FastAPI:
     settings = settings or get_settings()
     engine = engine or get_engine(settings.database_url)
@@ -128,6 +134,8 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         categories=list(registry.categories().keys()),
         countries=list(registry.countries().keys()),
         languages=registry.languages(),
+        url=seo.path,
+        investigation_title=investigation_title,
     )
 
     def get_session():
@@ -152,6 +160,20 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     def lang_of(request: Request) -> str:
         lang = request.query_params.get("lang") or request.cookies.get("lang") or settings.default_language
         return lang if lang in registry.languages() else settings.default_language
+
+    def canonical(request: Request, kind: str, ident: int, title: str | None):
+        """301 a /<kind>/<id>-<slug> si se llego por otra forma (sin slug, slug viejo)."""
+        want = seo.path(kind, ident, title)
+        if request.url.path == want:
+            return None
+        query = request.url.query
+        return RedirectResponse(want + (f"?{query}" if query else ""), status_code=301)
+
+    def ref_id(ref: str) -> int:
+        ident = seo.parse_ref(ref)
+        if ident is None:
+            raise HTTPException(404)
+        return ident
 
     def render(request: Request, name: str, **ctx) -> HTMLResponse:
         lang = lang_of(request)
@@ -216,28 +238,28 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         urls += [(f"{base}/pais/{c}", None) for c in registry.countries()]
         urls += [(f"{base}/medio/{slug}", None) for slug in session.scalars(select(Outlet.slug))]
         urls += [
-            (f"{base}/historia/{sid}", last)
-            for sid, last in session.execute(
-                select(Story.id, Story.last_seen)
+            (base + seo.path("historia", sid, title), last)
+            for sid, title, last in session.execute(
+                select(Story.id, Story.title, Story.last_seen)
                 .where(Story.n_outlets >= 2, Story.last_seen >= since)
                 .order_by(Story.last_seen.desc())
                 .limit(40_000)
             )
         ]
+        topic_titles = queries.topic_titles(session)
         urls += [
-            (f"{base}/tema/{tid}", up) for tid, up in session.execute(select(Topic.id, Topic.updated_at))
+            (base + seo.path("tema", tid, topic_titles.get(tid, title)), up)
+            for tid, title, up in session.execute(select(Topic.id, Topic.title, Topic.updated_at))
         ]
         urls += [
-            (f"{base}/hilo/{hid}", up)
-            for hid, up in session.execute(
-                select(Thread.id, Thread.updated_at).where(Thread.status == "publicado")
+            (base + seo.path("hilo", hid, title), up)
+            for hid, title, up in session.execute(
+                select(Thread.id, Thread.title, Thread.updated_at).where(Thread.status == "publicado")
             )
         ]
         urls += [
-            (f"{base}/investigacion/{iid}", up)
-            for iid, up in session.execute(
-                select(Investigation.id, Investigation.updated_at).where(Investigation.status == "publicada")
-            )
+            (base + seo.path("investigacion", inv.id, investigation_title(inv)), inv.updated_at)
+            for inv in session.scalars(select(Investigation).where(Investigation.status == "publicada"))
         ]
         return Response(social.sitemap_xml(urls), media_type="application/xml")
 
@@ -246,7 +268,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         items = [
             {
                 "title": st.title,
-                "link": f"{settings.site_url}/historia/{st.id}",
+                "link": settings.site_url + seo.path("historia", st.id, st.title),
                 "description": f"{st.n_outlets} medios"
                 + (
                     f" · cifras en disputa: {', '.join(st.contrast['disputas'])}"
@@ -260,7 +282,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         items += [
             {
                 "title": p.title,
-                "link": f"{settings.site_url}/tema/{p.topic_id}",
+                "link": settings.site_url + seo.path("tema", p.topic_id, p.title),
                 "description": p.dek or "",
                 "date": p.created_at if p.created_at.tzinfo else p.created_at.replace(tzinfo=UTC),
             }
@@ -281,18 +303,9 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             raise HTTPException(404)
         key = (st.id, st.updated_at, st.title)
         if key not in image_cache:
-            arts = queries.story_articles(session, st.id)
-            comp = compare(arts)
-            verdicts = queries.verdict_counts(session, [st.id]).get(st.id, {})
-            kicker = (
-                f"{registry.category_name(st.category, settings.default_language)} · {st.n_outlets} medios"
-            )
-            disputes = [(d.noun, d.low, d.high, d.n_outlets) for d in comp.dispute_summaries()]
             if len(image_cache) > 500:
                 image_cache.clear()
-            image_cache[key] = social.story_image(
-                st.title, kicker, disputes, verdicts, registry.t(settings.default_language, "tagline")
-            )
+            image_cache[key] = images.story_png(session, st, settings.default_language)
         return Response(
             image_cache[key], media_type="image/png", headers={"Cache-Control": "public, max-age=3600"}
         )
@@ -327,35 +340,43 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         pieces = queries.latest_pieces(session, kind=kind, limit=20, offset=(page - 1) * 20)
         return render(request, "analyses.html", pieces=pieces, page=page, tipo=kind)
 
-    @app.get("/tema/{topic_id}", response_class=HTMLResponse)
-    def topic(request: Request, topic_id: int, session: SessionDep):
-        tp, pieces, stories = queries.topic_view(session, topic_id)
+    @app.get("/tema/{ref}", response_class=HTMLResponse)
+    def topic(request: Request, ref: str, session: SessionDep):
+        tp, pieces, stories = queries.topic_view(session, ref_id(ref))
         if tp is None:
             raise HTTPException(404)
-        synth = pieces["analisis"].synthesis if "analisis" in pieces else {}
+        title = pieces["analisis"].title if "analisis" in pieces else tp.title
+        if redirect := canonical(request, "tema", tp.id, title):
+            return redirect
+        synth = (pieces["analisis"].synthesis or {}) if "analisis" in pieces else {}
         slugs = [m["medio_slug"] for m in synth.get("que_dice_cada_medio", [])]
         ids = [s.id for s in stories]
+        outlets = queries.outlets_by_slug(session, slugs)
+        verdicts = queries.verdict_counts(session, ids)
         return render(
             request,
             "topic.html",
             tp=tp,
+            title=title,
             pieces=pieces,
             stories=stories,
             synth=synth,
-            outlets=queries.outlets_by_slug(session, slugs),
+            view=topicview.build(queries.topic_articles(session, tp.id), synth, outlets, verdicts),
             outlet_names=queries.story_outlet_names(session, ids),
-            verdicts=queries.verdict_counts(session, ids),
+            verdicts=verdicts,
         )
 
     @app.get("/verificaciones", response_class=HTMLResponse)
     def verifications(request: Request, session: SessionDep):
         return render(request, "verifications.html", claims=queries.all_verifications(session))
 
-    @app.get("/historia/{story_id}", response_class=HTMLResponse)
-    def story(request: Request, story_id: int, session: SessionDep, medio: str | None = None):
-        st = session.get(Story, story_id)
+    @app.get("/historia/{ref}", response_class=HTMLResponse)
+    def story(request: Request, ref: str, session: SessionDep, medio: str | None = None):
+        st = session.get(Story, ref_id(ref))
         if st is None:
             raise HTTPException(404)
+        if redirect := canonical(request, "historia", st.id, st.title):
+            return redirect
         arts = queries.story_articles(session, st.id)
         related = [
             r
@@ -378,15 +399,20 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             related=related,
             thread=queries.thread_for_story(session, st.id),
             outlets_view=outlets_view,
-            share=social.share_links(f"{settings.site_url}/historia/{st.id}", share_text(st, comp)),
+            share=social.share_links(
+                settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
+            ),
             spread=spread(arts),
+            tr=translate.titles(session, [a.id for a in arts], lang_of(request)),
         )
 
-    @app.get("/hilo/{thread_id}", response_class=HTMLResponse)
-    def thread(request: Request, thread_id: int, session: SessionDep):
-        th = session.get(Thread, thread_id)
+    @app.get("/hilo/{ref}", response_class=HTMLResponse)
+    def thread(request: Request, ref: str, session: SessionDep):
+        th = session.get(Thread, ref_id(ref))
         if th is None or th.status != "publicado":
             raise HTTPException(404)
+        if redirect := canonical(request, "hilo", th.id, th.title):
+            return redirect
         sources = {s["id"]: s for s in th.sources}
         return render(request, "thread.html", th=th, c=th.content, sources=sources)
 
@@ -476,17 +502,21 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             profile=profile,
         )
 
-    @app.get("/noticia/{article_id}", response_class=HTMLResponse)
-    def article(request: Request, article_id: int, session: SessionDep, ficha: bool = False):
-        a = session.get(Article, article_id)
+    @app.get("/noticia/{ref}", response_class=HTMLResponse)
+    def article(request: Request, ref: str, session: SessionDep):
+        a = session.get(Article, ref_id(ref))
         if a is None:
             raise HTTPException(404)
+        if redirect := canonical(request, "noticia", a.id, a.title):
+            return redirect
         # Una noticia suelta aporta poco: si varios medios la cuentan, se va a la comparativa con su
         # medio primero y destacado (peticion del usuario 2026-10-19). La ficha de captura sigue en ?ficha=1.
         contrasted = a.story is not None and a.story.n_outlets >= 2
-        if contrasted and not ficha:
+        if contrasted and "ficha" not in request.query_params:
             slug = a.outlet.slug
-            return RedirectResponse(f"/historia/{a.story_id}?medio={slug}#m-{slug}", status_code=302)
+            return RedirectResponse(
+                seo.path("historia", a.story_id, a.story.title) + f"?medio={slug}#m-{slug}", status_code=302
+            )
         related = [
             s
             for s in queries.top_stories(
@@ -562,11 +592,13 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         )
         return render(request, "investigations.html", items=items)
 
-    @app.get("/investigacion/{inv_id}", response_class=HTMLResponse)
-    def investigation(request: Request, inv_id: int, session: SessionDep):
-        inv = session.get(Investigation, inv_id)
+    @app.get("/investigacion/{ref}", response_class=HTMLResponse)
+    def investigation(request: Request, ref: str, session: SessionDep):
+        inv = session.get(Investigation, ref_id(ref))
         if inv is None or inv.status != "publicada":
             raise HTTPException(404)
+        if redirect := canonical(request, "investigacion", inv.id, investigation_title(inv)):
+            return redirect
         return render(request, "investigation.html", inv=inv, r=inv.report)
 
     app.include_router(admin.make_router(settings, get_session, templates, render))

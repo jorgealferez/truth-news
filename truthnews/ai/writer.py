@@ -35,6 +35,7 @@ def piece_schema() -> dict:
         {
             "titular": s,
             "entradilla": s,
+            "claves": obj({"en_una_frase": s, "origen": s, "que_falla": arr(s), "que_falta": arr(s)}),
             "que_dice_cada_medio": arr(obj({"medio_slug": s, "sintesis": s, "enfoque": s})),
             "coincidencias": arr(s),
             "diferencias": arr(obj({"aspecto": s, "detalle": s})),
@@ -193,8 +194,9 @@ def write_pieces(
     grounding = check_grounding(out, dossier, story_ids, slugs)
     status = "publicada" if grounding["ok"] else "revision"
     synthesis = {
-        k: out[k]
+        k: out.get(k)
         for k in (
+            "claves",
             "que_dice_cada_medio",
             "coincidencias",
             "diferencias",

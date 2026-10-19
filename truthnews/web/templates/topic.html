@@ -1,41 +1,82 @@
 {% extends "base.html" %}
 {% set a = pieces.get('analisis') %}{% set o = pieces.get('opinion') %}
-{% block title %}{{ a.title if a else tp.title }} — {{ site.site_name }}{% endblock %}
+{% block title %}{{ title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ a.dek if a else tp.title }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}/tema/{{ tp.id }}">
-<meta property="og:title" content="{{ a.title if a else tp.title }}"><meta property="og:type" content="article">{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('tema', tp.id, title) }}">
+<meta property="og:title" content="{{ title }}"><meta property="og:type" content="article">{% endblock %}
+{% macro outlet_link(out, fallback='') %}{% if out %}<a href="/medio/{{ out.slug }}">{{ out.name }}</a>{% else %}<span>{{ fallback }}</span>{% endif %}{% endmacro %}
 {% block content %}
-<article class="story wide">
-  <p class="kicker"><a href="/analisis">{{ t(lang, 'analysis') }}</a> · <a href="/seccion/{{ tp.category }}">{{ category_name(tp.category, lang) }}</a> · {{ tp.n_stories }} {{ t(lang, 'topic_stories')|lower }} · {{ tp.n_outlets }} {{ t(lang, 'n_outlets') }}</p>
-  <h1>{{ a.title if a else tp.title }}</h1>
+<article class="story wide topic">
+  <p class="kicker"><a href="/analisis">{{ t(lang, 'analysis') }}</a> · <a href="/seccion/{{ tp.category }}">{{ category_name(tp.category, lang) }}</a></p>
+  <h1>{{ title }}</h1>
+  {% if view.one_liner %}<p class="one-liner">{{ view.one_liner }}</p>{% endif %}
   {% if a %}<p class="dek big">{{ a.dek }}</p>{% endif %}
 
+  <ul class="kpis" aria-label="{{ t(lang, 'essentials') }}">
+    <li><b>{{ view.n_outlets or tp.n_outlets }}</b><span>{{ t(lang, 'n_outlets') }}</span></li>
+    <li class="{{ 'warn' if view.n_copy_only else '' }}"><b>{{ view.n_own }}</b><span>{{ t(lang, 'own_text')|lower }}</span></li>
+    <li class="{{ 'bad' if view.n_differences else '' }}"><b>{{ view.n_differences }}</b><span>{{ t(lang, 'differences_n') }}</span></li>
+    <li><b>{{ view.n_verdicts }}</b><span>{{ t(lang, 'verified_n') }}</span></li>
+  </ul>
+
   {% if a %}
-  <section class="block"><h2>{{ t(lang, 'what_each_says') }}</h2>
-    <table class="table"><tbody>
-    {% for m in synth.get('que_dice_cada_medio', []) %}{% set out = outlets.get(m.medio_slug) %}
-      <tr><td>{% if out %}<a href="/medio/{{ out.slug }}">{{ out.name }}</a><br><span class="meta">{{ t(lang, 'scope_' ~ out.scope) }}</span>{% else %}{{ m.medio_slug }}{% endif %}</td>
-        <td>{{ m.sintesis }}<br><span class="meta">{{ t(lang, 'focus') }}: {{ m.enfoque }}</span></td></tr>
-    {% endfor %}
-    </tbody></table>
+  <section class="essentials" aria-label="{{ t(lang, 'essentials') }}">
+    <div class="ess origin-card"><p class="ess-k">① {{ t(lang, 'key_origin') }}</p>
+      {% if view.origin_text %}<p>{{ view.origin_text }}</p>{% endif %}
+      {% if view.groups %}{% set g = view.groups[0] %}<p class="big-n"><b>{{ g.n }}</b> {{ t(lang, 'same_text_n')|replace('{n} ', '') }}</p>{% endif %}
+      {% if view.first %}<p class="meta">{{ t(lang, 'first_published') }} <b>{{ view.first.outlet.name }}</b> · {{ view.first.published_at.strftime('%d/%m %H:%M') }}{% if view.hours %} · {{ view.dots|length }} {{ t(lang, 'n_outlets') }} {{ t(lang, 'in_hours')|replace('{h}', view.hours|string) }}{% endif %}</p>
+      <div class="track" role="img" aria-label="{{ t(lang, 'key_origin') }}">{% for d in view.dots %}<span class="dot{{ ' first' if loop.first }}{{ ' copy' if d.copy }}" style="left:{{ d.pos }}%" title="{{ d.name }}"></span>{% endfor %}</div>{% endif %}
+    </div>
+    <div class="ess fails"><p class="ess-k">② {{ t(lang, 'key_fails') }}</p>
+      {% if view.fails %}<ul class="xlist">{% for f in view.fails %}<li>{{ f }}</li>{% endfor %}</ul>{% else %}<p class="ok-line">✓ {{ t(lang, 'no_fails') }}</p>{% endif %}
+    </div>
+    <div class="ess missing"><p class="ess-k">③ {{ t(lang, 'key_missing') }}</p>
+      <ul class="qlist">{% for m in view.missing %}<li>{{ m }}</li>{% endfor %}
+      {% for key, args in view.flags %}<li class="flag">{{ t(lang, 'flag_' ~ key)|replace('{n}', args.get('n', '')|string)|replace('{total}', args.get('total', '')|string) }}</li>{% endfor %}</ul>
+    </div>
+    <div class="ess verdict"><p class="ess-k">④ {{ t(lang, 'key_verdict') }}</p>
+      {% set lv = {'baja': 1, 'media': 2, 'alta': 3}.get(view.confidence, 0) %}
+      <p class="meter" role="img" aria-label="{{ t(lang, 'confidence') }}: {{ view.confidence }}">{% for i in range(3) %}<span class="{{ 'on' if i < lv }}"></span>{% endfor %} <b>{{ t(lang, 'confidence') }} {{ view.confidence }}</b></p>
+      <p>{{ view.conclusion }}</p>
+    </div>
   </section>
-  <section class="block two">
-    <div><h2>{{ t(lang, 'agree') }}</h2><ul>{% for c in synth.get('coincidencias', []) %}<li>{{ c }}</li>{% endfor %}</ul></div>
-    <div><h2>{{ t(lang, 'differ') }}</h2><ul>{% for d in synth.get('diferencias', []) %}<li><strong>{{ d.aspecto }}</strong>: {{ d.detalle }}</li>{% endfor %}</ul></div>
-  </section>
+
+  {% if view.scopes %}<section class="block cover-viz"><h2>{{ t(lang, 'coverage_by_scope') }}</h2>
+    <div class="stack" role="img" aria-label="{{ t(lang, 'coverage_by_scope') }}">{% for s, n, pct in view.scopes %}<span class="sc-{{ s }}" style="width:{{ pct }}%" title="{{ t(lang, 'scope_' ~ s) }}: {{ n }}"></span>{% endfor %}</div>
+    <p class="legend">{% for s, n, pct in view.scopes %}<span><i class="sc-{{ s }}"></i>{{ t(lang, 'scope_' ~ s) }} <b>{{ n }}</b></span>{% endfor %}</p>
+    {% if view.n_copy_only %}<div class="stack" role="img" aria-label="{{ t(lang, 'own_text') }} / {{ t(lang, 'same_text') }}"><span class="own" style="width:{{ (100 * view.n_own / view.n_outlets)|round|int }}%"></span><span class="copy" style="width:{{ (100 * view.n_copy_only / view.n_outlets)|round|int }}%"></span></div>
+    <p class="legend"><span><i class="own"></i>{{ t(lang, 'own_text') }} <b>{{ view.n_own }}</b></span><span><i class="copy"></i>{{ t(lang, 'same_text') }} <b>{{ view.n_copy_only }}</b></span></p>{% endif %}
+  </section>{% endif %}
+
+  {% if synth.get('diferencias') %}<section class="block"><h2>{{ t(lang, 'differ') }}</h2>
+    <div class="cards">{% for d in synth.get('diferencias', []) %}<div class="card-v diff"><h3>{{ d.aspecto }}</h3><p>{{ d.detalle }}</p></div>{% endfor %}</div>
+  </section>{% endif %}
+  {% if synth.get('coincidencias') %}<section class="block"><h2>{{ t(lang, 'agree') }}</h2>
+    <ul class="checks">{% for c in synth.get('coincidencias', []) %}<li>{{ c }}</li>{% endfor %}</ul></section>{% endif %}
   {% if synth.get('datos') %}<section class="block"><h2>{{ t(lang, 'data') }}</h2>
-    <ul>{% for d in synth.get('datos', []) %}<li>{{ d.dato }} <span class="meta">({{ d.fuente }})</span></li>{% endfor %}</ul></section>{% endif %}
-  <section class="block assessment"><h2>{{ t(lang, 'assessment') }}</h2>
-    {% set v = synth.get('valoracion', {}) %}<p>{{ v.get('conclusion') }}</p>
-    <p class="meta">{{ t(lang, 'confidence') }}: {{ v.get('confianza') }}</p>
-    {% if v.get('lo_que_no_sabemos') %}<h3>{{ t(lang, 'unknowns') }}</h3><ul>{% for u in v.get('lo_que_no_sabemos') %}<li>{{ u }}</li>{% endfor %}</ul>{% endif %}
+    <div class="cards">{% for d in synth.get('datos', []) %}<div class="card-v flat"><p class="stat">{{ d.dato }}</p><p class="meta">{{ d.fuente }}</p></div>{% endfor %}</div></section>{% endif %}
+
+  <section class="block" id="medios"><h2>{{ t(lang, 'what_each_says') }}</h2>
+    {% for g in view.groups %}<div class="same-text">
+      <p class="ess-k">{{ t(lang, 'same_text_n')|replace('{n}', g.n|string) }}</p>
+      {% if g.summary %}<p>{{ g.summary.sintesis }}</p>{% endif %}
+      <p class="meta">{{ t(lang, 'first_published') }} <b>{{ g.first.outlet.name }}</b> · {{ g.first.published_at.strftime('%d/%m %H:%M') }}</p>
+      <p class="chips">{% for m in g.members %}<a href="/medio/{{ m.outlet.slug }}" class="{{ 'adds' if m.adds }}">{{ m.outlet.name }}{% if m.adds %} <b>+</b>{% endif %}</a>{% endfor %}</p>
+    </div>{% endfor %}
+    {% if view.own %}{% if view.groups %}<h3>{{ t(lang, 'what_adds') }}</h3>{% endif %}
+    <div class="outlet-cards">{% for m in view.own %}<div class="ocard">
+      <p class="who">{{ outlet_link(m.outlet, m.medio_slug) }}{% if m.outlet %} <span class="meta">· {{ t(lang, 'scope_' ~ m.outlet.scope) }}</span>{% endif %}{% if m.also_in_group is defined %} <span class="tag">{{ t(lang, 'also_runs_common') }}</span>{% endif %}</p>
+      <p>{{ m.sintesis }}</p><p class="meta">{{ t(lang, 'focus') }}: {{ m.enfoque }}</p>
+    </div>{% endfor %}</div>{% endif %}
   </section>
-  <section class="block prose"><h2>{{ t(lang, 'analysis') }}</h2>
+
+  <details class="block fold prose"><summary><h2>{{ t(lang, 'read_full_analysis') }}</h2></summary>
     {% for sec in a.body %}{% if sec.subtitulo %}<h3>{{ sec.subtitulo }}</h3>{% endif %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}{% endfor %}
-  </section>
+    {% if synth.get('valoracion', {}).get('lo_que_no_sabemos') %}<h3>{{ t(lang, 'unknowns') }}</h3><ul>{% for u in synth.valoracion.lo_que_no_sabemos %}<li>{{ u }}</li>{% endfor %}</ul>{% endif %}
+  </details>
   {% endif %}
-  {% if o %}<section class="block prose opinion"><h2>{{ t(lang, 'opinion') }}: {{ o.title }}</h2>
-    {% for sec in o.body %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}{% endfor %}</section>{% endif %}
+  {% if o %}<details class="block fold prose opinion"><summary><h2>{{ t(lang, 'opinion') }}: {{ o.title }}</h2></summary>
+    {% for sec in o.body %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}{% endfor %}</details>{% endif %}
 
   <section class="block"><h2>{{ t(lang, 'topic_stories') }}</h2>
     <div class="grid">{% for st in stories %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div>

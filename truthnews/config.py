@@ -62,6 +62,9 @@ class Settings:
     ai_max_threads_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_THREADS_PER_CYCLE", "2"))
     )
+    ai_max_translations_per_cycle: int = field(
+        default_factory=lambda: int(os.environ.get("AI_MAX_TRANSLATIONS_PER_CYCLE", "120"))
+    )
     admin_user: str = field(default_factory=lambda: os.environ.get("ADMIN_USER", "admin"))
     admin_password: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD", ""))
     role: str = field(default_factory=lambda: os.environ.get("TRUTHNEWS_ROLE", "web"))

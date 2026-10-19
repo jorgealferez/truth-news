@@ -16,7 +16,7 @@
   <section class="block"><h2>{{ t(lang, 'conclusion') }}</h2><p>{{ an.conclusion }}</p></section>
   {% endif %}
   <section class="block"><h2>{{ t(lang, 'related_stories') }}</h2>
-    <ul>{% for h in r.get('historias', []) %}<li><a href="/historia/{{ h.id }}">{{ h.titular }}</a> <span class="meta">· {{ h.medios }} {{ t(lang, 'n_outlets') }} · {{ h.ultima }}</span></li>{% endfor %}</ul></section>
+    <ul>{% for h in r.get('historias', []) %}<li><a href="{{ url('historia', h.id, h.titular) }}">{{ h.titular }}</a> <span class="meta">· {{ h.medios }} {{ t(lang, 'n_outlets') }} · {{ h.ultima }}</span></li>{% endfor %}</ul></section>
   {% if r.get('datos') %}<section class="block"><h2>{{ t(lang, 'official_data') }}</h2>
     <table class="table"><tbody>{% for d in r.datos %}<tr><td>{{ d.pais }}</td><td>{{ d.indicador }}</td><td>{{ d.periodo }}</td><td><strong>{{ d.valor }}</strong></td>
       <td class="meta">{% for k, v in d.serie_reciente.items() %}{{ k }}: {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}</td><td><a href="{{ d.url }}" rel="nofollow noopener" target="_blank">{{ d.fuente }}</a></td></tr>{% endfor %}</tbody></table></section>{% endif %}
