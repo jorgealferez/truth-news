@@ -149,3 +149,105 @@ BR:
   default_language: pt
   regions: {}
   autonomous_communities: []
+IE:
+  name: {es: Irlanda, en: Ireland, pt: Irlanda}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+NL:
+  name: {es: Países Bajos, en: Netherlands, pt: Países Baixos}
+  languages: [nl]
+  default_language: nl
+  regions: {}
+  autonomous_communities: []
+BE:
+  name: {es: Bélgica, en: Belgium, pt: Bélgica}
+  languages: [fr, nl]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+PL:
+  name: {es: Polonia, en: Poland, pt: Polónia}
+  languages: [pl]
+  default_language: pl
+  regions: {}
+  autonomous_communities: []
+UA:
+  name: {es: Ucrania, en: Ukraine, pt: Ucrânia}
+  languages: [uk, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+TR:
+  name: {es: Turquía, en: Türkiye, pt: Turquia}
+  languages: [tr, en]
+  default_language: tr
+  regions: {}
+  autonomous_communities: []
+IL:
+  name: {es: Israel, en: Israel, pt: Israel}
+  languages: [he, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+IN:
+  name: {es: India, en: India, pt: Índia}
+  languages: [en, hi]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+JP:
+  name: {es: Japón, en: Japan, pt: Japão}
+  languages: [ja, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+AU:
+  name: {es: Australia, en: Australia, pt: Austrália}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+CA:
+  name: {es: Canadá, en: Canada, pt: Canadá}
+  languages: [en, fr]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+ZA:
+  name: {es: Sudáfrica, en: South Africa, pt: África do Sul}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+NG:
+  name: {es: Nigeria, en: Nigeria, pt: Nigéria}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+UY:
+  name: {es: Uruguay, en: Uruguay, pt: Uruguai}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+EC:
+  name: {es: Ecuador, en: Ecuador, pt: Equador}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+CR:
+  name: {es: Costa Rica, en: Costa Rica, pt: Costa Rica}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+DO:
+  name: {es: República Dominicana, en: Dominican Republic, pt: República Dominicana}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []

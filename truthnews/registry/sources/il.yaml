@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): haaretz-en (HTTP 403), times-of-israel (robots.txt lo prohibe).
+country: IL
+default_language: en
+outlets:
+  - {slug: jerusalem-post, name: The Jerusalem Post, homepage: "https://www.jpost.com", scope: national, feeds: [{url: "https://www.jpost.com/rss/rssfeedsfrontpage.aspx"}]}
+  - {slug: ynetnews, name: Ynetnews, homepage: "https://www.ynetnews.com", scope: national, feeds: [{url: "https://www.ynetnews.com/Integration/StoryRss3089.xml"}]}

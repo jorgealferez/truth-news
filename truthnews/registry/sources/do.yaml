@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): listin-diario (HTTP 404).
+country: DO
+default_language: es
+outlets:
+  - {slug: diario-libre, name: Diario Libre, homepage: "https://www.diariolibre.com", scope: national, feeds: [{url: "https://www.diariolibre.com/rss/portada.xml"}]}
+  - {slug: el-dinero-do, name: elDinero, homepage: "https://eldinero.com.do", scope: national, feeds: [{url: "https://eldinero.com.do/feed/"}]}

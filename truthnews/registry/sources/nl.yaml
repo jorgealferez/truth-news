@@ -1,0 +1,7 @@
+country: NL
+default_language: nl
+outlets:
+  - {slug: nos, name: NOS, homepage: "https://nos.nl", scope: national, kind: tv, owner: NPO (pública), feeds: [{url: "https://feeds.nos.nl/nosnieuwsalgemeen"}, {url: "https://feeds.nos.nl/nosnieuwsbuitenland", category: internacional}]}
+  - {slug: nu-nl, name: NU.nl, homepage: "https://www.nu.nl", scope: national, feeds: [{url: "https://www.nu.nl/rss/Algemeen"}]}
+  - {slug: de-volkskrant, name: de Volkskrant, homepage: "https://www.volkskrant.nl", scope: national, feeds: [{url: "https://www.volkskrant.nl/voorpagina/rss.xml"}]}
+  - {slug: nrc, name: NRC, homepage: "https://www.nrc.nl", scope: national, feeds: [{url: "https://www.nrc.nl/rss/"}]}

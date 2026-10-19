@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): bianet (HTTP 403), duvar-english (HTTP 404), hurriyet-daily-news (no es un feed o esta vacio).
+country: TR
+default_language: tr
+outlets:
+  - {slug: anadolu-en, name: Anadolu Agency, homepage: "https://www.aa.com.tr/en", scope: national, kind: agency, language: en, owner: Anadolu Ajansı (pública), feeds: [{url: "https://www.aa.com.tr/en/rss/default?cat=guncel"}]}
