@@ -35,6 +35,8 @@ es:
   after: Después
   capture_record: Ficha de captura
   machine_translation: traducción automática con IA del original
+  abroad_title: Cómo lo cuentan en otros países
+  abroad_note: Medios de otros países que publican la misma historia, enlazados por su titular. No entran en la comparación de cifras.
   source: Fuente
   captured_at: Capturada
   fingerprint: Huella del texto
@@ -280,6 +282,8 @@ en:
   after: After
   capture_record: Capture record
   machine_translation: AI machine translation of the original
+  abroad_title: How other countries tell it
+  abroad_note: Outlets from other countries covering the same story, linked by their headline. They are not part of the figure comparison.
   source: Source
   captured_at: Captured
   fingerprint: Text fingerprint

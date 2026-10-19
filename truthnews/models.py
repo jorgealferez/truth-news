@@ -155,6 +155,23 @@ class ArticleTranslation(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class StoryAbroad(Base):
+    """Articulo de un medio de otro pais que cuenta la misma historia; no entra en ella (ADR 0022)."""
+
+    __tablename__ = "story_abroad"
+    __table_args__ = (UniqueConstraint("story_id", "article_id", name="uq_story_abroad_story_article"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    story_id: Mapped[int] = mapped_column(
+        ForeignKey("story.id", ondelete="CASCADE", name="fk_story_abroad_story_id")
+    )
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey("article.id", ondelete="CASCADE", name="fk_story_abroad_article_id")
+    )
+    similarity: Mapped[float] = mapped_column(Float)
+    linked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class CrawlRun(Base):
     __tablename__ = "crawl_run"
 

@@ -238,3 +238,6 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .ad-head { overflow-wrap:anywhere; }
 @media (max-width: 760px) { .ad { margin:14px 0; } .ad-link img { width:64px; height:64px; } }
 @media (prefers-reduced-motion: reduce) { .ad * { transition:none !important; } }
+/* La misma historia en otros paises (ADR 0022): una columna en movil, rejilla en escritorio */
+.abroad { display:grid; gap:10px; } @media (min-width:720px) { .abroad { grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); } }
+.abroad-c { border:1px solid var(--line); border-radius:6px; padding:10px 12px; background:#fff; } .abroad-c ul { list-style:none; margin:0; padding:0; } .abroad-c li { margin:6px 0; font-size:15px; line-height:1.35; }
