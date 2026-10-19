@@ -52,6 +52,10 @@ def timeline(
     return series[0].get("data", []) if series else []
 
 
+class Unavailable(Exception):
+    """GDELT no respondio (429 persistente, error o JSON roto): no es lo mismo que "sin resultados"."""
+
+
 def articles(
     query: str,
     start: datetime,
@@ -60,8 +64,12 @@ def articles(
     transport: httpx.BaseTransport | None = None,
     sleep=time.sleep,
     retries: int = 2,
+    strict: bool = False,
 ) -> list[dict]:
-    """Articulos de la prensa mundial entre `start` y `end`: fecha, titular, dominio, idioma y URL."""
+    """Articulos de la prensa mundial entre `start` y `end`: fecha, titular, dominio, idioma y URL.
+
+    Con `strict`, un fallo de GDELT lanza `Unavailable` en vez de devolver una lista vacia.
+    """
     params = {
         "query": query,
         "mode": "artlist",
@@ -70,8 +78,11 @@ def articles(
         "startdatetime": f"{start:%Y%m%d%H%M%S}",
         "enddatetime": f"{end:%Y%m%d%H%M%S}",
     }
+    data = _get(params, transport, sleep, retries)
+    if data is None and strict:
+        raise Unavailable(query)
     out = []
-    for a in (_get(params, transport, sleep, retries) or {}).get("articles", []):
+    for a in (data or {}).get("articles", []):
         try:
             seen = datetime.strptime(a["seendate"], "%Y%m%dT%H%M%SZ").replace(tzinfo=UTC)
         except (KeyError, ValueError):

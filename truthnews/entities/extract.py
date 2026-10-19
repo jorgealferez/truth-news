@@ -33,11 +33,12 @@ _UP = "A-ZÁÉÍÓÚÑÜÇÀÈÒÏ"
 _LOW = "a-záéíóúñüçàèòï"
 _TOKEN = rf"[{_UP}][{_LOW}]+(?:-[{_UP}][{_LOW}]+)?"
 _CONNECTOR = (
-    r"(?:de|del|de la|de las|de los|la|von|van|der|da|dos|i|y|por|por el|por la|para|para el|para la"
+    r"(?:de|del|de la|de las|de los|la|el|los|las|von|van|der|da|dos|por|por el|por la|para|para el|para la"
     r"|contra|contra el|contra la)"
 )
 _ORG_ONLY = re.compile(r"\s+(?:por|para|contra)\b.*$")
-_PROPER = re.compile(rf"{_TOKEN}(?:\s+(?:{_CONNECTOR}\s+)?{_TOKEN}){{1,4}}")
+# Sin saltos de linea: un nombre no sigue en el parrafo siguiente ("Ricardo Sanz\nDirector").
+_PROPER = re.compile(rf"{_TOKEN}(?:[ \t]+(?:{_CONNECTOR}[ \t]+)?{_TOKEN}){{1,4}}")
 _ROMAN = re.compile(r"\s+(?:I{1,3}|IV|V|VI{1,3}|IX|X|XI{1,3}|XIV|XV|XVI)\b")
 # Palabras con mayuscula que no forman parte de un nombre (inicio de frase, dias, meses...).
 _NOT_NAME = {
@@ -129,6 +130,33 @@ _SPEAKS_BEFORE = re.compile(
 )
 
 
+# Segundos nombres de un nombre compuesto; "Pedro Martin" (apellido que tambien es nombre) si pasa.
+_SECOND_GIVEN = {
+    "maria",
+    "jose",
+    "luis",
+    "luisa",
+    "jesus",
+    "carmen",
+    "antonio",
+    "antonia",
+    "manuel",
+    "angel",
+    "angeles",
+    "isabel",
+    "elena",
+    "teresa",
+    "carlos",
+    "juan",
+    "ignacio",
+    "javier",
+    "miguel",
+    "pilar",
+    "dolores",
+    "rosa",
+}
+
+
 def fold(text: str) -> str:
     """Minusculas sin tildes con la misma longitud que el original (los indices siguen valiendo)."""
     out = []
@@ -204,6 +232,11 @@ def _given() -> frozenset[str]:
 
 
 @lru_cache(maxsize=1)
+def _excluded() -> frozenset[str]:
+    return frozenset(fold(n) for n in registry().get("no_entidades", []))
+
+
+@lru_cache(maxsize=1)
 def _heads() -> dict[str, str]:
     reg = registry()
     heads = {h: "institucion" for h in reg["cabezas_institucion"]}
@@ -248,7 +281,11 @@ def _discover(text: str, folded: str, taken: list[tuple[int, int]]) -> list[tupl
             end = roman.end()
         name = text[start:end].strip(" -")
         first = fold(words[0])
+        if fold(name) in _excluded():
+            continue
         if first in given and fold(words[-1]) not in _NOT_NAME:
+            if len(words) == 2 and fold(words[1]) in _SECOND_GIVEN:
+                continue  # nombre de pila compuesto ("Jose Maria", "Maria Luisa"): no identifica a nadie
             trimmed = _ORG_ONLY.sub("", name)
             out.append((start, start + len(trimmed), "persona", trimmed))
         elif first in heads and len(words) >= 2:

@@ -62,6 +62,66 @@ def test_discovery_needs_a_given_name_or_an_institution_head():
     assert ("institucion", "Consejo de Seguridad Nuclear") in found
 
 
+def test_discovery_errors_seen_in_production():
+    # Medidos en produccion el 2026-10-19 (fichas /entidad): nombres que cruzan un salto de linea, dos
+    # personas unidas por "y", nombres de pila compuestos, cabezas inglesas y estadios.
+    text = (
+        "Lo firma Ricardo Sanz\nDirector del centro. Lo cuentan Manuel García y Javier Martínez Valencia."
+        " Habló José María en la radio. Ruta por el Red Sea con la Union Home Minister. Gol en el Santiago"
+        " Bernabéu. Pedro Martín presentó la Asociación Española Contra el Cáncer."
+    )
+    names = {f.name for f in extract("", text)}
+    assert "Ricardo Sanz" in names and not any("Director" in n for n in names)
+    assert "Manuel García" in names and "Javier Martínez Valencia" in names
+    assert not {"José María", "Red Sea", "Union Home Minister", "Santiago Bernabéu"} & names
+    assert {"Pedro Martín", "Asociación Española Contra el Cáncer"} <= names
+
+
+def test_gdelt_strict_raises_instead_of_returning_nothing():
+    import httpx
+
+    from truthnews.data import gdelt
+
+    t = httpx.MockTransport(lambda r: httpx.Response(429, text="Please limit requests"))
+    start, end = NOW - timedelta(days=30), NOW
+    assert gdelt.articles("x", start, end, transport=t, sleep=lambda s: None, retries=0) == []
+    with pytest.raises(gdelt.Unavailable):
+        gdelt.articles("x", start, end, transport=t, sleep=lambda s: None, retries=0, strict=True)
+
+
+def test_extraction_older_than_the_rules_is_redone(session, corpus):
+    from truthnews.entities.store import EXTRACTOR_SINCE
+
+    process(session)
+    elena = session.scalars(select(Entity).where(Entity.key == "persona:elena martinez")).one()
+    # Una entidad de una extraccion antigua que las reglas nuevas ya no producen pierde sus cifras.
+    old = Entity(
+        key="persona:ruido viejo",
+        kind="persona",
+        name="Ruido Viejo",
+        aliases=[],
+        n_articles=1,
+        n_outlets=1,
+        n_mentions=1,
+    )
+    session.add(old)
+    session.flush()
+    _, arts, _, _ = corpus
+    session.add(
+        Mention(
+            entity_id=old.id,
+            article_id=arts[0].id,
+            outlet_id=arts[0].outlet_id,
+            published_at=arts[0].published_at,
+        )
+    )
+    for a in arts:
+        a.entities_at = EXTRACTOR_SINCE - timedelta(hours=1)
+    session.flush()
+    assert process(session)["articles"] == 3
+    assert (old.n_articles, elena.n_articles) == (0, 3)
+
+
 def test_speaker_of_a_claim_sentence():
     who = speaker_of("La ministra María Jesús Montero ha asegurado que el paro está en el 9 %.")
     assert who is not None and who.name == "María Jesús Montero"
@@ -296,7 +356,8 @@ def test_archive_imports_registered_outlets_and_moves_the_cursor(session, corpus
     sync_curated(session)
     calls = []
 
-    def fake(query, start, end, max_records=75):
+    def fake(query, start, end, max_records=75, strict=False):
+        assert strict  # un fallo de GDELT no puede pasar por 'sin resultados'
         calls.append((query, start, end))
         return [
             {

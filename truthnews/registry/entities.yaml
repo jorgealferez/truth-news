@@ -194,5 +194,8 @@ cabezas_institucion: [
 ]
 cabezas_organizacion: [
   partido, asociacion, fundacion, federacion, confederacion, sindicato, plataforma, colegio, camara, grupo,
-  empresa, compania, banco, club, coordinadora, movimiento, union, frente, organizacion, red, observatorio
+  empresa, compania, banco, club, coordinadora, movimiento, frente, organizacion, observatorio
 ]
+
+# Nombres propios que la prensa usa casi siempre para otra cosa (un estadio, un premio): no se extraen.
+no_entidades: [Santiago Bernabéu, Ramón Sánchez-Pizjuán, Pedro Sánchez Pizjuán]

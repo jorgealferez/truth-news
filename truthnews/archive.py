@@ -88,7 +88,8 @@ def import_entity(
     now = now or utcnow()
     end = _window_end(session, entity, now)
     start = max(end - WINDOW, FLOOR)
-    found = fetch(query_for(entity), start, end, max_records=MAX_RECORDS)
+    # Si GDELT no responde se lanza Unavailable: el cursor no se mueve y ese mes se pide otra vez.
+    found = fetch(query_for(entity), start, end, max_records=MAX_RECORDS, strict=True)
     rows = []
     for item in found:
         outlet = hosts.get(host(item.get("domain") or item.get("url", "")))
