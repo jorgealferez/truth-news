@@ -21,6 +21,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from truthnews.config import Settings
+from truthnews.crawler import wikidata as wikidata_check
 from truthnews.crawler.feeds import clean_text
 from truthnews.crawler.http import PoliteClient
 from truthnews.models import PoliticalStatement
@@ -174,7 +175,9 @@ async def collect(
     return [(a, ch, items, status) for (a, ch), (items, status) in zip(targets, results, strict=True)]
 
 
-def run(session: Session, settings: Settings, actors: list[ActorSpec] | None = None) -> dict:
+def run(
+    session: Session, settings: Settings, actors: list[ActorSpec] | None = None, wikidata: bool = False
+) -> dict:
     actors = actors if actors is not None else load_political()
     out: dict = {"channels": 0, "channels_ok": 0, "new": 0, "failed": {}}
     for actor, ch, items, status in asyncio.run(collect(settings, actors)):
@@ -186,4 +189,9 @@ def run(session: Session, settings: Settings, actors: list[ActorSpec] | None = N
         out["new"] += store(session, actor, ch.channel, items)
     session.commit()
     log.info("declaraciones politicas: %s", out)
+    if wikidata:  # cuentas oficiales segun Wikidata, una vez por proceso, para revisar el registro
+        try:
+            out["wikidata"] = bool(wikidata_check.run_once(settings, actors))
+        except Exception as exc:  # una consulta de cortesia caida no tumba la ingesta
+            log.warning("wikidata: consulta fallida: %s", exc)
     return out

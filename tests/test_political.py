@@ -196,3 +196,53 @@ def test_invalid_political_registry(tmp_path: Path, body, msg):
 def test_dates_are_utc():
     assert political.parse_rss(RSS)[0]["published_at"] == datetime(2026, 10, 18, 10, tzinfo=UTC)
     assert json.dumps(BSKY)
+
+
+def _entity(qid, web, **props):
+    claims = {"P856": [{"mainsnak": {"datavalue": {"value": web}}}]}
+    for p, v in props.items():
+        claims[p] = [
+            {"mainsnak": {"datavalue": {"value": v}}},
+            {"rank": "deprecated", "mainsnak": {"datavalue": {"value": "viejo"}}},
+        ]
+    return {"entities": {qid: {"claims": claims}}}
+
+
+@respx.mock
+def test_wikidata_matches_only_the_official_website_and_stops_on_429(monkeypatch):
+    from truthnews.crawler import wikidata
+
+    respx.get("https://www.wikidata.org/robots.txt").mock(return_value=httpx.Response(404))
+    respx.get(url__startswith="https://www.wikidata.org/w/api.php").mock(
+        side_effect=[
+            httpx.Response(200, json={"search": [{"id": "Q1"}, {"id": "Q2"}]}),
+            httpx.Response(429),
+        ]
+    )
+    respx.get("https://www.wikidata.org/wiki/Special:EntityData/Q1.json").mock(
+        return_value=httpx.Response(200, json=_entity("Q1", "https://homonimo.test"))
+    )
+    respx.get("https://www.wikidata.org/wiki/Special:EntityData/Q2.json").mock(
+        return_value=httpx.Response(
+            200, json=_entity("Q2", "http://partido.test/", P12361="partido.test", P3789="canal")
+        )
+    )
+    actors = [ACTORS[0], ACTORS[1]]
+    settings = Settings(database_url="sqlite://", per_domain_delay_seconds=0)
+    monkeypatch.setattr(wikidata, "_DONE", False)
+    out = wikidata.run_once(settings, actors)
+    assert out["a"] == {"qid": "Q2", "bluesky": ["partido.test"], "telegram": ["canal"]}
+    assert out["_parado"] == "b: HTTP 429" and "b" not in out
+    assert wikidata.run_once(settings, actors) is None  # una vez por proceso
+    assert wikidata.host("www.Partido.test/x") == "partido.test"
+
+
+def test_political_run_survives_wikidata_errors(session, monkeypatch):
+    from truthnews.crawler import wikidata
+
+    def boom(settings, actors):
+        raise RuntimeError("caido")
+
+    monkeypatch.setattr(wikidata, "run_once", boom)
+    out = political.run(session, Settings(database_url="sqlite://"), [], wikidata=True)
+    assert out["channels"] == 0 and "wikidata" not in out
