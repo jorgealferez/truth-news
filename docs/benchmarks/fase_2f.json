@@ -1,0 +1,25 @@
+{
+  "fase": "2f",
+  "titulo": "Afirmaciones que se repiten: misma cifra, indicador, territorio y periodo en varios articulos",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "produccion": "nosmienten.com/verificaciones (19/10 ~06:00 UTC): 13 afirmaciones verificadas; de las 8 con indicador, territorio, periodo y cifra legibles en la pagina, ninguna se repite todavia: /repetidas sale vacia y lo dice",
+    "metodo": "ADR 0035: clave (indicador, territorio, unidad, periodo, valor a una decima); repetida con >= 2 articulos; veredicto mas reciente con dato; sin esquema"
+  },
+  "criterios_de_salida": {},
+  "no_verificable": [
+    "Agrupacion sobre afirmaciones repetidas reales: NO VERIFICADO hasta que produccion tenga alguna repetida"
+  ],
+  "fuera_de_alcance": [],
+  "pendientes": []
+}
