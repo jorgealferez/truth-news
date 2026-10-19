@@ -2,7 +2,11 @@
 {% block title %}{{ t(lang, 'today_title') }} — {{ date_label }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ t(lang, 'today_lead') }}{% endblock %}
 {% block og_image %}{{ site.site_url }}/og/hoy-horizontal.png{% endblock %}
-{% block head %}<link rel="alternate" type="application/rss+xml" title="{{ t(lang, 'today_title') }}" href="/hoy.xml">{% endblock %}
+{# ItemList y migas (ADR 0038): cada clave con su URL canonica. #}
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block head %}<link rel="alternate" type="application/rss+xml" title="{{ t(lang, 'today_title') }}" href="/hoy.xml">
+{% if items %}{% set ns = namespace(els=[]) %}{% for k in items %}{% set ns.els = ns.els + [{'@type': 'ListItem', 'position': loop.index, 'name': k.sentence, 'url': site.site_url ~ k.path}] %}{% endfor %}{{ jsonld({'@context': 'https://schema.org', '@type': 'ItemList', 'name': t(lang, 'today_title') ~ ' — ' ~ date_label, 'url': site.site_url ~ '/hoy', 'numberOfItems': items|length, 'itemListElement': ns.els}) }}{% endif %}{% endblock %}
+{% block crumbs %}{{ breadcrumbs([(t(lang, 'home'), '/'), (t(lang, 'today_title'), None)]) }}{% endblock %}
 {% block content %}
 <h1 class="page-title">{{ t(lang, 'today_title') }} <span class="meta">{{ date_label }}</span></h1>
 <p class="lead-text">{{ t(lang, 'today_lead') }}</p>
