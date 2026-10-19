@@ -100,6 +100,45 @@ def top_stories(
     return list(session.scalars(q))
 
 
+def breaking(session: Session, country: str, *, hours: int = 6, limit: int = 6) -> list[dict]:
+    """Ultimo minuto: historias multimedio nacidas en las ultimas horas, la que mas se mueve primero.
+
+    Cada entrada lleva cuantos medios se han sumado en la ultima hora ("impulso") y su hilo del porque,
+    si existe: la franja recalca lo nuevo sin perder la comparativa (peticion del usuario 2026-10-19)."""
+    now = datetime.now(UTC)
+    since = now - timedelta(hours=hours)
+    q = (
+        select(Story)
+        .where(
+            Story.country == country,
+            Story.n_outlets >= 2,
+            Story.last_seen >= since,  # recorre ix_story_country_last_seen
+            Story.first_seen >= since,
+        )
+        .order_by(Story.last_seen.desc(), Story.id.desc())
+        .limit(limit)
+    )
+    stories = list(session.scalars(q))
+    if not stories:
+        return []
+    ids = [s.id for s in stories]
+    hour_ago = now - timedelta(hours=1)
+    momentum = dict(
+        session.execute(
+            select(Article.story_id, func.count(func.distinct(Article.outlet_id)))
+            .where(Article.story_id.in_(ids), Article.fetched_at >= hour_ago)
+            .group_by(Article.story_id)
+        ).all()
+    )
+    threads = {
+        t.anchor_story_id: t
+        for t in session.scalars(
+            select(Thread).where(Thread.anchor_story_id.in_(ids), Thread.status == "publicado")
+        )
+    }
+    return [{"story": s, "new_outlets": momentum.get(s.id, 0), "thread": threads.get(s.id)} for s in stories]
+
+
 def story_articles(session: Session, story_id: int) -> list[Article]:
     q = (
         select(Article)

@@ -5,6 +5,7 @@
   {% if totals.last_crawl %} · <span>{{ t(lang, 'latest') }}: {{ totals.last_crawl|ago(lang) }}</span>{% endif %}
   · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>
 </section>
+{% if breaking %}{% include "_breaking.html" %}{% endif %}
 {% if pieces %}
 <section class="analysis-band">
   <h2 class="band-title"><a href="/analisis">{{ t(lang, 'analysis') }}</a></h2>
@@ -29,4 +30,5 @@
     {% else %}<p class="meta">{{ t(lang, 'no_checks_yet') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>{% endfor %}
   </aside>
 </div>
+<script src="/static/live.js" defer></script>
 {% endblock %}

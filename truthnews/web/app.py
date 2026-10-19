@@ -60,6 +60,15 @@ def _ago(value: datetime | None, lang: str = "es") -> str:
     return value.strftime("%d/%m/%Y")
 
 
+def _epoch_ms(value: datetime | None) -> int:
+    """Marca de tiempo en ms para el JS de la portada (lo nuevo desde la ultima visita)."""
+    if value is None:
+        return 0
+    if value.tzinfo is None:
+        value = value.replace(tzinfo=UTC)
+    return int(value.timestamp() * 1000)
+
+
 def story_outlets(arts: list, comp, claims: list) -> list[dict]:
     """Una ficha por medio: su ultimo titular y lo que lo distingue ('como lo cuenta cada uno')."""
     verdicts: dict[str, list[str]] = {}
@@ -129,6 +138,7 @@ def create_app(
     app.mount("/static", StaticFiles(directory=HERE / "static"), name="static")
     templates = Jinja2Templates(directory=HERE / "templates")
     templates.env.filters["ago"] = _ago
+    templates.env.filters["epoch_ms"] = _epoch_ms
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
     templates.env.filters["word_diff"] = citations.word_diff
@@ -340,6 +350,20 @@ def create_app(
         session.execute(text("SELECT 1"))
         return {"status": "ok"}
 
+    @app.get("/ahora.json")
+    def now_json(session: SessionDep):
+        # Lo que consulta la portada abierta cada pocos minutos para avisar, sin recargar, de que hay
+        # novedades: la ultima historia en movimiento y el ultimo rastreo (carril de ultimo minuto).
+        items = queries.breaking(session, settings.default_country, limit=1)
+        last = totals_cached(session)["last_crawl"]
+        return JSONResponse(
+            {
+                "latest": _epoch_ms(items[0]["story"].last_seen) if items else 0,
+                "last_crawl": _epoch_ms(last),
+            },
+            headers={"Cache-Control": "public, max-age=60"},
+        )
+
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request, session: SessionDep):
         # Portada de contrastes: historias contadas por varios medios del pais por defecto.
@@ -350,6 +374,8 @@ def create_app(
         return render(
             request,
             "home.html",
+            breaking=queries.breaking(session, home_country),
+            breaking_every=settings.breaking_interval_minutes or settings.crawl_interval_minutes,
             stories=stories,
             outlet_names=queries.story_outlet_names(session, ids),
             verdicts=queries.verdict_counts(session, ids),

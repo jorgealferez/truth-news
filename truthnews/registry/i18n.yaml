@@ -91,6 +91,14 @@ es:
   thread_method: Elaborado con IA a partir de fuentes con fecha y enlace; lo que no cita una fuente se descarta y las cifras se comprueban contra ellas. Actualizado el
   thread_cta: El hilo completo
   why_happening: Por qué está pasando
+  breaking: Último minuto
+  updated_ago: "Actualizado hace {t}"
+  breaking_every: "los medios nacionales se revisan cada {m} min"
+  news_available: Hay novedades
+  new_label: Nuevo
+  new_since_visit: "{n} nuevas desde tu última visita"
+  in_last_hour: en la última hora
+  why_short: El porqué
   copy_link: Copiar enlace
   copied: Copiado
   latest: Última hora
@@ -351,6 +359,14 @@ en:
   thread_method: Produced with AI from dated, linked sources; anything without a source is dropped and figures are checked against them. Updated on
   thread_cta: The full thread
   why_happening: Why it is happening
+  breaking: Latest
+  updated_ago: "Updated {t} ago"
+  breaking_every: "national outlets are checked every {m} min"
+  news_available: New stories
+  new_label: New
+  new_since_visit: "{n} new since your last visit"
+  in_last_hour: in the last hour
+  why_short: The why
   copy_link: Copy link
   copied: Copied
   latest: Latest

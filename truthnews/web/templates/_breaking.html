@@ -1,0 +1,21 @@
+{# Ultimo minuto (peticion del usuario 2026-10-19): lo nuevo, recalcado sin molestar y sin perder la comparativa. #}
+<section class="breaking" aria-labelledby="bk-h" data-latest="{{ breaking[0].story.last_seen|epoch_ms }}">
+  <header class="bk-head">
+    <h2 id="bk-h"><span class="live-dot" aria-hidden="true"></span>{{ t(lang, 'breaking') }}</h2>
+    <p class="bk-status">{% if totals.last_crawl %}{{ t(lang, 'updated_ago')|replace('{t}', totals.last_crawl|ago(lang)) }} · {% endif %}{{ t(lang, 'breaking_every')|replace('{m}', breaking_every|string) }}<span class="bk-newcount" hidden data-tpl="{{ t(lang, 'new_since_visit') }}"></span></p>
+    <button type="button" class="bk-fresh" hidden>{{ t(lang, 'news_available') }} ↻</button>
+  </header>
+  <ol class="bk-list">{% for b in breaking %}{% set st = b.story %}{% set c = st.contrast or {} %}
+    <li data-ts="{{ st.first_seen|epoch_ms }}">
+      <span class="bk-time">{{ st.first_seen|ago(lang) }}</span>
+      <div class="bk-body">
+        <a class="bk-title" href="{{ url('historia', st.id, st.title) }}">{{ st.title }}</a><span class="bk-new" hidden>{{ t(lang, 'new_label') }}</span>
+        <p class="bk-meta"><a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a>
+          <span class="bk-meter" title="{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}" aria-hidden="true">{% for i in range([st.n_outlets, 10]|min) %}<i></i>{% endfor %}</span>{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}
+          {% if b.new_outlets %}<span class="bk-up">+{{ b.new_outlets }} {{ t(lang, 'in_last_hour') }}</span>{% endif %}
+          {% if c.disputas %}<span class="bk-flag">{{ t(lang, 'disputed_figures') }}</span>{% endif %}
+          {% if b.thread %}<a class="bk-why" href="{{ url('hilo', b.thread.id, b.thread.title) }}">{{ t(lang, 'why_short') }} →</a>{% endif %}</p>
+      </div>
+    </li>{% endfor %}
+  </ol>
+</section>
