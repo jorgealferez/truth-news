@@ -868,6 +868,34 @@ def create_app(
         # Sin publicidad en paginas de elecciones (ads.py): ni se llama al servicio.
         return render(request, "election.html", v=el_views.page(session, e, now))
 
+    @app.get("/elecciones/{slug}/promesas", response_class=HTMLResponse)
+    def election_promises(
+        request: Request,
+        slug: str,
+        session: SessionDep,
+        partido: str | None = None,
+        tema: str | None = None,
+        anio: Annotated[int | None, Query(ge=1977, le=2100)] = None,
+    ):
+        now = datetime.now(UTC)
+        e = elections.get(slug, session, now)
+        if e is None:
+            raise HTTPException(404)
+        actors = [a for a in registry.load_political() if a.country == e.country]
+        actor = next((a for a in actors if a.slug == partido), None)
+        if partido and actor is None:
+            raise HTTPException(404)
+        return render(
+            request,
+            "promises.html",
+            e=e,
+            actor=actor,
+            actors=actors,
+            topic=tema,
+            names={a.slug: a.name for a in actors},
+            v=el_views.promises_page(session, e, partido, tema, anio),
+        )
+
     @app.get("/publicidad", response_class=HTMLResponse)
     def advertising(request: Request):
         return render(request, "advertising.html")

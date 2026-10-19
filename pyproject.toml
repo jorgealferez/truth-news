@@ -25,6 +25,7 @@ dependencies = [
   "anthropic>=1.15",
   "pillow>=10.4",
   "openpyxl>=3.1",
+  "pypdf>=5.1",
 ]
 
 [project.optional-dependencies]

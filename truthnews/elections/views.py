@@ -14,10 +14,12 @@ from sqlalchemy.orm import Session
 
 from truthnews.classify import normalize
 from truthnews.elections.calendar import Election, _aliases
-from truthnews.models import VERDICTS, PoliticalStatement, StatementCheck, Story
+from truthnews.models import VERDICTS, PoliticalStatement, Program, Promise, StatementCheck, Story
 from truthnews.registry import load_political
 
 STATEMENTS_PER_PARTY = 3
+PROMISES_PER_PARTY = 4
+PROMISES_PAGE = 300
 COVERAGE = 12
 _STORY_WORDS = ("%elecci%", "%comicios%", "%campaña%", "%candidat%", "%electoral%", "%encuesta%", "%sondeo%")
 
@@ -78,9 +80,11 @@ def parties(session: Session, e: Election) -> list[dict]:
         .group_by(PoliticalStatement.actor, StatementCheck.verdict)
     ):
         verdicts.setdefault(actor, {})[verdict] = n
+    docs = programs_by_actor(session, e, slugs)
     out = []
     for a in actors:
         said = by_actor.get(a.slug, [])
+        current, previous = docs.get(a.slug, (None, None))
         out.append(
             {
                 "actor": a,
@@ -90,9 +94,80 @@ def parties(session: Session, e: Election) -> list[dict]:
                 "verdicts": [(v, verdicts.get(a.slug, {}).get(v, 0)) for v in VERDICTS],
                 "n_checked": sum(verdicts.get(a.slug, {}).values()),
                 "program": e.programs.get(a.slug),
+                "doc": current,
+                "previous": previous,
+                "promises": promises_for(session, e, a.slug, current, limit=PROMISES_PER_PARTY),
+                "n_promises": count_promises(session, e, a.slug, current),
             }
         )
     return out
+
+
+def programs_by_actor(session: Session, e: Election, slugs: list[str]) -> dict[str, tuple]:
+    """Por partido: su programa para esta eleccion (si ya esta publicado) y el de la anterior del mismo tipo.
+
+    Se prefiere el importado; si hay varios del mismo ano, el primero encontrado (el programa principal
+    suele ir antes que sus resumenes en la pagina del partido).
+    """
+    rows = session.scalars(
+        select(Program)
+        .where(
+            Program.country == e.country,
+            Program.actor.in_(slugs),
+            Program.election_kind == e.kind,
+            Program.election_year <= e.date.year,
+        )
+        .order_by(Program.election_year.desc(), (Program.status == "importado").desc(), Program.id)
+    ).all()
+    out: dict[str, list] = {}
+    for p in rows:
+        cur, prev = out.setdefault(p.actor, [None, None])
+        if p.election_year == e.date.year and cur is None:
+            out[p.actor][0] = p
+        elif p.election_year < e.date.year and prev is None:
+            out[p.actor][1] = p
+    return {k: (v[0], v[1]) for k, v in out.items()}
+
+
+def _promise_query(e: Election, actor: str | None, doc: Program | None):
+    """Promesas de esta eleccion: las de su programa y las dichas en canales oficiales en la ventana."""
+    q = select(Promise).where(Promise.country == e.country)
+    if actor:
+        q = q.where(Promise.actor == actor)
+    window = Promise.statement_id.is_not(None) & (Promise.made_at >= _since(e))
+    in_program = (Promise.election_kind == e.kind) & (Promise.election_year == e.date.year)
+    return q.where(window | (Promise.program_id.is_not(None) & in_program))
+
+
+def promises_for(session: Session, e: Election, actor: str, doc, limit: int) -> list[Promise]:
+    return list(session.scalars(_promise_query(e, actor, doc).order_by(Promise.made_at.desc()).limit(limit)))
+
+
+def count_promises(session: Session, e: Election, actor: str, doc) -> int:
+    return session.scalar(select(func.count()).select_from(_promise_query(e, actor, doc).subquery())) or 0
+
+
+def promises_page(
+    session: Session, e: Election, actor: str | None, topic: str | None, year: int | None
+) -> dict:
+    """Listado de promesas por partido y tema; `year` anterior = lo que se prometio en esa eleccion."""
+    if year and year != e.date.year:
+        q = select(Promise).where(
+            Promise.country == e.country, Promise.election_kind == e.kind, Promise.election_year == year
+        )
+        if actor:
+            q = q.where(Promise.actor == actor)
+    else:
+        q = _promise_query(e, actor, None)
+    if topic:
+        q = q.where(Promise.topic == topic)
+    rows = list(
+        session.scalars(q.order_by(Promise.actor, Promise.page, Promise.id).limit(PROMISES_PAGE))
+    )
+    by_topic: dict[str | None, int] = {}
+    for p in rows:
+        by_topic[p.topic] = by_topic.get(p.topic, 0) + 1
+    return {"rows": rows, "by_topic": sorted(by_topic.items(), key=lambda kv: -kv[1]), "year": year}
 
 
 def coverage(session: Session, e: Election, now: datetime) -> list[Story]:

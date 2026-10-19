@@ -209,6 +209,27 @@
       "unidad": "s",
       "direccion": "max",
       "objetivo": 300
+    },
+    {
+      "id": "programas_precision_promesas",
+      "descripcion": "C15: de una muestra aleatoria de 20 promesas extraidas por reglas, cuantas son compromisos",
+      "unidad": "%",
+      "direccion": "min",
+      "objetivo": 90
+    },
+    {
+      "id": "programas_promesas_sin_cita",
+      "descripcion": "C15: promesas sin documento o declaracion de origen (CHECK en la base)",
+      "unidad": "promesas",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "programas_descubrimiento_segundos",
+      "descripcion": "C15: segundos de descubrir programas en las webs de los 12 partidos del registro",
+      "unidad": "s",
+      "direccion": "max",
+      "objetivo": 120
     }
   ]
 }

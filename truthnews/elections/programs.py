@@ -24,7 +24,7 @@ import time
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from functools import lru_cache
-from urllib.parse import urljoin, urlsplit
+from urllib.parse import unquote, urljoin, urlsplit
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -104,6 +104,12 @@ def election_of(url: str, text: str) -> tuple[str, int] | None:
     return None
 
 
+def file_title(url: str) -> str:
+    """'.../23_bng_xerais_programa.pdf' -> '23 bng xerais programa'."""
+    name = unquote(url.rsplit("/", 1)[-1]).rsplit(".", 1)[0]
+    return re.sub(r"[_\-\s]+", " ", name).strip()
+
+
 def links(html: str, base: str) -> list[tuple[str, str]]:
     return [(urljoin(base, href.strip()), _text(label)) for href, label in _LINK.findall(html)]
 
@@ -111,16 +117,19 @@ def links(html: str, base: str) -> list[tuple[str, str]]:
 def program_links(actor: ActorSpec, page_url: str, html: str, program_page: bool) -> list[Candidate]:
     """PDF de programas enlazados desde una pagina del partido."""
     out = []
+    # Una pagina como /programa-electoral-23j/ dice de que eleccion son los PDF que enlaza sin nombrarla.
+    page_hint = election_of(page_url, "") if program_page else None
     for url, label in links(html, page_url):
         if not urlsplit(url).path.lower().endswith(".pdf"):
             continue
         said = normalize(f"{label} {url}")
         if not program_page and not _PROGRAM_WORD.search(said):
             continue
-        which = election_of(url, label)
+        which = election_of(url, label) or page_hint
         if not which:
             continue
-        title = label if len(label) > 6 else url.rsplit("/", 1)[-1]
+        generic = len(label) < 8 or re.match(r"(pdf|descarga|download|baixa|deskarga)", normalize(label))
+        title = file_title(url) if generic else label
         out.append(Candidate(actor.slug, actor.country, url, title[:300], page_url, which[0], which[1]))
     return out
 
@@ -226,6 +235,7 @@ def promises_in(
         flat = re.sub(r"(?<![.;:!?])\n(?=[a-záéíóúñ(])", " ", flat)
         for raw in _SENTENCE.split(flat):
             s = re.sub(r"\s+", " ", raw).strip(" -·*")
+            s = re.sub(r"^\d{1,3}\s+(?=[a-záéíóúñ])", "", s)  # numero de pagina pegado a la frase
             if not 50 <= len(s) <= 500 or not is_commitment(s, names):
                 continue
             key = normalize(s)
@@ -356,16 +366,25 @@ def statement_promises(session: Session, since: datetime, country: str) -> int:
 _last_discovery: dict[str, float] = {}
 
 
-def run(session: Session, settings: Settings, windows: list | None = None, clock=time.monotonic) -> dict:
+def run(
+    session: Session,
+    settings: Settings,
+    windows: list | None = None,
+    clock=time.monotonic,
+    transport=None,
+    actors: list[ActorSpec] | None = None,
+) -> dict:
     """Paso del worker: descubrir (cada 6 h por partido), importar unos pocos y extraer promesas."""
     now = datetime.now(UTC)
-    actors = load_political()
+    actors = actors if actors is not None else load_political()
     every = DISCOVER_EVERY.total_seconds()
     due = [a for a in actors if clock() - _last_discovery.get(a.slug, -1e18) >= every]
     summary: dict = {"discovered": 0, "new_programs": 0, "imported": 0, "unread": {}, "statement_promises": 0}
 
     async def go():
-        async with PoliteClient(settings.user_agent, per_domain_delay=1.0, timeout=60) as client:
+        async with PoliteClient(
+            settings.user_agent, per_domain_delay=0 if transport else 1.0, timeout=60, transport=transport
+        ) as client:
             for a in due:
                 cands, why = await discover(client, a)
                 _last_discovery[a.slug] = clock()

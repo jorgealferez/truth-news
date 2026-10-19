@@ -11,6 +11,7 @@ def _no_boe_index(monkeypatch):
     """Sin descargas del BOE en segundo plano en los tests (se prueba aparte con un transporte falso)."""
     monkeypatch.setenv("BOE_INDEX_DAYS", "0")
     monkeypatch.setenv("ELECTIONS_LOOKBACK_DAYS", "0")
+    monkeypatch.setenv("PROGRAMS_ENABLED", "0")
 
 
 @pytest.fixture()

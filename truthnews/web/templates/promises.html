@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'el_promises') }} · {{ e.name }}{% if actor %} · {{ actor.name }}{% endif %} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'el_promises_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/elecciones/{{ e.slug }}/promesas">{% if actor or topic or v.year %}<meta name="robots" content="noindex,follow">{% endif %}{% endblock %}
+{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/elecciones">{{ t(lang, 'el_title') }}</a> › <a href="/elecciones/{{ e.slug }}">{{ e.name }}</a> › {{ t(lang, 'el_promises') }}</p>{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'el_promises') }}{% if actor %} · {{ actor.name }}{% endif %}{% if v.year and v.year != e.date.year %} · {{ v.year }}{% endif %}</h1>
+<p class="lead-text">{{ t(lang, 'el_promises_lead') }}</p>
+<nav class="pager"><a href="/elecciones/{{ e.slug }}/promesas{% if v.year %}?anio={{ v.year }}{% endif %}"{% if not actor %} aria-current="page"{% endif %}>{{ t(lang, 'el_all_parties') }}</a>{% for a in actors %} · <a href="/elecciones/{{ e.slug }}/promesas?partido={{ a.slug }}{% if v.year %}&amp;anio={{ v.year }}{% endif %}"{% if actor and actor.slug == a.slug %} aria-current="page"{% endif %}>{{ a.name }}</a>{% endfor %}</nav>
+{% if v.by_topic %}<p class="meta">{% for tp, n in v.by_topic %}{% if tp %}<a href="?{% if actor %}partido={{ actor.slug }}&amp;{% endif %}{% if v.year %}anio={{ v.year }}&amp;{% endif %}tema={{ tp }}">{{ t(lang, 'pt_' ~ tp) }}</a> {{ n }}{% else %}{{ t(lang, 'el_no_topic') }} {{ n }}{% endif %}{% if not loop.last %} · {% endif %}{% endfor %}</p>{% endif %}
+{% if not v.rows %}<p class="empty">{{ t(lang, 'el_no_promises') }}</p>{% else %}
+<ul class="compact">{% for pr in v.rows %}<li>{% if not actor %}<strong>{{ names.get(pr.actor, pr.actor) }}</strong>: {% endif %}«{{ pr.text }}» {% include "_promise_cite.html" %}</li>{% endfor %}</ul>{% endif %}
+<p class="meta">{{ t(lang, 'el_promises_method') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+{% endblock %}

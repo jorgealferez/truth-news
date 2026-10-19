@@ -515,6 +515,38 @@ es:
   el_no_statements: Sin declaraciones en sus canales desde la convocatoria
   el_coverage: Lo que cuentan los medios
   el_no_coverage: Aún no hay historias sobre estas elecciones.
+  el_pages: páginas
+  el_page: pág.
+  el_doc_enlazado: enlazado, pendiente de importar
+  el_doc_importado: importado
+  el_doc_bloqueado: su web no permite descargarlo; se enlaza
+  el_doc_error: no se pudo leer; se enlaza
+  el_promises: Promesas
+  el_see_all: "ver las {n}"
+  el_previous: "Lo que prometió en {y}"
+  el_original: documento original
+  el_all_parties: Todos los partidos
+  el_no_topic: sin tema
+  el_no_promises: Aún no hay promesas importadas para esta selección.
+  el_promises_lead: Compromisos citados literalmente de los programas electorales (con su página) y de las declaraciones en canales oficiales desde la convocatoria. Mismo método para todos los partidos.
+  el_promises_method: "Se extraen por reglas las frases con un verbo de compromiso en futuro (\"bajaremos\", \"vamos a\", \"nos comprometemos a\", o el partido en tercera persona). Un programa solo se descarga si robots.txt lo permite; si no, se enlaza. El cumplimiento de lo prometido se publicará con su evidencia oficial."
+  pt_vivienda: Vivienda
+  pt_empleo: Empleo
+  pt_impuestos: Impuestos
+  pt_pensiones: Pensiones
+  pt_sanidad: Sanidad
+  pt_educacion: Educación
+  pt_inmigracion: Inmigración
+  pt_energia_clima: Energía y clima
+  pt_seguridad_justicia: Seguridad y justicia
+  pt_igualdad: Igualdad
+  pt_territorio_autogobierno: Territorio y autogobierno
+  pt_infraestructuras: Infraestructuras
+  pt_economia_empresas: Economía y empresas
+  pt_agricultura: Agricultura
+  pt_exterior_defensa: Exterior y defensa
+  pt_social: Política social
+  pt_cultura_digital: Cultura y digital
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1026,3 +1058,35 @@ en:
   el_no_statements: No statements on its channels since the call
   el_coverage: What the media report
   el_no_coverage: No stories about these elections yet.
+  el_pages: pages
+  el_page: p.
+  el_doc_enlazado: linked, pending import
+  el_doc_importado: imported
+  el_doc_bloqueado: its website does not allow downloading it; linked
+  el_doc_error: could not be read; linked
+  el_promises: Promises
+  el_see_all: "see all {n}"
+  el_previous: "What it promised in {y}"
+  el_original: original document
+  el_all_parties: All parties
+  el_no_topic: no topic
+  el_no_promises: No promises imported for this selection yet.
+  el_promises_lead: Commitments quoted verbatim from manifestos (with their page) and from statements on official channels since the call. Same method for every party.
+  el_promises_method: "Sentences with a future commitment verb (\"we will cut\", \"we are going to\", \"we commit to\", or the party in the third person) are extracted by rules. A manifesto is downloaded only if robots.txt allows it; otherwise it is linked. Whether promises were kept will be published with official evidence."
+  pt_vivienda: Housing
+  pt_empleo: Jobs
+  pt_impuestos: Taxes
+  pt_pensiones: Pensions
+  pt_sanidad: Health
+  pt_educacion: Education
+  pt_inmigracion: Immigration
+  pt_energia_clima: Energy and climate
+  pt_seguridad_justicia: Security and justice
+  pt_igualdad: Equality
+  pt_territorio_autogobierno: Territory and self-government
+  pt_infraestructuras: Infrastructure
+  pt_economia_empresas: Economy and business
+  pt_agricultura: Agriculture
+  pt_exterior_defensa: Foreign affairs and defence
+  pt_social: Social policy
+  pt_cultura_digital: Culture and digital
