@@ -498,3 +498,37 @@ def test_cli_entities_and_archive(monkeypatch, db_url, capsys):
     assert '"articles": 0' in capsys.readouterr().out
     assert cli.main(["archive", "--slots", "1", "--countries", ""]) == 0
     assert '"slots"' in capsys.readouterr().out
+
+
+def test_archive_cursor_ignores_stray_old_articles(session, corpus):
+    # Produccion 2026-10-19: 4 noticias de 2022 importadas por la API antigua hicieron saltar el recorrido
+    # a diciembre de 2022. La serie contigua desde la primera noticia rastreada es la que manda.
+    outs, arts, *_ = corpus
+    session.add(
+        Article(
+            outlet_id=outs[0].id,
+            url="https://medio0.es/2022",
+            url_hash="s" * 64,
+            origin="archivo",
+            title="Suelta de 2022",
+            published_at=datetime(2022, 12, 15, 16, tzinfo=UTC),
+            language="es",
+            country="ES",
+            category="politica",
+            topics=[],
+        )
+    )
+    session.flush()
+    start = archive.floor_slot(min(a.published_at for a in arts))
+    stride = timedelta(hours=6)
+    assert archive.oldest(session, NOW, stride) == start
+    calls = []
+
+    def fake(url):
+        calls.append(url)
+        stamp = url.rsplit("/", 1)[1][:14]
+        return gkg_zip([gkg_row(stamp, "medio1.es", f"https://medio1.es/{stamp}", "Titular de archivo")])
+
+    archive.run(session, slots=2, stride=stride, now=NOW, fetch=fake)
+    assert calls[0].endswith(f"{start - stride:%Y%m%d%H%M%S}.translation.gkg.csv.zip")
+    assert archive.oldest(session, NOW, stride) == start - 2 * stride
