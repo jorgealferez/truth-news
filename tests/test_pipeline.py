@@ -136,3 +136,26 @@ def test_foreign_news_needs_an_explicit_territory(session, world):
     a.category = "internacional"
     out = pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(3.9))
     assert out["claims"] == 0
+
+
+def test_stories_never_mix_countries(session, world):
+    """Agrupar por pais: el mismo titular en un medio de otro pais no entra en la historia (ADR 0022)."""
+    session.add(
+        Article(
+            outlet_id=world[0].id,
+            url="https://m/ar",
+            url_hash=f"{99:064d}",
+            title="El Consejo de Ministros aprueba la reforma de las pensiones",
+            published_at=NOW - timedelta(minutes=35),
+            language="es",
+            country="AR",
+            category="economia",
+            topics=[],
+        )
+    )
+    session.flush()
+    pipeline.assign_stories(session)
+    big = session.scalars(select(Story).where(Story.n_articles == 3)).one()
+    assert big.country == "ES"
+    ar = session.scalars(select(Article).where(Article.country == "AR")).one()
+    assert ar.story_id != big.id and session.get(Story, ar.story_id).country == "AR"
