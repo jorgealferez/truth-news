@@ -28,6 +28,7 @@ from urllib.parse import urljoin, urlsplit
 import httpx
 
 from truthnews.crawler.http import PoliteClient
+from truthnews.models import Evidence
 
 MAX_PAGES = 5
 JUSTIFICATIONS = ("dudas-entre-medios", "falta-de-pruebas")
@@ -148,3 +149,12 @@ async def lookup(
     finally:
         await robots.aclose()
     return rec
+
+
+def evidence_of(rec: Lookup, source: str, label: str, period: str | None = None, value: float | None = None):
+    """La evidencia de la verificacion que motivo la consulta: el documento y la traza completa."""
+    if rec.document_url is None:
+        raise ValueError(f"la consulta no obtuvo el documento ({rec.stopped})")
+    return Evidence(
+        source=source, label=label, url=rec.document_url, period=period, value=value, payload=rec.as_payload()
+    )
