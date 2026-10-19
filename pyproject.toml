@@ -24,6 +24,7 @@ dependencies = [
   "python-multipart>=0.0.9",
   "anthropic>=1.15",
   "pillow>=10.4",
+  "openpyxl>=3.1",
 ]
 
 [project.optional-dependencies]

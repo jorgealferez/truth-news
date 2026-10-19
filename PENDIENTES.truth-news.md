@@ -50,7 +50,9 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] "En los medios" en /nombramientos: noticias rastreadas de los ultimos 60 dias que nombran a cada persona (nombre y primer apellido, palabra completa, sin tildes)
   - [ ] Discrepancias con el BOE: medios que dan un nombramiento que el BOE no recoge o con otro cargo
   - [ ] Votaciones del Congreso y del Senado: NO VERIFICADO desde este entorno (congreso.es y senado.es responden 403 de Akamai a la IP del entorno; bloqueo tecnico, no se evade); probar desde Railway
-  - [ ] Presupuestos y ejecucion (IGAE, datos abiertos de Hacienda)
+  - [x] Ejecucion del Presupuesto del Estado (`truthnews/data/igae.py`): extracto mensual de la IGAE (Excel), gastos por ministerio, inversiones reales e ingresos; medido con el extracto real hasta el 31/08/2026 (ejecucion total 60,7 %, inversiones 27,1 %, Defensa 22,0 %: coinciden con las columnas de la IGAE)
+  - [ ] Pagina /presupuestos con la ejecucion por ministerio (gasto e inversion) y su cita a la IGAE
+  - [ ] Deficit, gasto e ingresos publicos (Eurostat gov_10a_main) como indicadores verificables: propuesto al carril Verificaciones (registry/indicators.yaml es suyo)
 - [ ] Cobertura global en cualquier idioma (peticion del usuario 2026-10-19): medios internacionales de referencia por pais y lengua (RSS, GDELT), titulares traducidos con IA marcados como traduccion, misma historia contada en distintos paises lado a lado, paginas en ingles para mas audiencia. Carril: Global (docs/equipo.md) — EN CURSO (session_012trDStWm4oFnLoYbz2Be91, 2026-10-19)
   - [x] Registro global: 18 paises nuevos (UE, Reino Unido, EEUU, Latinoamerica, Marruecos, Argelia, Golfo, Egipto), 73 medios y 118 feeds validados en vivo en 7 lenguas; medidos con tools/check_feeds.py (docs/benchmarks/fase_g1.json) — #28
   - [ ] Titulares traducidos con IA marcados como traduccion: ADR 0017, migracion 0009, worker (120 por ciclo) y vista de la historia; hecho en #32, medir en produccion tras el despliegue
