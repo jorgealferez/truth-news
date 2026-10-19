@@ -210,6 +210,22 @@ def verifications(session: Session, site_url: str, since: datetime, lang: str) -
     return out
 
 
+TODAY_SCORE = 10.0  # la pieza diaria va la primera (ADR 0048)
+
+
+def today_piece(session: Session, site_url: str, now: datetime, lang: str) -> list[Candidate]:
+    """La pieza diaria "Hoy en 1 minuto" (ADR 0047/0048): una por dia (`ref_id` = AAAAMMDD) y solo si hay
+    algo contrastado; sus frases salen de los datos (`social.today`), sin texto anadido."""
+    from truthnews.social import today  # perezoso: today importa la web
+
+    keys = today.keys(session, now, lang)
+    if not keys:
+        return []
+    lines = [clip(k.sentence, 220) for k in keys[:3]]
+    draft = Draft(f"Hoy en 1 minuto · {now:%d/%m/%Y}", lines, "Las claves y sus fuentes:", f"{site_url}/hoy")
+    return [Candidate("hoy", int(f"{now:%Y%m%d}"), TODAY_SCORE, draft, None, lang, now)]
+
+
 def candidates(
     session: Session,
     site_url: str,
@@ -222,7 +238,8 @@ def candidates(
     since = (now or utcnow()) - timedelta(hours=window_hours)
     site_url = site_url.rstrip("/")
     found = (
-        stories(session, site_url, since, min_score, lang)
+        today_piece(session, site_url, now or utcnow(), lang)
+        + stories(session, site_url, since, min_score, lang)
         + threads(session, site_url, since, lang)
         + verifications(session, site_url, since, lang)
     )

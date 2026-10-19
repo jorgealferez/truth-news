@@ -208,7 +208,9 @@ def test_dry_run_registers_without_sending_no_duplicates_and_quota(session, cont
     assert {p.status for p in posts} == {"prueba"} and all(p.link.startswith(SITE) for p in posts)
     second = run(session, SITE, cfg, client=client, now=NOW + timedelta(minutes=60))
     assert second["x"]["nuevas"] == 0  # cupo diario agotado
-    assert second["telegram"]["nuevas"] == 1  # el tercer candidato, nunca un repetido
+    assert (
+        second["telegram"]["nuevas"] == 2
+    )  # los dos siguientes (hoy, verificacion, hilo, historia), sin repetir
     keys = [(p.network, p.kind, p.ref_id) for p in session.query(SocialPost)]
     assert len(keys) == len(set(keys))
     tomorrow = run(session, SITE, cfg, client=client, now=NOW + timedelta(days=1))
@@ -377,7 +379,7 @@ def test_cli_preview_writes_nothing_and_run_dry(db_url, engine, session, content
     try:
         assert cli.main(["social", "preview", "--limit", "1"]) == 0
         out = capsys.readouterr().out
-        assert "== verificacion" in out and "-- telegram (" in out and "3 candidatas" in out
+        assert "== hoy" in out and "-- telegram (" in out and "4 candidatas" in out
         assert session.query(SocialPost).count() == 0
         assert cli.main(["social", "run", "--dry"]) == 0
         assert json.loads(capsys.readouterr().out)["x"]["modo"] == "prueba"
@@ -599,3 +601,21 @@ def test_active_hours_setting(monkeypatch):
     monkeypatch.setenv("SOCIAL_ACTIVE_HOURS", "22-7")
     assert SocialSettings().active_hours == (8, 23)
     assert SocialSettings(quota={"x": 0}).gap_minutes("x") == float("inf")
+
+
+def test_daily_piece_once_a_day_only_with_checked_data(session):
+    from truthnews.social.select import today_piece
+
+    assert today_piece(session, SITE, NOW, "es") == []  # nada contrastado: no hay pieza
+    st = _story(session, "Desalojo en la calle Mayor", [400, 1000])
+    _verification(session, st, verdict="falso")
+    session.commit()
+    (c,) = today_piece(session, SITE, NOW, "es")
+    assert c.kind == "hoy" and c.ref_id == int(f"{NOW:%Y%m%d}") and c.draft.url == f"{SITE}/hoy"
+    assert c.draft.lines[0].startswith("Falso:")
+    out = run(session, SITE, settings(per_cycle=1), now=NOW)
+    assert out["x"]["nuevas"] == 1 and out["x_en"]["nuevas"] == 0
+    post = session.query(SocialPost).filter_by(network="telegram", kind="hoy").one()
+    assert post.image_url == f"{SITE}/og/hoy-vertical.png" and "Hoy en 1 minuto" in post.text
+    run(session, SITE, settings(per_cycle=1), now=NOW + timedelta(hours=1))
+    assert session.query(SocialPost).filter_by(network="telegram", kind="hoy").count() == 1
