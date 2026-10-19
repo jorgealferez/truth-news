@@ -79,3 +79,9 @@ ai_claims 0,02; unos 119 USD/dia a 48 ciclos), el usuario fija en el worker de p
 - `AI_MAX_PIECES_PER_CYCLE=3`: analisis solo para los ~6 temas de cabecera (candidatos = 2 x 3), cada uno
   como mucho cada 2 h; los temas 7 en adelante se quedan sin analisis.
 Rechaza por ahora traducir con un modelo mas barato y limitar los hilos. Las verificaciones no se tocan.
+
+Ademas, para que agotar los 10 USD no pare las verificaciones, el usuario aprueba (15:2x UTC) una **bolsa aparte
+de 1,5 USD/dia** (`AI_DAILY_BUDGET_VERIFY_USD`, 0 = sin bolsa propia): las llamadas que juzgan afirmaciones
+(`ai_claims` y `statement_checks_ai`, `AIClient(pool="verificacion")`) se cargan a ella y siguen todo el dia
+(~0,02 USD por ciclo, ~1 USD/dia medido). Tope total maximo: 11,5 USD/dia. `stats.ai_cost` separa
+`verificacion_usd` y `hoy_verificacion_usd`.

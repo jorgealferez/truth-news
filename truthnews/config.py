@@ -97,6 +97,11 @@ class Settings:
     ai_daily_budget_usd: float = field(
         default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_USD", "40"))
     )
+    # Bolsa aparte para juzgar afirmaciones (decision del usuario 2026-10-19): agotar el tope general no para
+    # las verificaciones. 0 = sin bolsa propia (las verificaciones gastan del tope general).
+    ai_daily_budget_verify_usd: float = field(
+        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_VERIFY_USD", "1.5"))
+    )
     # Publicidad (cliente de ads-service, microservices-ecosystem). Sin URL o sin clave no se pinta nada.
     ads_service_url: str = field(default_factory=lambda: os.environ.get("ADS_SERVICE_URL", ""))
     ads_site_key: str = field(default_factory=lambda: os.environ.get("ADS_SITE_KEY", ""))
