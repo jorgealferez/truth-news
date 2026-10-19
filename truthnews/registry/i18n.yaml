@@ -567,6 +567,7 @@ es:
   el_status_note_declarada: Fecha declarada según el calendario electoral internacional de IFES (ElectionGuide), citado abajo; no la hemos leído en el diario oficial del país.
   el_phase_proxima: Próxima
   el_dates_other: Calendario
+  el_context: lo dijo a propósito de
 en:
   legal_h: Legal
   legal_notice: Legal notice
@@ -1130,3 +1131,4 @@ en:
   el_status_note_declarada: Date declared in the IFES international election calendar (ElectionGuide), cited below; we have not read it in the country's official gazette.
   el_phase_proxima: Upcoming
   el_dates_other: Calendar
+  el_context: said in connection with

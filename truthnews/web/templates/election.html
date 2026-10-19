@@ -35,7 +35,7 @@
     {% if p.comparable %}<p class="meta"><a href="/elecciones/{{ e.slug }}/promesas?partido={{ p.actor.slug }}#cambios">{{ t(lang, 'el_compare') }}</a></p>{% endif %}
     {% if p.previous %}<p class="meta">{{ t(lang, 'el_previous')|replace('{y}', p.previous.election_year|string) }}: <a href="/elecciones/{{ e.slug }}/promesas?partido={{ p.actor.slug }}&amp;anio={{ p.previous.election_year }}">{{ p.previous.title }}</a> · <a href="{{ p.previous.url }}" rel="noopener" target="_blank">{{ t(lang, 'el_original') }}</a></p>{% endif %}
     {% if p.n_checked %}<p>{% for vd, n in p.verdicts if n %}<span class="tag v-{{ vd }}">{{ t(lang, 'verdict_' ~ vd) }} {{ n }}</span> {% endfor %}<a class="meta" href="/quien-dice-la-verdad">{{ t(lang, 'speakers_title') }}</a></p>{% endif %}
-    {% if p.statements %}<ul class="compact">{% for s in p.statements %}<li>«{{ s.text }}» <a class="meta" href="{{ s.url }}" rel="noopener" target="_blank">{{ s.channel }} · {{ s.published_at.strftime('%d/%m %H:%M') }}</a></li>{% endfor %}</ul>
+    {% if p.statements %}<ul class="compact">{% for s in p.statements %}<li>«{{ s.text }}» <a class="meta" href="{{ s.url }}" rel="noopener" target="_blank">{{ s.channel }} · {{ s.published_at.strftime('%d/%m %H:%M') }}</a>{% if s.story_id and p.contexts.get(s.story_id) %} <span class="meta">· {{ t(lang, 'el_context') }}: <a href="{{ url('historia', s.story_id, p.contexts[s.story_id]) }}">{{ p.contexts[s.story_id] }}</a></span>{% endif %}</li>{% endfor %}</ul>
     {% elif not p.channels %}<p class="meta">{{ t(lang, 'el_no_channel') }}{% if p.actor.note %} ({{ p.actor.note }}){% endif %}</p>
     {% else %}<p class="meta">{{ t(lang, 'el_no_statements') }}</p>{% endif %}
   </details>{% endfor %}

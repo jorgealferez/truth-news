@@ -189,7 +189,12 @@ def _near_registry(today: date) -> dict:
 def test_election_pages(engine, session):
     now = datetime.now(UTC)
     slug = f"es-generales-{(now.date() + timedelta(days=20)).isoformat()}"
+    ctx = Story(title="El Gobierno sube el IRPF a las rentas altas", category="economia", country="ES",
+                first_seen=now - timedelta(days=2), last_seen=now - timedelta(days=1))
+    session.add(ctx)
+    session.flush()
     pp = _statement(session, "pp", "Bajaremos el IRPF", now - timedelta(days=1), "https://pp.example/1")
+    pp.story_id = ctx.id
     _statement(session, "vox", "Antes de la convocatoria", now - timedelta(days=30), "https://vox.example/1")
     session.add(
         StatementCheck(
@@ -239,6 +244,7 @@ def test_election_pages(engine, session):
     page = r.text
     assert "Real Decreto de prueba" in page and "Precampaña" in page
     assert "Bajaremos el IRPF" in page and "Antes de la convocatoria" not in page
+    assert "lo dijo a propósito de" in page and "El Gobierno sube el IRPF" in page
     assert "Falso 1" in page and "https://movimientosumar.es/programa" in page
     # Los 12 partidos del registro con el mismo formato; solo uno tiene programa enlazado.
     assert page.count("no localizado aún") == 11

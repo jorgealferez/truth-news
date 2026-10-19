@@ -85,6 +85,11 @@ def parties(session: Session, e: Election) -> list[dict]:
         .group_by(PoliticalStatement.actor, StatementCheck.verdict)
     ):
         verdicts.setdefault(actor, {})[verdict] = n
+    shown = [st for said in by_actor.values() for st in said[:STATEMENTS_PER_PARTY] if st.story_id]
+    contexts = {
+        st.id: st.title
+        for st in session.scalars(select(Story).where(Story.id.in_({s.story_id for s in shown})))
+    } if shown else {}
     docs = programs_by_actor(session, e, slugs)
     changed = figure_changes(session, e, slugs, datetime.now(UTC))
     out = []
@@ -96,6 +101,7 @@ def parties(session: Session, e: Election) -> list[dict]:
                 "actor": a,
                 "n_statements": len(said),
                 "statements": said[:STATEMENTS_PER_PARTY],
+                "contexts": contexts,
                 "channels": len(a.channels),
                 "verdicts": [(v, verdicts.get(a.slug, {}).get(v, 0)) for v in VERDICTS],
                 "n_checked": sum(verdicts.get(a.slug, {}).values()),
