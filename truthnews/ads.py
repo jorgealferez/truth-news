@@ -18,6 +18,7 @@ import time
 from collections import Counter
 from collections.abc import Iterable
 from datetime import UTC, datetime
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -35,6 +36,36 @@ BREAKER_OPEN_SECONDS = 60.0
 MAX_KEYWORDS = 8
 _WORD = re.compile(r"[a-z][a-z0-9]+")
 _TEXT_FIELDS = ("label", "headline", "body", "cta", "display_url", "why")
+# Neutralidad (direccion, 2026-10-19): sin publicidad politica, de partidos, gobiernos ni administraciones,
+# y ninguna pagina sobre elecciones lleva anuncios. Se comprueba sobre texto normalizado (sin tildes).
+_POLITICAL_CATEGORIES = frozenset(
+    [
+        "politica",
+        "political",
+        "partido",
+        "party",
+        "electoral",
+        "election",
+        "gobierno",
+        "government",
+        "administracion",
+        "administration",
+        "institucional",
+        "institutional",
+        "causa",
+        "cause",
+        "advocacy",
+    ]
+)
+_POLITICAL_AD = re.compile(
+    r"\b(partido|partidos|elecciones|electoral|electorales|vota|votar|votad|voto|votos|candidat\w*|"
+    r"campana electoral|gobierno|ministerio|ayuntamiento|junta de|generalitat|xunta|diputacion|"
+    r"consejeria|cabildo|administracion publica|psoe|pp|vox|sumar|podemos|erc|junts|bildu|pnv|bng)\b"
+)
+_ELECTION_PAGE = re.compile(
+    r"\b(elecciones|electoral|electorales|comicios|campana electoral|candidat\w*|investidura|"
+    r"sondeo\w*|encuesta electoral|mitin\w*|escrutinio|papeletas?|urnas?)\b"
+)
 
 
 def keywords(texts: Iterable[str], limit: int = MAX_KEYWORDS) -> list[str]:
@@ -45,6 +76,22 @@ def keywords(texts: Iterable[str], limit: int = MAX_KEYWORDS) -> list[str]:
             if len(tok) >= 4 and tok not in STOPWORDS:
                 counts[tok] += 1
     return [w for w, _ in counts.most_common(limit)]
+
+
+def sensitive(texts: Iterable[str]) -> bool:
+    """La pagina trata de elecciones o campanas: no lleva publicidad (ni se pide)."""
+    return any(_ELECTION_PAGE.search(normalize(t or "")) for t in texts)
+
+
+def _political(ad: dict, adv: dict) -> bool:
+    if str(adv.get("category") or ad.get("category") or "").strip().lower() in _POLITICAL_CATEGORIES:
+        return True
+    text = " ".join(str(ad.get(k) or "") for k in ("headline", "body", "cta", "display_url"))
+    return bool(_POLITICAL_AD.search(normalize(f"{text} {adv.get('name') or ''}")))
+
+
+def _same_host(a: str, b: str) -> bool:
+    return bool(a and b) and urlsplit(a).hostname == urlsplit(b).hostname
 
 
 def _truncate_ip(raw: str) -> str:
@@ -104,6 +151,8 @@ def _clean_ad(ad: object) -> dict | None:
     if not isinstance(ad.get("headline"), str) or not ad["headline"].strip():
         return None
     adv = ad.get("advertiser") if isinstance(ad.get("advertiser"), dict) else {}
+    if _political(ad, adv):
+        return None
     out = {k: str(ad.get(k) or "").strip()[:400] for k in _TEXT_FIELDS}
     # La etiqueta es obligatoria por ley (LSSI art. 20): si el servicio no la manda, la ponemos nosotros.
     out["label"] = out["label"] or "Publicidad"
@@ -112,7 +161,10 @@ def _clean_ad(ad: object) -> dict | None:
         format=ad.get("format") if ad.get("format") in FORMATS else "native",
         click_url=ad["click_url"],
         view_url=ad["view_url"],
-        image_url=ad.get("image_url") if _https(ad.get("image_url")) else "",
+        # Sin rastreadores de terceros: la imagen solo se carga si la sirve el mismo host que el clic.
+        image_url=ad["image_url"]
+        if _https(ad.get("image_url")) and _same_host(ad["image_url"], ad["click_url"])
+        else "",
         advertiser={
             "name": str(adv.get("name") or "")[:120],
             "kind": "own" if adv.get("kind") == "own" else "third",

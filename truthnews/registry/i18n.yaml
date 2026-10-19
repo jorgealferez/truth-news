@@ -340,7 +340,9 @@ es:
   advertising_independence: >-
     La publicidad nunca influye en los veredictos, en lo que verificamos ni en el orden de las noticias:
     los decide el código con datos y el mismo método para todos. Un anunciante, propio o ajeno, no puede
-    pedir que se publique, se retire o se cambie nada.
+    pedir que se publique, se retire o se cambie nada. No aceptamos publicidad política, de partidos,
+    gobiernos ni administraciones; las páginas sobre elecciones no llevan anuncios, y ninguno aparece junto a
+    un veredicto ni junto a lo que dicen los partidos.
   advertising_contact_h: Contacto
   advertising_contact: >-
     Para preguntas sobre la publicidad o para anunciarte, abre una incidencia en el repositorio público del
@@ -738,7 +740,9 @@ en:
   advertising_independence: >-
     Advertising never influences verdicts, what we check or the order of the news: the code decides with
     data and the same method for everyone. No advertiser, ours or third-party, can ask for anything to be
-    published, removed or changed.
+    published, removed or changed. We accept no political advertising, nor ads from parties, governments or
+    public administrations; pages about elections carry no ads, and no ad appears next to a verdict or next
+    to what the parties say.
   advertising_contact_h: Contact
   advertising_contact: >-
     For questions about advertising or to advertise, open an issue in the project's public repository

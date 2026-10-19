@@ -237,7 +237,7 @@ def create_app(
 
     def ads_for(request: Request, slots, title: str, category, texts, country: str) -> dict:
         """Anuncios por el contenido de la pagina (ads-service); {} si no hay servicio o falla."""
-        if not ads_client.enabled:
+        if not ads_client.enabled or adsmod.sensitive([title, *texts]):
             return {}
         context = adsmod.page_context(
             f"{settings.site_url}{request.url.path}", title, category, texts, country, lang_of(request)
@@ -536,6 +536,7 @@ def create_app(
         ][:6]
         comp = compare(arts)
         claims = queries.claims_for_story(session, st.id)
+        parties = statements.for_story(session, st)
         outlets_view = story_outlets(arts, comp, claims)
         if medio:  # llegada desde /noticia: la ficha de ese medio va primero y destacada
             outlets_view.sort(key=lambda o: o["outlet"].slug != medio)
@@ -558,15 +559,16 @@ def create_app(
             ),
             spread=spread(arts),
             abroad=sorted(outside, key=lambda a: a.outlet.country),
-            parties=statements.for_story(session, st),
+            parties=parties,
             people=entity_views.for_story(session, st.id),
             tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
             boe=boe_index.confirmations(
                 [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()
             ),
+            # Nunca junto a un veredicto ni a "Que dicen los partidos": ahi solo la franja del pie.
             ads=ads_for(
                 request,
-                ("story-inline", "footer-strip"),
+                ("footer-strip",) if claims or parties else ("story-inline", "footer-strip"),
                 st.title,
                 st.category,
                 [a.title for a in arts] + [a.summary or "" for a in arts],

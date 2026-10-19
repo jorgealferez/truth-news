@@ -252,8 +252,10 @@ def test_list_native_after_sixth_item_once(engine, seeded):
     for path in ("/seccion/economia", "/pais/ES", "/medio/m"):
         page = tc.get(path).text
         assert page.count("ad-list-native") == 1, path
-        assert page.index("Vivienda y alquiler 2") < page.index("ad-list-native") < page.index(
-            "Vivienda y alquiler 1"
+        assert (
+            page.index("Vivienda y alquiler 2")
+            < page.index("ad-list-native")
+            < page.index("Vivienda y alquiler 1")
         )  # orden: 7, 6, 5, 4, 3, 2 | anuncio | 1, 0
     assert json.loads(calls[0].content)["slots"] == ["list-native", "footer-strip"]
     assert "ad-list-native" not in tc.get("/region/ES-MD").text  # menos de 6 elementos: sin anuncio
@@ -265,6 +267,10 @@ def test_advertising_page_and_links(engine):
     page = tc.get("/publicidad").text
     assert "Publicidad en nosmienten.com" in page and "Ley 34/2002" in page and "artículo 9" in page
     assert "sin cookies ni perfiles" in page and "nunca influye en los veredictos" in page
+    assert (
+        "No aceptamos publicidad política" in page
+        and "las páginas sobre elecciones no llevan anuncios" in page
+    )
     assert "github.com/jorgealferez/truth-news" in page and "IntersectionObserver" not in page
     js = tc.get("/static/ads.js")
     assert js.status_code == 200 and "IntersectionObserver" in js.text and "keepalive: true" in js.text
@@ -272,3 +278,55 @@ def test_advertising_page_and_links(engine):
         assert 'href="/publicidad"' in tc.get(path).text
     assert "/publicidad" in tc.get("/sitemap.xml").text
     assert "Advertising on nosmienten.com" in tc.get("/publicidad?lang=en").text
+
+
+# --- Neutralidad (condiciones de la direccion, 2026-10-19) ----------------------------------------------
+
+
+def test_political_or_institutional_ads_are_rejected():
+    assert ads._clean_ad({**AD, "headline": "Vota por el cambio"}) is None
+    assert ads._clean_ad({**AD, "advertiser": {"name": "Partido Ejemplo", "kind": "third"}}) is None
+    assert ads._clean_ad({**AD, "advertiser": {"name": "X", "kind": "third", "category": "Politica"}}) is None
+    assert ads._clean_ad({**AD, "body": "Campaña del Ministerio de Sanidad"}) is None
+    assert ads._clean_ad({**AD, "category": "institutional"}) is None
+    assert ads._clean_ad(AD) is not None  # marca propia de hoteles: pasa
+
+
+def test_ad_image_only_from_the_ad_gateway():
+    other = ads._clean_ad({**AD, "image_url": "https://tracker.example/pixel.png"})
+    assert other["image_url"] == ""  # otro host: sin rastreadores de terceros
+    same = ads._clean_ad({**AD, "image_url": "https://gw.example/img/1.png"})
+    assert same["image_url"] == "https://gw.example/img/1.png"
+
+
+def test_election_pages_get_no_ads_and_no_call(engine, seeded, session):
+    seeded.title = "Sondeo de las elecciones generales: así votarían"
+    session.commit()
+    tc, calls = app_with(engine, ok())
+    page = tc.get(f"/historia/{seeded.id}").text
+    assert calls == [] and 'class="ad ' not in page
+    assert ads.sensitive(["La campaña electoral arranca"]) and not ads.sensitive(["Sube el alquiler"])
+
+
+def test_no_story_inline_next_to_verdicts(engine, seeded, session):
+    from truthnews.models import Article, Claim, Verification
+
+    a = session.query(Article).filter_by(story_id=seeded.id).first()
+    c = Claim(
+        article_id=a.id,
+        story_id=seeded.id,
+        outlet_id=a.outlet_id,
+        text="El alquiler sube un 12 %",
+        indicator="paro",
+        geo="ES",
+        value=12.0,
+        unit="pct",
+    )
+    session.add(c)
+    session.flush()
+    session.add(Verification(claim_id=c.id, verdict="falso", confidence=0.8, explanation="x", method="nivel"))
+    session.commit()
+    tc, calls = app_with(engine, ok())
+    page = tc.get(f"/historia/{seeded.id}").text
+    assert json.loads(calls[0].content)["slots"] == ["footer-strip"]
+    assert "ad-story-inline" not in page and "ad-footer-strip" in page
