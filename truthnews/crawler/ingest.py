@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
+from urllib.parse import urlsplit
 
 import httpx
 from sqlalchemy import select
@@ -21,6 +23,11 @@ from truthnews.registry import OutletSpec, load_outlets
 
 log = logging.getLogger(__name__)
 MAX_FEED_ERRORS = 5
+# Secciones donde hay afirmaciones que contrastar con datos: su texto completo va primero.
+VERIFIABLE = ("politica", "economia")
+BACKFILL_WINDOW = timedelta(hours=24)
+BACKFILL_PER_DOMAIN = 5
+BACKFILL_DOMAIN_FAILURES = 2
 
 
 def sync_registry(session: Session, specs: list[OutletSpec] | None = None) -> dict:
@@ -139,6 +146,54 @@ async def _fetch_text(client: PoliteClient, url: str) -> str | None:
     return await asyncio.to_thread(extract_text, resp.text, url)
 
 
+async def backfill_texts(
+    session: Session, client: PoliteClient, limit: int, now: datetime | None = None
+) -> int:
+    """Texto completo de los articulos recientes de secciones verificables que aun no lo tienen.
+
+    Como mucho `limit` peticiones por ciclo y BACKFILL_PER_DOMAIN por medio; un dominio que falla dos
+    veces (paywall, 403, timeout) se deja hasta el ciclo siguiente. Mismo cliente educado del rastreo.
+    """
+    since = (now or datetime.now(UTC)) - BACKFILL_WINDOW
+    rows = session.scalars(
+        select(Article)
+        .where(
+            Article.content_text.is_(None),
+            Article.category.in_(VERIFIABLE),
+            Article.published_at >= since,
+        )
+        .order_by(Article.published_at.desc())
+        .limit(limit * 3)
+    ).all()
+    by_domain: dict[str, list[Article]] = defaultdict(list)
+    picked = 0
+    for art in rows:
+        domain = urlsplit(art.url).netloc
+        if picked < limit and len(by_domain[domain]) < BACKFILL_PER_DOMAIN:
+            by_domain[domain].append(art)
+            picked += 1
+
+    async def one_domain(arts: list[Article]) -> list[tuple[Article, str]]:
+        got, failures = [], 0
+        for art in arts:
+            text = await _fetch_text(client, art.url)
+            if text:
+                got.append((art, text))
+            else:
+                failures += 1
+                if failures >= BACKFILL_DOMAIN_FAILURES:
+                    break
+        return got
+
+    filled = 0
+    for got in await asyncio.gather(*(one_domain(a) for a in by_domain.values())):
+        for art, text in got:
+            art.content_text, art.content_hash, art.word_count = text, sha256(text), word_count(text)
+            filled += 1
+    log.info("textos rellenados: %s de %s intentables", filled, picked)
+    return filled
+
+
 def _norm(text: str | None) -> str:
     return " ".join((text or "").split())
 
@@ -244,10 +299,16 @@ async def crawl(
                 n_revisions += track_revisions(session, known_art, candidates[known_art.url_hash][1], run.id)
         new_items = [(h, feed, entry) for h, (feed, entry) in candidates.items() if h not in existing]
         texts: list[str | None] = [None] * len(new_items)
+        cats = [
+            classify(e.title, e.summary, e.url, e.tags, outlet_by_id[f.outlet_id].language, f.category_hint)
+            for _, f, e in new_items
+        ]
         if settings.fetch_full_text and new_items:
             epoch = datetime.min.replace(tzinfo=UTC)
-            order = sorted(
-                range(len(new_items)), key=lambda i: new_items[i][2].published_at or epoch, reverse=True
+            order = sorted(  # politica y economia primero; dentro, lo mas reciente
+                range(len(new_items)),
+                key=lambda i: (cats[i] in VERIFIABLE, new_items[i][2].published_at or epoch),
+                reverse=True,
             )[: settings.max_text_fetch_per_run]
             fetched = await asyncio.gather(
                 *(_fetch_text(client, canonical_url(new_items[i][2].url)) for i in order)
@@ -255,7 +316,7 @@ async def crawl(
             for i, text in zip(order, fetched, strict=True):
                 texts[i] = text
         now = datetime.now(UTC)
-        for (h, feed, entry), text in zip(new_items, texts, strict=True):
+        for (h, feed, entry), text, category in zip(new_items, texts, cats, strict=True):
             outlet = outlet_by_id[feed.outlet_id]
             published = entry.published_at or now
             if published > now:
@@ -275,14 +336,16 @@ async def crawl(
                     language=outlet.language,
                     country=outlet.country,
                     region=outlet.region,
-                    category=classify(
-                        entry.title, entry.summary, entry.url, entry.tags, outlet.language, feed.category_hint
-                    ),
+                    category=category,
                     topics=topics(entry.title, entry.tags),
                     content_hash=sha256(text) if text else None,
                     word_count=word_count(text),
                 )
             )
+        session.flush()
+        backfilled = 0
+        if settings.fetch_full_text and settings.max_text_backfill_per_run > 0:
+            backfilled = await backfill_texts(session, client, settings.max_text_backfill_per_run)
         run.articles_new = len(new_items)
         run.robots_blocked = client.robots_blocked
         run.stats = {
@@ -291,6 +354,7 @@ async def crawl(
             "with_full_text": sum(1 for t in texts if t),
             "outlets_with_new": len({by_id[f.id].outlet_id for _, f, _ in new_items}),
             "revisions": n_revisions,
+            "texts_backfilled": backfilled,
         }
     run.finished_at = utcnow()
     session.flush()
