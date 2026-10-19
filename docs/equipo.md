@@ -78,7 +78,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
 | ADR 0032 | diseno | PR (este) | Comparativas (quien cambio su cifra; sin migracion: la 0017 pasa a Redes) |
 | ADR 0033 + migracion 0018 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
-| siguiente libre | — | — | ADR 0034 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
+| ADR 0034 | diseno | PR (este) | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News; sin migracion) |
+| siguiente libre | — | — | ADR 0035 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
 
 ## Como se trabaja
 

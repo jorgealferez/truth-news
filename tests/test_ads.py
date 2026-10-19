@@ -276,7 +276,7 @@ def test_advertising_page_and_links(engine):
     assert js.status_code == 200 and "IntersectionObserver" in js.text and "keepalive: true" in js.text
     for path in ("/metodologia", "/acerca"):
         assert 'href="/publicidad"' in tc.get(path).text
-    assert "/publicidad" in tc.get("/sitemap.xml").text
+    assert "/publicidad" in tc.get("/sitemaps/paginas-1.xml").text
     assert "Advertising on nosmienten.com" in tc.get("/publicidad?lang=en").text
 
 

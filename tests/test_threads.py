@@ -270,7 +270,7 @@ def test_thread_pages(engine, session):
     assert f'href="{seo.path("hilo", th.id, th.title)}"' in client.get(f"/historia/{st.id}").text
     home = client.get("/").text
     assert "Por qué está pasando" in home and "De Ghali a Ceuta" in home
-    assert f"{seo.path('hilo', th.id, th.title)}</loc>" in client.get("/sitemap.xml").text
+    assert f"{seo.path('hilo', th.id, th.title)}</loc>" in client.get("/sitemaps/hilos-1.xml").text
 
 
 def test_thread_piece_is_grounded_and_not_repeated(session):

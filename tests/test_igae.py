@@ -111,7 +111,7 @@ def test_budget_page(engine):
     assert page.index("Deuda Pública") < page.index("Defensa")  # por presupuesto, de mayor a menor
     assert "462.162" in page  # millones de euros
     assert 'href="https://www.igae.pap.hacienda.gob.es/x.xlsx"' in page and "Ingresos" in page
-    assert 'href="/presupuestos"' in page and "/presupuestos" in tc.get("/sitemap.xml").text
+    assert 'href="/presupuestos"' in page and "/presupuestos" in tc.get("/sitemaps/paginas-1.xml").text
     assert "State budget" in tc.get("/presupuestos?lang=en").text
     down = TestClient(
         create_app(
