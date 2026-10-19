@@ -26,7 +26,7 @@ from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
-from truthnews.web import admin, queries, social
+from truthnews.web import admin, citations, queries, social
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -107,6 +107,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     templates.env.filters["ago"] = _ago
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
+    templates.env.filters["word_diff"] = citations.word_diff
     templates.env.globals.update(
         site=settings,
         t=registry.t,
@@ -448,7 +449,17 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             raise HTTPException(404)
         items = queries.latest(session, outlet_id=o.id, page=page)
         record = queries.verdict_counts(session, outlet_id=o.id).get("total", {})
-        return render(request, "list.html", items=items, page=page, heading=o.name, outlet=o, record=record)
+        profile = queries.outlet_profile(session, o.id)
+        return render(
+            request,
+            "list.html",
+            items=items,
+            page=page,
+            heading=o.name,
+            outlet=o,
+            record=record,
+            profile=profile,
+        )
 
     @app.get("/noticia/{article_id}", response_class=HTMLResponse)
     def article(request: Request, article_id: int, session: SessionDep):
@@ -456,7 +467,15 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         if a is None:
             raise HTTPException(404)
         related = [x for x in queries.latest(session, category=a.category, limit=8) if x.id != a.id][:6]
-        return render(request, "article.html", a=a, related=related)
+        return render(
+            request,
+            "article.html",
+            a=a,
+            related=related,
+            cites=citations.cited_figures(a),
+            claims=queries.article_claims(session, a.id),
+            archive_url=citations.archive_url(a),
+        )
 
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):

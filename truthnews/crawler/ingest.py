@@ -16,7 +16,7 @@ from truthnews.config import Settings
 from truthnews.crawler.extract import canonical_url, extract_text, sha256, word_count
 from truthnews.crawler.feeds import FeedEntry, discover_feed_urls, parse_feed
 from truthnews.crawler.http import PoliteClient
-from truthnews.models import Article, CrawlRun, Feed, Outlet, utcnow
+from truthnews.models import REVISION_MAX_CHARS, Article, ArticleRevision, CrawlRun, Feed, Outlet, utcnow
 from truthnews.registry import OutletSpec, load_outlets
 
 log = logging.getLogger(__name__)
@@ -139,6 +139,36 @@ async def _fetch_text(client: PoliteClient, url: str) -> str | None:
     return await asyncio.to_thread(extract_text, resp.text, url)
 
 
+def _norm(text: str | None) -> str:
+    return " ".join((text or "").split())
+
+
+def track_revisions(session: Session, article: Article, entry: FeedEntry, run_id: int | None = None) -> int:
+    """Guarda el antes y el despues si el medio cambio el titular o el extracto, y deja la noticia en
+    su version vigente. Un extracto que desaparece del feed no es un cambio (los feeds lo recortan)."""
+    n = 0
+    for name, new in (("title", entry.title), ("summary", entry.summary)):
+        old, new = _norm(getattr(article, name)), _norm(new)
+        if not new or new == old:
+            continue
+        before, after = old[:REVISION_MAX_CHARS], new[:REVISION_MAX_CHARS]
+        session.add(
+            ArticleRevision(
+                article_id=article.id,
+                outlet_id=article.outlet_id,
+                crawl_run_id=run_id,
+                field=name,
+                before=before,
+                after=after,
+                before_hash=sha256(old),
+                after_hash=sha256(new),
+            )
+        )
+        setattr(article, name, new)
+        n += 1
+    return n
+
+
 async def crawl(
     session: Session,
     settings: Settings,
@@ -202,13 +232,16 @@ async def crawl(
                 candidates.setdefault(sha256(url), (feed, entry))
         run.feeds_total = len(feeds)
 
-        # 3) Articulos nuevos (deduplicados por url_hash).
+        # 3) Articulos nuevos (deduplicados por url_hash); en los ya conocidos, cambios de titular o
+        # extracto (ADR 0015).
         existing: set[str] = set()
         hashes = list(candidates)
+        n_revisions = 0
         for i in range(0, len(hashes), 500):
-            existing.update(
-                session.scalars(select(Article.url_hash).where(Article.url_hash.in_(hashes[i : i + 500])))
-            )
+            batch = hashes[i : i + 500]
+            for known_art in session.scalars(select(Article).where(Article.url_hash.in_(batch))):
+                existing.add(known_art.url_hash)
+                n_revisions += track_revisions(session, known_art, candidates[known_art.url_hash][1], run.id)
         new_items = [(h, feed, entry) for h, (feed, entry) in candidates.items() if h not in existing]
         texts: list[str | None] = [None] * len(new_items)
         if settings.fetch_full_text and new_items:
@@ -257,14 +290,16 @@ async def crawl(
             "feeds_discovered": n_discovered,
             "with_full_text": sum(1 for t in texts if t),
             "outlets_with_new": len({by_id[f.id].outlet_id for _, f, _ in new_items}),
+            "revisions": n_revisions,
         }
     run.finished_at = utcnow()
     session.flush()
     log.info(
-        "rastreo %s: %s feeds ok, %s fallidos, %s articulos nuevos",
+        "rastreo %s: %s feeds ok, %s fallidos, %s articulos nuevos, %s cambios de titular o extracto",
         run.id,
         run.feeds_ok,
         run.feeds_failed,
         run.articles_new,
+        run.stats.get("revisions", 0),
     )
     return run
