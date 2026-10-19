@@ -50,6 +50,8 @@ es:
   cited_data: Datos citados
   cited_data_note: Fragmentos breves del medio con una cifra o una afirmación comprobable, citados con enlace a la fuente. No reproducimos el texto completo.
   changes_detected: Cambios detectados
+  plus_live_changes: "Aparte, {c} cambios de titular en {n} coberturas en directo, que se actualizan por definición."
+  live_note: Es una cobertura en directo; el medio actualiza el titular y el extracto a medida que avanza. Guardamos cada versión, pero estos cambios no son rectificaciones.
   changes_note: El medio cambió esta noticia después de que la capturáramos. Guardamos la versión anterior, su huella y la fecha en que vimos el cambio.
   field_title: Titular
   field_summary: Extracto
@@ -455,6 +457,8 @@ en:
   cited_data: Cited data
   cited_data_note: Short excerpts from the outlet with a figure or a verifiable claim, quoted with a link to the source. We never reproduce the full text.
   changes_detected: Changes detected
+  plus_live_changes: "In addition, {c} headline changes in {n} live coverages, which update by design."
+  live_note: This is live coverage; the outlet updates the headline and excerpt as it goes. We keep every version, but these changes are not corrections.
   changes_note: The outlet changed this story after we captured it. We keep the previous version, its fingerprint and the date we saw the change.
   field_title: Headline
   field_summary: Excerpt

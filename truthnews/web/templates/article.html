@@ -44,7 +44,7 @@
   </section>{% endif %}
 
   {% if a.revisions %}<section class="block" id="cambios"><h2>{{ t(lang, 'changes_detected') }} <span class="meta">{{ a.revisions|length }}</span></h2>
-    <p class="meta">{{ t(lang, 'changes_note') }}</p>
+    <p class="meta">{{ t(lang, 'live_note') if live else t(lang, 'changes_note') }}</p>
     <ol class="revisions">{% for r in a.revisions|reverse %}<li>
       <p class="meta"><b>{{ t(lang, 'field_' ~ r.field) }}</b> · {{ t(lang, 'detected') }} {{ r.detected_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
       <p class="diff">{% for op, txt in r.before|word_diff(r.after) %}{% if op == '-' %}<del>{{ txt }}</del>{% elif op == '+' %}<ins>{{ txt }}</ins>{% else %}<span>{{ txt }}</span>{% endif %} {% endfor %}</p>
