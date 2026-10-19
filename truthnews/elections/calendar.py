@@ -114,7 +114,7 @@ class Election:
     kind: str
     date: date
     name: str
-    status: str  # convocada (fuente oficial) | anunciada (solo medios)
+    status: str  # convocada (fuente oficial) | declarada (calendario internacional) | anunciada (medios)
     sources: tuple[Source, ...]
     region: str | None = None
     place: str | None = None
@@ -148,7 +148,7 @@ class Election:
             return "campana"
         if self.campaign and today == self.campaign[1] + timedelta(days=1):
             return "reflexion"
-        return "precampana"
+        return "precampana" if self.campaign else "proxima"  # sin calendario oficial no hay "precampana"
 
     def days_left(self, today: date) -> int:
         return (self.date - today).days
@@ -404,7 +404,7 @@ def from_world(markup: str) -> tuple[list[Election], list[str]]:
                 kind=kind,
                 date=when,
                 name=default_name(kind, None, None, iso),
-                status="convocada",
+                status="declarada",
                 sources=(
                     Source(f"IFES ElectionGuide: {html.unescape(body).strip()}", urljoin(WORLD, href)),
                 ),

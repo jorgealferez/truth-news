@@ -112,6 +112,7 @@ def test_press_needs_two_outlets_same_country_and_date():
     assert e.name == "Elecciones legislativas · Portugal" and len(e.sources) == 3
     # Lo anunciado en medios cede ante una convocatoria oficial del mismo pais y dia.
     official = cal.Election("PT", "legislativas", e.date, "x", "convocada", (cal.Source("d", "u"),))
+    assert e.phase(now.date()) == "proxima"  # sin campana conocida no se dice "precampana"
     assert cal.merge([official], hits) == [official]
 
 
@@ -441,6 +442,7 @@ def test_world_calendar_declared_dates_only_and_spain_first(engine, session):
         ("US", "legislativas", date(2026, 11, 3)),
     }
     assert unknown == [] and not any(e.country == "GW" for e in found)  # "(t)": tentativa, no cuenta
+    assert {e.status for e in found} == {"declarada"}
     merged = cal.merge(cal.load_registry(), found)
     us = next(e for e in merged if e.country == "US")
     assert len(us.sources) == 2 and us.name == "Elecciones legislativas · Estados Unidos"
@@ -496,3 +498,4 @@ def test_nav_prefers_spain_and_links_the_world(engine):
     assert main.index("Elecciones generales") < main.index("presidenciales · Brasil")  # Espana primero
     page = client.get(f"/elecciones/br-presidenciales-{(today + timedelta(days=6)).isoformat()}").text
     assert "IFES" in page and "Qué dicen los partidos" not in page  # sin registro de partidos de Brasil
+    assert "Calendario oficial" not in page and "Fecha declarada" in page

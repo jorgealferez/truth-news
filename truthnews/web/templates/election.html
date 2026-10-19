@@ -9,7 +9,7 @@
 <p class="lead-text">{{ e.date.strftime('%d/%m/%Y') }} · {{ t(lang, 'el_phase_' ~ v.phase) }}{% if v.days_left > 0 %} · {{ t(lang, 'el_days_left')|replace('{n}', v.days_left|string) }}{% endif %}</p>
 <p class="meta"><span class="tag">{{ t(lang, 'el_status_' ~ e.status) }}</span> {{ t(lang, 'el_status_note_' ~ e.status) }}</p>
 
-<section class="block" id="calendario"><h2>{{ t(lang, 'el_dates') }}</h2>
+<section class="block" id="calendario"><h2>{{ t(lang, 'el_dates' if e.status == 'convocada' else 'el_dates_other') }}</h2>
   <ul class="compact">{% for d in v.dates %}<li{% if d.past %} class="meta"{% endif %}><strong>{{ d.date.strftime('%d/%m/%Y') }}</strong> — {{ t(lang, d.key) }}</li>{% endfor %}</ul>
   <p class="meta">{{ t(lang, 'el_source') }} {% for s in e.sources %}<a href="{{ s.url }}" rel="noopener" target="_blank">{{ s.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>
 </section>
