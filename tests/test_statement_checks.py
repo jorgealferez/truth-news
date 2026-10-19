@@ -189,3 +189,38 @@ def test_ai_respects_the_call_cap(session, monkeypatch):
         session, FakeAI([{"afirmaciones": []}]), run.id, verifier(), max_calls=1, now=NOW
     )
     assert out["llamadas"] == 1 and out["cursor"] == a.id < b.id  # la segunda queda para el siguiente ciclo
+
+
+def test_rules_judge_the_body_of_the_release(session):
+    party(session)
+    st = statement(session, "ejemplo", "Nota de prensa sobre empleo", 2, summary="Entradilla sin cifras.")
+    assert statement_checks.run(session, verifier(), now=NOW, actors=actors())["claims"] == 0
+    st.body, st.body_status, st.body_fetched_at = f"Introduccion. {TEXT}", "ok", NOW
+    assert statement_checks._body(st).startswith("Nota de prensa sobre empleo. Introduccion.")
+    out = statement_checks.run(session, verifier(), now=NOW, actors=actors())
+    assert out["claims"] == 1 and session.query(StatementCheck).one().statement_id == st.id
+
+
+def test_ai_resends_once_a_statement_whose_body_came_later(session):
+    party(session)
+    st = statement(session, "ejemplo", "Nota de prensa sobre empleo", 2)
+    first = CrawlRun()
+    session.add(first)
+    session.flush()
+    out = statement_checks.run_ai(session, FakeAI([]), first.id, verifier(), now=NOW, actors=actors())
+    assert out["frases_candidatas"] == 0 and statement_checks.ai_cursor(session) == st.id
+    # El cuerpo llega en el ciclo siguiente: la declaracion ya paso el cursor, pero se envia otra vez.
+    body = "Con nuestras medidas el paro baja hasta el 10,6 % este trimestre, el dato mas bajo."
+    st.body, st.body_status, st.body_fetched_at = body, "ok", NOW + timedelta(minutes=30)
+    second = CrawlRun()
+    session.add(second)
+    session.flush()
+    ai = FakeAI([ai_reply((0, "paro", "ES", 10.6))])
+    out = statement_checks.run_ai(session, ai, second.id, verifier(), now=NOW, actors=actors())
+    assert out["llamadas"] == 1 and out["claims"] == 1 and out["cursor"] == st.id
+    assert statement_checks.ai_body_cursor(session) == NOW + timedelta(minutes=30)
+    third = CrawlRun()
+    session.add(third)
+    session.flush()
+    again = statement_checks.run_ai(session, FakeAI([]), third.id, verifier(), now=NOW, actors=actors())
+    assert again["frases_candidatas"] == 0  # una sola vez
