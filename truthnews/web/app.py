@@ -1,11 +1,9 @@
 """Aplicacion FastAPI: portada, secciones, paises, comunidades, medios y noticia."""
 # Sin `from __future__ import annotations`: FastAPI resuelve los alias Annotated locales al definir.
 
-import dataclasses
 import time
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
-from types import SimpleNamespace
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request
@@ -226,18 +224,13 @@ def create_app(
 
     nocuadra_cache: dict = {}
 
-    def nocuadra_cached(session: Session) -> tuple[list, list]:
-        # Lo que no cuadra en portada (ADR 0027): cambia con el ciclo del worker; 5 min de cache para no
-        # recalcular comparativas en cada visita. Se guardan valores, no objetos de una sesion cerrada.
+    def nocuadra_cached(session: Session) -> list:
+        # Lo que no cuadra en portada (ADR 0027): una sola consulta y 5 min de cache (cambia con el ciclo
+        # del worker). Solo falsedades con dato oficial y al menos 2; con menos, el bloque no sale.
         now = time.monotonic()
         if not nocuadra_cache or now - nocuadra_cache["at"] > 300:
-            dis = [
-                dataclasses.replace(
-                    d, story=SimpleNamespace(id=d.story.id, title=d.story.title, last_seen=d.story.last_seen)
-                )
-                for d in ranking.discrepancies(session, country=settings.default_country, limit=3)
-            ]
-            nocuadra_cache.update(at=now, value=(ranking.falsehoods(session, limit=3), dis))
+            found = [f for f in ranking.falsehoods(session, limit=10) if f.official is not None][:3]
+            nocuadra_cache.update(at=now, value=found if len(found) >= 2 else [])
         return nocuadra_cache["value"]
 
     def lang_of(request: Request) -> str:

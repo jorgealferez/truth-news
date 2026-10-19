@@ -15,7 +15,8 @@
         <span class="nc-bar said" style="width:{{ (100 * f.claimed / hi) if hi else 0 }}%">{{ t(lang, 'nc_said') }}</span>
         <span class="nc-bar data" style="width:{{ (100 * f.official / hi) if hi else 0 }}%">{{ t(lang, 'nc_data') }}</span>
       </div>{% endif %}
-      {% if f.article_id %}<a class="meta" href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }} →</a>{% endif %}
+      <blockquote class="quote-cite nc-cite">«{{ f.text }}»</blockquote>
+      <p class="meta">{% if f.source_url %}<a href="{{ f.source_url }}" rel="nofollow noopener" target="_blank">{{ t(lang, 'evidence') }}: {{ f.source }}{% if f.period %} · {{ f.period }}{% endif %}</a> · {% endif %}{% if f.article_id %}<a href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }} →</a>{% endif %}</p>
     </li>
   {% endfor %}
   {% for d in discrepancies[:3] %}

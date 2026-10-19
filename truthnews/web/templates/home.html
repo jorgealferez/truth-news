@@ -6,7 +6,7 @@
   · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>
 </section>
 {% if breaking %}{% include "_breaking.html" %}{% endif %}
-{% if nocuadra and (nocuadra[0] or nocuadra[1]) %}{% with falsehoods = nocuadra[0], discrepancies = nocuadra[1] %}{% include "_discrepancias.html" %}{% endwith %}{% endif %}
+{% if nocuadra %}{% with falsehoods = nocuadra, discrepancies = [] %}{% include "_discrepancias.html" %}{% endwith %}{% endif %}
 {% if pieces %}
 <section class="analysis-band">
   <h2 class="band-title"><a href="/analisis">{{ t(lang, 'analysis') }}</a></h2>
