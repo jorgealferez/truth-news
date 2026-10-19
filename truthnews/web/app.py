@@ -297,7 +297,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         home_country = settings.default_country
         stories = queries.top_stories(session, country=home_country, limit=24)
         ids = [s.id for s in stories]
-        wire = queries.latest(session, country=home_country, limit=12)
+        wire = queries.latest_checks(session, limit=8)
         return render(
             request,
             "home.html",
@@ -466,12 +466,24 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         a = session.get(Article, article_id)
         if a is None:
             raise HTTPException(404)
-        related = [x for x in queries.latest(session, category=a.category, limit=8) if x.id != a.id][:6]
+        # Una noticia suelta aporta poco: si varios medios la cuentan, se va a la comparativa
+        # (peticion del usuario 2026-10-19). La ficha de captura sigue en ?ficha=1.
+        if a.story is not None and a.story.n_outlets >= 2 and "ficha" not in request.query_params:
+            return RedirectResponse(f"/historia/{a.story_id}#m-{a.outlet.slug}", status_code=302)
+        related = [
+            s
+            for s in queries.top_stories(
+                session, country=a.country, category=a.category, hours=24 * 7, limit=7
+            )
+            if s.id != a.story_id
+        ][:6]
         return render(
             request,
             "article.html",
             a=a,
             related=related,
+            outlet_names=queries.story_outlet_names(session, [s.id for s in related]),
+            verdicts=queries.verdict_counts(session, [s.id for s in related]),
             cites=citations.cited_figures(a),
             claims=queries.article_claims(session, a.id),
             archive_url=citations.archive_url(a),

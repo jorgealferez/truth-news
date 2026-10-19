@@ -203,6 +203,19 @@ def all_verifications(session: Session, limit: int = 200) -> list[Claim]:
     return list(session.scalars(q).unique())
 
 
+def latest_checks(session: Session, limit: int = 8) -> list[Claim]:
+    """Ultimas afirmaciones juzgadas con datos (sin las 'sin datos'): lo verificado, para portada."""
+    q = (
+        select(Claim)
+        .join(Verification, Verification.claim_id == Claim.id)
+        .options(joinedload(Claim.verification), joinedload(Claim.outlet))
+        .where(Verification.verdict != "sin-datos")
+        .order_by(Verification.checked_at.desc(), Claim.id.desc())
+        .limit(limit)
+    )
+    return list(session.scalars(q).unique())
+
+
 def thread_for_story(session: Session, story_id: int) -> Thread | None:
     return session.scalars(
         select(Thread).where(Thread.anchor_story_id == story_id, Thread.status == "publicado")
