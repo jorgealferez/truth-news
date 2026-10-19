@@ -305,6 +305,14 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .legend .sw { display:inline-block; width:10px; height:10px; border-radius:2px; vertical-align:middle; margin-left:8px; }
 .chips a.on { background:var(--ink); color:var(--paper); border-color:var(--ink); }
 .ent-bars .tag { position:relative; z-index:1; }
+/* Filas de barras sin desplegable (entidades, discrepancias, ficha de entidad): la etiqueta puede saltar de
+   linea en movil, asi que la fila crece con el texto y la barra es una pista fina debajo, nunca un fondo. */
+.bars li:not(.x) { display:flex; flex-wrap:wrap; align-items:baseline; gap:2px 8px; height:auto; min-height:0; margin:0; padding:7px 0 13px; border-bottom:1px solid var(--line); font:15px/1.3 system-ui, sans-serif; }
+.bars li:not(.x)::before { content:""; position:absolute; left:0; right:0; bottom:5px; height:5px; border-radius:3px; background:var(--soft); }
+.bars li:not(.x) .bar { top:auto; bottom:5px; height:5px; border-radius:3px; background:var(--brand); z-index:1; } .bars li:not(.x) .bar.alt { background:#9aa3b5; }
+.bars li:not(.x) b { padding-left:0; min-width:0; overflow-wrap:anywhere; font-size:16px; } .bars li:not(.x) .tag { font-size:11px; padding:1px 6px; }
+.bars li:not(.x) .n { padding-right:0; font-size:13px; white-space:nowrap; } .bars li:not(.x) .who { flex-basis:100%; color:var(--muted); font-size:13px; line-height:1.4; overflow-wrap:anywhere; }
+.nc-dispute + .nc-dispute { margin-top:10px; } .nc-noun { margin:10px 0 2px; font:700 15px system-ui, sans-serif; }
 .ent-list { margin:6px 0 14px; padding-left:20px; } .ent-list li { margin:6px 0; line-height:1.4; overflow-wrap:anywhere; }
 .chips.people .label { background:none; border:0; padding:3px 0; }
 /* Pagina de verificacion: la conclusion en una frase y el grafico de la serie oficial (carril Verificaciones). */
