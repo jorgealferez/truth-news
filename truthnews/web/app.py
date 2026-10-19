@@ -32,6 +32,16 @@ HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
 
 
+def _dato(value: float | None, unit: str | None = None) -> str:
+    """Un dato oficial legible: 10,0 % o 1.234,5 (es)."""
+    if value is None:
+        return "—"
+    if unit == "pct":
+        return f"{value:.1f}".replace(".", ",") + " %"
+    text = f"{value:,.1f}" if value % 1 else f"{value:,.0f}"
+    return text.replace(",", "_").replace(".", ",").replace("_", ".")
+
+
 def _ago(value: datetime | None, lang: str = "es") -> str:
     if value is None:
         return ""
@@ -108,6 +118,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
     templates.env.filters["word_diff"] = citations.word_diff
+    templates.env.filters["dato"] = _dato
     templates.env.globals.update(
         site=settings,
         t=registry.t,
@@ -341,7 +352,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         return render(request, "verifications.html", claims=queries.all_verifications(session))
 
     @app.get("/historia/{story_id}", response_class=HTMLResponse)
-    def story(request: Request, story_id: int, session: SessionDep):
+    def story(request: Request, story_id: int, session: SessionDep, medio: str | None = None):
         st = session.get(Story, story_id)
         if st is None:
             raise HTTPException(404)
@@ -353,16 +364,20 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         ][:6]
         comp = compare(arts)
         claims = queries.claims_for_story(session, st.id)
+        outlets_view = story_outlets(arts, comp, claims)
+        if medio:  # llegada desde /noticia: la ficha de ese medio va primero y destacada
+            outlets_view.sort(key=lambda o: o["outlet"].slug != medio)
         return render(
             request,
             "story.html",
+            target=medio,
             st=st,
             arts=arts,
             comp=comp,
             claims=claims,
             related=related,
             thread=queries.thread_for_story(session, st.id),
-            outlets_view=story_outlets(arts, comp, claims),
+            outlets_view=outlets_view,
             share=social.share_links(f"{settings.site_url}/historia/{st.id}", share_text(st, comp)),
             spread=spread(arts),
         )
@@ -462,15 +477,25 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         )
 
     @app.get("/noticia/{article_id}", response_class=HTMLResponse)
-    def article(request: Request, article_id: int, session: SessionDep):
+    def article(request: Request, article_id: int, session: SessionDep, ficha: bool = False):
         a = session.get(Article, article_id)
         if a is None:
             raise HTTPException(404)
-        related = [x for x in queries.latest(session, category=a.category, limit=8) if x.id != a.id][:6]
+        contrasted = a.story is not None and a.story.n_outlets >= 2
+        if contrasted and not ficha:
+            # Una noticia que cuentan varios medios se lee comparada (contraste primero).
+            slug = a.outlet.slug
+            return RedirectResponse(f"/historia/{a.story_id}?medio={slug}#m-{slug}", status_code=302)
+        related = [
+            st
+            for st in queries.top_stories(session, country=a.country, category=a.category, hours=72, limit=7)
+            if st.id != a.story_id
+        ][:6]
         return render(
             request,
             "article.html",
             a=a,
+            contrasted=contrasted,
             related=related,
             cites=citations.cited_figures(a),
             claims=queries.article_claims(session, a.id),

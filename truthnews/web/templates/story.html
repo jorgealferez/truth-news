@@ -61,8 +61,8 @@
 
   <section class="block"><h2>{{ t(lang, 'how_each_tells_it') }}</h2>
     <div class="outlet-cards">{% for o in outlets_view %}{% if loop.index == 7 %}</div><details class="more"><summary>{{ t(lang, 'see_all') }} ({{ outlets_view|length }})</summary><div class="outlet-cards">{% endif %}
-      <div class="ocard">
-        <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}</p>
+      <div class="ocard{{ ' target' if target == o.outlet.slug }}" id="m-{{ o.outlet.slug }}">
+        <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}<a class="ficha" href="/noticia/{{ o.article.id }}?ficha=1">{{ t(lang, 'record_and_changes') }}</a></p>
         <p class="headline"><a href="/noticia/{{ o.article.id }}">{{ o.article.title }}</a></p>
         <p class="tags">{% for v in o.verdicts %}<span class="badge v-{{ v }}">{{ t(lang, 'verdict_' ~ v) }}</span>{% endfor %}
           {% for n, f in o.figures.items() %}<span class="tag">{{ n }} <b>{{ f.value|num }}</b></span>{% endfor %}
@@ -78,7 +78,7 @@
       <div class="claim">
         <p><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> <a href="/medio/{{ c.outlet.slug }}"><strong>{{ c.outlet.name }}</strong></a>: «{{ c.text }}»</p>
         <p>{{ v.explanation }}</p>
-        {% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+        {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> <span class="vs">{{ t(lang, 'vs_said') }} {{ c.value|dato(c.unit) }}</span> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
       </div>
     {% endfor %}</details>{% endif %}
 

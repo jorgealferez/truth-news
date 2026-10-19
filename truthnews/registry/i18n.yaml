@@ -18,6 +18,14 @@ es:
   shared_names_note: "Personas, lugares e instituciones que citan la mayoría de los {n} medios (cuántos lo citan):"
   see_all: Ver todos
   which_outlets: ver qué medios
+  record_and_changes: Ficha y cambios
+  official_figure: Dato oficial
+  vs_said: frente a
+  compared_in: "Esta noticia se compara en {n} medios: ver la comparativa"
+  only_outlet: "Solo lo publica {outlet}: sin contraste todavía."
+  only_outlet_note: Ningún otro de los medios que seguimos lo ha contado aún. Lo compararemos en cuanto aparezca en otro.
+  what_we_checked: Lo que comprobamos
+  pending_check: Pendiente de comprobar
   cited_data: Datos citados
   cited_data_note: Fragmentos breves del medio con una cifra o una afirmación comprobable, citados con enlace a la fuente. No reproducimos el texto completo.
   changes_detected: Cambios detectados
@@ -188,6 +196,14 @@ en:
   shared_names_note: "People, places and institutions named by most of the {n} outlets (how many name each):"
   see_all: See all
   which_outlets: see which outlets
+  record_and_changes: Record and changes
+  official_figure: Official figure
+  vs_said: versus
+  compared_in: "This story is compared across {n} outlets: see the comparison"
+  only_outlet: "Only {outlet} publishes this: no contrast yet."
+  only_outlet_note: None of the other outlets we follow has reported it yet. We will compare it as soon as another one does.
+  what_we_checked: What we checked
+  pending_check: Pending check
   cited_data: Cited data
   cited_data_note: Short excerpts from the outlet with a figure or a verifiable claim, quoted with a link to the source. We never reproduce the full text.
   changes_detected: Changes detected
