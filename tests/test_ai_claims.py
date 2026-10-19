@@ -338,3 +338,21 @@ def test_public_entry_points_without_articles():
     assert stats["llamadas"] == 1 and sum(stats["rechazos"].values()) == 1
     assert judge_candidate(got[0][1], verifier()).verdict == "verdadero"
     assert ai_claims.propose(FakeAI([AIError("x")]), items)[1]["errores"] == 1
+
+
+def test_effect_of_an_indicator_is_not_its_level():
+    # Caso real (El Debate, 19/10/2026), juzgado Falso por la v5: la inflacion no es del 3,1 %.
+    s = "Los ingresos crecen un 7,8 %, pero la inflación le resta un 3,1 %, y los gastos suben un 8,9 %."
+    assert "variacion" in check(s, "inflacion", "ES", 3.1)
+    assert "variacion" in check("El turismo suma un 0,4 % al paro de la región este año.", "paro", "ES", 0.4)
+
+
+def test_expectations_and_annual_figures_are_not_the_latest_data():
+    # Caso real (La Informacion, 19/10/2026), juzgado Falso por la v6: es una prevision para el ano.
+    s = "Eleva su expectativa de inflación al 3,7% en 2026."
+    assert "prevision" in check(s, "inflacion", "ES", 3.7, year=2026)
+    assert extract(s, "es", "ES", 2026, 10) == []
+    assert "ano en curso" in check(
+        "La inflación media de 2026 será del 3,7 %.", "inflacion", "ES", 3.7, year=2026
+    )
+    assert extract("La inflación se sitúa en el 3,7 % en 2026 en el país.", "es", "ES", 2026, 10) == []

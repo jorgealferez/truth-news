@@ -7,6 +7,7 @@ ya lo esta, o su traduccion con IA (ADR 0017). Sin texto comparable, el articulo
 
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from datetime import UTC, datetime, timedelta
 
@@ -21,6 +22,9 @@ WINDOW = timedelta(hours=48)
 MAX_STORIES = 80
 PER_STORY = 12
 PER_COUNTRY = 3
+# Contenido seriado que comparte casi todo el titular de un dia a otro: no es "la misma historia" (medido
+# en produccion 2026-10-19: 3 de los 3 enlaces fallidos de una muestra de 63 eran horoscopos).
+NO_LINK = re.compile(r"hor[oó]scopo", re.IGNORECASE)
 
 
 def centroid(vectors: list[dict[str, float]]) -> dict[str, float]:
@@ -75,10 +79,11 @@ def link(session: Session, country: str, lang: str, now: datetime | None = None)
     )
     if not stories:
         return {"stories": 0, "links": 0}
-    ids = [s.id for s in stories]
+    ids = [s.id for s in stories]  # se recalculan todas, tambien las que dejan de enlazarse
+    linkable = {s.id for s in stories if not NO_LINK.search(s.title)}
     titles: dict[int, list[str]] = defaultdict(list)
     for sid, title in session.execute(
-        select(Article.story_id, Article.title).where(Article.story_id.in_(ids))
+        select(Article.story_id, Article.title).where(Article.story_id.in_(linkable))
     ):
         titles[sid].append(title)
     foreign = session.execute(

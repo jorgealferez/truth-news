@@ -13,7 +13,9 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v3: atribucion de territorio con nomenclator mundial; la poblacion exige pais explicito (ADR 0009).
 # v4: una variacion ("el paro baja un 2 %") no se lee como el nivel del indicador.
 # v5: el pais del medio solo se supone si la noticia no es de otro pais; paro EPA por comunidad.
-METHOD_VERSION = "v5"
+# v6: "la inflacion le resta un 3,1 %" es un efecto, no el nivel; umbrales sin error de coma flotante.
+# v7: expectativas y previsiones ("eleva su expectativa de inflacion al 3,7 % en 2026") no se juzgan.
+METHOD_VERSION = "v7"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
@@ -128,12 +130,12 @@ class Verifier:
             )
         official = obs.value
         if claim.unit == "pct":
-            diff = abs(claim.value - official)
+            diff = round(abs(claim.value - official), 6)  # 8,9 - 8,7 = 0,2000000000000001 en coma flotante
             close, rough = diff <= PCT_TRUE, diff <= PCT_ROUGH
             gap = f"{diff:.1f} puntos".replace(".", ",")
             fmt = _fmt_pct
         else:
-            diff = abs(claim.value - official) / max(abs(official), 1e-9)
+            diff = round(abs(claim.value - official) / max(abs(official), 1e-9), 6)
             close, rough = diff <= ABS_TRUE, diff <= ABS_ROUGH
             gap = f"{diff * 100:.1f} %".replace(".", ",")
             fmt = _fmt_abs

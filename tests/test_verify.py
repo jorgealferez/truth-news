@@ -32,7 +32,7 @@ def claim(value, indicator="paro", direction=None, unit="pct", geo="ES"):
 def test_level_verdicts(claimed, official, verdict):
     r = Verifier(lambda s, g, label: obs(official)).judge(claim(claimed))
     assert r.verdict == verdict and r.observations and "dato oficial" in r.explanation
-    assert r.method.endswith("/v5")
+    assert r.method.endswith("/v7")
 
 
 def test_direction_misleading_and_consistent():
@@ -52,12 +52,12 @@ def test_absolute_values():
 def test_no_source_stale_and_failing_source():
     assert Verifier(lambda s, g, label: None).judge(claim(10)).verdict == "sin-datos"
     stale = Verifier(lambda s, g, label: obs(10.0, period="2019-01")).judge(claim(10))
-    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v5"
+    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v7"
 
     def boom(s, g, label):
         raise RuntimeError("caida")
 
-    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v5"
+    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v7"
 
 
 def test_cited_period_is_compared_with_that_period():
@@ -74,7 +74,7 @@ def test_cited_period_is_compared_with_that_period():
     up = ClaimCandidate("sube al 4,3 % en agosto", "inflacion", "ES", 4.3, "pct", "baja", "2026-08")
     assert v.judge(up).verdict == "enganoso"  # julio 3,58 -> agosto 4,28: sube
     gone = v.judge(ClaimCandidate("x", "inflacion", "ES", 4.3, "pct", None, "2020-01"))
-    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v5"
+    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v7"
     assert latest.at("2026-07").previous is None
 
 
@@ -128,3 +128,11 @@ def test_deficit_is_judged_against_the_negated_series(monkeypatch):
     (claim,) = extract("El déficit público se situó en el 2,5 % del PIB.", "es", "ES", 2026)
     res = v.Verifier().judge(claim)
     assert res.verdict == "verdadero" and res.observations[0].value == 2.4
+
+
+def test_threshold_has_no_floating_point_error():
+    # Caso real (elDinero, 19/10/2026): Suecia 8,7 % frente a 8,9 % oficial = 0,2 puntos -> Verdadero.
+    from truthnews.analysis.claims import ClaimCandidate
+
+    v = Verifier(lambda s, g, label: Observation("eurostat", label, "https://x", "2026-08", 8.9))
+    assert v.judge(ClaimCandidate("x", "paro", "SE", 8.7, "pct", None)).verdict == "verdadero"

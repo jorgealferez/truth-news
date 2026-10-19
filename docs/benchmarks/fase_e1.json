@@ -43,16 +43,46 @@
       "noticias_por_s": 5028
     },
     "archivo": {
-      "fuente": "GDELT DOC 2.0 artlist",
-      "comprobado_en_vivo": "consulta '\"Pedro Sanchez\" sourcecountry:spain' de marzo de 2019 devuelve noticias de elpais.com",
-      "cupo": "6 consultas por ciclo, 5,5 s entre consultas, <= 90 s por ciclo, 1 mes hacia atras por consulta hasta 2017-01-01",
-      "produccion": "NO VERIFICADO: se mide en los ciclos del worker tras el despliegue (log 'archivo: N consultas, M noticias nuevas')"
+      "fuente": "GDELT GKG 2.1 (ficheros de 15 min, ADR 0030); la API DOC respondio 429 siempre desde IP de la nube",
+      "medido": "tramos 2025-03-05 12:15 y 06:15: 156 y 140 noticias de medios ES del registro, 296 nuevas en 3,9 s; despues 162 menciones extraidas",
+      "por_defecto": "2 tramos por ciclo, uno cada 6 h hacia atras, medios de ES",
+      "produccion": "NO VERIFICADO: se mide tras el despliegue (log 'archivo: N tramos, M noticias nuevas')"
     },
     "produccion_al_medir": {
       "noticias_ventana": 3164,
       "medios": 130,
       "afirmaciones_comprobadas": 3,
       "nota": "con 3 comprobaciones el ranking de falsedades sale casi vacio; el de discrepancias entre medios ya tiene contenido (195 contrastes de hoy)"
+    },
+    "produccion_tras_despliegue": {
+      "fecha": "2026-10-19 02:46-03:15 UTC (logs del worker)",
+      "entidades_por_tanda": {
+        "noticias": 2000,
+        "menciones": [
+          1143,
+          2187,
+          4178,
+          4057
+        ],
+        "entidades_nuevas": [
+          509,
+          764,
+          1535,
+          1181
+        ],
+        "hablantes_atribuidos": 0
+      },
+      "archivo": {
+        "consultas_por_ciclo": 3,
+        "noticias_nuevas": [
+          4,
+          0,
+          0
+        ],
+        "causa": "GDELT devolvia 429 o nada y el cursor avanzaba igual: corregido (gdelt.articles strict, el cursor no se mueve si GDELT no responde)"
+      },
+      "ranking_30_dias": "Donald Trump 476 noticias/141 medios, Emmanuel Macron 200/125, Partido Popular 173/60, Congreso 118/52, PSOE 117/47, Pedro Sanchez 110/47, Feijoo 107/47",
+      "errores_vistos": "nombres que cruzan saltos de linea (Ricardo Sanz\\nDirector, Cortes\\nAdam), dos personas unidas por 'y', nombres de pila compuestos (Jose Maria), cabezas inglesas (Red Sea, Union Home Minister), estadio (Santiago Bernabeu): corregidos y re-extraccion de lo anterior a 03:20 UTC"
     }
   }
 }

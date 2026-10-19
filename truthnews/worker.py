@@ -95,7 +95,7 @@ def _run_cycle(settings: Settings) -> dict:
         summary["analysis"] = analyze(session, since=started)
     with session_scope(engine) as session:  # partidos en sus canales oficiales verificados (ADR 0024)
         try:
-            summary["political"] = political.run(session, settings, wikidata=True)
+            summary["political"] = political.run(session, settings)  # sin Wikidata: robots.txt lo prohibe
         except Exception as exc:  # un canal o un partido caido no tumba el ciclo
             log.exception("declaraciones politicas: el paso fallo")
             session.rollback()
@@ -112,9 +112,16 @@ def _run_cycle(settings: Settings) -> dict:
     summary["entities"] = _guarded(
         engine, "entidades", lambda s: entities.process(s, settings.entities_batch)
     )
-    if settings.archive_queries_per_cycle > 0:
+    if settings.archive_slots_per_cycle > 0:
         summary["archive"] = _guarded(
-            engine, "archivo", lambda s: archive.run(s, budget=settings.archive_queries_per_cycle)
+            engine,
+            "archivo",
+            lambda s: archive.run(
+                s,
+                slots=settings.archive_slots_per_cycle,
+                stride=timedelta(minutes=settings.archive_stride_minutes),
+                countries=settings.archive_countries,
+            ),
         )
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
         with session_scope(engine) as session:

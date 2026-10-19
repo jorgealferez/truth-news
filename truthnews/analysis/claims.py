@@ -39,7 +39,12 @@ _VARIATION = re.compile(
     r"\b(sube|subio|subido|baja|bajo|bajado|cae|cayo|caido|crece|crecio|crecido|aumenta|aumento|aumentado"
     r"|desciende|descendio|descendido|se reduce|se redujo|reducido|repunta|repunto|se dispara|se disparo"
     r"|retrocede|retrocedio|mejora|mejoro|empeora|empeoro|avanza|avanzo|subida|bajada|caida|descenso"
-    r"|incremento|reduccion|rises|rose|falls|fell|increases|decreases|grew|sobe|subiu|desce|caiu)"
+    r"|incremento|reduccion|rises|rose|falls|fell|increases|decreases|grew|sobe|subiu|desce|caiu"
+    # Efecto de un indicador sobre otra cosa (caso real, El Debate 19/10/2026: "la inflacion le resta un
+    # 3,1 %" a los ingresos): tampoco es el nivel del indicador.
+    r"|resta|restan|resto|restado|quita|quitan|quito|recorta|recortan|reduce|reducen|redujo|merma|mermo"
+    r"|erosiona|erosionan|descuenta|lastra|lastro|se come|se comen|se comio|suma|suman|sumo|anade|anadio"
+    r"|aporta|aportan|aporto)"
     r"\s+(?:(?:de|en|del|hasta)\s+)?(?:un|una|um|uma|by)\s*$"
 )
 
@@ -53,7 +58,13 @@ def is_variation(before: str) -> bool:
 _NOT_CURRENT = re.compile(
     r"\b(pasado ano|ano pasado|el pasado ejercicio|ano anterior|previsto|prevision|previsiones|preve|preven"
     r"|avanzara|crecera|subira|bajara|se situara|estima|estimacion|proyecta|podria|podra|objetivo de"
-    r"|last year|forecast|expected|will|projected|previsao)\b"
+    r"|last year|forecast|expected|will|projected|previsao"
+    # Caso real (La Informacion, 19/10/2026): "eleva su expectativa de inflacion al 3,7 % en 2026" es una
+    # prevision, no el dato publicado.
+    r"|expectativa|expectativas|eleva su|elevan su|rebaja su|rebajan su|revisa al alza|revisa a la baja"
+    r"|pronostico|pronostica|pronostican|proyeccion|proyecciones|anticipa|calcula que|espera que|esperan que"
+    r"|outlook|projection|estimate|estimates|expects"
+    r")\b"
 )
 # Construccion explicita indicador -> (verbo) -> conector -> cifra: "la inflacion sube al 4,9 %".
 _VERBS = (
@@ -305,6 +316,8 @@ def extract(
                 continue
             seen.add(k)
             period = period_of(sn, published_year, published_month)
+            if period is None and not ind.get("annual") and any(y >= published_year for y in years):
+                continue  # cifra del ano en curso o futuro: no es el ultimo dato mensual o trimestral
             if period is None and ind.get("annual") and len(years) == 1:
                 period = str(next(iter(years)))  # "crecio un 2,6 % en 2025": se compara con 2025
             out.append(ClaimCandidate(sentence[:600], key, geo, value, ind["unit"], direction, period))
@@ -319,7 +332,13 @@ def indicator_name(key: str, lang: str = "es") -> str:
 # --- Propuestas de la IA (ADR 0019): la IA propone, estas reglas deciden si es atribuible -------------
 _FORECAST = re.compile(
     r"\b(previsto|prevision|previsiones|preve|preven|avanzara|crecera|subira|bajara|se situara|estima"
-    r"|estimacion|proyecta|podria|podra|objetivo de|forecast|expected|will|projected|previsao)\b"
+    r"|estimacion|proyecta|podria|podra|objetivo de|forecast|expected|will|projected|previsao"
+    # Caso real (La Informacion, 19/10/2026): "eleva su expectativa de inflacion al 3,7 % en 2026" es una
+    # prevision, no el dato publicado.
+    r"|expectativa|expectativas|eleva su|elevan su|rebaja su|rebajan su|revisa al alza|revisa a la baja"
+    r"|pronostico|pronostica|pronostican|proyeccion|proyecciones|anticipa|calcula que|espera que|esperan que"
+    r"|outlook|projection|estimate|estimates|expects"
+    r")\b"
 )
 _ANY_NUM = re.compile(r"\d+(?:[.,]\d+)*")
 _PERIOD = re.compile(r"^(\d{4})(?:-(0[1-9]|1[0-2])|-Q([1-4]))?$")
@@ -418,6 +437,8 @@ def check_proposal(
     if not ruled and period and (len(period) != 4 or period not in sn):
         return "periodo no escrito en la frase"
     years = {int(y) for y in _YEAR.findall(sn)}
+    if not period and not ind.get("annual") and any(y >= published_year for y in years):
+        return "cifra del ano en curso o futuro: no es el ultimo dato mensual o trimestral"
     if not period and ind.get("annual") and len(years) == 1:
         period = str(next(iter(years)))  # serie anual: el ano escrito es el periodo citado
     if not period and (any(y < published_year - 1 for y in years) or _NOT_CURRENT.search(sn)):
