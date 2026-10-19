@@ -40,3 +40,29 @@ region_aliases:
   ES-RI: [la rioja]
   ES-CE: [ceuta]
   ES-ML: [melilla]
+
+# Temas de las promesas (palabras sin tildes, en minusculas; es, gl y ca). Una promesa toma el tema con
+# mas palabras; sin ninguna queda sin tema. Anadir un tema o un idioma = anadir palabras aqui.
+promise_topics:
+  vivienda: [vivienda, viviendas, alquiler, alquileres, hipoteca, hipotecas, vivenda, habitatge, desahucio]
+  empleo: [empleo, paro, desempleo, salario minimo, smi, contrato, contratos, trabajadores, autonomos, emprego, ocupacio, jornada laboral]
+  impuestos: [impuesto, impuestos, irpf, iva, fiscal, fiscalidad, tributo, tributos, cotizaciones, imposto, impost]
+  pensiones: [pension, pensiones, pensionistas, jubilacion, pensions, pensions]
+  sanidad: [sanidad, sanitario, sanitaria, salud, hospital, hospitales, listas de espera, atencion primaria, saude, sanitat]
+  educacion: [educacion, escuela, escuelas, universidad, universidades, becas, profesorado, alumnado, educacion infantil, ensino, educacio]
+  inmigracion: [inmigracion, inmigrantes, migrantes, migratoria, fronteras, regularizacion, asilo, immigracio]
+  energia_clima: [energia, energetica, renovables, clima, climatico, climatica, emisiones, electricidad, nuclear, transicion ecologica, enerxia]
+  seguridad_justicia: [seguridad, policia, guardia civil, delito, delitos, justicia, jueces, judicial, okupacion, terrorismo]
+  igualdad: [igualdad, violencia de genero, mujeres, lgtbi, discriminacion, conciliacion, igualdade, igualtat]
+  territorio_autogobierno: [autogobierno, financiacion autonomica, estatuto, competencias, despoblacion, rural, autodeterminacion, soberania, amnistia]
+  infraestructuras: [infraestructuras, tren, ferrocarril, cercanias, carreteras, aeropuerto, puerto, transporte publico, corredor]
+  economia_empresas: [empresas, pymes, industria, inversion, deficit, deuda, crecimiento, productividad, competitividad, innovacion]
+  agricultura: [agricultura, agricultores, ganaderia, pesca, regadio, agrario, campo, agro]
+  exterior_defensa: [union europea, europa, otan, defensa, ejercito, politica exterior, cooperacion internacional, marruecos]
+  social: [dependencia, pobreza, ingreso minimo, discapacidad, familias, infancia, mayores, servicios sociales, cuidados]
+  cultura_digital: [cultura, deporte, digital, internet, inteligencia artificial, ciberseguridad, telecomunicaciones, idioma, lengua]
+
+# Paginas de programas que la portada del partido no enlaza (comprobadas a mano, con robots.txt que las
+# permite). El descubrimiento las visita ademas de las que encuentra solo.
+program_pages:
+  sumar: [https://movimientosumar.es/programa-electoral-23j/]

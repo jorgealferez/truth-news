@@ -33,9 +33,9 @@ impediria enlazarlas a su cumplimiento y consultarlas por tema y partido.
 ## Escalabilidad
 
 Programas: ~30 documentos por partido y pais en 25 anos (BNG 33, CC 24); 12 partidos de Espana ->
-< 500 filas; texto extraido ~100-400 KB por programa (el de Sumar 2023 tiene ~200 paginas) -> < 200 MB
+< 500 filas; texto extraido ~100-700 KB por programa (medido: Sumar 2023, 182 paginas y 697 000 caracteres; BNG 2023, 68 paginas y 118 000) -> < 500 MB
 a 10 paises en 12 meses; se escribe una vez por documento nuevo (huella SHA-256). Promesas: el extractor
-por reglas acota 400 por programa -> < 200 000 filas a 10x; lecturas por (partido, eleccion) y por tema,
+por reglas acota 1000 por programa -> < 500 000 filas a 10x; lecturas por (partido, eleccion) y por tema,
 con indices `ix_promise_actor_election` y `ix_promise_topic`. Cumplimiento: una fila por promesa y
 metodo, se reescribe al cambiar de metodo; mismo orden de magnitud que las promesas.
 
