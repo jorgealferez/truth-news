@@ -1174,6 +1174,9 @@ def create_app(
             return redirect
         return render(request, "investigation.html", inv=inv, r=inv.report)
 
-    app.include_router(admin.make_router(settings, get_session, templates, render))
+    # Retirar o restituir un veredicto vacia las vistas en cache: /hoy no lo sigue mostrando.
+    app.include_router(
+        admin.make_router(settings, get_session, templates, render, on_change=view_cache.clear)
+    )
 
     return app

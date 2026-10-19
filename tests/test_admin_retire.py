@@ -133,3 +133,14 @@ def test_the_retirement_reason_is_visible_in_the_public_pages(admin_client, sess
     for path in ("/verificaciones", f"/verificacion/{falso.claim_id}"):
         html = admin_client.get(path).text
         assert 'class="vretired"' in html and "Retirado por la redacción" in html and reason in html
+
+
+def test_retire_clears_the_cached_today_page(admin_client, falso):
+    link = f'href="/verificacion/{falso.claim_id}"'
+    assert link in admin_client.get("/hoy").text  # queda en cache (5 min)
+    token = csrf_token(Settings(admin_password="secreto"))
+    reason = "La cifra es el paro de Estados Unidos, no el de Argentina."
+    admin_client.post(
+        f"/admin/verificacion/{falso.id}/retirar", data={"reason": reason, "csrf": token}, auth=AUTH
+    )
+    assert link not in admin_client.get("/hoy").text  # la retirada vacia la cache: no sigue publicada
