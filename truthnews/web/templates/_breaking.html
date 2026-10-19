@@ -11,7 +11,7 @@
       <div class="bk-body">
         <a class="bk-title" href="{{ url('historia', st.id, st.title) }}">{{ st.title }}</a><span class="bk-new" hidden>{{ t(lang, 'new_label') }}</span>
         <p class="bk-meta"><a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a>
-          <span class="meter" title="{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}" aria-hidden="true">{% for i in range([st.n_outlets, 10]|min) %}<i></i>{% endfor %}</span>{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}
+          <span class="bk-meter" title="{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}" aria-hidden="true">{% for i in range([st.n_outlets, 10]|min) %}<i></i>{% endfor %}</span>{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}
           {% if b.new_outlets %}<span class="bk-up">+{{ b.new_outlets }} {{ t(lang, 'in_last_hour') }}</span>{% endif %}
           {% if c.disputas %}<span class="bk-flag">{{ t(lang, 'disputed_figures') }}</span>{% endif %}
           {% if b.thread %}<a class="bk-why" href="{{ url('hilo', b.thread.id, b.thread.title) }}">{{ t(lang, 'why_short') }} →</a>{% endif %}</p>

@@ -265,7 +265,7 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .bk-new { display:inline-block; margin-left:6px; font:800 10px system-ui, sans-serif; text-transform:uppercase; background:var(--brand); color:var(--ink); padding:1px 6px; border-radius:3px; vertical-align:2px; }
 .bk-meta { margin:3px 0 0; font:12px system-ui, sans-serif; color:var(--muted); display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; }
 .bk-meta a { color:var(--accent); font-weight:600; }
-.meter { display:inline-flex; gap:2px; margin-right:-6px; } .meter i { width:5px; height:10px; background:var(--ink); opacity:.7; border-radius:1px; }
+.bk-meter { display:inline-flex; gap:2px; margin-right:-6px; } .bk-meter i { width:5px; height:10px; background:var(--ink); opacity:.7; border-radius:1px; }
 .bk-up { color:#1e6b34; font-weight:700; } .bk-flag { font-weight:700; color:var(--ink); border-bottom:2px solid var(--brand); }
 @media (max-width: 640px) { .bk-list { grid-template-columns:1fr; } .bk-list li { grid-template-columns:46px 1fr; } .bk-title { font-size:16px; } }
 .breaking [hidden] { display:none; }
