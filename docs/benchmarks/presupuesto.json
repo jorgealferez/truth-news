@@ -183,6 +183,13 @@
       "objetivo": 0.9
     },
     {
+      "id": "relectura_comparaciones_por_s",
+      "descripcion": "Texto completo (ADR 0052): pares antes/despues de ~750 palabras que compara body_excerpts por segundo",
+      "unidad": "pares/s",
+      "direccion": "min",
+      "objetivo": 100
+    },
+    {
       "id": "entidades_noticias_por_s",
       "descripcion": "Entidades (ADR 0027): noticias por segundo que procesa el extractor (titular y extracto reales)",
       "unidad": "noticias/s",

@@ -1,0 +1,31 @@
+{
+  "fase": "e2",
+  "titulo": "Quien cambio su cifra tambien en el texto completo: relectura del cuerpo y revisiones de la frase de la cifra (ADR 0052)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "relectura_comparaciones_por_s": 365,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "comparacion": {
+      "que": "body_excerpts sobre pares de textos de 758 palabras (30 parrafos): 200 con una cifra cambiada y 200 con un retoque sin cifra",
+      "pares_por_s": 365,
+      "pares_con_revision": 200,
+      "coste_por_rastreo": "como mucho 60 relecturas por rastreo (MAX_TEXT_RECHECK_PER_RUN): ~0,16 s de CPU; el resto es red, en paralelo entre dominios y con el cliente educado del rastreo"
+    },
+    "produccion_antes": {
+      "fuente": "registros del worker en Railway, 2026-10-19 06:35-12:40 UTC",
+      "noticias_nuevas_por_ciclo": "385-589",
+      "relleno_de_textos": "0-10 rellenados de 80-95 candidatas por rastreo (muros de pago y 403): el texto completo llega sobre todo al entrar la noticia",
+      "revisiones_de_cuerpo": "no existian: content_hash se calculaba y no se comparaba"
+    },
+    "produccion_despues": "NO VERIFICADO (pendiente del despliegue en la ventana de las 16:00 UTC): textos releidos por rastreo, revisiones content y duracion del paso, de run.stats (texts_rechecked, content_revisions)"
+  }
+}

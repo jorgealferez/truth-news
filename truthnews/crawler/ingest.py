@@ -10,9 +10,10 @@ from datetime import UTC, datetime, timedelta
 from urllib.parse import urlsplit
 
 import httpx
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
+from truthnews.analysis.figure_changes import body_excerpts
 from truthnews.classify import classify, topics
 from truthnews.config import Settings
 from truthnews.crawler.extract import canonical_url, extract_text, sha256, word_count
@@ -29,6 +30,10 @@ VERIFIABLE = ("politica", "economia")
 BACKFILL_WINDOW = timedelta(hours=24)
 BACKFILL_PER_DOMAIN = 5
 BACKFILL_DOMAIN_FAILURES = 2
+# ADR 0052: el texto completo se relee a las 3 h de la captura y otra vez desde las 24 h de publicarse.
+RECHECK_WINDOW = timedelta(hours=48)
+RECHECK_FIRST = timedelta(hours=3)
+RECHECK_SECOND = timedelta(hours=24)
 
 
 def sync_registry(session: Session, specs: list[OutletSpec] | None = None) -> dict:
@@ -147,6 +152,37 @@ async def _fetch_text(client: PoliteClient, url: str) -> str | None:
     return await asyncio.to_thread(extract_text, resp.text, url)
 
 
+async def _fetch_by_domain(
+    client: PoliteClient, rows: list[Article], limit: int
+) -> tuple[int, list[tuple[Article, str | None]]]:
+    """Pide el texto de hasta `limit` articulos, BACKFILL_PER_DOMAIN por medio y en paralelo entre medios.
+
+    Devuelve cuantos se eligieron y los intentados con su texto (None si fallo). Un dominio que falla
+    BACKFILL_DOMAIN_FAILURES veces (paywall, 403, timeout) se deja hasta el ciclo siguiente.
+    """
+    by_domain: dict[str, list[Article]] = defaultdict(list)
+    picked = 0
+    for art in rows:
+        domain = urlsplit(art.url).netloc
+        if picked < limit and len(by_domain[domain]) < BACKFILL_PER_DOMAIN:
+            by_domain[domain].append(art)
+            picked += 1
+
+    async def one_domain(arts: list[Article]) -> list[tuple[Article, str | None]]:
+        got, failures = [], 0
+        for art in arts:
+            text = await _fetch_text(client, art.url)
+            got.append((art, text))
+            if not text:
+                failures += 1
+                if failures >= BACKFILL_DOMAIN_FAILURES:
+                    break
+        return got
+
+    done = await asyncio.gather(*(one_domain(a) for a in by_domain.values()))
+    return picked, [x for got in done for x in got]
+
+
 async def backfill_texts(
     session: Session, client: PoliteClient, limit: int, now: datetime | None = None
 ) -> int:
@@ -166,29 +202,11 @@ async def backfill_texts(
         .order_by(Article.published_at.desc())
         .limit(limit * 3)
     ).all()
-    by_domain: dict[str, list[Article]] = defaultdict(list)
-    picked = 0
-    for art in rows:
-        domain = urlsplit(art.url).netloc
-        if picked < limit and len(by_domain[domain]) < BACKFILL_PER_DOMAIN:
-            by_domain[domain].append(art)
-            picked += 1
-
-    async def one_domain(arts: list[Article]) -> list[tuple[Article, str]]:
-        got, failures = [], 0
-        for art in arts:
-            text = await _fetch_text(client, art.url)
-            if text:
-                got.append((art, text))
-            else:
-                failures += 1
-                if failures >= BACKFILL_DOMAIN_FAILURES:
-                    break
-        return got
+    picked, fetched = await _fetch_by_domain(client, rows, limit)
 
     filled = 0
-    for got in await asyncio.gather(*(one_domain(a) for a in by_domain.values())):
-        for art, text in got:
+    for art, text in fetched:
+        if text:
             art.content_text, art.content_hash, art.word_count = text, sha256(text), word_count(text)
             filled += 1
     log.info("textos rellenados: %s de %s intentables", filled, picked)
@@ -223,6 +241,61 @@ def track_revisions(session: Session, article: Article, entry: FeedEntry, run_id
         setattr(article, name, new)
         n += 1
     return n
+
+
+async def recheck_texts(
+    session: Session, client: PoliteClient, limit: int, now: datetime | None = None, run_id: int | None = None
+) -> dict:
+    """Vuelve a leer el texto completo de politica y economia y guarda las cifras que cambian (ADR 0052).
+
+    Dos relecturas por noticia de las ultimas 48 h: a las 3 h de la primera captura y desde las 24 h de
+    publicarse. Si cambia una cifra, una revision `content` con la frase de antes y la de despues; si cambia
+    otra cosa, solo se actualiza el texto. Un fallo cuenta como relectura: no se insiste.
+    """
+    now = now or datetime.now(UTC)
+    due = or_(
+        and_(Article.content_checks == 0, Article.fetched_at <= now - RECHECK_FIRST),
+        and_(Article.content_checks == 1, Article.published_at <= now - RECHECK_SECOND),
+    )
+    rows = session.scalars(
+        select(Article)
+        .where(
+            Article.origin == "rss",
+            Article.content_text.is_not(None),
+            Article.category.in_(VERIFIABLE),
+            Article.published_at >= now - RECHECK_WINDOW,
+            due,
+        )
+        .order_by(Article.published_at)
+        .limit(limit * 3)
+    ).all()
+    _, fetched = await _fetch_by_domain(client, rows, limit)
+    out = {"rechecked": 0, "changed": 0, "revisions": 0}
+    for art, text in fetched:
+        art.content_checks += 1
+        out["rechecked"] += bool(text)
+        if not text or sha256(text) == art.content_hash:
+            continue
+        out["changed"] += 1
+        excerpts = body_excerpts(art.content_text or "", text)
+        if excerpts:
+            session.add(
+                ArticleRevision(
+                    article_id=art.id,
+                    outlet_id=art.outlet_id,
+                    crawl_run_id=run_id,
+                    field="content",
+                    before=excerpts[0],
+                    after=excerpts[1],
+                    before_hash=art.content_hash or sha256(art.content_text or ""),
+                    after_hash=sha256(text),
+                )
+            )
+            out["revisions"] += 1
+        art.content_text, art.content_hash, art.word_count = text, sha256(text), word_count(text)
+    session.flush()
+    log.info("textos releidos: %s", out)
+    return out
 
 
 async def crawl(
@@ -351,6 +424,9 @@ async def crawl(
         backfilled = 0
         if settings.fetch_full_text and settings.max_text_backfill_per_run > 0:
             backfilled = await backfill_texts(session, client, settings.max_text_backfill_per_run)
+        rechecked = {}
+        if settings.fetch_full_text and settings.max_text_recheck_per_run > 0:
+            rechecked = await recheck_texts(session, client, settings.max_text_recheck_per_run, run_id=run.id)
         run.articles_new = len(new_items)
         run.robots_blocked = client.robots_blocked
         run.stats = {
@@ -360,6 +436,8 @@ async def crawl(
             "outlets_with_new": len({by_id[f.id].outlet_id for _, f, _ in new_items}),
             "revisions": n_revisions,
             "texts_backfilled": backfilled,
+            "texts_rechecked": rechecked.get("rechecked", 0),
+            "content_revisions": rechecked.get("revisions", 0),
             "promotional_skipped": n_promo,
         }
     run.finished_at = utcnow()

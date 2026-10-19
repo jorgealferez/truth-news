@@ -22,6 +22,10 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - [ ] Quien informa primero y bien (encargo de la direccion 2026-10-19, ADR 0041): en historias con dato oficial, tiempo desde el primer articulo hasta que cada medio publica la cifra que coincide con el dato, y quien da antes una cifra que no cuadra; muestra minima por medio como en la fiabilidad. Carril: Comparativas — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19)
   - [ ] Modulo `timeliness` (ADR 0041): tabla en el ranking de /medios (acierta, mediana de horas, se adelanta con cifra que no cuadra; minimo 5 historias) y linea en 'En claro'; produccion hoy sin muestra suficiente
 - [ ] Quien cambio su cifra tambien en el texto completo (content_hash), no solo titular y extracto. Carril: Comparativas (cedido por la direccion 2026-10-19 12:40 al carril Entidades mientras Comparativas espera un permiso del usuario; no hay refetch.py en ninguna rama remota, medido 12:45 UTC) — EN CURSO (session_01Juk7hZcsWaeHLeGwUxFzuh, 2026-10-19)
+  - [x] Reservado (#205). Ninguna rama remota tiene `refetch.py` (medido 12:45 UTC): no se pisa a Comparativas
+  - [x] ADR 0052 + migracion 0023 (`article.content_checks`, revision `content`), registrados en docs/equipo.md
+  - [x] `recheck_texts` en el rastreo: dos relecturas (3 h y 24 h), 60 por rastreo y 5 por dominio; solo se guarda la frase de la cifra; benchmark docs/benchmarks/fase_e2.json (365 pares/s)
+  - [ ] PR con merge en la ventana de las 16:00 UTC, detras de #194 y #201 (codigo del worker); despues, medir en produccion `texts_rechecked` y `content_revisions`
 
 ## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
   agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se

@@ -68,6 +68,10 @@ class Settings:
     max_text_backfill_per_run: int = field(
         default_factory=lambda: int(os.environ.get("MAX_TEXT_BACKFILL_PER_RUN", "150"))
     )
+    # Relecturas por ciclo del texto completo para ver si un medio cambio una cifra (ADR 0052).
+    max_text_recheck_per_run: int = field(
+        default_factory=lambda: int(os.environ.get("MAX_TEXT_RECHECK_PER_RUN", "60"))
+    )
     # IA (ADR 0007). Sin ANTHROPIC_API_KEY no se generan temas ni piezas; el resto funciona igual.
     ai_enabled: bool = field(default_factory=lambda: bool(os.environ.get("ANTHROPIC_API_KEY")))
     ai_model: str = field(default_factory=lambda: os.environ.get("AI_MODEL", "claude-opus-5-5"))
