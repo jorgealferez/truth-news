@@ -7,7 +7,18 @@ from datetime import UTC, datetime, timedelta
 from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, joinedload
 
-from truthnews.models import Article, Claim, CrawlRun, Outlet, Piece, Story, Thread, Topic, Verification
+from truthnews.models import (
+    Article,
+    ArticleRevision,
+    Claim,
+    CrawlRun,
+    Outlet,
+    Piece,
+    Story,
+    Thread,
+    Topic,
+    Verification,
+)
 
 PAGE_SIZE = 30
 
@@ -214,6 +225,19 @@ def all_verifications(session: Session, limit: int = 200) -> list[Claim]:
     return list(session.scalars(q).unique())
 
 
+def latest_checks(session: Session, limit: int = 8) -> list[Claim]:
+    """Ultimas afirmaciones juzgadas con datos (sin las 'sin datos'): lo verificado, para portada."""
+    q = (
+        select(Claim)
+        .join(Verification, Verification.claim_id == Claim.id)
+        .options(joinedload(Claim.verification), joinedload(Claim.outlet))
+        .where(Verification.verdict != "sin-datos")
+        .order_by(Verification.checked_at.desc(), Claim.id.desc())
+        .limit(limit)
+    )
+    return list(session.scalars(q).unique())
+
+
 def thread_for_story(session: Session, story_id: int) -> Thread | None:
     return session.scalars(
         select(Thread).where(Thread.anchor_story_id == story_id, Thread.status == "publicado")
@@ -231,3 +255,56 @@ def front_threads(session: Session, story_ids: list[int], limit: int = 3) -> lis
         )
     }
     return [by_story[s] for s in story_ids if s in by_story][:limit]
+
+
+def outlet_profile(session: Session, outlet_id: int, recent: int = 8) -> dict:
+    """Cifras del medio y sus ultimos cambios de titular o extracto detectados (ADR 0015)."""
+    since = datetime.now(UTC) - timedelta(days=30)
+    n_total = session.scalar(select(func.count(Article.id)).where(Article.outlet_id == outlet_id)) or 0
+    n_30d = (
+        session.scalar(
+            select(func.count(Article.id)).where(
+                Article.outlet_id == outlet_id, Article.published_at >= since
+            )
+        )
+        or 0
+    )
+    n_rev = (
+        session.scalar(select(func.count(ArticleRevision.id)).where(ArticleRevision.outlet_id == outlet_id))
+        or 0
+    )
+    n_rev_articles = (
+        session.scalar(
+            select(func.count(func.distinct(ArticleRevision.article_id))).where(
+                ArticleRevision.outlet_id == outlet_id
+            )
+        )
+        or 0
+    )
+    changes = list(
+        session.scalars(
+            select(ArticleRevision)
+            .options(joinedload(ArticleRevision.article))
+            .where(ArticleRevision.outlet_id == outlet_id)
+            .order_by(ArticleRevision.detected_at.desc(), ArticleRevision.id.desc())
+            .limit(recent)
+        )
+    )
+    return {
+        "articles": n_total,
+        "articles_30d": n_30d,
+        "revisions": n_rev,
+        "revised_articles": n_rev_articles,
+        "changes": changes,
+    }
+
+
+def article_claims(session: Session, article_id: int) -> list[Claim]:
+    return list(
+        session.scalars(
+            select(Claim)
+            .options(joinedload(Claim.verification))
+            .where(Claim.article_id == article_id)
+            .order_by(Claim.id)
+        )
+    )

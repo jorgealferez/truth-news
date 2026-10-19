@@ -26,7 +26,7 @@ from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
-from truthnews.web import admin, queries, seo, social, topicview
+from truthnews.web import admin, citations, queries, seo, social, topicview
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -111,6 +111,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
     templates.env.filters["ago"] = _ago
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
+    templates.env.filters["word_diff"] = citations.word_diff
     templates.env.globals.update(
         site=settings,
         t=registry.t,
@@ -316,7 +317,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
         home_country = settings.default_country
         stories = queries.top_stories(session, country=home_country, limit=24)
         ids = [s.id for s in stories]
-        wire = queries.latest(session, country=home_country, limit=12)
+        wire = queries.latest_checks(session, limit=8)
         return render(
             request,
             "home.html",
@@ -480,7 +481,17 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             raise HTTPException(404)
         items = queries.latest(session, outlet_id=o.id, page=page)
         record = queries.verdict_counts(session, outlet_id=o.id).get("total", {})
-        return render(request, "list.html", items=items, page=page, heading=o.name, outlet=o, record=record)
+        profile = queries.outlet_profile(session, o.id)
+        return render(
+            request,
+            "list.html",
+            items=items,
+            page=page,
+            heading=o.name,
+            outlet=o,
+            record=record,
+            profile=profile,
+        )
 
     @app.get("/noticia/{ref}", response_class=HTMLResponse)
     def article(request: Request, ref: str, session: SessionDep):
@@ -489,8 +500,30 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             raise HTTPException(404)
         if redirect := canonical(request, "noticia", a.id, a.title):
             return redirect
-        related = [x for x in queries.latest(session, category=a.category, limit=8) if x.id != a.id][:6]
-        return render(request, "article.html", a=a, related=related)
+        # Una noticia suelta aporta poco: si varios medios la cuentan, se va a la comparativa
+        # (peticion del usuario 2026-10-19). La ficha de captura sigue en ?ficha=1.
+        if a.story is not None and a.story.n_outlets >= 2 and "ficha" not in request.query_params:
+            return RedirectResponse(
+                seo.path("historia", a.story_id, a.story.title) + f"#m-{a.outlet.slug}", status_code=302
+            )
+        related = [
+            s
+            for s in queries.top_stories(
+                session, country=a.country, category=a.category, hours=24 * 7, limit=7
+            )
+            if s.id != a.story_id
+        ][:6]
+        return render(
+            request,
+            "article.html",
+            a=a,
+            related=related,
+            outlet_names=queries.story_outlet_names(session, [s.id for s in related]),
+            verdicts=queries.verdict_counts(session, [s.id for s in related]),
+            cites=citations.cited_figures(a),
+            claims=queries.article_claims(session, a.id),
+            archive_url=citations.archive_url(a),
+        )
 
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):

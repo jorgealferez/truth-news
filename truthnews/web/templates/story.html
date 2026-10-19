@@ -61,9 +61,9 @@
 
   <section class="block"><h2>{{ t(lang, 'how_each_tells_it') }}</h2>
     <div class="outlet-cards">{% for o in outlets_view %}{% if loop.index == 7 %}</div><details class="more"><summary>{{ t(lang, 'see_all') }} ({{ outlets_view|length }})</summary><div class="outlet-cards">{% endif %}
-      <div class="ocard">
+      <div class="ocard" id="m-{{ o.outlet.slug }}">
         <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}</p>
-        <p class="headline"><a href="{{ url('noticia', o.article.id, o.article.title) }}">{{ o.article.title }}</a></p>
+        <p class="headline"><a href="{{ o.article.url }}" rel="noopener nofollow" target="_blank">{{ o.article.title }}</a> <a class="meta" href="{{ url('noticia', o.article.id, o.article.title) }}?ficha=1">{{ t(lang, 'capture_record')|lower }}</a></p>
         <p class="tags">{% for v in o.verdicts %}<span class="badge v-{{ v }}">{{ t(lang, 'verdict_' ~ v) }}</span>{% endfor %}
           {% for n, f in o.figures.items() %}<span class="tag">{{ n }} <b>{{ f.value|num }}</b></span>{% endfor %}
           {% for x in o.blame %}<span class="tag point">→ {{ x }}</span>{% endfor %}

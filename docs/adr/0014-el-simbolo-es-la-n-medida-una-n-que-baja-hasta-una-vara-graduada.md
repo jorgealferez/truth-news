@@ -4,7 +4,8 @@
 - **Fecha:** 2026-10-19
 - **Fase:** marca v2 (peticion del usuario, fuera de las fases de la carta)
 - **Decide:** Constructor, auditado por el Critico; el usuario eligio la propuesta entre varias
-- **Revisa:** ADR 0011 (solo el simbolo; logotipo, paleta, lema e imagen social siguen igual)
+- **Revisa:** ADR 0011 (simbolo, punto de la i del logotipo y la regla como recurso grafico; paleta, lema y
+  pesos del logotipo siguen igual)
 
 ## Contexto
 El usuario pide un icono "mas identificativo, menos generico y mas profesional", "algo que podamos
@@ -29,8 +30,16 @@ El simbolo es la **"n medida"**, monograma de nosmienten:
 - **Iconos**: sobre papel (la marca vive en claro); `icon-180.png` opaco para iOS, `icon-192/512.png`,
   `icon-maskable-512.png` con zona segura (declarado `purpose: maskable` en el manifest) y
   `avatar-400.png` para la foto de perfil en redes, que se recorta en circulo.
-- Sin cambios: logotipo "nos" Medium + "mienten" ExtraBold + ".com" en ambar oscuro, paleta tinta /
-  papel / ambar, lema "Sin bandos. Con datos." e imagen social por defecto.
+- **Mezcla final** (el usuario: "mezcla todo y arregla lo que falle"): el logotipo formal se mantiene
+  ("nos" Medium + "mienten" ExtraBold + ".com" en ambar oscuro), pero el punto de la i de "mienten" es una
+  **marca cuadrada ambar**, la medida dentro del nombre. Se aplica igual en `logo.svg` (contornos) y en la
+  imagen por historia (Pillow, con la i sin punto U+0131 anadida al subconjunto ExtraBold).
+- **La regla graduada** (marcas cortas y largas cada cinco) es el recurso grafico de la marca: cuelga del
+  filete de la barra de secciones y abre el pie de la web (CSS, sin imagenes), separa el contenido de la
+  banda de fuentes en `og-default.png` y en la imagen por historia, y corre bajo el logotipo en
+  `banner-1500x500.png` (cabecera de perfil, contenido centrado porque las redes tapan la esquina
+  inferior izquierda con la foto).
+- Sin cambios: paleta tinta / papel / ambar, lema "Sin bandos. Con datos.", banda de tinta con las fuentes.
 
 ## Alternativas consideradas
 | Alternativa | Por que no |
@@ -38,7 +47,7 @@ El simbolo es la **"n medida"**, monograma de nosmienten:
 | Mantener las dos barras (ADR 0011) | Se leia como icono generico de texto o menu; nada propio que registrar |
 | Nivel de burbuja (burbuja centrada: "sin inclinacion") | Buena idea de neutralidad, pero es un icono de herramienta comun, poco distintivo |
 | Lupa o marca de verificacion | Iconografia de todos los verificadores (ya descartada en el ADR 0011) |
-| Rediseno completo (punto de la i ambar, regla como recurso grafico, nombre en un solo peso) | Probado y descartado por el usuario: "el resto dejalo como estaba, que era mas formal" |
+| Rediseno completo en modo claro (nombre en un solo peso, sin banda de tinta) | Probado; el usuario prefirio los pesos y la banda formales y pidio mezclar solo el punto ambar y la regla |
 
 ## Consecuencias
 Signo figurativo propio, ligado al nombre (la n) y a la tesis del medio (medir lo que se cuenta),

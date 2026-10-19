@@ -281,5 +281,5 @@ def process_pending(
             inv.status, inv.error = "error", f"{type(exc).__name__}: {exc}"[:500]
             failed += 1
         inv.updated_at = utcnow()
-        session.flush()
+        session.commit()  # cada investigacion queda guardada aunque el ciclo se corte
     return {"processed": done, "failed": failed}

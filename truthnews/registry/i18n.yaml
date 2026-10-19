@@ -18,6 +18,29 @@ es:
   shared_names_note: "Personas, lugares e instituciones que citan la mayoría de los {n} medios (cuántos lo citan):"
   see_all: Ver todos
   which_outlets: ver qué medios
+  cited_data: Datos citados
+  cited_data_note: Fragmentos breves del medio con una cifra o una afirmación comprobable, citados con enlace a la fuente. No reproducimos el texto completo.
+  changes_detected: Cambios detectados
+  changes_note: El medio cambió esta noticia después de que la capturáramos. Guardamos la versión anterior, su huella y la fecha en que vimos el cambio.
+  field_title: Titular
+  field_summary: Extracto
+  detected: detectado el
+  see_versions: Ver versiones y huellas
+  before: Antes
+  after: Después
+  capture_record: Ficha de captura
+  source: Fuente
+  captured_at: Capturada
+  fingerprint: Huella del texto
+  words: palabras
+  archived_copy: Copia de archivo
+  capture_note: La huella (sha256) y la fecha de captura permiten demostrar qué decía la noticia cuando la analizamos, aunque después cambie.
+  outlet_profile: Ficha del medio
+  articles_total: Noticias rastreadas
+  last_30_days: en 30 días
+  in_n_articles: "en {n} noticias"
+  recent_changes: Ver los últimos cambios
+  no_changes_yet: Aún no hemos detectado cambios en sus titulares ni extractos.
   see_what_each_omits: Ver qué calla cada medio
   range_from: de
   range_to: a
@@ -102,7 +125,10 @@ es:
   basis: Base del análisis
   evidence: Evidencia
   methodology: Metodología
-  latest_wire: Lo último de los medios
+  latest_wire: Verificado
+  no_checks_yet: Todavía no hay afirmaciones comprobadas con datos en este ciclo.
+  only_one_outlet: "Solo lo publica {m}: sin contraste todavía"
+  only_one_outlet_text: Ningún otro medio de los que seguimos ha contado esta noticia, así que no hay versiones que comparar. Si otros la publican o aparecen datos que la contrasten, pasará a la comparativa.
   verdict_verdadero: Verdadero
   verdict_impreciso: Impreciso
   verdict_falso: Falso
@@ -184,6 +210,29 @@ en:
   shared_names_note: "People, places and institutions named by most of the {n} outlets (how many name each):"
   see_all: See all
   which_outlets: see which outlets
+  cited_data: Cited data
+  cited_data_note: Short excerpts from the outlet with a figure or a verifiable claim, quoted with a link to the source. We never reproduce the full text.
+  changes_detected: Changes detected
+  changes_note: The outlet changed this story after we captured it. We keep the previous version, its fingerprint and the date we saw the change.
+  field_title: Headline
+  field_summary: Excerpt
+  detected: detected on
+  see_versions: See versions and fingerprints
+  before: Before
+  after: After
+  capture_record: Capture record
+  source: Source
+  captured_at: Captured
+  fingerprint: Text fingerprint
+  words: words
+  archived_copy: Archived copy
+  capture_note: The fingerprint (sha256) and the capture date prove what the story said when we analysed it, even if it changes later.
+  outlet_profile: Outlet profile
+  articles_total: Stories crawled
+  last_30_days: in 30 days
+  in_n_articles: "in {n} stories"
+  recent_changes: See latest changes
+  no_changes_yet: We have not detected changes in its headlines or excerpts yet.
   see_what_each_omits: See what each outlet leaves out
   range_from: from
   range_to: to
@@ -268,7 +317,10 @@ en:
   basis: Analysis basis
   evidence: Evidence
   methodology: Methodology
-  latest_wire: Latest from the outlets
+  latest_wire: Checked
+  no_checks_yet: No claims checked against data in this cycle yet.
+  only_one_outlet: "Only {m} reports this: no contrast yet"
+  only_one_outlet_text: None of the other outlets we follow has reported this story, so there are no versions to compare. If others publish it or data appear that test it, it will move to the comparison.
   verdict_verdadero: True
   verdict_impreciso: Imprecise
   verdict_falso: False

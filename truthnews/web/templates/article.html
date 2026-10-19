@@ -12,13 +12,50 @@
   <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a> · <a href="/pais/{{ a.country }}">{{ country_name(a.country, lang) }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>
   <h1>{{ a.title }}</h1>
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
+  {% if not a.story or a.story.n_outlets < 2 %}<div class="summary-box flat"><h2>{{ t(lang, 'only_one_outlet')|replace('{m}', a.outlet.name) }}</h2><p>{{ t(lang, 'only_one_outlet_text') }}</p></div>{% endif %}
   {% if a.summary %}<blockquote class="excerpt">{{ a.summary[:600] }}</blockquote>{% endif %}
   {% if a.story and a.story.n_outlets > 1 %}<p class="callout"><a href="{{ url('historia', a.story_id, a.story.title) }}">{{ a.story.n_outlets }} {{ t(lang, 'n_outlets') }} — {{ t(lang, 'compare_cta') }} →</a></p>{% endif %}
   <p><a class="button" href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'read_original') }} ↗</a></p>
   {% if a.topics %}<nav class="chips">{% for tp in a.topics %}<span>{{ tp }}</span>{% endfor %}</nav>{% endif %}
+
+  {% if cites or claims %}<section class="block" id="datos"><h2>{{ t(lang, 'cited_data') }}</h2>
+    <p class="meta">{{ t(lang, 'cited_data_note') }}</p>
+    {% for c in claims %}{% set v = c.verification %}<div class="claim">
+      <p>{% if v %}<span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span> {% endif %}«{{ c.text }}»</p>
+      {% if v %}<p>{{ v.explanation }}</p>{% for e in v.evidence %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}{% endif %}
+    </div>{% endfor %}
+    {% for c in cites %}<figure class="quote-cite">
+      <blockquote>«{{ c.quote }}»</blockquote>
+      <figcaption><span class="tags">{% for noun, value, qual in c.figures %}<span class="tag">{{ noun }} <b>{% if qual %}{{ qual|qual }} {% endif %}{{ value|num }}</b></span>{% endfor %}</span>
+        <span class="meta">— <a href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ a.outlet.name }}</a>, {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</span></figcaption>
+    </figure>{% endfor %}
+  </section>{% endif %}
+
+  {% if a.revisions %}<section class="block" id="cambios"><h2>{{ t(lang, 'changes_detected') }} <span class="meta">{{ a.revisions|length }}</span></h2>
+    <p class="meta">{{ t(lang, 'changes_note') }}</p>
+    <ol class="revisions">{% for r in a.revisions|reverse %}<li>
+      <p class="meta"><b>{{ t(lang, 'field_' ~ r.field) }}</b> · {{ t(lang, 'detected') }} {{ r.detected_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
+      <p class="diff">{% for op, txt in r.before|word_diff(r.after) %}{% if op == '-' %}<del>{{ txt }}</del>{% elif op == '+' %}<ins>{{ txt }}</ins>{% else %}<span>{{ txt }}</span>{% endif %} {% endfor %}</p>
+      <details class="who-more"><summary>{{ t(lang, 'see_versions') }}</summary>
+        <p class="meta">{{ t(lang, 'before') }}: «{{ r.before }}» <code title="sha256">{{ r.before_hash[:12] }}</code></p>
+        <p class="meta">{{ t(lang, 'after') }}: «{{ r.after }}» <code title="sha256">{{ r.after_hash[:12] }}</code></p></details>
+    </li>{% endfor %}</ol>
+  </section>{% endif %}
+
+  <details class="block fold" id="captura"><summary><h2>{{ t(lang, 'capture_record') }}</h2></summary>
+    <dl class="facts">
+      <dt>{{ t(lang, 'source') }}</dt><dd><a href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ a.url }}</a></dd>
+      <dt>{{ t(lang, 'published') }}</dt><dd>{{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</dd>
+      <dt>{{ t(lang, 'captured_at') }}</dt><dd>{{ a.fetched_at.strftime('%d/%m/%Y %H:%M') }} UTC</dd>
+      {% if a.content_hash %}<dt>{{ t(lang, 'fingerprint') }}</dt><dd><code title="sha256">{{ a.content_hash[:16] }}</code> · {{ a.word_count }} {{ t(lang, 'words') }}</dd>{% endif %}
+      <dt>{{ t(lang, 'changes_detected') }}</dt><dd>{{ a.revisions|length }}</dd>
+      <dt>{{ t(lang, 'archived_copy') }}</dt><dd><a href="{{ archive_url }}" rel="noopener nofollow" target="_blank">Wayback Machine ↗</a></dd>
+    </dl>
+    <p class="meta">{{ t(lang, 'capture_note') }}</p>
+  </details>
 </article>
 {% if related %}
-<section class="section-block"><h2>{{ t(lang, 'more') }}: {{ category_name(a.category, lang) }}</h2>
-<div class="grid">{% for a in related %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div></section>
+<section class="section-block"><h2>{{ t(lang, 'more_contrasts_in') }} {{ category_name(a.category, lang)|lower }}</h2>
+<div class="grid">{% for st in related %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div></section>
 {% endif %}
 {% endblock %}

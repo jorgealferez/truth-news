@@ -4,9 +4,21 @@ import pytest
 from fastapi.testclient import TestClient
 
 from truthnews.config import Settings
-from truthnews.models import Article, Claim, CrawlRun, Evidence, Outlet, Piece, Story, Topic, Verification
+from truthnews.models import (
+    Article,
+    ArticleRevision,
+    Claim,
+    CrawlRun,
+    Evidence,
+    Outlet,
+    Piece,
+    Story,
+    Topic,
+    Verification,
+)
 from truthnews.web import seo
 from truthnews.web.app import _ago, create_app
+from truthnews.web.citations import cited_figures, word_diff
 
 
 @pytest.fixture()
@@ -61,7 +73,8 @@ def test_pages_render(client):
         r = client.get(path)
         assert r.status_code == 200, path
     home = client.get("/").text
-    assert "Titular 0" in home and "35 noticias" in home and "Contrastes de hoy" in home
+    assert "35 noticias" in home and "Contrastes de hoy" in home and "Verificado" in home
+    assert 'href="/noticia/' not in home  # sin titulares sueltos en portada (peticion 2026-10-19)
 
 
 def test_article_and_related(client, session):
@@ -69,7 +82,75 @@ def test_article_and_related(client, session):
     r = client.get(f"/noticia/{a.id}")
     assert r.status_code == 200
     assert "Leer en el medio original" in r.text and 'href="https://m.es/1"' in r.text
-    assert "Titular 3" in r.text  # relacionada de la misma seccion
+    assert "Solo lo publica Medio Uno: sin contraste todavía" in r.text
+
+
+def test_article_of_a_multi_outlet_story_redirects_to_the_comparison(client, session):
+    now = datetime.now(UTC)
+    st = Story(
+        title="Contada por dos", category="politica", country="ES", first_seen=now, last_seen=now, n_outlets=2
+    )
+    session.add(st)
+    session.flush()
+    a = session.query(Article).filter_by(url="https://m.es/4").one()
+    a.story_id = st.id
+    session.commit()
+    r = client.get(seo.path("noticia", a.id, a.title), follow_redirects=False)
+    assert r.status_code == 302
+    assert r.headers["location"] == seo.path("historia", st.id, st.title) + "#m-medio"
+    assert client.get(f"/noticia/{a.id}?ficha=1").status_code == 200
+
+
+def test_article_cites_figures_tracks_changes_and_outlet_profile(client, session):
+    """Peticion 2026-10-19: datos citados por fragmentos, prueba de captura y cambios del medio (ADR 0015)."""
+    a = session.query(Article).filter_by(url="https://m.es/2").one()
+    a.title = "La policía detiene a 22 personas en Irún"
+    a.content_text = (
+        "Los agentes detuvieron a 22 personas tras los disturbios. "
+        + "Texto largo sin cifras que no se cita. " * 30
+        + "Más de 300 manifestantes se concentraron en la plaza."
+    )
+    a.content_hash = "a" * 64
+    a.word_count = 230
+    session.add(
+        ArticleRevision(
+            article_id=a.id,
+            outlet_id=a.outlet_id,
+            field="title",
+            before="La policía detiene a 2 personas en Irún",
+            after=a.title,
+            before_hash="b" * 64,
+            after_hash="c" * 64,
+        )
+    )
+    session.commit()
+    page = client.get(f"/noticia/{a.id}").text
+    assert "Datos citados" in page and "«Más de 300 manifestantes se concentraron en la plaza.»" in page
+    assert "Texto largo sin cifras" not in page  # se cita por fragmentos, no el texto completo
+    assert "Cambios detectados" in page and "<del>2</del>" in page and "<ins>22</ins>" in page
+    assert (
+        "Ficha de captura" in page and "https://web.archive.org/web/" in page and "aaaaaaaaaaaaaaaa" in page
+    )
+    outlet = client.get("/medio/medio").text
+    assert "Noticias rastreadas" in outlet and "en 1 noticias" in outlet
+    assert f'href="{seo.path("noticia", a.id, a.title)}#cambios"' in outlet
+    # Un medio sin cambios lo dice en vez de mostrar una lista vacia.
+    session.query(ArticleRevision).delete()
+    session.commit()
+    assert "Aún no hemos detectado cambios" in client.get("/medio/medio").text
+
+
+def test_citation_helpers():
+    assert word_diff("detiene a 2 personas", "detiene a 22 personas") == [
+        ("=", "detiene a"),
+        ("-", "2"),
+        ("+", "22"),
+        ("=", "personas"),
+    ]
+    art = Article(title="Sin cifras", summary="Hubo 40 heridos. Hubo 40 heridos.", content_text=None)
+    cites = cited_figures(art)
+    assert [c["quote"] for c in cites] == ["Hubo 40 heridos."]  # sin repetir la misma frase
+    assert cites[0]["figures"][0][:2] == ("heridos", 40.0)
 
 
 @pytest.mark.parametrize(
@@ -384,6 +465,7 @@ def test_brand_assets_and_social_meta(client):
         "/static/icon-180.png",
         "/static/icon-maskable-512.png",
         "/static/avatar-400.png",
+        "/static/banner-1500x500.png",
     ):
         assert client.get(path).status_code == 200, path
     en = client.get("/acerca?lang=en").text
