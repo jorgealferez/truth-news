@@ -24,6 +24,7 @@ from sqlalchemy.orm import Session
 from truthnews import ads as adsmod
 from truthnews import registry
 from truthnews.ai import translate
+from truthnews.analysis import abroad
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
@@ -426,6 +427,7 @@ def create_app(
         outlets_view = story_outlets(arts, comp, claims)
         if medio:  # llegada desde /noticia: la ficha de ese medio va primero y destacada
             outlets_view.sort(key=lambda o: o["outlet"].slug != medio)
+        outside = abroad.for_story(session, st.id)
         return render(
             request,
             "story.html",
@@ -441,7 +443,8 @@ def create_app(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
             spread=spread(arts),
-            tr=translate.titles(session, [a.id for a in arts], lang_of(request)),
+            abroad=sorted(outside, key=lambda a: a.outlet.country),
+            tr=translate.titles(session, [a.id for a in arts + outside], lang_of(request)),
             ads=ads_for(
                 request,
                 ("story-inline", "footer-strip"),

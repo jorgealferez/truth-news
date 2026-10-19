@@ -75,6 +75,15 @@
   </section>
   {% with ad = (ads or {}).get('story-inline'), slot = 'story-inline' %}{% include "_ad.html" %}{% endwith %}
 
+  {% if abroad %}<section class="block" id="otros-paises"><h2>{{ t(lang, 'abroad_title') }}</h2>
+    <p class="meta">{{ t(lang, 'abroad_note') }}</p>
+    <div class="abroad">{% for iso, items in abroad|groupby('outlet.country') %}
+      <div class="abroad-c"><p class="card-k">{{ country_name(iso, lang) }}</p>
+        <ul>{% for a in items %}<li><a href="/medio/{{ a.outlet.slug }}"><b>{{ a.outlet.name }}</b></a> <a href="{{ a.url }}" rel="noopener nofollow" target="_blank" lang="{{ a.language }}">{{ a.title }}</a>{% if tr[a.id] and a.language != lang %}<span class="tr" lang="{{ lang }}">{{ tr[a.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ a.language }})</span></span>{% endif %}</li>{% endfor %}</ul>
+      </div>{% endfor %}
+    </div>
+  </section>{% endif %}
+
   {% if claims %}<details class="block fold" id="datos" open><summary><h2>{{ t(lang, 'data_check') }}</h2></summary>
     {% for c in claims %}{% set v = c.verification %}
       <div class="claim">

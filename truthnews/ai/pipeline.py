@@ -11,6 +11,7 @@ from truthnews.ai import translate
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.topics import build_topics
 from truthnews.ai.writer import write_pieces
+from truthnews.analysis import abroad
 from truthnews.analysis.verify import Verifier
 from truthnews.config import Settings
 from truthnews.models import Topic
@@ -38,6 +39,9 @@ def run(
     except AIError as exc:
         session.rollback()
         log.warning("traducciones no generadas: %s", exc)
+    # La misma historia en otros paises, con los titulares ya traducidos (ADR 0022).
+    out["abroad"] = abroad.link(session, settings.default_country, settings.default_language)
+    session.commit()
     try:
         out["topics"] = build_topics(session, ai, settings.default_country)
         session.commit()
