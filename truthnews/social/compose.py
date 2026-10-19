@@ -20,9 +20,13 @@ LIMITS = {
 _URL = re.compile(r"https?://\S+")
 
 
+def limit_of(network: str) -> tuple[int, int | None]:
+    return LIMITS[network.removesuffix("_en")]
+
+
 def length(network: str, text: str) -> int:
     """Longitud tal como la cuenta la red (aproximacion conservadora: puntos de codigo)."""
-    _, url_cost = LIMITS[network]
+    _, url_cost = limit_of(network)
     if url_cost is None:
         return len(text)
     return len(_URL.sub("", text)) + url_cost * len(_URL.findall(text))
@@ -43,7 +47,7 @@ class Draft:
 
 
 def fit(network: str, draft: Draft) -> str:
-    limit, _ = LIMITS[network]
+    limit, _ = limit_of(network)
     lines = [ln for ln in draft.lines if ln]
     while True:
         text = draft.render(draft.headline, lines)
@@ -67,6 +71,11 @@ def fmt(value: float) -> str:
     if float(value).is_integer():
         return f"{value:,.0f}".replace(",", ".")
     return f"{value:,.1f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def fmt_en(value: float) -> str:
+    """Cifra al estilo ingles: 12,500; 3.4."""
+    return f"{value:,.0f}" if float(value).is_integer() else f"{value:,.1f}"
 
 
 def clip(text: str, n: int) -> str:

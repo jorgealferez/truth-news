@@ -11,6 +11,7 @@ redes es neutral aunque el medio no lo sea.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
@@ -20,8 +21,8 @@ from sqlalchemy.orm import Session, joinedload
 from truthnews import registry
 from truthnews.analysis.compare import compare, loaded_words
 from truthnews.models import Article, Claim, Story, Thread, Verification, utcnow
-from truthnews.social.compose import Draft, clip, fmt
-from truthnews.web import seo
+from truthnews.social.compose import Draft, clip, fmt, fmt_en
+from truthnews.web import queries, seo
 
 PUBLISHABLE_VERDICTS = {"falso": 6.0, "enganoso": 6.0, "impreciso": 4.0}
 THREAD_SCORE = 4.0
@@ -90,6 +91,58 @@ def stories(session: Session, site_url: str, since: datetime, min_score: float, 
         out.append(
             Candidate("historia", st.id, st.priority or st.contrast_score, draft, st.id, lang, st.last_seen)
         )
+    return out
+
+
+# Lenguaje cargado en ingles (`analysis.compare.LOADED` solo tiene espanol): estos titulares no salen.
+LOADED_EN = re.compile(
+    r"\b(chaos|chaotic|brutal|savage|hell|scandal(ous)?|shameful|disgrace|massacre|terror|radicals?|"
+    r"invasion|avalanche|horde|outrage(ous)?|slam(s|med)?|destroys?|shock(ing)?)\b"
+)
+# Sustantivos de las cifras en disputa (`analysis.compare._COUNTABLE`); sin traduccion, la linea no sale.
+NOUNS_EN = {
+    "agentes": "officers",
+    "comercios": "shops",
+    "desalojados": "evicted",
+    "desaparecidos": "missing",
+    "detenidos": "arrested",
+    "escanos": "seats",
+    "euros": "euros",
+    "evacuados": "evacuated",
+    "heridos": "injured",
+    "manifestantes": "protesters",
+    "migrantes": "migrants",
+    "muertos": "dead",
+    "personas": "people",
+    "policias": "police officers",
+    "soldados": "soldiers",
+    "victimas": "victims",
+    "viviendas": "homes",
+    "votos": "votes",
+}
+
+
+def stories_en(session: Session, site_url: str, since: datetime, min_score: float) -> list[Candidate]:
+    """Las mismas historias, para las cuentas en ingles: solo con titular traducido por IA (ADR 0017) y
+    avisando de que es una traduccion. Hilos y verificaciones no: su texto solo existe en espanol."""
+    found = stories(session, site_url, since, min_score, "es")
+    titles = queries.story_title_translations(session, [c.ref_id for c in found], "en")
+    out = []
+    for c in found:
+        title = titles.get(c.ref_id)
+        if not title or LOADED_EN.search(title.lower()):
+            continue
+        st = session.get(Story, c.ref_id)
+        comp = compare([a for a in queries.story_articles(session, st.id) if a.url])
+        lines = [
+            f"{NOUNS_EN[d.noun].capitalize()}: from {fmt_en(d.low)} to {fmt_en(d.high)}, by outlet."
+            for d in comp.dispute_summaries()[:2]
+            if d.noun in NOUNS_EN
+        ]
+        lines += [f"Reported by {st.n_outlets} outlets. Headline machine-translated from Spanish."]
+        url = site_url + "/en" + seo.path("historia", st.id, st.title)  # el slug canonico es el original
+        draft = Draft(clip(title, 200), lines, "How each outlet tells it:", url)
+        out.append(Candidate("historia", st.id, c.score, draft, st.id, "en", c.date))
     return out
 
 

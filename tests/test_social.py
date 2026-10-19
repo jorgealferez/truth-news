@@ -284,7 +284,16 @@ def test_failure_is_recorded_stops_the_network_and_retries_next_cycle(session, c
 def test_settings_quota_and_credentials(monkeypatch):
     monkeypatch.setenv("SOCIAL_DAILY_QUOTA", "x:2, telegram:10, nada:3, bluesky:abc")
     s = SocialSettings()
-    assert s.quota == {"x": 2, "bluesky": 6, "mastodon": 6, "telegram": 10}
+    assert s.quota == {
+        "x": 2,
+        "bluesky": 6,
+        "mastodon": 6,
+        "telegram": 10,
+        "x_en": 2,
+        "bluesky_en": 3,
+        "mastodon_en": 3,
+        "telegram_en": 4,
+    }
     assert settings(env=ALL_CREDS).credentials("x")["X_API_KEY"] == "k"
     assert settings(env={"X_API_KEY": "k"}).credentials("x") is None
     assert settings(env=ALL_CREDS, dry_run=True).credentials("telegram") is None
@@ -387,3 +396,61 @@ def test_x_publishes_without_image_when_upload_fails():
     x = adapters.X(ALL_CREDS, httpx.Client(transport=httpx.MockTransport(handler)))
     assert x.send("texto", SITE, b"png", "t") == ("7", "https://x.com/i/web/status/7")
     assert "media" not in json.loads(seen[-1].content)  # la tarjeta del enlace lleva la imagen
+
+
+def _english(session, st, title_en):
+    """Tercer medio con el titular de la historia y su traduccion (ADR 0017)."""
+    from truthnews.models import ArticleTranslation
+
+    o = _outlet(session, f"en{st.id}")
+    a = Article(
+        outlet_id=o.id,
+        url=f"https://{o.slug}.es/n",
+        url_hash=f"en{st.id:062d}",
+        title=st.title,
+        summary="Sin cifras.",
+        published_at=NOW - timedelta(hours=2),
+        language="es",
+        country="ES",
+        category="politica",
+        story_id=st.id,
+    )
+    session.add(a)
+    session.flush()
+    session.add(ArticleTranslation(article_id=a.id, lang="en", title=title_en, model="m"))
+    session.flush()
+
+
+def test_english_pieces_only_with_translated_headline(session, content):
+    from truthnews.social.select import stories_en
+
+    good, _ = content
+    _english(session, good, "Eviction at the building on Calle Mayor")
+    other = _story(session, "Otra historia con cifras", [300, 700])
+    _english(session, other, "Chaos as police clash with protesters")  # lenguaje cargado: fuera
+    _story(session, "Historia sin traducir", [300, 700])
+    session.commit()
+    (c,) = stories_en(session, SITE, NOW - timedelta(hours=72), 2.0)
+    assert c.language == "en" and c.ref_id == good.id
+    assert c.draft.url == f"{SITE}/en/historia/{good.id}-desalojo-en-el-edificio-de-la-calle-mayor"
+    assert "Arrested: from 400 to 1,000, by outlet." in c.draft.lines
+    text = fit("x_en", c.draft)
+    assert text.startswith("Eviction at the building on Calle Mayor") and "machine-translated" in text
+    assert length("x_en", text) <= 280
+    out = run(session, SITE, settings(), now=NOW)
+    assert out["candidatas_en"] == 1
+    assert out["x_en"] == {"modo": "prueba", "nuevas": 1, "enviadas": 0, "errores": 0}
+    post = session.query(SocialPost).filter_by(network="telegram_en").one()
+    assert post.language == "en" and "/en/historia/" in post.link
+
+
+def test_english_accounts_use_their_own_credentials():
+    env = {k.replace("X_", "X_EN_", 1): v for k, v in ALL_CREDS.items() if k.startswith("X_")}
+    s = settings(env=env)
+    assert s.credentials("x") is None
+    assert s.credentials("x_en") == {k: ALL_CREDS[k] for k in env and ALL_CREDS if k.startswith("X_")}
+    tg = settings(env={"TELEGRAM_EN_BOT_TOKEN": "1:a", "TELEGRAM_EN_CHAT_ID": "@nosmienten_en"})
+    assert tg.credentials("telegram_en") == {
+        "TELEGRAM_BOT_TOKEN": "1:a",
+        "TELEGRAM_CHAT_ID": "@nosmienten_en",
+    }
