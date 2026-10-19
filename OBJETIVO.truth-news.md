@@ -96,7 +96,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [ ] Fase 15 — IA, traduccion y redes por servicios del holding: D4 y D5 (acerca C9, C13, C14)
 - [ ] Fase 16 — Busqueda y admin con OIDC del holding: D6 y D7 (acerca C8, C14)
 - [ ] Fase 17 — Retirada del Postgres propio: 7 dias limpios, volcado final archivado con huella; truth-news queda como frontend con su logica (acerca C14)
-- [ ] Fase 18 — Elecciones: seccion temporal que se activa sola con comicios convocados en cualquier pais y ambito (Espana primero: generales del 29-N de 2026, RD 806/2026), con calendario desde fuentes oficiales, que dicen y prometen los partidos por igual, programas importados, promesas pasadas frente a hechos, contradicciones y cambios con fecha (peticion del usuario 2026-10-19; acerca C6, C12, C15)
+- [ ] Fase 18 — Elecciones: seccion temporal que se activa sola con comicios convocados en cualquier pais y ambito (Espana primero: generales del 29-N de 2026, RD 806/2026), con calendario desde fuentes oficiales, que dicen y prometen los partidos por igual, programas importados, promesas pasadas frente a hechos, contradicciones y cambios con fecha (peticion del usuario 2026-10-19; acerca C6, C12, C15) — en curso: 18a, 18b, 18d y 18e en #139; 18c bloqueado (decision del usuario)
 
 ## Calidad y proyeccion
 
