@@ -30,6 +30,7 @@ pib_trimestral:
     en: ["gdp", "the economy"]
     pt: ["pib", "a economia"]
   requires: ["trimestre", "trimestral", "quarter"]
+  change_is_level: true  # el indicador ya es una tasa de variacion: "crece un 0,7 %" es su valor
   directional: false  # "el PIB crece un 0,7 %" describe la economia, no la evolucion de la tasa
   sources:
     - {connector: eurostat, dataset: namq_10_gdp, params: {unit: CLV_PCH_PRE, s_adj: SCA, na_item: B1GQ}, geos: EU}
@@ -82,6 +83,7 @@ pobreza_exclusion:
 precio_vivienda:
   name: {es: Precio de la vivienda (variación anual), en: House prices (annual change)}
   unit: pct
+  change_is_level: true
   patterns:
     es: ["precio de la vivienda", "precios de la vivienda", "precio de los pisos", "precio de la casa"]
     en: ["house prices", "home prices", "housing prices"]

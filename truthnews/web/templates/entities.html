@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'ent_title') }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'ent_title') }}</h1>
+<p class="lead-text">{{ t(lang, 'ent_lead') }}</p>
+<nav class="chips" aria-label="{{ t(lang, 'ent_filter') }}">
+  <a href="/entidades?dias={{ dias }}" class="{{ 'on' if not tipo }}">{{ t(lang, 'ent_all') }}</a>
+  {% for k in ['persona', 'partido', 'institucion', 'organizacion', 'lugar'] %}<a href="/entidades?tipo={{ k }}&dias={{ dias }}" class="{{ 'on' if tipo == k }}">{{ t(lang, 'ent_kind_' ~ k) }}</a>{% endfor %}
+</nav>
+<nav class="chips" aria-label="{{ t(lang, 'ent_period') }}">{% for d in [7, 30, 365] %}<a href="/entidades?dias={{ d }}{% if tipo %}&tipo={{ tipo }}{% endif %}" class="{{ 'on' if dias == d }}">{{ t(lang, 'ent_days_' ~ d) }}</a>{% endfor %}</nav>
+{% if not rows %}<p class="empty">{{ t(lang, 'ent_empty') }}</p>{% endif %}
+{% set top = rows[0][1] if rows else 1 %}
+<ol class="bars ent-bars">
+{% for e, n, o in rows %}
+  <li><span class="bar{{ ' alt' if e.kind == 'lugar' }}" style="width:{{ 100 * n / top }}%"></span><b><a href="{{ url('entidad', e.id, e.name) }}">{{ e.name }}</a></b> <span class="tag">{{ t(lang, 'ent_kind_' ~ e.kind) }}</span><span class="n">{{ n }} {{ t(lang, 'ent_news') }} · {{ o }} {{ t(lang, 'outlets')|lower }}</span></li>
+{% endfor %}
+</ol>
+<p class="meta">{{ t(lang, 'ent_method') }}</p>
+{% endblock %}

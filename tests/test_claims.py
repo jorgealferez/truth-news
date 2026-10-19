@@ -37,6 +37,11 @@ CASES = [
     ),
     ("La tasa de riesgo de pobreza infantil es del 28,9 % en el país.", []),
     ("La inflación es del 2 % del PIB en ese cálculo.", []),
+    # Una variacion no es el nivel (v4): "el paro baja un 2 %" no dice que la tasa de paro sea del 2 %.
+    ("El paro baja un 2 % en septiembre en el país.", []),
+    ("La inflación sube un 0,3 % en el mes en el país.", []),
+    ("La deuda pública crece un 4 % en el año en el país.", []),
+    ("El precio de la vivienda sube un 12,1 % en el país.", [("precio_vivienda", "ES", 12.1, None)]),
 ]
 
 

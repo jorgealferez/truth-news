@@ -1,0 +1,2 @@
+{# Cifra con su unidad: porcentaje con coma decimal o numero absoluto con puntos de millar. #}
+{% macro fig(v, unit) %}{% if v is none %}—{% elif unit == 'pct' %}{{ ('%.1f' % v)|replace('.', ',') }} %{% else %}{{ v|num }}{% endif %}{% endmacro %}

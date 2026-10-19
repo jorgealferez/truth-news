@@ -1,0 +1,30 @@
+{# Bloque "Lo que no cuadra" (ADR 0027), listo para la portada: necesita `falsehoods` y `discrepancies`. #}
+{% from "_figure.html" import fig %}
+<section class="nocuadra" aria-labelledby="nocuadra-h">
+  <h2 id="nocuadra-h"><a href="/discrepancias">{{ t(lang, 'nc_title') }}</a></h2>
+  <p class="meta">{{ t(lang, 'nc_lead') }}</p>
+  {% if not falsehoods and not discrepancies %}<p class="empty">{{ t(lang, 'nc_empty') }}</p>{% endif %}
+  <ol class="nc-list">
+  {% for f in falsehoods[:3] %}
+    <li class="nc-item">
+      <span class="badge v-{{ f.verdict }}">{{ t(lang, 'verdict_' ~ f.verdict) }}</span>
+      <p class="nc-one"><strong>{% if f.speakers %}{{ f.speakers|map(attribute=1)|join(', ') }}{% else %}{{ f.outlets[:2]|join(', ') }}{% if f.outlets|length > 2 %} +{{ f.outlets|length - 2 }}{% endif %}{% endif %}</strong>:
+        {{ f.label }} {{ fig(f.claimed, f.unit) }} · {{ t(lang, 'nc_data_says') }} <strong>{{ fig(f.official, f.unit) }}</strong>{% if f.period %} ({{ f.source }}, {{ f.period }}){% endif %}</p>
+      {% if f.official is not none %}{% set hi = [f.claimed, f.official]|max %}
+      <div class="nc-vs" role="img" aria-label="{{ t(lang, 'nc_said') }} {{ fig(f.claimed, f.unit) }}, {{ t(lang, 'nc_data') }} {{ fig(f.official, f.unit) }}">
+        <span class="nc-bar said" style="width:{{ (100 * f.claimed / hi) if hi else 0 }}%">{{ t(lang, 'nc_said') }}</span>
+        <span class="nc-bar data" style="width:{{ (100 * f.official / hi) if hi else 0 }}%">{{ t(lang, 'nc_data') }}</span>
+      </div>{% endif %}
+      {% if f.article_id %}<a class="meta" href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }} →</a>{% endif %}
+    </li>
+  {% endfor %}
+  {% for d in discrepancies[:3] %}
+    <li class="nc-item">
+      <span class="badge v-impreciso">{{ t(lang, 'nc_dispute') }}</span>
+      <p class="nc-one"><a href="{{ url('historia', d.story.id, d.story.title) }}"><strong>{{ d.story.title }}</strong></a></p>
+      <p class="meta">{% for s in d.disputes[:2] %}{{ s.noun }}: {{ s.low|num }}–{{ s.high|num }} ({{ s.n_outlets }} {{ t(lang, 'outlets')|lower }}){% if not loop.last %} · {% endif %}{% endfor %}</p>
+    </li>
+  {% endfor %}
+  </ol>
+  <a class="more" href="/discrepancias">{{ t(lang, 'nc_all') }} →</a>
+</section>

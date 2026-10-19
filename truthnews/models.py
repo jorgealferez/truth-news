@@ -66,9 +66,13 @@ class Feed(Base):
     outlet: Mapped[Outlet] = relationship(back_populates="feeds")
 
 
+ARTICLE_ORIGINS = ("rss", "archivo")
+
+
 class Article(Base):
     __tablename__ = "article"
     __table_args__ = (
+        CheckConstraint(f"origin IN {ARTICLE_ORIGINS!r}", name="ck_article_origin"),
         Index("ix_article_category_published", "category", "published_at"),
         Index("ix_article_country_published", "country", "published_at"),
         Index("ix_article_outlet_published", "outlet_id", "published_at"),
@@ -96,6 +100,9 @@ class Article(Base):
     story_id: Mapped[int | None] = mapped_column(
         ForeignKey("story.id", ondelete="SET NULL", name="fk_article_story_id"), nullable=True, index=True
     )
+    # ADR 0028: rastreada por RSS o importada del archivo; y cuando se extrajeron sus entidades.
+    origin: Mapped[str] = mapped_column(String(16), default="rss", server_default="rss")
+    entities_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
 
     outlet: Mapped[Outlet] = relationship()
     story: Mapped[Story | None] = relationship(back_populates="articles")
@@ -278,10 +285,17 @@ class Claim(Base):
     # Quien la propuso (ADR 0019): las reglas o la IA (validada por el codigo); el veredicto es del codigo.
     extractor: Mapped[str] = mapped_column(String(8), default="reglas", server_default="reglas")
     period: Mapped[str | None] = mapped_column(String(20), nullable=True)  # periodo citado en la frase
+    # Quien la dice (ADR 0028); NULL = la afirma el propio medio.
+    speaker_entity_id: Mapped[int | None] = mapped_column(
+        ForeignKey("entity.id", ondelete="SET NULL", name="fk_claim_speaker_entity_id"),
+        nullable=True,
+        index=True,
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     article: Mapped[Article] = relationship()
     outlet: Mapped[Outlet] = relationship()
+    speaker: Mapped[Entity | None] = relationship()
     verification: Mapped[Verification | None] = relationship(back_populates="claim", uselist=False)
 
 
@@ -476,3 +490,69 @@ class SocialPost(Base):
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+ENTITY_KINDS = ("persona", "partido", "institucion", "organizacion", "lugar")
+MENTION_ROLES = ("menciona", "dice")
+
+
+class Entity(Base):
+    """Persona, partido, institucion, organizacion o lugar que aparece en las noticias (ADR 0028)."""
+
+    __tablename__ = "entity"
+    __table_args__ = (
+        CheckConstraint(f"kind IN {ENTITY_KINDS!r}", name="ck_entity_kind"),
+        UniqueConstraint("key", name="uq_entity_key"),
+        Index("ix_entity_kind_articles", "kind", "n_articles"),
+        Index("ix_entity_last_seen", "last_seen"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    key: Mapped[str] = mapped_column(String(220))  # <kind>:<nombre normalizado>
+    kind: Mapped[str] = mapped_column(String(16))
+    name: Mapped[str] = mapped_column(String(200))
+    country: Mapped[str | None] = mapped_column(String(2), nullable=True)
+    aliases: Mapped[list] = mapped_column(JSON, default=list)
+    curated: Mapped[bool] = mapped_column(default=False)  # viene de registry/entities.yaml
+    n_mentions: Mapped[int] = mapped_column(Integer, default=0)
+    n_articles: Mapped[int] = mapped_column(Integer, default=0)
+    n_outlets: Mapped[int] = mapped_column(Integer, default=0)
+    first_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    last_seen: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    archived_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class Mention(Base):
+    """Una entidad en un articulo: cuantas veces, y si habla (con la frase citada) (ADR 0028)."""
+
+    __tablename__ = "mention"
+    __table_args__ = (
+        CheckConstraint(f"role IN {MENTION_ROLES!r}", name="ck_mention_role"),
+        UniqueConstraint("entity_id", "article_id", name="uq_mention_entity_article"),
+        Index("ix_mention_entity_published", "entity_id", "published_at"),
+        Index("ix_mention_article", "article_id"),
+        Index("ix_mention_story", "story_id"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    entity_id: Mapped[int] = mapped_column(
+        ForeignKey("entity.id", ondelete="CASCADE", name="fk_mention_entity_id")
+    )
+    article_id: Mapped[int] = mapped_column(
+        ForeignKey("article.id", ondelete="CASCADE", name="fk_mention_article_id")
+    )
+    outlet_id: Mapped[int] = mapped_column(
+        ForeignKey("outlet.id", ondelete="CASCADE", name="fk_mention_outlet_id")
+    )
+    story_id: Mapped[int | None] = mapped_column(
+        ForeignKey("story.id", ondelete="SET NULL", name="fk_mention_story_id"), nullable=True
+    )
+    published_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    count: Mapped[int] = mapped_column(Integer, default=1)
+    role: Mapped[str] = mapped_column(String(16), default="menciona")
+    quote: Mapped[str | None] = mapped_column(Text, nullable=True)
+
+    entity: Mapped[Entity] = relationship()
+    article: Mapped[Article] = relationship()

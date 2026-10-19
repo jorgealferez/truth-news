@@ -11,7 +11,8 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # Version del metodo: un veredicto guardado con otra version se vuelve a juzgar en el siguiente ciclo.
 # v2: compara con el periodo citado en la frase (mes o trimestre), no con el ultimo dato.
 # v3: atribucion de territorio con nomenclator mundial; la poblacion exige pais explicito (ADR 0009).
-METHOD_VERSION = "v3"
+# v4: una variacion ("el paro baja un 2 %") no se lee como el nivel del indicador.
+METHOD_VERSION = "v4"
 # Umbrales: porcentajes en puntos, cantidades en diferencia relativa.
 PCT_TRUE, PCT_ROUGH = 0.2, 0.6
 ABS_TRUE, ABS_ROUGH = 0.03, 0.10
