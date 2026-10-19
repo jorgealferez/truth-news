@@ -25,7 +25,9 @@
     "despues_produccion_ia": "Primeros 4 ciclos completos con el rastreo recuperado (2026-10-19 02:45-02:55 UTC, logs del worker 'afirmaciones con IA'): candidatas 29/0/5/4, llamadas 3, propuestas 10, aceptadas 6, juzgadas 5 (3 verdadero, 1 impreciso, 1 falso) y 1 sin-datos; rechazos: 2 periodo que no cuadra, 2 falta de contexto. Tokens por llamada: 1 839-4 226 de entrada y 947-3 290 de salida (cache de 1 671-1 702). Juzgadas por ciclo: antes 0,17 (18 ciclos, solo reglas) -> 1,25 (4 ciclos, todas propuestas por la IA y validadas por el codigo)",
     "revision_humana_de_lo_publicado": "Leidas en nosmienten.com/verificaciones el 2026-10-19 03:10 UTC: 2 veredictos injustos encontrados y corregidos en v6: El Debate 'Falso' ('la inflacion le resta un 3,1 %' a los ingresos no es el nivel de la inflacion: efecto, no nivel) y elDinero 'Impreciso' (Suecia 8,7 % frente a 8,9 %: 0,2 puntos es Verdadero; error de coma flotante en el umbral). La correccion de ABC/Pakistan (v5) ya aparece publicada",
     "revision_humana_04_11": "Leidas en nosmienten.com/verificaciones el 2026-10-19 04:11 UTC: las correcciones v6 aparecen publicadas con su nota (El Debate falso -> sin-datos; elDinero impreciso -> verdadero). Nuevo veredicto injusto encontrado y corregido en v7: La Informacion 'Falso' por 'eleva su expectativa de inflacion al 3,7 % en 2026' (prevision anual comparada con el dato mensual)",
-    "produccion_03_26_04_11": "3 ciclos con frases (03:28, 03:35, 03:42 UTC): 12 candidatas, 3 llamadas, 0 aceptadas; 1 516-2 273 tokens de entrada y 140-818 de salida por llamada. cache_read_input_tokens = 0 en todas: el prompt de sistema (1 702 tokens) se escribe en cache en cada llamada y caduca antes del siguiente ciclo"
+    "produccion_03_26_04_11": "3 ciclos con frases (03:28, 03:35, 03:42 UTC): 12 candidatas, 3 llamadas, 0 aceptadas; 1 516-2 273 tokens de entrada y 140-818 de salida por llamada. cache_read_input_tokens = 0 en todas: el prompt de sistema (1 702 tokens) se escribe en cache en cada llamada y caduca antes del siguiente ciclo",
+    "revision_humana_05_03": "Leidas en nosmienten.com/verificaciones el 2026-10-19 05:03 UTC: la correccion v7 de La Informacion esta publicada con su nota. Caso dudoso corregido en v8: La Gaceta de Salamanca 'Impreciso' por 'en Francia esta la inflacion en el 3,1 %' frente al 3,4 % del IPCA de Eurostat; el IPC nacional (INSEE) puede diferir del armonizado unas decimas, asi que en esa franja no se juzga",
+    "produccion_04_16_05_03": "Ciclo 04:42 UTC: 65 candidatas, 2 llamadas, 5 propuestas, 0 aceptadas (rechazos: 2 previsiones, 1 regional sin serie, 1 variacion en puntos, 1 sin contexto); 9 864 tokens de entrada y 6 880 de salida; dentro del ciclo la cache si se reutiliza (cache_read 1 702 en la segunda llamada). Ciclos 04:44 y 04:45: 0 candidatas"
   },
   "criterios_de_salida": {},
   "no_verificable": [],
@@ -34,6 +36,6 @@
     "Ampliar el catalogo de indicadores y fuentes oficiales (el multiplicador real segun la medida)",
     "Datos regionales (INE por comunidad, EPA trimestral, PIB regional): en la muestra aparecen 'Castilla y Leon crecio un 3 %', 'PIB andaluz', 'paro en Andalucia'",
     "Seguir midiendo juzgadas por ciclo con mas ciclos (4 ciclos es poca muestra) y revisar a mano cada falso o enganoso publicado",
-    "Coste: la cache del prompt no se reutiliza entre ciclos (TTL de 5 min frente a ciclos de ~7 min); valorar quitar cache_control en este paso o agrupar lotes"
+    "Coste: la cache del prompt solo se reutiliza dentro de un ciclo con varias llamadas; entre ciclos caduca (TTL 5 min)"
   ]
 }

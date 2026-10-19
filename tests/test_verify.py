@@ -32,7 +32,7 @@ def claim(value, indicator="paro", direction=None, unit="pct", geo="ES"):
 def test_level_verdicts(claimed, official, verdict):
     r = Verifier(lambda s, g, label: obs(official)).judge(claim(claimed))
     assert r.verdict == verdict and r.observations and "dato oficial" in r.explanation
-    assert r.method.endswith("/v7")
+    assert r.method.endswith("/v8")
 
 
 def test_direction_misleading_and_consistent():
@@ -52,12 +52,12 @@ def test_absolute_values():
 def test_no_source_stale_and_failing_source():
     assert Verifier(lambda s, g, label: None).judge(claim(10)).verdict == "sin-datos"
     stale = Verifier(lambda s, g, label: obs(10.0, period="2019-01")).judge(claim(10))
-    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v7"
+    assert stale.verdict == "sin-datos" and stale.method == "dato-obsoleto/v8"
 
     def boom(s, g, label):
         raise RuntimeError("caida")
 
-    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v7"
+    assert Verifier(boom).judge(claim(10)).method == "sin-fuente/v8"
 
 
 def test_cited_period_is_compared_with_that_period():
@@ -74,7 +74,7 @@ def test_cited_period_is_compared_with_that_period():
     up = ClaimCandidate("sube al 4,3 % en agosto", "inflacion", "ES", 4.3, "pct", "baja", "2026-08")
     assert v.judge(up).verdict == "enganoso"  # julio 3,58 -> agosto 4,28: sube
     gone = v.judge(ClaimCandidate("x", "inflacion", "ES", 4.3, "pct", None, "2020-01"))
-    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v7"
+    assert gone.verdict == "sin-datos" and gone.method == "sin-periodo/v8"
     assert latest.at("2026-07").previous is None
 
 
@@ -136,3 +136,20 @@ def test_threshold_has_no_floating_point_error():
 
     v = Verifier(lambda s, g, label: Observation("eurostat", label, "https://x", "2026-08", 8.9))
     assert v.judge(ClaimCandidate("x", "paro", "SE", 8.7, "pct", None)).verdict == "verdadero"
+
+
+def test_harmonised_inflation_does_not_judge_the_measure_gap(monkeypatch):
+    # Caso real (La Gaceta de Salamanca, 19/10/2026): Francia 3,1 % frente al 3,4 % del IPCA.
+    from truthnews.analysis import verify as v
+    from truthnews.analysis.claims import ClaimCandidate
+
+    monkeypatch.setattr(
+        v.eurostat,
+        "latest",
+        lambda d, g, p, label="": Observation("eurostat", label, "https://x", "2026-09", 3.4),
+    )
+    judge = v.Verifier().judge
+    gap = judge(ClaimCandidate("x", "inflacion", "FR", 3.1, "pct", None))
+    assert gap.verdict == "sin-datos" and "IPC nacional" in gap.explanation and gap.observations
+    assert judge(ClaimCandidate("x", "inflacion", "FR", 3.4, "pct", None)).verdict == "verdadero"
+    assert judge(ClaimCandidate("x", "inflacion", "FR", 5.0, "pct", None)).verdict == "falso"
