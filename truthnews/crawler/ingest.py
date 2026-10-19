@@ -4,16 +4,19 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from urllib.parse import urlsplit
 
 import httpx
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.orm import Session
 
-from truthnews.classify import classify, topics
+from truthnews.analysis.compare import _LIVE
+from truthnews.analysis.figure_changes import body_excerpts
+from truthnews.classify import classify, normalize, topics
 from truthnews.config import Settings
 from truthnews.crawler.extract import canonical_url, extract_text, sha256, word_count
 from truthnews.crawler.feeds import FeedEntry, discover_feed_urls, parse_feed
@@ -29,6 +32,12 @@ VERIFIABLE = ("politica", "economia")
 BACKFILL_WINDOW = timedelta(hours=24)
 BACKFILL_PER_DOMAIN = 5
 BACKFILL_DOMAIN_FAILURES = 2
+# ADR 0052: el texto completo se relee a las 3 h de la captura y otra vez desde las 24 h de publicarse.
+RECHECK_WINDOW = timedelta(hours=48)
+RECHECK_FIRST = timedelta(hours=3)
+RECHECK_SECOND = timedelta(hours=24)
+RECHECK_MIN_SHARE = 0.5  # una relectura con menos de la mitad de palabras se trata como fallida
+RECHECK_MAX_SECONDS = 60.0  # tope de la direccion: la relectura no alarga el rastreo mas de un minuto
 
 
 def sync_registry(session: Session, specs: list[OutletSpec] | None = None) -> dict:
@@ -137,14 +146,55 @@ async def _discover(client: PoliteClient, outlet: Outlet) -> list[str]:
     return discover_feed_urls(resp.text, str(resp.url))
 
 
-async def _fetch_text(client: PoliteClient, url: str) -> str | None:
+async def _fetch_text(client: PoliteClient, url: str, refused: dict[str, int] | None = None) -> str | None:
     try:
         resp = await client.get(url)
     except (httpx.HTTPError, ValueError):
         return None
+    if resp is not None and resp.status_code in (403, 429) and refused is not None:
+        key = f"{urlsplit(url).netloc} {resp.status_code}"  # el medio nos frena: se mide, no se rodea
+        refused[key] = refused.get(key, 0) + 1
     if resp is None or resp.status_code >= 400 or "html" not in resp.headers.get("content-type", "html"):
         return None
     return await asyncio.to_thread(extract_text, resp.text, url)
+
+
+async def _fetch_by_domain(
+    client: PoliteClient,
+    rows: list[Article],
+    limit: int,
+    deadline: float | None = None,
+    refused: dict[str, int] | None = None,
+) -> tuple[int, list[tuple[Article, str | None]]]:
+    """Pide el texto de hasta `limit` articulos, BACKFILL_PER_DOMAIN por medio y en paralelo entre medios.
+
+    Devuelve cuantos se eligieron y los intentados con su texto (None si fallo). Un dominio que falla
+    BACKFILL_DOMAIN_FAILURES veces (paywall, 403, timeout) se deja hasta el ciclo siguiente. Pasado
+    `deadline` (reloj monotonico) no se empieza ninguna peticion mas.
+    """
+    by_domain: dict[str, list[Article]] = defaultdict(list)
+    picked = 0
+    for art in rows:
+        domain = urlsplit(art.url).netloc
+        if picked < limit and len(by_domain[domain]) < BACKFILL_PER_DOMAIN:
+            by_domain[domain].append(art)
+            picked += 1
+
+    async def one_domain(arts: list[Article]) -> list[tuple[Article, str | None]]:
+        got, failures = [], 0
+        for art in arts:
+            if deadline is not None and time.monotonic() > deadline:
+                break
+            text = await _fetch_text(client, art.url, refused)
+            got.append((art, text))
+            if not text:
+                failures += 1
+                if failures >= BACKFILL_DOMAIN_FAILURES:
+                    break
+        return got
+
+    done = await asyncio.gather(*(one_domain(a) for a in by_domain.values()))
+    return picked, [x for got in done for x in got]
 
 
 async def backfill_texts(
@@ -166,29 +216,11 @@ async def backfill_texts(
         .order_by(Article.published_at.desc())
         .limit(limit * 3)
     ).all()
-    by_domain: dict[str, list[Article]] = defaultdict(list)
-    picked = 0
-    for art in rows:
-        domain = urlsplit(art.url).netloc
-        if picked < limit and len(by_domain[domain]) < BACKFILL_PER_DOMAIN:
-            by_domain[domain].append(art)
-            picked += 1
-
-    async def one_domain(arts: list[Article]) -> list[tuple[Article, str]]:
-        got, failures = [], 0
-        for art in arts:
-            text = await _fetch_text(client, art.url)
-            if text:
-                got.append((art, text))
-            else:
-                failures += 1
-                if failures >= BACKFILL_DOMAIN_FAILURES:
-                    break
-        return got
+    picked, fetched = await _fetch_by_domain(client, rows, limit)
 
     filled = 0
-    for got in await asyncio.gather(*(one_domain(a) for a in by_domain.values())):
-        for art, text in got:
+    for art, text in fetched:
+        if text:
             art.content_text, art.content_hash, art.word_count = text, sha256(text), word_count(text)
             filled += 1
     log.info("textos rellenados: %s de %s intentables", filled, picked)
@@ -223,6 +255,81 @@ def track_revisions(session: Session, article: Article, entry: FeedEntry, run_id
         setattr(article, name, new)
         n += 1
     return n
+
+
+async def recheck_texts(
+    session: Session,
+    client: PoliteClient,
+    limit: int,
+    now: datetime | None = None,
+    run_id: int | None = None,
+    max_seconds: float = RECHECK_MAX_SECONDS,
+) -> dict:
+    """Vuelve a leer el texto completo de politica y economia y guarda las cifras que cambian (ADR 0052).
+
+    Dos relecturas por noticia de las ultimas 48 h: a las 3 h de la primera captura y desde las 24 h de
+    publicarse. Si cambia una cifra, una revision `content` con la frase de antes y la de despues; si cambia
+    otra cosa, solo se actualiza el texto. Un fallo cuenta como relectura: no se insiste. Los directos no se
+    releen (su texto cambia a cada minuto sin que sea una correccion). Los 403 y 429 se cuentan por medio.
+    """
+    started = time.monotonic()
+    now = now or datetime.now(UTC)
+    due = or_(
+        and_(Article.content_checks == 0, Article.fetched_at <= now - RECHECK_FIRST),
+        and_(
+            Article.content_checks == 1,
+            Article.published_at <= now - RECHECK_SECOND,
+            # una noticia que entro tarde no se relee dos veces seguidas (el relleno no cambia fetched_at)
+            Article.fetched_at <= now - (RECHECK_SECOND - RECHECK_FIRST),
+        ),
+    )
+    rows = session.scalars(
+        select(Article)
+        .where(
+            Article.origin == "rss",
+            Article.language == "es",  # el lector de cifras es de castellano: en portugues «dos votos» es 2
+            Article.content_text.is_not(None),
+            Article.category.in_(VERIFIABLE),
+            Article.published_at >= now - RECHECK_WINDOW,
+            due,
+        )
+        .order_by(Article.published_at)
+        .limit(limit * 3)
+    ).all()
+    rows = [a for a in rows if not _LIVE.search(normalize(a.title or ""))]
+    refused: dict[str, int] = {}
+    _, fetched = await _fetch_by_domain(client, rows, limit, started + max_seconds, refused)
+    out = {"rechecked": 0, "changed": 0, "revisions": 0, "shorter": 0}
+    for art, text in fetched:
+        art.content_checks += 1
+        if text and art.word_count and word_count(text) < RECHECK_MIN_SHARE * art.word_count:
+            out["shorter"] += 1  # muro de pago, registro o cookies: la entradilla no pisa el cuerpo
+            continue
+        out["rechecked"] += bool(text)
+        if not text or sha256(text) == art.content_hash:
+            continue
+        out["changed"] += 1
+        excerpts = body_excerpts(art.content_text or "", text)
+        if excerpts:
+            session.add(
+                ArticleRevision(
+                    article_id=art.id,
+                    outlet_id=art.outlet_id,
+                    crawl_run_id=run_id,
+                    field="content",
+                    before=excerpts[0],
+                    after=excerpts[1],
+                    before_hash=art.content_hash or sha256(art.content_text or ""),
+                    after_hash=sha256(text),
+                )
+            )
+            out["revisions"] += 1
+        art.content_text, art.content_hash, art.word_count = text, sha256(text), word_count(text)
+    session.flush()
+    out["refused"] = refused
+    out["seconds"] = round(time.monotonic() - started, 1)
+    log.info("textos releidos: %s", out)
+    return out
 
 
 async def crawl(
@@ -351,6 +458,9 @@ async def crawl(
         backfilled = 0
         if settings.fetch_full_text and settings.max_text_backfill_per_run > 0:
             backfilled = await backfill_texts(session, client, settings.max_text_backfill_per_run)
+        rechecked = {}
+        if settings.fetch_full_text and settings.max_text_recheck_per_run > 0:
+            rechecked = await recheck_texts(session, client, settings.max_text_recheck_per_run, run_id=run.id)
         run.articles_new = len(new_items)
         run.robots_blocked = client.robots_blocked
         run.stats = {
@@ -360,6 +470,11 @@ async def crawl(
             "outlets_with_new": len({by_id[f.id].outlet_id for _, f, _ in new_items}),
             "revisions": n_revisions,
             "texts_backfilled": backfilled,
+            "texts_rechecked": rechecked.get("rechecked", 0),
+            "content_revisions": rechecked.get("revisions", 0),
+            "recheck_refused": rechecked.get("refused", {}),
+            "recheck_seconds": rechecked.get("seconds", 0.0),
+            "recheck_shorter": rechecked.get("shorter", 0),
             "promotional_skipped": n_promo,
         }
     run.finished_at = utcnow()

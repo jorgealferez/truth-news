@@ -103,6 +103,8 @@ class Article(Base):
     # ADR 0028: rastreada por RSS o importada del archivo; y cuando se extrajeron sus entidades.
     origin: Mapped[str] = mapped_column(String(16), default="rss", server_default="rss")
     entities_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
+    # ADR 0052: veces que se volvio a leer el texto completo para ver si cambio una cifra (0, 1 o 2).
+    content_checks: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
 
     outlet: Mapped[Outlet] = relationship()
     story: Mapped[Story | None] = relationship(back_populates="articles")
@@ -111,12 +113,12 @@ class Article(Base):
     )
 
 
-REVISION_FIELDS = ("title", "summary")
+REVISION_FIELDS = ("title", "summary", "content")  # content: frase de la cifra del texto completo (ADR 0052)
 REVISION_MAX_CHARS = 600  # lo mismo que ya se publica del extracto (derecho de cita, ADR 0003)
 
 
 class ArticleRevision(Base):
-    """Un cambio de titular o extracto detectado entre dos rastreos (ADR 0015)."""
+    """Un cambio de titular o extracto (ADR 0015), o de una cifra del texto completo (ADR 0052)."""
 
     __tablename__ = "article_revision"
     __table_args__ = (

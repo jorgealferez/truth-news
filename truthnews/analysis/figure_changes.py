@@ -1,4 +1,5 @@
-"""Quien cambio su cifra (ADR 0032): revisiones de titular o extracto (ADR 0015) que cambian una cifra.
+"""Quien cambio su cifra (ADR 0032): revisiones de titular o extracto (ADR 0015), y del texto completo
+(ADR 0052), que cambian una cifra.
 
 Una revision cambia una cifra cuando la primera cifra de un mismo sustantivo (detenidos, muertos...) vale
 distinto antes y despues. Se dice si el medio lo avisa en el texto nuevo ("actualiza", "eleva a",
@@ -19,7 +20,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from truthnews.analysis.compare import _LIVE, figures
 from truthnews.classify import normalize
-from truthnews.models import Article, ArticleRevision
+from truthnews.models import REVISION_MAX_CHARS, Article, ArticleRevision
 
 MIN_CHANGES = 5  # por debajo, la proporcion de cambios en silencio no se da como porcentaje
 _ANNOUNCED = re.compile(
@@ -55,13 +56,74 @@ def _first_values(text: str) -> dict[str, float]:
     return out
 
 
+def _diff(before: str, after: str) -> list[tuple[str, float, float, bool]]:
+    b, a = _first_values(before), _first_values(after)
+    announced = bool(_ANNOUNCED.search(normalize(after))) and not _ANNOUNCED.search(normalize(before))
+    return [(n, b[n], a[n], announced) for n in b if n in a and b[n] != a[n]]
+
+
 def changes_in(before: str, after: str) -> list[tuple[str, float, float, bool]]:
     """(sustantivo, antes, despues, avisado) de cada cifra que cambia entre dos versiones de un texto."""
     if _LIVE.search(normalize(before)) or _LIVE.search(normalize(after)):
         return []
-    b, a = _first_values(before), _first_values(after)
-    announced = bool(_ANNOUNCED.search(normalize(after))) and not _ANNOUNCED.search(normalize(before))
-    return [(n, b[n], a[n], announced) for n in b if n in a and b[n] != a[n]]
+    return _diff(before, after)
+
+
+_SENTENCE = re.compile(r"(?<=[.!?…])\s+|\n+")
+
+
+def _sentences(text: str) -> list[str]:
+    return [s for s in (" ".join(p.split()) for p in _SENTENCE.split(text)) if s]
+
+
+SAME_SENTENCE = 0.6  # solapamiento minimo de palabras (sin cifras) para tratar dos frases como la misma
+_WORD = re.compile(r"[a-z]+")
+
+
+def _words(sentence: str) -> set[str]:
+    return set(_WORD.findall(normalize(sentence)))
+
+
+def _overlap(a: set[str], b: set[str]) -> float:
+    return len(a & b) / max(len(a), len(b), 1)
+
+
+def _join(parts: list[str]) -> str:
+    parts = list(dict.fromkeys(parts))
+    each = REVISION_MAX_CHARS // len(parts) - 3  # cabe en la cita aunque cada frase sea larga
+    return " … ".join(p if len(p) <= each else p[: each - 1] + "…" for p in parts)
+
+
+def body_excerpts(before: str, after: str) -> tuple[str, str] | None:
+    """Las frases del texto completo de antes y de despues donde cambia una cifra (ADR 0052), o None.
+
+    En un cuerpo largo no vale «la primera cifra del sustantivo»: un parrafo nuevo de contexto («en 2019
+    hubo 30 muertos») la cambiaria sin que el medio corrija nada. Solo cuenta la misma frase con otra
+    cifra: una frase nueva que comparte al menos el 60 % de sus palabras (sin cifras) con una frase
+    anterior que ya no esta, y cuya cifra de un mismo sustantivo vale distinto. Solo se guarda la cita
+    (ADR 0003). Si el texto nuevo, y no el anterior, avisa del cambio, la frase del aviso va detras en el
+    despues, para que `changes_in` sobre las citas lea las mismas cifras y el mismo aviso.
+    """
+    old, new = _sentences(before), _sentences(after)
+    gone = [(s, _words(s), _first_values(s)) for s in old if s not in set(new)]
+    b_parts, a_parts = [], []
+    for sa in new:
+        if sa in old or not (va := _first_values(sa)):
+            continue
+        wa = _words(sa)
+        best = max(gone, key=lambda g: _overlap(g[1], wa), default=None)
+        if best is None or _overlap(best[1], wa) < SAME_SENTENCE:
+            continue
+        if any(n in best[2] and best[2][n] != v for n, v in va.items()):
+            b_parts.append(best[0])
+            a_parts.append(sa)
+    if not b_parts:
+        return None
+    notice = next((s for s in new if _ANNOUNCED.search(normalize(s))), None)
+    if notice and not _ANNOUNCED.search(normalize(before)):
+        a_parts.append(notice)
+    b_ex, a_ex = _join(b_parts), _join(a_parts)
+    return (b_ex, a_ex) if changes_in(b_ex, a_ex) else None
 
 
 def figure_changes(revisions: list[ArticleRevision]) -> list[FigureChange]:

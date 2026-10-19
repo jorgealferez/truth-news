@@ -36,6 +36,7 @@ es:
   fc_silent: en silencio
   fc_field_title: titular
   fc_field_summary: extracto
+  fc_field_content: texto completo
   fc_see: ver antes y después
   fc_before: Antes
   fc_after: Después
@@ -112,6 +113,7 @@ es:
   changes_note: El medio cambió esta noticia después de que la capturáramos. Guardamos la versión anterior, su huella y la fecha en que vimos el cambio.
   field_title: Titular
   field_summary: Extracto
+  field_content: Texto completo (frase de la cifra)
   detected: detectado el
   see_versions: Ver versiones y huellas
   before: Antes
@@ -711,6 +713,7 @@ en:
   fc_silent: silently
   fc_field_title: headline
   fc_field_summary: excerpt
+  fc_field_content: full text
   fc_see: see before and after
   fc_before: Before
   fc_after: After
@@ -787,6 +790,7 @@ en:
   changes_note: The outlet changed this story after we captured it. We keep the previous version, its fingerprint and the date we saw the change.
   field_title: Headline
   field_summary: Excerpt
+  field_content: Full text (sentence with the figure)
   detected: detected on
   see_versions: See versions and fingerprints
   before: Before
