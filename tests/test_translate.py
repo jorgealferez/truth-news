@@ -155,3 +155,9 @@ def test_english_reader_sees_headline_translated_under_h1(engine, session, story
     assert "EN: Titular es1" in h1 and "AI machine translation of the original (es)" in h1
     fresh = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
     assert "EN: Titular es1" not in fresh.get(f"/historia/{story.id}").text  # en espanol no se muestra
+
+
+def test_story_headline_is_translated_first(session, story):
+    story.title = "Titular fr1"  # la cabecera de la historia
+    session.commit()
+    assert [a.title for a in translate.pending(session, "es", 1)] == ["Titular fr1"]
