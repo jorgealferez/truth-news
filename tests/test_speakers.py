@@ -75,7 +75,8 @@ def test_speakers_page(engine, session):
     assert "Con pocas verificaciones todavía (1)" in page and "Ana López" in page
     assert "Sin Datos" not in page and "Madrid" not in page
     assert "No deducimos la afiliación de nadie" in page
-    assert 'href="/quien-dice-la-verdad"' in page and "/quien-dice-la-verdad" in tc.get("/sitemap.xml").text
+    assert 'href="/quien-dice-la-verdad"' in page
+    assert "/quien-dice-la-verdad" in tc.get("/sitemaps/paginas-1.xml").text
     assert "Who tells the truth" in tc.get("/quien-dice-la-verdad?lang=en").text
 
 
