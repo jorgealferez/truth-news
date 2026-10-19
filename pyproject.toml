@@ -36,7 +36,7 @@ truthnews = "truthnews.cli:main"
 include = ["truthnews*"]
 
 [tool.setuptools.package-data]
-truthnews = ["registry/*.yaml", "registry/sources/*.yaml", "web/templates/*.html", "web/static/*", "web/fonts/*"]
+truthnews = ["registry/*.yaml", "registry/sources/*.yaml", "registry/political/*.yaml", "web/templates/*.html", "web/static/*", "web/fonts/*"]
 
 [tool.ruff]
 line-length = 110
