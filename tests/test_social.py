@@ -336,3 +336,15 @@ def test_admin_shows_social_queue_without_secrets(engine, session, content, monk
     page = client.get("/admin", auth=("admin", "clave")).text
     assert "<h2>Redes</h2>" in page and "modo prueba (sin credenciales)" in page
     assert "Verificación: Falso" in page and "secreto-del-bot" not in page
+
+
+def test_rss_includes_published_threads_and_sourced_verifications(engine, session, content):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.web.app import create_app
+
+    rss = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine)).get("/rss.xml").text
+    assert "<title>Hilo: El edificio de la calle Mayor, de 2019 a hoy</title>" in rss
+    assert "<title>Verificación: Falso</title>" in rss and "INE, Encuesta de Poblacion Activa" in rss
+    assert "Hilo en revision" not in rss and "Verificación: Engañoso" not in rss  # revision / sin fuente

@@ -32,11 +32,14 @@ from truthnews.db import get_engine, session_factory
 from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.social import images
+from truthnews.social import select as select_social
 from truthnews.web import admin, appointments, budget, citations, queries, seo, social, topicview
 from truthnews.web.langprefix import LangPrefix, localize
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
+RSS_DAYS = 14
+RSS_MAX_ITEMS = 100
 
 
 def _dato(value: float | None, unit: str | None = None) -> str:
@@ -376,7 +379,22 @@ def create_app(
             }
             for p in queries.latest_pieces(session, limit=20)
         ]
+        # Hilos publicados y verificaciones con fuente, con las mismas reglas que las redes (ADR 0018).
+        since = datetime.now(UTC) - timedelta(days=RSS_DAYS)
+        lang = settings.default_language
+        for c in select_social.threads(session, settings.site_url, since, lang) + select_social.verifications(
+            session, settings.site_url, since, lang
+        ):
+            items.append(
+                {
+                    "title": c.draft.headline,
+                    "link": c.draft.url,
+                    "description": " ".join(ln for ln in c.draft.lines if ln),
+                    "date": c.date if c.date.tzinfo else c.date.replace(tzinfo=UTC),
+                }
+            )
         items.sort(key=lambda i: i["date"], reverse=True)
+        items = items[:RSS_MAX_ITEMS]
         xml = social.rss_xml(
             settings.site_name, settings.site_url, registry.t(settings.default_language, "tagline"), items
         )
