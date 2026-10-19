@@ -87,11 +87,19 @@ def _cmd_entities(args) -> int:
 
 
 def _cmd_archive(args) -> int:
+    from datetime import timedelta
+
     from truthnews import archive
     from truthnews.db import get_engine, session_scope
 
     with session_scope(get_engine()) as session:
-        out = archive.run(session, budget=args.queries, max_seconds=args.max_seconds)
+        out = archive.run(
+            session,
+            slots=args.slots,
+            stride=timedelta(minutes=args.stride),
+            countries=[c.strip().upper() for c in args.countries.split(",") if c.strip()] or None,
+            max_seconds=args.max_seconds,
+        )
     print(json.dumps(out, indent=2, default=str))
     return 0
 
@@ -194,9 +202,11 @@ def build_parser() -> argparse.ArgumentParser:
     en = sub.add_parser("entities", help="extrae personas y entidades de las noticias pendientes")
     en.add_argument("--limit", type=int, default=2000)
     en.set_defaults(func=_cmd_entities)
-    ar = sub.add_parser("archive", help="importa noticias antiguas de las entidades (GDELT)")
-    ar.add_argument("--queries", type=int, default=6)
-    ar.add_argument("--max-seconds", type=float, default=90.0)
+    ar = sub.add_parser("archive", help="importa noticias antiguas de los medios del registro (GDELT GKG)")
+    ar.add_argument("--slots", type=int, default=2, help="tramos de 15 minutos a importar")
+    ar.add_argument("--stride", type=int, default=360, help="minutos entre tramos, hacia atras")
+    ar.add_argument("--countries", default="ES", help="paises de los medios (vacio = todos)")
+    ar.add_argument("--max-seconds", type=float, default=120.0)
     ar.set_defaults(func=_cmd_archive)
     so = sub.add_parser("social", help="redes: vista previa o paso del worker").add_subparsers(
         dest="sub", required=True

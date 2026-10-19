@@ -81,10 +81,19 @@ class Settings:
     ai_claims_effort: str = field(default_factory=lambda: os.environ.get("AI_CLAIMS_EFFORT", "medium"))
     # Dias de BOE (nombramientos y ceses) que la web guarda en memoria para confirmar noticias; 0 = nada.
     boe_index_days: int = field(default_factory=lambda: int(os.environ.get("BOE_INDEX_DAYS", "30")))
-    # Entidades y archivo (ADR 0028): noticias por tanda y consultas al archivo por ciclo (0 = apagado).
+    # Entidades y archivo (ADR 0028/0030): noticias por tanda; tramos GKG de 15 min por ciclo (0 = apagado),
+    # cada cuanto se toma un tramo hacia atras y de que paises son los medios que se importan.
     entities_batch: int = field(default_factory=lambda: int(os.environ.get("ENTITIES_BATCH", "2000")))
-    archive_queries_per_cycle: int = field(
-        default_factory=lambda: int(os.environ.get("ARCHIVE_QUERIES_PER_CYCLE", "6"))
+    archive_slots_per_cycle: int = field(
+        default_factory=lambda: int(os.environ.get("ARCHIVE_SLOTS_PER_CYCLE", "2"))
+    )
+    archive_stride_minutes: int = field(
+        default_factory=lambda: int(os.environ.get("ARCHIVE_STRIDE_MINUTES", "360"))
+    )
+    archive_countries: tuple[str, ...] = field(
+        default_factory=lambda: tuple(
+            c.strip().upper() for c in os.environ.get("ARCHIVE_COUNTRIES", "ES").split(",") if c.strip()
+        )
     )
     admin_user: str = field(default_factory=lambda: os.environ.get("ADMIN_USER", "admin"))
     admin_password: str = field(default_factory=lambda: os.environ.get("ADMIN_PASSWORD", ""))

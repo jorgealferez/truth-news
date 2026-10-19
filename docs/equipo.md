@@ -72,6 +72,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0026 | diseno | en este PR | Ultimo minuto (session_01VVUuDkKCf1JjwvouACQM38) |
 | ADR 0027 | diseno | PR (este) | Entidades (lo que no cuadra: gravedad y quien lo dice) |
 | ADR 0028 + migracion 0015 | datos | PR (este) | Entidades (entidades, menciones, hablante y archivo) |
+| ADR 0030 | diseno | PR (este) | Entidades (archivo desde los ficheros GKG de GDELT) |
 | siguiente libre | — | — | pedir a la direccion |
 
 ## Como se trabaja
