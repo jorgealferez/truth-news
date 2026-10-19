@@ -286,6 +286,30 @@ es:
   no_appointments: Ese día el BOE no publicó nombramientos ni ceses (o aún no está disponible).
   previous_day: Día anterior
   next_day: Día siguiente
+  budget: Presupuestos del Estado
+  budget_lead: >-
+    Cuánto ha gastado e invertido cada ministerio de lo presupuestado, mes a mes, según el extracto oficial de
+    ejecución que publica la Intervención General del Estado (IGAE).
+  budget_unavailable: El extracto de la IGAE no está disponible ahora mismo. Vuelve a intentarlo más tarde.
+  budget_until: Hasta el
+  budget_spent: el Estado ha reconocido el
+  budget_of_credits: de su presupuesto de gasto
+  budget_investment: en inversiones, el
+  budget_credits_m: presupuesto (millones de euros)
+  budget_obligations_m: gastado (millones de euros)
+  budget_yoy: frente al año anterior
+  budget_investment_exec: inversión ejecutada
+  budget_spending_exec: gasto ejecutado
+  budget_by_ministry: Por ministerio
+  budget_section: Sección
+  budget_revenue: Ingresos
+  budget_chapter: Capítulo
+  budget_forecast_m: previsto (millones de euros)
+  budget_collected_m: recaudado (millones de euros)
+  budget_method: >-
+    Ejecutado = obligaciones reconocidas netas sobre créditos definitivos; la comparación es con el mismo mes
+    del año anterior. Lo calculamos a partir de los importes publicados, sin estimaciones.
+  budget_extract: extracto de ejecución
 
 en:
   tagline: We compare what the media report with what the data say
@@ -570,3 +594,27 @@ en:
   no_appointments: That day the BOE published no appointments or dismissals (or it is not available yet).
   previous_day: Previous day
   next_day: Next day
+  budget: State budget
+  budget_lead: >-
+    How much of its budget each Spanish ministry has spent and invested, month by month, according to the
+    official execution extract published by the Comptroller General of the State (IGAE).
+  budget_unavailable: The IGAE extract is not available right now. Please try again later.
+  budget_until: Up to
+  budget_spent: the State had committed
+  budget_of_credits: of its spending budget
+  budget_investment: on investment,
+  budget_credits_m: budget (million euros)
+  budget_obligations_m: spent (million euros)
+  budget_yoy: vs. previous year
+  budget_investment_exec: investment executed
+  budget_spending_exec: spending executed
+  budget_by_ministry: By ministry
+  budget_section: Section
+  budget_revenue: Revenue
+  budget_chapter: Chapter
+  budget_forecast_m: forecast (million euros)
+  budget_collected_m: collected (million euros)
+  budget_method: >-
+    Executed = net recognised obligations over final appropriations; compared with the same month of the
+    previous year. Computed from the published amounts, with no estimates.
+  budget_extract: execution extract

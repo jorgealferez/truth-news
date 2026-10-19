@@ -31,7 +31,7 @@ from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.social import images
-from truthnews.web import admin, appointments, citations, queries, seo, social, topicview
+from truthnews.web import admin, appointments, budget, citations, queries, seo, social, topicview
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -130,10 +130,12 @@ def create_app(
     engine: Engine | None = None,
     ads_client: adsmod.AdsClient | None = None,
     boe_days: appointments.BoeDays | None = None,
+    igae_extract: budget.LatestExtract | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
     boe_days = boe_days or appointments.BoeDays()
+    igae_extract = igae_extract or budget.LatestExtract()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -142,6 +144,9 @@ def create_app(
     templates.env.filters["ago"] = _ago
     templates.env.filters["epoch_ms"] = _epoch_ms
     templates.env.filters["num"] = lambda v: f"{v:,.0f}".replace(",", ".")
+    templates.env.filters["pct"] = lambda v, sign=False: (f"{v:+.1f}" if sign else f"{v:.1f}").replace(
+        ".", ","
+    )
     templates.env.filters["qual"] = lambda q: QUALIFIER_LABEL.get(q, q)
     templates.env.filters["word_diff"] = citations.word_diff
     templates.env.filters["dato"] = _dato
@@ -268,6 +273,7 @@ def create_app(
                 "/investigaciones",
                 "/metodologia",
                 "/nombramientos",
+                "/presupuestos",
                 "/publicidad",
                 "/acerca",
             )
@@ -666,6 +672,11 @@ def create_app(
             prev_day=day - timedelta(days=1),
             next_day=day + timedelta(days=1) if day < today else None,
         )
+
+    @app.get("/presupuestos", response_class=HTMLResponse)
+    def budget_page(request: Request):
+        ex = igae_extract.get()
+        return render(request, "budget.html", ex=ex, v=budget.view(ex) if ex else None)
 
     @app.get("/publicidad", response_class=HTMLResponse)
     def advertising(request: Request):
