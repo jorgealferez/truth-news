@@ -1,0 +1,11 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): el-universal-mx (robots.txt lo prohibe), proceso (HTTP 403), animal-politico (robots.txt lo
+# prohibe), excelsior (HTTP 404), milenio (HTTP 403).
+country: MX
+default_language: es
+outlets:
+  - {slug: la-jornada, name: La Jornada, homepage: "https://www.jornada.com.mx", scope: national, feeds: [{url: "https://www.jornada.com.mx/rss/edicion.xml"}]}
+  - {slug: el-financiero-mx, name: El Financiero, homepage: "https://www.elfinanciero.com.mx", scope: national,
+     feeds: [{url: "https://www.elfinanciero.com.mx/arc/outboundfeeds/rss/?outputType=xml", category: economia}]}
+  - {slug: el-economista-mx, name: El Economista México, homepage: "https://www.eleconomista.com.mx", scope: national,
+     feeds: [{url: "https://www.eleconomista.com.mx/rss/ultimas-noticias", category: economia}]}

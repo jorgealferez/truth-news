@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): el-espectador (no es un feed o esta vacio), la-silla-vacia (HTTP 429).
+country: CO
+default_language: es
+outlets:
+  - {slug: el-tiempo, name: El Tiempo, homepage: "https://www.eltiempo.com", scope: national, feeds: [{url: "https://www.eltiempo.com/rss/colombia.xml"}]}
+  - {slug: semana, name: Semana, homepage: "https://www.semana.com", scope: national, feeds: [{url: "https://www.semana.com/arc/outboundfeeds/rss/?outputType=xml"}]}

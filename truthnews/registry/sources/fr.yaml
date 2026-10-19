@@ -1,0 +1,20 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): les-echos (HTTP 403), l-humanite (robots.txt lo prohibe).
+# Medios de Francia (France 24 y RFI en espanol estan en xx.yaml).
+country: FR
+default_language: fr
+outlets:
+  - {slug: le-monde, name: Le Monde, homepage: "https://www.lemonde.fr", scope: national,
+     feeds: [{url: "https://www.lemonde.fr/rss/une.xml"}, {url: "https://www.lemonde.fr/international/rss_full.xml", category: internacional},
+             {url: "https://www.lemonde.fr/politique/rss_full.xml", category: politica}, {url: "https://www.lemonde.fr/economie/rss_full.xml", category: economia}]}
+  - {slug: le-figaro, name: Le Figaro, homepage: "https://www.lefigaro.fr", scope: national,
+     feeds: [{url: "https://www.lefigaro.fr/rss/figaro_actualites.xml"}, {url: "https://www.lefigaro.fr/rss/figaro_international.xml", category: internacional},
+             {url: "https://www.lefigaro.fr/rss/figaro_politique.xml", category: politica}]}
+  - {slug: liberation, name: Libération, homepage: "https://www.liberation.fr", scope: national,
+     feeds: [{url: "https://www.liberation.fr/arc/outboundfeeds/rss-all/?outputType=xml"}]}
+  - {slug: franceinfo, name: franceinfo, homepage: "https://www.francetvinfo.fr", scope: national, kind: tv, owner: France Télévisions (pública),
+     feeds: [{url: "https://www.francetvinfo.fr/titres.rss"}, {url: "https://www.francetvinfo.fr/monde.rss", category: internacional}]}
+  - {slug: france24-fr, name: France 24, homepage: "https://www.france24.com/fr/", scope: national, kind: tv, owner: France Médias Monde (pública),
+     feeds: [{url: "https://www.france24.com/fr/rss"}]}
+  - {slug: 20minutes-fr, name: 20 Minutes, homepage: "https://www.20minutes.fr", scope: national, feeds: [{url: "https://www.20minutes.fr/feeds/rss-une.xml"}]}
+  - {slug: mediapart, name: Mediapart, homepage: "https://www.mediapart.fr", scope: national, feeds: [{url: "https://www.mediapart.fr/articles/feed"}]}

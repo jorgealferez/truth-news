@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): la-republica-pe (HTTP 404).
+country: PE
+default_language: es
+outlets:
+  - {slug: el-comercio-pe, name: El Comercio, homepage: "https://elcomercio.pe", scope: national,
+     feeds: [{url: "https://elcomercio.pe/arc/outboundfeeds/rss/?outputType=xml"}]}
+  - {slug: rpp, name: RPP Noticias, homepage: "https://rpp.pe", scope: national, kind: radio, feeds: [{url: "https://rpp.pe/feed"}]}
