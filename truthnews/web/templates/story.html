@@ -64,6 +64,7 @@
       <div class="ocard" id="m-{{ o.outlet.slug }}">
         <p class="who"><a href="/medio/{{ o.outlet.slug }}">{{ o.outlet.name }}</a>{% if o.outlet.owner %}<span class="owner">{{ o.outlet.owner }}</span>{% endif %}</p>
         <p class="headline"><a href="{{ o.article.url }}" rel="noopener nofollow" target="_blank">{{ o.article.title }}</a> <a class="meta" href="{{ url('noticia', o.article.id, o.article.title) }}?ficha=1">{{ t(lang, 'capture_record')|lower }}</a></p>
+        {% if tr[o.article.id] and o.article.language != lang %}<p class="tr" lang="{{ lang }}">{{ tr[o.article.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ o.article.language }})</span></p>{% endif %}
         <p class="tags">{% for v in o.verdicts %}<span class="badge v-{{ v }}">{{ t(lang, 'verdict_' ~ v) }}</span>{% endfor %}
           {% for n, f in o.figures.items() %}<span class="tag">{{ n }} <b>{{ f.value|num }}</b></span>{% endfor %}
           {% for x in o.blame %}<span class="tag point">→ {{ x }}</span>{% endfor %}
@@ -101,7 +102,7 @@
   <details class="block fold" id="cobertura"><summary><h2>{{ t(lang, 'coverage') }}</h2> <span class="meta">{{ arts|length }} {{ t(lang, 'articles_count') }}</span></summary>
     <ol class="coverage">
     {% for a in arts %}<li><span class="who"><a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a> {{ a.published_at.strftime('%d/%m %H:%M') }} · {{ t(lang, 'scope_' ~ a.outlet.scope) }}</span>
-      <span class="what"><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a></span></li>{% endfor %}
+      <span class="what"><a href="{{ url('noticia', a.id, a.title) }}">{{ a.title }}</a>{% if tr[a.id] and a.language != lang %}<span class="tr" lang="{{ lang }}">{{ tr[a.id] }} <span class="meta">· {{ t(lang, 'machine_translation') }} ({{ a.language }})</span></span>{% endif %}</span></li>{% endfor %}
     </ol>
   </details>
 

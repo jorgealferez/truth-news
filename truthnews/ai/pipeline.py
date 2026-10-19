@@ -7,6 +7,7 @@ import logging
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from truthnews.ai import translate
 from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.topics import build_topics
 from truthnews.ai.writer import write_pieces
@@ -18,12 +19,25 @@ log = logging.getLogger(__name__)
 
 
 def run(
-    session: Session, settings: Settings, ai: AIClient | None = None, verifier: Verifier | None = None
+    session: Session,
+    settings: Settings,
+    ai: AIClient | None = None,
+    verifier: Verifier | None = None,
+    translator: AIClient | None = None,
 ) -> dict:
     if ai is None and not settings.ai_enabled:
         return {"ai": "desactivada (sin ANTHROPIC_API_KEY)"}
+    injected = ai is not None
     ai = ai or AIClient(settings.ai_model, settings.ai_effort)
     out: dict = {}
+    try:  # titulares de otros idiomas al de la portada, con esfuerzo bajo: traducir no razona (ADR 0017)
+        translator = translator or (ai if injected else AIClient(settings.ai_model, "low", max_tokens=16000))
+        out["translations"] = translate.run(
+            session, translator, [settings.default_language], settings.ai_max_translations_per_cycle
+        )
+    except AIError as exc:
+        session.rollback()
+        log.warning("traducciones no generadas: %s", exc)
     try:
         out["topics"] = build_topics(session, ai, settings.default_country)
         session.commit()
