@@ -135,3 +135,13 @@ def test_cli_prints_the_trace(monkeypatch, capsys):
     assert cli.main(argv) == 0
     out = capsys.readouterr().out
     assert '"parada": "documento-obtenido"' in out and '"vias_alternativas": [\n    "BOE"' in out
+
+
+def test_evidence_carries_the_trace():
+    from truthnews.crawler.targeted import evidence_of
+
+    rec = run("https://ayto.es/x", {"/x": (200, "Contrato 2026/17")}, [])
+    ev = evidence_of(rec, "Portal de transparencia", "Contrato 2026/17", value=2950000.0)
+    assert ev.url == "https://ayto.es/x" and ev.payload["consulta_puntual"] and ev.payload["visitas"]
+    with pytest.raises(ValueError):
+        evidence_of(run("https://ayto.es/x", {"/x": (403, "no")}, []), "s", "l")
