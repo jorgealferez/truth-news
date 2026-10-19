@@ -293,6 +293,7 @@ def run(session: Session, ai: AIClient, country: str = "ES", limit: int = 2, **s
             log.warning("hilo de la historia %s no generado: %s", st.id, exc)
             failed += 1
             continue
+        session.commit()  # cada hilo queda guardado aunque el ciclo se corte
         done += 1
         revision += thread.status == "revision"
     return {"threads": done, "threads_in_revision": revision, "threads_failed": failed}

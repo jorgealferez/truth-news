@@ -26,6 +26,7 @@ def run(
     out: dict = {}
     try:
         out["topics"] = build_topics(session, ai, settings.default_country)
+        session.commit()
     except AIError as exc:
         log.warning("temas no generados: %s", exc)
         return {"error": str(exc)}
@@ -46,6 +47,7 @@ def run(
             failed += 1
             continue
         if pieces:
+            session.commit()  # cada pieza queda guardada aunque el ciclo se corte (p. ej. un redespliegue)
             written += 1
             revision += pieces[0].status == "revision"
     out.update({"pieces_written": written, "pieces_in_revision": revision, "failed": failed})
