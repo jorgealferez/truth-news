@@ -1,12 +1,12 @@
 """redes en ingles: cuentas `*_en` en la cola de publicaciones (ADR 0033)
 
-Revision ID: 0018
+Revision ID: 0017
 Revises: 0016
 """
 
 from alembic import op
 
-revision = "0018"
+revision = "0017"
 down_revision = "0016"
 branch_labels = None
 depends_on = None

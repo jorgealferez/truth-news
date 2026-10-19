@@ -71,4 +71,4 @@ lo rechaza tras bajar y rechaza siempre una red inexistente; `compare_metadata` 
 
 ## Alcance
 - `truthnews/models.py`
-- `alembic/versions/0018_redes_en_ingles.py`
+- `alembic/versions/0017_redes_en_ingles.py`

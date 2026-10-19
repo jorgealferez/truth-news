@@ -77,7 +77,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0030 | diseno | en main | Entidades (archivo desde los ficheros GKG de GDELT) |
 | ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
 | ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
-| ADR 0033 + migracion 0017 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
+| ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
 | ADR 0035 | diseno | reservado | Comparativas (afirmaciones que se repiten; sin migracion) |
 | ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
