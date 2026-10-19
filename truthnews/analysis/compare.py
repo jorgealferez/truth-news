@@ -74,6 +74,12 @@ _PERSONAS_CONTEXT = (
     ("detenidos", re.compile(r"\b(detenid|detencion|arrestad)")),
     ("evacuados", re.compile(r"\b(evacuad|desalojad|realojad)")),
 )
+# Con quien le paso no basta: "mueren 12 inmigrantes" son 12 muertos y "1.000 policias y gendarmes heridos"
+# son 1.000 heridos. Si la frase dice que les paso, cuenta eso (ADR 0053); si no, el sustantivo.
+_PEOPLE = {"migrantes", "soldados", "agentes", "policias", "manifestantes"}
+_DIED_BEFORE = re.compile(
+    r"\b(mata|matan|mato|mataron|mueren|murieron|fallecen|fallecieron|pierden la vida)\b"
+)
 # Dos cifras del mismo sustantivo solo se comparan si hablan del mismo hecho (ADR 0016). Un balance que se
 # actualiza o una discrepancia real se mueven dentro de un orden de magnitud; "12 migrantes" ocultados en una
 # casa frente a "500" desalojados, o "50 detenidos" en Milan frente a "2.000" en Francia, son hechos
@@ -84,7 +90,7 @@ _ATTRIBUTED = re.compile(r"\bsegun\b")
 # Ni el territorio ni el partido cambian el orden de magnitud: "300 muertes en Aragon" y "500 en Castilla y
 # Leon", o "entre 16 y 20 escanos" de Vox y "hasta diez" de Adelante, son hechos distintos. Se lee la frase
 # de la cifra (comunidades autonomas, provincias y Espana; el partido mas cercano antes de la cifra) y dos
-# cifras con territorios que no se cruzan, o de partidos distintos, no se comparan (ADR 0051).
+# cifras con territorios que no se cruzan, o de partidos distintos, no se comparan (ADR 0053).
 _TERRITORIES = {
     "espana": r"espana",
     "andalucia": r"andalucia|almeria|cadiz|cordoba|granada|huelva|jaen|malaga|sevilla",
@@ -133,7 +139,7 @@ _SENTENCE_END = re.compile(r"[.!?](?:\s|$)")
 # Una cantidad de dinero no es un recuento: en una misma noticia conviven medias, umbrales, multas y precios
 # ("por debajo de 700 euros" y "superan los 1.000"; 300 euros/MWh en la hora mas cara y 215 de media). Sin
 # indicador ni periodo (eso lo hacen las verificaciones, ADR 0019) no se sabe si dos cifras son el mismo
-# dato: se dice en que coinciden los medios, pero no se abre disputa (ADR 0051).
+# dato: se dice en que coinciden los medios, pero no se abre disputa (ADR 0053).
 MEASURES = {"euros"}
 _LIVE = re.compile(r"\b(en directo|directo|ultima hora|minuto a minuto|live)\b")
 LEAD_CHARS = 400  # las cifras se toman del titular, el resumen y el arranque del texto
@@ -364,16 +370,25 @@ def _figures(
             continue
         frag = tn[max(0, m.start() - 30) : m.end() + 10].strip()
         noun = _COUNTABLE[m.group(4)]
-        if noun == "personas":
+        if noun == "personas" or noun in _PEOPLE:
             # Solo la frase de la cifra, y primero lo que la sigue: en "cuatro muertos. Otras 39 personas
             # resultaron heridas" los 39 son heridos, no muertos.
             before = re.split(r"[.;:!?]\s", tn[max(0, m.start() - 20) : m.start()])[-1]
             after = re.split(r"[.;:!?](?:\s|$)", tn[m.end() : m.end() + 25])[0]
-            noun = next(
-                (n for part in (after, before) for n, rx in _PERSONAS_CONTEXT if rx.search(part)), None
-            )
-            if noun is None:
-                continue
+            if noun == "personas":
+                event = next(
+                    (n for part in (after, before) for n, rx in _PERSONAS_CONTEXT if rx.search(part)), None
+                )
+                if event is None:
+                    continue
+            else:
+                # Con quien (migrantes, policias...) solo vale lo que les pasa: "500 policias heridos" o
+                # "mueren 12 inmigrantes". Un participio de antes es de la cifra anterior: en "1.800 personas
+                # detenidas y 500 policias" los 500 no son detenidos.
+                event = next((n for n, rx in _PERSONAS_CONTEXT if rx.search(after)), None)
+                if event is None and _DIED_BEFORE.search(before):
+                    event = "muertos"
+            noun = event or noun
         out.append((noun, value, (m.group(1) or "").strip(), frag, *_scope(tn, m.start(), m.end(), noun)))
     return out
 
@@ -447,6 +462,8 @@ def compare(articles: list) -> Comparison:
         for a in sorted(arts, key=lambda x: x.published_at):
             if _LIVE.search(normalize(a.title)):
                 continue  # un directo mezcla datos de muchos momentos: no se compara
+            if (a.language or "es") != "es":
+                continue  # las cifras se leen en castellano: en portugues "dos votos" no son dos (ADR 0053)
             lead = f"{a.title}. {a.summary or ''} {(a.content_text or '')[:LEAD_CHARS]}"
             # La frase de una cifra del arranque puede seguir despues del corte: se lee entera.
             context = lead + (a.content_text or "")[LEAD_CHARS : LEAD_CHARS + SCOPE_CHARS]

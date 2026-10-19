@@ -1,6 +1,7 @@
 """Medida de la calidad de las disputas de cifras sobre historias reales etiquetadas (ADR 0016).
 
-Fixture: `tests/fixtures/disputes.json`. Cada historia trae sus articulos (titular, resumen y, en las de
+Fixture: `tests/fixtures/disputes.json`. Cada historia trae sus articulos (titular, resumen, `idioma` si no es
+castellano y, en las de
 produccion del 19/10, `texto`: las frases del texto completo citadas en la ficha del articulo) y, en
 `hechos`, de que hecho habla cada cifra: {sustantivo: {medio: {cifra: hecho}}}. Una disputa es correcta
 si todas sus cifras hablan del mismo hecho; una cifra sin etiqueta cuenta como error.
@@ -23,7 +24,7 @@ def _articles(story: dict) -> list:
             summary=a["summary"],
             content_text=a.get("texto"),
             published_at=datetime.fromisoformat(a["published_at"]),
-            language="es",
+            language=a.get("idioma", "es"),
         )
         for a in story["articulos"]
     ]

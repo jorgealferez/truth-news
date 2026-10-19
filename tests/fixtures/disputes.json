@@ -1,5 +1,5 @@
 {
- "$comentario": "Historias reales de produccion (nosmienten.com): 15 del rastreo del 17-18/10/2026 con titular y resumen de cada articulo, y 13 del 18-19/10/2026 (encargo de la direccion: casos en que los medios dan cifras que no cuadran) con titular, resumen, 'texto' (las frases del texto completo citadas en la ficha del articulo), 'url' del medio, fecha y, en 'cifras_oficiales', la cifra oficial cuando los textos la citan (valor null si no la hay). 'hechos' etiqueta a mano, por sustantivo, medio y cifra, de que hecho habla cada cifra: dos cifras solo son una disputa si hablan del mismo hecho (ADR 0016). Una cifra sin etiqueta en una disputa cuenta como error.",
+ "$comentario": "Historias reales de produccion (nosmienten.com): 15 del rastreo del 17-18/10/2026 con titular y resumen de cada articulo y 13 del 18-19/10/2026 (encargo de la direccion: casos en que los medios dan cifras que no cuadran), estas con titular, resumen, 'texto' (las frases del texto completo citadas en la ficha del articulo), 'url' del medio, fecha, 'idioma' si no es castellano y, en 'cifras_oficiales', la cifra oficial cuando los textos la citan (valor null si no la hay). 'hechos' etiqueta a mano, por sustantivo, medio y cifra, de que hecho habla cada cifra: dos cifras solo son una disputa si hablan del mismo hecho (ADR 0016). Una cifra sin etiqueta en una disputa cuenta como error.",
  "historias": [
   {
    "historia": 1224,
@@ -474,6 +474,9 @@
      },
      "Huelva Información": {
       "600": "policias-francia"
+     },
+     "La Razón": {
+      "600": "policias-francia"
      }
     },
     "policias": {
@@ -806,6 +809,11 @@
      },
      "Melilla Hoy": {
       "350": "operativo"
+     }
+    },
+    "evacuados": {
+     "Melilla Hoy": {
+      "500": "desalojo"
      }
     }
    }
@@ -1923,6 +1931,9 @@
      },
      "Euronews Español": {
       "1000": "policías y agentes heridos en Francia el sábado"
+     },
+     "El Economista México": {
+      "1000": "policías y agentes heridos en Francia el sábado"
      }
     },
     "agentes": {
@@ -2427,6 +2438,9 @@
     "heridos": {
      "El Mundo": {
       "997": "policías y agentes heridos en Francia el sábado"
+     },
+     "DW Español": {
+      "1000": "policías y agentes heridos en Francia el sábado"
      }
     },
     "policias": {

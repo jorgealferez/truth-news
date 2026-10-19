@@ -96,8 +96,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0048 + migracion 0020 | datos | reservado | Redes (pieza diaria de Hoy en 1 minuto: kind `hoy` en `social_post`) |
 | ADR 0049 + migracion 0021 | datos | PR #183 | Verificaciones (retirar un veredicto a mano, registro en `admin_action`; pedido por la direccion) |
 | ADR 0050 | diseno | PR (este) | Entidades (graficos SVG de entidad e historia; asignado por la direccion) |
-| ADR 0051 | diseno | PR (este) | Comparativas (dos cifras solo se comparan con el mismo territorio y partido; el dinero no abre disputa; sin migracion) |
-| siguiente libre | — | — | ADR 0052 + migracion 0022; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
+| ADR 0053 | diseno | PR #215 | Comparativas (dos cifras solo se comparan si cuentan lo mismo, del mismo territorio y partido; el dinero no abre disputa; sin migracion) |
+| siguiente libre | — | — | ADR 0054 + migracion 0024; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 
