@@ -254,9 +254,11 @@ def test_rankings_profile_and_web_pages(engine, session, corpus):
     assert r.status_code == 301 and r.headers["location"] == f"/entidad/{elena.id}-elena-martinez"
     page = client.get(f"/entidad/{elena.id}-elena-martinez")
     assert page.status_code == 200 and "Lo que dice" in page.text and "Falso" in page.text
+    assert '<svg class="chart said"' in page.text and "Lo que dijo y cuándo" in page.text
     assert client.get(f"/entidad/{lonely.id}").status_code == 404
     story = client.get(f"/historia/{st.id}-debate")
     assert story.status_code == 200 and "Quién aparece" in story.text
+    assert "La cifra en el tiempo" in story.text and "Dato oficial (ine, " in story.text
     assert f'href="/entidad/{elena.id}-elena-martinez"' in story.text
     assert [e.name for e, _ in views.for_story(session, st.id)][0] == "Elena Martínez"
     assert client.get("/entidad/999999").status_code == 404
