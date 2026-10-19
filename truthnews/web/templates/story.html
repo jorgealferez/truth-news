@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block title %}{{ st.title }} — {{ site.site_name }}{% endblock %}
-{% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ st.title }}{% endblock %}
+{% block title %}{{ (st_tr or {}).get(st.id) or st.title }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ st.n_outlets }} {{ t(lang, 'n_outlets') }}: {{ (st_tr or {}).get(st.id) or st.title }}{% endblock %}
 {% block og_image %}{{ site.site_url }}/og/historia/{{ st.id }}.png{% endblock %}
 {% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('historia', st.id, st.title) }}">{% endblock %}
 {% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/contrastes">{{ t(lang, 'contrasts') }}</a> › <a href="/seccion/{{ st.category }}">{{ category_name(st.category, lang) }}</a></p>{% endblock %}
