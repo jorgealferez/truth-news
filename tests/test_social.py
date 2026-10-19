@@ -234,6 +234,8 @@ def _fake_networks(fail=()):
             return httpx.Response(200, json={"id": "88", "url": "https://mastodon.social/@n/88"})
         if path.endswith("/sendPhoto"):
             return httpx.Response(200, json={"ok": True, "result": {"message_id": 9}})
+        if path == "/2/media/upload":
+            return httpx.Response(200, json={"data": {"id": "555", "media_key": "3_555"}})
         if path == "/2/tweets":
             return httpx.Response(201, json={"data": {"id": "1001", "text": "t"}})
         return httpx.Response(404)
@@ -260,6 +262,9 @@ def test_sends_with_credentials_and_records_each_post(session, content):
         and "oauth_signature=" in tweet.headers["Authorization"]
     )
     assert "Idempotency-Key" in next(r for r in seen if r.url.path == "/api/v1/statuses").headers
+    assert json.loads(tweet.content)["media"] == {"media_ids": ["555"]}  # imagen adjunta en X
+    upload = next(r for r in seen if r.url.path == "/2/media/upload")
+    assert b'name="media_category"' in upload.content and upload.headers["Authorization"].startswith("OAuth ")
 
 
 def test_failure_is_recorded_stops_the_network_and_retries_next_cycle(session, content):
@@ -368,3 +373,17 @@ def test_cli_preview_writes_nothing_and_run_dry(db_url, engine, session, content
         assert session.query(SocialPost).count() == 8
     finally:
         get_engine.cache_clear()
+
+
+def test_x_publishes_without_image_when_upload_fails():
+    seen = []
+
+    def handler(req):
+        seen.append(req)
+        if req.url.path == "/2/media/upload":
+            return httpx.Response(403, text="sin permiso de medios")
+        return httpx.Response(201, json={"data": {"id": "7"}})
+
+    x = adapters.X(ALL_CREDS, httpx.Client(transport=httpx.MockTransport(handler)))
+    assert x.send("texto", SITE, b"png", "t") == ("7", "https://x.com/i/web/status/7")
+    assert "media" not in json.loads(seen[-1].content)  # la tarjeta del enlace lleva la imagen
