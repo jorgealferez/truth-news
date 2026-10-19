@@ -11,6 +11,7 @@
 <article class="vpage">
   <p class="vhead"><span class="badge v-{{ v.verdict }}">{{ t(lang, 'verdict_' ~ v.verdict) }}</span></p>
   <h1 class="vline">{{ line }}</h1>
+  {% set rn = retired_note(v) %}{% if rn %}<p class="vretired"><strong>{{ t(lang, 'retired_by_newsroom') }}</strong> ({{ rn[0] }}): {{ rn[1] }}</p>{% endif %}
   {% if chart %}<figure class="vfig">{{ chart }}
     <figcaption class="meta">{% for e in v.evidence %}{% if loop.first %}{{ t(lang, 'evidence') }}: <a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }}</a>{% endif %}{% endfor %}</figcaption>
   </figure>
