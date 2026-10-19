@@ -63,3 +63,59 @@ def test_latest_follows_first_xlsx_link_and_fails_closed():
         return httpx.Response(404)
 
     assert igae.latest(httpx.MockTransport(broken)) is None
+
+
+# --- Pagina /presupuestos -----------------------------------------------------------------------------
+
+
+class Clock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+
+def test_latest_extract_cache_keeps_last_good_one():
+    from truthnews.web.budget import LatestExtract
+
+    clock, calls, state = Clock(), [], {"ok": True}
+
+    def fetch():
+        calls.append(1)
+        if not state["ok"]:
+            raise RuntimeError("IGAE caida")
+        return igae.parse(XLSX, "u")
+
+    cache = LatestExtract(fetch, clock)
+    assert cache.get().periodo == "2026-08" and cache.get() is not None and len(calls) == 1
+    clock.now += 12 * 3600 + 1
+    state["ok"] = False
+    assert cache.get().periodo == "2026-08" and len(calls) == 2  # fallo: se sigue el ultimo bueno
+    assert LatestExtract(lambda: None, clock).get() is None
+
+
+def test_budget_page(engine):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.web.app import create_app
+    from truthnews.web.budget import LatestExtract
+
+    good = LatestExtract(lambda: igae.parse(XLSX, "https://www.igae.pap.hacienda.gob.es/x.xlsx"))
+    tc = TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, igae_extract=good))
+    page = tc.get("/presupuestos").text
+    assert "Presupuestos del Estado" in page and "31 de agosto de 2026" in page
+    assert "60,7 %" in page and "27,1 %" in page and "+12,7 %" in page
+    assert "Relaciones Financieras con la U. E." in page
+    assert page.index("Deuda Pública") < page.index("Defensa")  # por presupuesto, de mayor a menor
+    assert "462.162" in page  # millones de euros
+    assert 'href="https://www.igae.pap.hacienda.gob.es/x.xlsx"' in page and "Ingresos" in page
+    assert 'href="/presupuestos"' in page and "/presupuestos" in tc.get("/sitemap.xml").text
+    assert "State budget" in tc.get("/presupuestos?lang=en").text
+    down = TestClient(
+        create_app(
+            Settings(database_url="sqlite://"), engine=engine, igae_extract=LatestExtract(lambda: None)
+        )
+    )
+    assert "no está disponible" in down.get("/presupuestos").text

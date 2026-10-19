@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'budget') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'budget_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/presupuestos">{% endblock %}
+{% macro bar(p) %}{% if p and p.ejecucion is not none %}<span class="exec"><span class="exec-bar"><i style="width:{{ [p.ejecucion, 100]|min }}%"></i></span> <b>{{ p.ejecucion|pct }} %</b></span>{% else %}<span class="meta">—</span>{% endif %}{% endmacro %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'budget') }}</h1>
+<p class="lead-text">{{ t(lang, 'budget_lead') }}</p>
+{% if not ex %}<p class="empty">{{ t(lang, 'budget_unavailable') }}</p>{% else %}
+<p class="one-liner">{{ t(lang, 'budget_until') }} {{ ex.hasta }}: {{ t(lang, 'budget_spent') }} {{ ex.total_gastos.ejecucion|pct }} % {{ t(lang, 'budget_of_credits') }}{% if ex.total_inversiones %}; {{ t(lang, 'budget_investment') }} {{ ex.total_inversiones.ejecucion|pct }} %{% endif %}.</p>
+<ul class="kpis">
+  <li><b>{{ (ex.total_gastos.creditos / 1000)|num }}</b><span>{{ t(lang, 'budget_credits_m') }}</span></li>
+  <li><b>{{ (ex.total_gastos.obligaciones / 1000)|num }}</b><span>{{ t(lang, 'budget_obligations_m') }}</span></li>
+  <li class="{{ 'warn' if ex.total_gastos.variacion and ex.total_gastos.variacion > 0 }}"><b>{{ (ex.total_gastos.variacion or 0)|pct(True) }} %</b><span>{{ t(lang, 'budget_yoy') }}</span></li>
+  {% if ex.total_inversiones %}<li><b>{{ ex.total_inversiones.ejecucion|pct }} %</b><span>{{ t(lang, 'budget_investment_exec') }}</span></li>{% endif %}
+</ul>
+<section class="block"><h2>{{ t(lang, 'budget_by_ministry') }}</h2>
+<table class="table budget"><thead><tr><th>{{ t(lang, 'budget_section') }}</th><th class="num">{{ t(lang, 'budget_credits_m') }}</th><th>{{ t(lang, 'budget_spending_exec') }}</th><th>{{ t(lang, 'budget_investment_exec') }}</th><th class="num">{{ t(lang, 'budget_yoy') }}</th></tr></thead><tbody>
+{% for r in v.rows %}<tr><th>{{ r.nombre }}</th><td class="num">{{ (r.gasto.creditos / 1000)|num }}</td><td>{{ bar(r.gasto) }}</td><td>{{ bar(r.inversion) }}</td><td class="num">{% if r.gasto.variacion is not none %}{{ r.gasto.variacion|pct(True) }} %{% else %}—{% endif %}</td></tr>
+{% endfor %}</tbody></table></section>
+{% if v.ingresos %}<details class="block fold"><summary><h2>{{ t(lang, 'budget_revenue') }}</h2></summary>
+<table class="table budget"><thead><tr><th>{{ t(lang, 'budget_chapter') }}</th><th class="num">{{ t(lang, 'budget_forecast_m') }}</th><th class="num">{{ t(lang, 'budget_collected_m') }}</th><th class="num">{{ t(lang, 'budget_yoy') }}</th></tr></thead><tbody>
+{% for p in v.ingresos %}<tr><th>{{ p.nombre|capitalize }}</th><td class="num">{{ (p.creditos / 1000)|num }}</td><td class="num">{{ (p.pagos / 1000)|num }}</td><td class="num">{% if p.variacion is not none %}{{ p.variacion|pct(True) }} %{% else %}—{% endif %}</td></tr>{% endfor %}
+</tbody></table></details>{% endif %}
+<p class="meta">{{ t(lang, 'budget_method') }} {{ t(lang, 'source') }}: <a href="{{ ex.url }}" rel="noopener" target="_blank">IGAE · {{ t(lang, 'budget_extract') }} · {{ ex.periodo }}</a>.</p>
+{% endif %}
+{% endblock %}
