@@ -499,6 +499,10 @@ es:
   contracts_kind_rectificacion: Rectificación
   contracts_kind_otro: Anuncio
   contracts_file: Expediente
+  contracts_cited: Contratos públicos de empresas citadas
+  contracts_cited_note: >-
+    Adjudicaciones de los últimos 14 días publicadas en el Diario Oficial de la UE a empresas que esta noticia
+    nombra. Es el dato oficial; la mención no implica relación entre la noticia y el contrato.
   contracts_natural_person: adjudicatario que no consta como empresa (no se nombra)
   contracts_no_boe: Ese día el BOE no publicó anuncios de contratación (o aún no está disponible).
   contracts_no_ted: Las adjudicaciones de TED no están disponibles ahora mismo. Vuelve a intentarlo más tarde.
@@ -1169,6 +1173,10 @@ en:
   contracts_kind_rectificacion: Correction
   contracts_kind_otro: Notice
   contracts_file: File
+  contracts_cited: Public contracts of companies mentioned
+  contracts_cited_note: >-
+    Awards from the last 14 days published in the EU Official Journal to companies named in this story. This is
+    the official record; a mention does not imply any link between the story and the contract.
   contracts_natural_person: winner not listed as a company (not named)
   contracts_no_boe: That day the BOE published no procurement notices (or it is not available yet).
   contracts_no_ted: TED awards are not available right now. Please try again later.

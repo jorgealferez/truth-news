@@ -168,6 +168,7 @@ def create_app(
     council_index = council_index or council.CouncilIndex()
     boe_contracts = boe_contracts or contracts.BoeContractDays()
     ted_awards = ted_awards or contracts.TedAwards()
+    cited_firms = contracts.CitedFirms(ted_awards)
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -765,6 +766,9 @@ def create_app(
             boe=boe_index.confirmations(
                 [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()
             ),
+            contracts_cited=cited_firms.in_texts(
+                [st.title] + [f"{a.title} {a.summary or ''}" for a in arts], datetime.now(UTC).date()
+            ),
             # Nunca junto a un veredicto ni a "Que dicen los partidos": ahi solo la franja del pie.
             ads=ads_for(
                 request,
@@ -945,6 +949,7 @@ def create_app(
             archive_url=citations.archive_url(a),
             live=citations.is_live(a.title, *(x for r in a.revisions for x in (r.before, r.after))),
             boe=boe_index.confirmations([a.title, a.summary or ""], datetime.now(UTC).date()),
+            contracts_cited=cited_firms.in_texts([a.title, a.summary or ""], datetime.now(UTC).date()),
         )
 
     @app.get("/consejo-de-ministros", response_class=HTMLResponse)

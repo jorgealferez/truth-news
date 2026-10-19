@@ -269,3 +269,52 @@ def mentions(session: Session, names: list[str], until) -> dict[str, list[Articl
         if hits:
             out[name] = hits
     return out
+
+
+class CitedFirms:
+    """Indice de adjudicatarios de TED por nombre sin forma juridica, reconstruido cuando cambia la lista."""
+
+    def __init__(self, awards: TedAwards) -> None:
+        self.awards = awards
+        self._built_for: int | None = None
+        self._index: list[tuple[re.Pattern, str, list[ct.Adjudicacion]]] = []
+        self._lock = threading.Lock()
+
+    def _index_for(self, items: list[ct.Adjudicacion]) -> list[tuple[re.Pattern, str, list[ct.Adjudicacion]]]:
+        with self._lock:
+            if self._built_for != id(items):
+                by_core: dict[str, tuple[str, list[ct.Adjudicacion]]] = {}
+                for a in items:
+                    for name, _ in a.adjudicatarios:
+                        core = core_name(name)
+                        if searchable(core):
+                            by_core.setdefault(core, (name, []))[1].append(a)
+                self._index = [
+                    (re.compile(rf"(?<!\w){re.escape(core)}(?!\w)"), name, awards)
+                    for core, (name, awards) in by_core.items()
+                ]
+                self._built_for = id(items)
+            return self._index
+
+    def in_texts(self, texts: list[str], today: date, limit: int = MENTIONS_PER_NAME) -> list[dict]:
+        """Empresas que la noticia nombra por su nombre completo y que ganaron contratos en TED en el periodo.
+
+        Solo enlaza el dato oficial: no dice que la noticia trate del contrato.
+        """
+        got = self.awards.get(today)
+        text = normalize(" ".join(t for t in texts if t))
+        if not got or not text:
+            return []
+        out = []
+        for rx, name, awards in self._index_for(got[2]):
+            if rx.search(text):
+                eur = [a.importe for a in awards if a.importe is not None and a.moneda == "EUR"]
+                out.append(
+                    {
+                        "nombre": name,
+                        "contratos": sorted(awards, key=lambda a: -(a.importe or 0))[:limit],
+                        "n": len(awards),
+                        "importe": sum(eur) if all(len(a.adjudicatarios) == 1 for a in awards) else None,
+                    }
+                )
+        return sorted(out, key=lambda f: -f["n"])[:5]
