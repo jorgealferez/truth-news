@@ -22,8 +22,8 @@
     {
       "title": "El Tribunal Superior de Justicia de Madrid anula la ordenanza",
       "text": "El Tribunal Superior de Justicia de Madrid ha anulado la ordenanza de movilidad del Ayuntamiento de Madrid. La portavoz municipal, Inmaculada Sanz, ha replicado que recurrirán al Tribunal Supremo.",
-      "entidades": [["institucion", "Tribunal Superior de Justicia de Madrid"], ["institucion", "Ayuntamiento de Madrid"], ["institucion", "Tribunal Supremo"]],
-      "hablan": []
+      "entidades": [["institucion", "Tribunal Superior de Justicia de Madrid"], ["institucion", "Ayuntamiento de Madrid"], ["institucion", "Tribunal Supremo"], ["persona", "Inmaculada Sanz"]],
+      "hablan": ["Inmaculada Sanz"]
     },
     {
       "title": "Trump amenaza con nuevos aranceles a la Unión Europea",

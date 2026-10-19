@@ -1,0 +1,2 @@
+{# Quien aparece en la historia (ADR 0028): cada nombre lleva a su ficha con su historial. Necesita `people`. #}
+{% if people %}<p class="chips people" aria-label="{{ t(lang, 'ent_in_story') }}"><span class="label">{{ t(lang, 'ent_in_story') }}</span>{% for e, n in people %}<a href="{{ url('entidad', e.id, e.name) }}">{{ e.name }}{% if n > 1 %} <b>{{ n }}</b>{% endif %}</a>{% endfor %}</p>{% endif %}
