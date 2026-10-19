@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass, field
+from datetime import UTC, datetime, timedelta
 
 DEFAULT_QUOTA = {
     "x": 4,
@@ -49,6 +50,14 @@ def _quota() -> dict[str, int]:
     return quota
 
 
+def _hours(raw: str) -> tuple[int, int]:
+    """'8-23' -> (8, 23). Un valor mal escrito deja el de por defecto."""
+    start, _, end = raw.partition("-")
+    if start.strip().isdigit() and end.strip().isdigit() and 0 <= int(start) < int(end) <= 24:
+        return int(start), int(end)
+    return 8, 23
+
+
 def _flag(name: str, default: bool) -> bool:
     raw = os.environ.get(name)
     return default if raw is None else raw.strip().lower() in {"1", "true", "yes", "si", "on"}
@@ -62,7 +71,20 @@ class SocialSettings:
     min_score: float = field(default_factory=lambda: float(os.environ.get("SOCIAL_MIN_SCORE", "2")))
     window_hours: int = field(default_factory=lambda: int(os.environ.get("SOCIAL_WINDOW_HOURS", "72")))
     per_cycle: int = field(default_factory=lambda: int(os.environ.get("SOCIAL_PER_CYCLE", "2")))
+    # Horas activas en hora de Madrid, [inicio, fin): fuera de ellas no se publica nada nuevo; dentro, cada
+    # red espera (horas activas / cupo) entre piezas para repartirlas en el dia en vez de llenar el cupo de
+    # madrugada (medido 2026-10-19: cupos llenos antes de las 07:35 UTC).
+    spread: bool = field(default_factory=lambda: _flag("SOCIAL_SPREAD", True))
+    active_hours: tuple[int, int] = field(
+        default_factory=lambda: _hours(os.environ.get("SOCIAL_ACTIVE_HOURS", "8-23"))
+    )
     env: dict[str, str] = field(default_factory=lambda: dict(os.environ))
+
+    def gap_minutes(self, network: str) -> float:
+        """Separacion minima entre dos piezas de la misma red para repartir el cupo en las horas activas."""
+        quota = self.quota.get(network, 0)
+        start, end = self.active_hours
+        return (end - start) * 60 / quota if quota else float("inf")
 
     def credentials(self, network: str) -> dict[str, str] | None:
         """Las credenciales de la cuenta, o None si falta alguna (o si se fuerza el modo prueba)."""
@@ -71,3 +93,22 @@ class SocialSettings:
         if self.dry_run or not all(values.values()):
             return None
         return values  # con los nombres de la red base, que son los que leen los adaptadores
+
+
+def _last_sunday(year: int, month: int) -> datetime:
+    day = (
+        datetime(year, month + 1, 1, tzinfo=UTC) - timedelta(days=1)
+        if month < 12
+        else datetime(year, 12, 31, tzinfo=UTC)
+    )
+    return day - timedelta(days=(day.weekday() + 1) % 7)
+
+
+def madrid_hour(now: datetime) -> int:
+    """Hora local de Madrid sin depender de tzdata (la imagen slim no la trae): UTC+1, y UTC+2 en horario
+    de verano de la UE (desde el ultimo domingo de marzo hasta el ultimo de octubre, a la 01:00 UTC)."""
+    now = now if now.tzinfo else now.replace(tzinfo=UTC)
+    summer_start = _last_sunday(now.year, 3).replace(hour=1)
+    summer_end = _last_sunday(now.year, 10).replace(hour=1)
+    offset = 2 if summer_start <= now < summer_end else 1
+    return (now.astimezone(UTC) + timedelta(hours=offset)).hour

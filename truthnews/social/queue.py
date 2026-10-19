@@ -10,7 +10,7 @@ siguiente ciclo.
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 import httpx
 from sqlalchemy import func, select
@@ -19,7 +19,7 @@ from sqlalchemy.orm import Session
 from truthnews.models import SOCIAL_NETWORKS, SOCIAL_NETWORKS_EN, SocialPost, utcnow
 from truthnews.social import adapters, balance
 from truthnews.social.compose import fit
-from truthnews.social.config import SocialSettings, base_network
+from truthnews.social.config import SocialSettings, base_network, madrid_hour
 from truthnews.social.images import image_for
 from truthnews.social.select import Candidate, candidates, stories_en
 
@@ -63,9 +63,7 @@ def run(
     now = now or utcnow()
     day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     found = candidates(session, site_url, settings.min_score, settings.window_hours, lang, now)
-    equilibrium = balance.measure(
-        session, now
-    )  # ADR 0043: nadie acapara lo negativo sin que los datos lo digan
+    equilibrium = balance.measure(session, now)  # ADR 0043: nadie acapara lo negativo sin datos que lo digan
     found = balance.diversify(session, found, equilibrium["marcados"])
     since = now - timedelta(hours=settings.window_hours)
     found_en = stories_en(session, site_url.rstrip("/"), since, settings.min_score)
@@ -84,7 +82,10 @@ def run(
 
     own_client = client is None
     client = client or adapters.make_client()
+    hour = madrid_hour(now)
+    in_hours = not settings.spread or settings.active_hours[0] <= hour < settings.active_hours[1]
     summary: dict = {
+        "horario": {"hora_madrid": hour, "activo": in_hours},
         "candidatas": len(found),
         "candidatas_en": len(found_en),
         "equilibrio": {k: equilibrium[k] for k in ("piezas", "negativas", "por_actor", "marcados")},
@@ -98,6 +99,8 @@ def run(
             adapter = _adapter(network, creds, settings, client) if creds else None
             stats = {"modo": "envio" if adapter else "prueba", "nuevas": 0, "enviadas": 0, "errores": 0}
             summary[network] = stats
+            if not in_hours:  # de noche no se publica: ni nuevas ni reintentos
+                continue
             healthy = True
             if adapter:
                 for post in list(
@@ -122,6 +125,14 @@ def run(
                 .where(SocialPost.network == network, SocialPost.created_at >= day)
             )
             room = min(settings.quota.get(network, 0) - used, settings.per_cycle)
+            last = session.scalar(
+                select(func.max(SocialPost.created_at)).where(SocialPost.network == network)
+            )
+            if settings.spread:  # repartir: una pieza cada (horas activas / cupo) como mucho
+                room = min(room, 1)
+                last = last if last is None or last.tzinfo else last.replace(tzinfo=UTC)
+                if last is not None and now - last < timedelta(minutes=settings.gap_minutes(network)):
+                    room = 0
             done = set(
                 session.execute(
                     select(SocialPost.kind, SocialPost.ref_id).where(SocialPost.network == network)
