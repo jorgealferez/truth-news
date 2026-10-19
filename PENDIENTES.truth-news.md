@@ -26,11 +26,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Navegacion movil y escritorio: cabecera compacta, menu accesible, historia legible en movil (tabla "quien lo cuenta" sin desbordes), migas y enlaces entre historias, medios y temas (peticion del usuario 2026-10-18) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-18)
-  - [x] Barra de secciones fija, menu completo sin JS, pestanas inferiores en movil, migas de pan
-  - [x] Historia visual: origen con linea de tiempo, barras de cifras en disputa, medidor de veredictos, a quien senala cada version, omisiones
-  - [x] Ficha por medio (titular, propietario, cifra, senalados, omisiones, lenguaje cargado); keywords y piezas en desplegables (peticion del usuario 2026-10-19: "muy visual, no tan lineal")
-- [ ] Sitemap, robots.txt, RSS y botones de compartir en redes con imagen social por historia (peticion del usuario 2026-10-18; parte de la Fase 4)
+- [ ] Sitemap, robots.txt, RSS y botones de compartir en redes con imagen social por historia (peticion del usuario 2026-10-18; parte de la Fase 4) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19)
 - [ ] Comparativas mejores: que dice cada medio lado a lado, cifras por medio, coincidencias y diferencias legibles, y la verdad segun los datos cuando la hay (peticion del usuario 2026-10-18)
 - [ ] Reposicionar el producto en "quien miente, quien informa, quien dice la verdad y cual es la verdad si la tenemos": ficha de fiabilidad por medio con historial de veredictos, ranking de medios por exactitud comprobada, portada que lo destaca (peticion del usuario 2026-10-18)
 - [ ] Fase 4 — Distribucion en redes sociales, RSS, sitemap, interfaz en ingles
@@ -70,3 +66,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] Portada y contrastes ordenados por prioridad; la tarjeta dice que difiere y si vuelve con datos nuevos
   - [x] "personas" desambiguado por contexto (falso positivo medido con datos reales)
 - [x] Marca y dominio: valorar nosmienten.com (peticion del usuario 2026-10-18) para una imagen solida, profesional, politicamente neutral y creible para el gran publico; aplicar el nombre via SITE_NAME y el dominio en Railway cuando el usuario decida (#9: hecho en la Fase 6)
+- [x] Fase 8 — Navegacion movil/escritorio e historia visual (#11)
+  - [x] Barra de secciones fija, menu completo sin JS, pestanas inferiores en movil, migas de pan
+  - [x] Historia visual: origen con linea de tiempo, barras de cifras en disputa, medidor de veredictos, a quien senala cada version, omisiones
+  - [x] Ficha por medio (titular, propietario, cifra, senalados, omisiones, lenguaje cargado); keywords y piezas en desplegables (peticion del usuario 2026-10-19: "muy visual, no tan lineal")

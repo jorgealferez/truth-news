@@ -83,7 +83,7 @@ alcanza; el sistema nunca afirma sin fuente.
 - [ ] Fase 5 — Despliegue en Railway: Postgres, web, worker programado, medido en produccion (acerca C2, C11)
 - [x] Fase 6 — Marca nosmienten.com: identidad sobria y neutral (logotipo, favicon, imagen social, cabecera), dominio propio en Railway (peticion del usuario 2026-10-18; acerca C9, C11) (#9; www pendiente de DNS)
 - [x] Fase 7 — Prioridad a lo que difiere: puntuacion de contraste por historia que ordena portada y contrastes, y relanzamiento de historias antiguas con datos nuevos y tendencia (peticion del usuario 2026-10-18; acerca C6, C12) (#10)
-- [ ] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18)
+- [x] Fase 8 — Navegacion movil y escritorio: cabecera compacta, menu accesible, historias legibles en movil, enlaces entre historias, medios y temas (peticion del usuario 2026-10-18) (#11)
 - [ ] Fase 9 — Quien miente, quien informa, quien dice la verdad: fiabilidad por medio con historial de veredictos, ranking por exactitud comprobada, comparativas lado a lado y "la verdad segun los datos" cuando la hay (peticion del usuario 2026-10-18; acerca C6, C12)
 
 ## Calidad y proyeccion
