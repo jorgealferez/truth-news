@@ -12,6 +12,7 @@
   <p class="kicker"><a href="/seccion/{{ a.category }}">{{ category_name(a.category, lang) }}</a> · <a href="/pais/{{ a.country }}">{{ country_name(a.country, lang) }}</a>{% if a.region %} · <a href="/region/{{ a.region }}">{{ region_name(a.region) }}</a>{% endif %}</p>
   <h1>{{ a.title }}</h1>
   <p class="meta">{{ t(lang, 'outlet') }}: <a href="/medio/{{ a.outlet.slug }}">{{ a.outlet.name }}</a>{% if a.author %} · {{ a.author }}{% endif %} · {{ t(lang, 'published') }} {{ a.published_at.strftime('%d/%m/%Y %H:%M') }} UTC</p>
+  {% if not a.story or a.story.n_outlets < 2 %}<div class="summary-box flat"><h2>{{ t(lang, 'only_one_outlet')|replace('{m}', a.outlet.name) }}</h2><p>{{ t(lang, 'only_one_outlet_text') }}</p></div>{% endif %}
   {% if a.summary %}<blockquote class="excerpt">{{ a.summary[:600] }}</blockquote>{% endif %}
   {% if a.story and a.story.n_outlets > 1 %}<p class="callout"><a href="/historia/{{ a.story_id }}">{{ a.story.n_outlets }} {{ t(lang, 'n_outlets') }} — {{ t(lang, 'compare_cta') }} →</a></p>{% endif %}
   <p><a class="button" href="{{ a.url }}" rel="noopener nofollow" target="_blank">{{ t(lang, 'read_original') }} ↗</a></p>
@@ -54,7 +55,7 @@
   </details>
 </article>
 {% if related %}
-<section class="section-block"><h2>{{ t(lang, 'more') }}: {{ category_name(a.category, lang) }}</h2>
-<div class="grid">{% for a in related %}{% with lead = False %}{% include "_card.html" %}{% endwith %}{% endfor %}</div></section>
+<section class="section-block"><h2>{{ t(lang, 'more_contrasts_in') }} {{ category_name(a.category, lang)|lower }}</h2>
+<div class="grid">{% for st in related %}{% with lead = False %}{% include "_story_card.html" %}{% endwith %}{% endfor %}</div></section>
 {% endif %}
 {% endblock %}

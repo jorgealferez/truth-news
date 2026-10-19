@@ -23,8 +23,10 @@
     {% endif %}
   </div>
   <aside class="wire">
-    <h2>{{ t(lang, 'latest_wire') }}</h2>
-    {% for a in wire %}<p><span class="meta">{{ a.published_at|ago(lang) }} · {{ a.outlet.name }}</span><br><a href="/noticia/{{ a.id }}">{{ a.title }}</a></p>{% endfor %}
+    <h2><a href="/verificaciones">{{ t(lang, 'latest_wire') }}</a></h2>
+    {% for c in wire %}<p class="check"><span class="badge v-{{ c.verification.verdict }}">{{ t(lang, 'verdict_' ~ c.verification.verdict) }}</span> <span class="meta">{{ c.outlet.name }}</span><br>
+      <a href="{{ '/historia/%d' % c.story_id if c.story_id else '/verificaciones' }}">«{{ c.text[:140] }}{% if c.text|length > 140 %}…{% endif %}»</a></p>
+    {% else %}<p class="meta">{{ t(lang, 'no_checks_yet') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>{% endfor %}
   </aside>
 </div>
 {% endblock %}

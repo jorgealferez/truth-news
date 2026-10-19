@@ -125,7 +125,10 @@ es:
   basis: Base del análisis
   evidence: Evidencia
   methodology: Metodología
-  latest_wire: Lo último de los medios
+  latest_wire: Verificado
+  no_checks_yet: Todavía no hay afirmaciones comprobadas con datos en este ciclo.
+  only_one_outlet: "Solo lo publica {m}: sin contraste todavía"
+  only_one_outlet_text: Ningún otro medio de los que seguimos ha contado esta noticia, así que no hay versiones que comparar. Si otros la publican o aparecen datos que la contrasten, pasará a la comparativa.
   verdict_verdadero: Verdadero
   verdict_impreciso: Impreciso
   verdict_falso: Falso
@@ -295,7 +298,10 @@ en:
   basis: Analysis basis
   evidence: Evidence
   methodology: Methodology
-  latest_wire: Latest from the outlets
+  latest_wire: Checked
+  no_checks_yet: No claims checked against data in this cycle yet.
+  only_one_outlet: "Only {m} reports this: no contrast yet"
+  only_one_outlet_text: None of the other outlets we follow has reported this story, so there are no versions to compare. If others publish it or data appear that test it, it will move to the comparison.
   verdict_verdadero: True
   verdict_impreciso: Imprecise
   verdict_falso: False
