@@ -315,3 +315,33 @@ def test_ai_pipeline(session, topic_world):
 def test_schemas_are_strict():
     for schema in (topics_schema(), piece_schema()):
         assert schema["additionalProperties"] is False and schema["required"]
+
+
+def test_ai_pipeline_writes_pieces_in_parallel(session, monkeypatch):
+    """Las llamadas de las piezas se solapan; los dossieres y el guardado van en serie y en orden."""
+    import threading
+    import time
+
+    topics = [type("T", (), {"id": i})() for i in range(4)]
+    monkeypatch.setattr(ai_pipeline, "prepare_piece", lambda s, t, v: ({"t": t.id}, f"h{t.id}"))
+    running, peak, lock = [0], [0], threading.Lock()
+
+    def ask(ai, dossier):
+        with lock:
+            running[0] += 1
+            peak[0] = max(peak[0], running[0])
+        time.sleep(0.2)
+        with lock:
+            running[0] -= 1
+        if dossier["t"] == 1:
+            raise AIError("x")
+        return dossier
+
+    stored = []
+    monkeypatch.setattr(ai_pipeline, "ask_piece", ask)
+    monkeypatch.setattr(
+        ai_pipeline, "store_pieces", lambda s, t, d, h, r: stored.append(t.id) or [Piece(status="revision")]
+    )
+    written, revision, failed = ai_pipeline.write_batch(session, None, topics, None, 3, 3)
+    assert peak[0] == 3 and stored == [0, 2]  # el tope de piezas (3) se respeta: el tema 3 no entra
+    assert (written, revision, failed) == (2, 2, 1)

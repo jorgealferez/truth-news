@@ -126,7 +126,7 @@ def test_page_shows_both_citations(engine):
     assert index.councils(TODAY)[0].count("publicado") == 2
     app = create_app(Settings(database_url=str(engine.url)), engine=engine, council_index=index)
     html = TestClient(app).get("/consejo-de-ministros").text
-    assert "BOE-A-2026-21318" in html and "Publicado en el BOE el 14/10" in html
+    assert "BOE-A-2026-21318" in html and "Publicado en el BOE el 14/10 (1 día después)" in html
     assert "Todavía no figura en el BOE" in html and consejo.SITE + REF in html
 
 

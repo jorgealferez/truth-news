@@ -230,6 +230,27 @@
       "unidad": "s",
       "direccion": "max",
       "objetivo": 120
+    },
+    {
+      "id": "movil_tactiles_menores_44",
+      "descripcion": "Movil: objetivos tactiles visibles de menos de 44 px (portada, historia, verificacion, quien dice la verdad; Chromium tactil 412 px)",
+      "unidad": "objetivos",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "movil_contraste_fallos",
+      "descripcion": "Movil: textos por debajo del contraste WCAG AA en las cuatro paginas medidas",
+      "unidad": "textos",
+      "direccion": "max",
+      "objetivo": 0
+    },
+    {
+      "id": "movil_cls_max",
+      "descripcion": "Movil: CLS (desplazamiento acumulado) maximo de las cuatro paginas medidas; bueno segun Google < 0,1",
+      "unidad": "cls",
+      "direccion": "max",
+      "objetivo": 0.1
     }
   ]
 }
