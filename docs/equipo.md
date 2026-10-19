@@ -86,7 +86,7 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
 | ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno; 18c BLOQUEADO por decision del usuario, ledger) |
-| ADR 0041 | diseno | PR (este) | Comparativas (quien informa primero y bien) |
+| ADR 0041 | diseno | en main | Comparativas (quien informa primero y bien; #159) |
 | ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
 | ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
