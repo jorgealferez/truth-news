@@ -13,7 +13,14 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   repositorio, con referencia cruzada. Nunca se crea un `PENDIENTES.md` sin nombre ni un ledger global.
 - `## Activo` esta en **orden de ejecucion**. Se toma siempre el primero sin reservar.
 - Un item se marca `[x]` solo con su pull request mergeado (o su entregable verificado).
-- `## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
+- `
+- [ ] Migracion al holding (peticion del usuario 2026-10-19: "todo esto deberia acabar migrandose ... sin perjuicio del servicio y sin que caiga absolutamente nada ni se pierda informacion ... que todo el servicio unicamente nuestro sea un frontend con nuestra logica de negocio, pero que utilice su BFF, su microservicio, su base de datos y todo"): arranca cuando cierren los items de arriba, sin pararlos; plan en ADR 0025 y `docs/migracion-holding.md` (fases 11 a 17, dominios D1 a D7, doble escritura, backfill, conciliacion, sombra, corte por bandera). Parte del holding con referencia cruzada en PENDIENTES.microservices-ecosystem.md ("[squad:nosmienten] propuesta"). Carril: Migracion al holding (docs/equipo.md) — EN CURSO (session_01DgF9WootYzqTr7jwzkbDSj, 2026-10-19)
+  - [ ] Fase 11 — plan, ADR 0025, alcance de la carta e items cruzados (este PR)
+  - [ ] Coordinacion: propuesta enviada al orquestador del holding (session_01JEomBbrRwabYbNac8Wvkr6) y a la direccion (session_012mRsejPRjvr7vC2Aq3edZ4), 2026-10-19
+  - [ ] Credenciales: clave de aplicacion `nosmienten` (tipo bff) y `HOLDING_PLATFORM_API_KEY` (missing): las crea una persona
+  - [ ] Fases 12 a 17 en orden, cuando terminen los items en curso
+
+## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
   agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
   mueve: se sigue trabajando.
 - `## Bloqueado`: solo con `BLOQUEADO: <motivo>` y solo si el motivo es una de las causas de la seccion
