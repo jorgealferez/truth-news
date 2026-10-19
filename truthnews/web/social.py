@@ -65,7 +65,7 @@ def _mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
 
 
 def _wordmark(draw: ImageDraw.ImageDraw, x: float, baseline: float, size: int) -> None:
-    """"nos" + "mienten" + ".com" como en `logo.svg`, en papel sobre tinta: la i de "mienten" lleva una marca
+    """ "nos" + "mienten" + ".com" como en `logo.svg`, en papel sobre tinta: la i de "mienten" lleva una marca
     cuadrada ambar en lugar del punto (ADR 0014)."""
     nos, bold = _font("Medium", size), _font("ExtraBold", size)
     draw.text((x, baseline), "nos", font=nos, fill=PAPER, anchor="ls")
@@ -148,14 +148,33 @@ def share_links(url: str, text: str) -> list[tuple[str, str, str]]:
     ]
 
 
-def sitemap_xml(urls: list[tuple[str, datetime | None]]) -> str:
+def sitemap_xml(
+    urls: list[tuple[str, datetime | None]],
+    base: str = "",
+    alternates: dict[str, str] | None = None,
+    default: str = "es",
+) -> str:
+    """Sitemap; con `alternates` ({idioma: prefijo}) cada URL lleva sus versiones con xhtml:link."""
     rows = []
+    prefixes = sorted((alternates or {}).values(), key=len, reverse=True)
     for loc, lastmod in urls:
         mod = f"<lastmod>{lastmod:%Y-%m-%d}</lastmod>" if lastmod else ""
-        rows.append(f"<url><loc>{escape(loc)}</loc>{mod}</url>")
+        links = ""
+        if alternates and loc.startswith(base):
+            path = loc[len(base) :] or "/"
+            for p in prefixes:  # la ruta sin prefijo de idioma
+                if p and (path == p or path.startswith(p + "/")):
+                    path = path[len(p) :] or "/"
+                    break
+            for lang, p in alternates.items():
+                href = base + (p + ("" if path == "/" else path) if p else path)
+                links += f'<xhtml:link rel="alternate" hreflang="{lang}" href="{escape(href)}"/>'
+            links += f'<xhtml:link rel="alternate" hreflang="x-default" href="{escape(base + path)}"/>'
+        rows.append(f"<url><loc>{escape(loc)}</loc>{mod}{links}</url>")
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
-        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + "".join(rows) + "</urlset>\n"
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+        ' xmlns:xhtml="http://www.w3.org/1999/xhtml">' + "".join(rows) + "</urlset>\n"
     )
 
 
