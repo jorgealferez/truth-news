@@ -32,6 +32,13 @@ def test_c10_global_coverage_only_as_data():
     assert {o.language for o in outlets} >= {"es", "en", "fr", "de", "it", "pt", "ar"}
 
 
+def test_country_keys_are_iso_codes():
+    # YAML 1.1 lee NO (Noruega) como false: toda clave de pais tiene que seguir siendo un codigo ISO.
+    for iso in registry.countries():
+        assert isinstance(iso, str) and len(iso) == 2 and iso.isupper(), iso
+    assert "NO" in registry.countries()
+
+
 def test_lookups_and_translations():
     assert registry.category_name("economia", "en") == "Economy"
     assert registry.category_name("nope", "es") == "nope"
