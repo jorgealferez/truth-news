@@ -10,6 +10,7 @@ from datetime import UTC, datetime, timedelta
 from apscheduler.schedulers.blocking import BlockingScheduler
 from sqlalchemy import select
 
+from truthnews import archive
 from truthnews.ai import claims as ai_claims
 from truthnews.ai import threads
 from truthnews.ai.client import AIClient, AIError
@@ -20,6 +21,7 @@ from truthnews.config import Settings, get_settings
 from truthnews.crawler import political
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
+from truthnews.entities import store as entities
 from truthnews.investigate import process_pending, seed_defaults
 from truthnews.models import CrawlRun, Outlet
 from truthnews.social import queue as social
@@ -102,6 +104,15 @@ def _run_cycle(settings: Settings) -> dict:
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
             summary["ai_claims"] = ai_claims.run(session, ai, started, max_calls=settings.ai_claims_max_calls)
             summary["ai_claims"]["scores"] = score_stories(session, started)
+    # Entidades tras el analisis (las afirmaciones ya existen y se les atribuye quien las dice) y, despues,
+    # archivo de las entidades; lo importado se extrae en el ciclo siguiente (ADR 0028).
+    summary["entities"] = _guarded(
+        engine, "entidades", lambda s: entities.process(s, settings.entities_batch)
+    )
+    if settings.archive_queries_per_cycle > 0:
+        summary["archive"] = _guarded(
+            engine, "archivo", lambda s: archive.run(s, budget=settings.archive_queries_per_cycle)
+        )
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
         with session_scope(engine) as session:
             try:
@@ -128,6 +139,16 @@ def _run_cycle(settings: Settings) -> dict:
             summary["social"] = {"error": str(exc)[:300]}
     log.info("ciclo terminado: %s", summary)
     return summary
+
+
+def _guarded(engine, name: str, step) -> dict:
+    """Un paso que falla no tumba el ciclo: se registra y se sigue."""
+    try:
+        with session_scope(engine) as session:
+            return step(session)
+    except Exception as exc:
+        log.exception("%s: el paso fallo", name)
+        return {"error": str(exc)[:300]}
 
 
 def recent_cycle(settings: Settings, now: datetime | None = None) -> bool:

@@ -1,0 +1,57 @@
+{
+  "fase": "e1",
+  "titulo": "Entidades, archivo historico y lo que no cuadra: personas e instituciones por noticia, quien dice cada afirmacion y ranking de falsedades y discrepancias",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "entidades_precision": 1.0,
+    "entidades_exhaustividad": 1.0,
+    "hablante_precision": 1.0,
+    "entidades_noticias_por_s": 5028,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "conjunto_etiquetado": {
+      "fichero": "tests/fixtures/entities.json",
+      "documentos": 16,
+      "entidades": 57,
+      "hablantes": 14,
+      "precision": 1.0,
+      "exhaustividad": 1.0,
+      "hablante_precision": 1.0,
+      "hablante_exhaustividad": 1.0,
+      "aviso": "el conjunto se uso para ajustar las reglas: es una cota optimista; por eso se mide tambien sobre titulares reales no vistos"
+    },
+    "titulares_reales": {
+      "fuente": "https://nosmienten.com/rss.xml (2026-10-19)",
+      "noticias": 52,
+      "entidades_registro": 39,
+      "entidades_descubiertas": 2,
+      "falsos_positivos_revisados_a_mano": 0,
+      "omisiones_vistas": "personas cuyo nombre de pila no esta en la lista (p. ej. Cindy Crawford, Vito Quiles), apellidos sueltos (Colau, Albiol) y clubes (Real Madrid, Sevilla FC): se prefiere callar a inventar"
+    },
+    "rendimiento": {
+      "medida": "extract() sobre 3.120 noticias (52 reales x 60)",
+      "segundos": 0.62,
+      "noticias_por_s": 5028
+    },
+    "archivo": {
+      "fuente": "GDELT DOC 2.0 artlist",
+      "comprobado_en_vivo": "consulta '\"Pedro Sanchez\" sourcecountry:spain' de marzo de 2019 devuelve noticias de elpais.com",
+      "cupo": "6 consultas por ciclo, 5,5 s entre consultas, <= 90 s por ciclo, 1 mes hacia atras por consulta hasta 2017-01-01",
+      "produccion": "NO VERIFICADO: se mide en los ciclos del worker tras el despliegue (log 'archivo: N consultas, M noticias nuevas')"
+    },
+    "produccion_al_medir": {
+      "noticias_ventana": 3164,
+      "medios": 130,
+      "afirmaciones_comprobadas": 3,
+      "nota": "con 3 comprobaciones el ranking de falsedades sale casi vacio; el de discrepancias entre medios ya tiene contenido (195 contrastes de hoy)"
+    }
+  }
+}

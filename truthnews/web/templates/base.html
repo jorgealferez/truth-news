@@ -42,10 +42,12 @@
   <div class="wrap bar">
     <a href="/" class="mini" aria-label="{{ t(lang, 'home') }}"><img src="/static/mark.svg" alt="" width="26" height="26"></a>
     <div class="scroller">
+      <a href="/discrepancias" class="hl">{{ t(lang, 'nc_title') }}</a>
       <a href="/contrastes" class="hl">{{ t(lang, 'contrasts') }}</a>
       <a href="/analisis" class="hl">{{ t(lang, 'analysis') }}</a>
       <a href="/verificaciones">{{ t(lang, 'verifications') }}</a>
       <a href="/medios">{{ t(lang, 'outlets') }}</a>
+      <a href="/entidades">{{ t(lang, 'ent_title') }}</a>
       <a href="/investigaciones">{{ t(lang, 'investigations') }}</a>
       {% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}
     </div>
@@ -53,7 +55,7 @@
       <summary>{{ t(lang, 'menu') }}</summary>
       <div class="menu-panel">
         <div><h3>{{ t(lang, 'site_sections') }}</h3>
-          <a href="/">{{ t(lang, 'home') }}</a><a href="/contrastes">{{ t(lang, 'contrasts') }}</a><a href="/analisis">{{ t(lang, 'analysis') }}</a><a href="/verificaciones">{{ t(lang, 'verifications') }}</a><a href="/medios">{{ t(lang, 'outlets') }}</a><a href="/investigaciones">{{ t(lang, 'investigations') }}</a></div>
+          <a href="/">{{ t(lang, 'home') }}</a><a href="/contrastes">{{ t(lang, 'contrasts') }}</a><a href="/analisis">{{ t(lang, 'analysis') }}</a><a href="/verificaciones">{{ t(lang, 'verifications') }}</a><a href="/discrepancias">{{ t(lang, 'nc_title') }}</a><a href="/entidades">{{ t(lang, 'ent_title') }}</a><a href="/medios">{{ t(lang, 'outlets') }}</a><a href="/investigaciones">{{ t(lang, 'investigations') }}</a></div>
         <div><h3>{{ t(lang, 'sections') }}</h3>{% for c in categories %}<a href="/seccion/{{ c }}">{{ category_name(c, lang) }}</a>{% endfor %}</div>
         <div><h3>{{ t(lang, 'countries') }}</h3>{% for c in countries %}<a href="/pais/{{ c }}">{{ country_name(c, lang) }}</a>{% endfor %}
           <h3>{{ site.site_domain }}</h3><a href="/metodologia">{{ t(lang, 'methodology') }}</a><a href="/acerca">{{ t(lang, 'about') }}</a></div>

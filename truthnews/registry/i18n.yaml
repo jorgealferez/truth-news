@@ -231,6 +231,65 @@ es:
   conclusion: Conclusión
   method: Método
   verifications_lead: Registro público de todas las afirmaciones comprobadas, con su veredicto, su fuente y las correcciones.
+  nc_title: Lo que no cuadra
+  nc_lead: Donde lo publicado y los datos oficiales no coinciden, y donde los medios dan cifras distintas del mismo hecho.
+  nc_page_lead: "La noticia grande: afirmaciones que no cuadran con los datos oficiales, ordenadas por su peso (cuánto se desvían, cuántos medios las repiten y cuándo), los hechos en los que los medios dan cifras distintas, quién se contradice y quién acumula más. Mismo método para todos: no decimos que nadie mienta, decimos qué cifra dio, qué dice el dato y dónde comprobarlo."
+  nc_empty: Por ahora no hay nada que no cuadre en lo comprobado.
+  nc_data_says: el dato dice
+  nc_said: Publicado
+  nc_data: Dato oficial
+  nc_see_source: ver la noticia
+  nc_dispute: Cifras distintas
+  nc_all: Todo lo que no cuadra
+  nc_falsehoods: Afirmaciones que no cuadran con los datos
+  nc_falsehoods_note: "Peso = veredicto × desviación frente al dato oficial × medios que repiten la cifra × actualidad (la mitad cada 30 días)."
+  nc_no_falsehoods: No hay afirmaciones falsas, engañosas o imprecisas comprobadas en este periodo.
+  nc_off_by: se desvía un
+  nc_said_by: Lo dijo
+  nc_published_by: Lo publicaron
+  nc_weight: peso
+  nc_disputes: Mayores discrepancias entre medios
+  nc_disputes_note: Historias en las que varios medios dan cifras distintas del mismo hecho. La barra más oscura es la cifra que dan más medios.
+  nc_no_disputes: No hay cifras en disputa entre medios en los últimos días.
+  nc_contradictions: Contradicciones
+  nc_contradictions_note: La misma persona, partido o medio da cifras distintas del mismo indicador, territorio y periodo.
+  nc_no_contradictions: No hemos detectado contradicciones en lo comprobado.
+  nc_board: Quién acumula más
+  nc_board_note: Afirmaciones falsas o engañosas sobre el total comprobado con datos oficiales en el último año. Con pocas comprobaciones el número dice poco; por eso mostramos siempre el total.
+  nc_board_people: Personas y partidos que las dicen
+  nc_board_outlets: Medios que las publican
+  nc_no_board: Sin comprobaciones todavía.
+  nc_who: Quién
+  nc_bad: Falsas o engañosas
+  nc_checked: Comprobadas
+  ent_title: Personas y entidades
+  ent_lead: Quién aparece en las noticias, en cuántas y en qué medios; en cada ficha, su línea temporal (con noticias antiguas del archivo), con quién aparece, qué dice y qué afirmaciones suyas hemos comprobado.
+  ent_filter: Filtrar por tipo
+  ent_period: Periodo
+  ent_all: Todas
+  ent_kind_persona: Persona
+  ent_kind_partido: Partido
+  ent_kind_institucion: Institución
+  ent_kind_organizacion: Organización
+  ent_kind_lugar: Lugar
+  ent_days_7: 7 días
+  ent_days_30: 30 días
+  ent_days_365: 1 año
+  ent_empty: Aún no hay entidades en este periodo.
+  ent_news: noticias
+  ent_since: primera noticia
+  ent_bad_checked: falsas o engañosas / comprobadas
+  ent_timeline: Noticias por mes
+  ent_timeline_note: Noticias que la nombran cada mes en los medios del registro
+  ent_from_archive: importadas del archivo
+  ent_tracked: rastreadas
+  ent_archive: archivo
+  ent_claims: Afirmaciones suyas comprobadas
+  ent_together: Aparece junto a
+  ent_outlets: Medios que más la nombran
+  ent_quotes: Lo que dice
+  ent_latest: Últimas noticias
+  ent_method: "Extracción automática: nombres del registro curado y nombres propios descubiertos en el texto (una entidad descubierta se publica cuando la nombran al menos 2 medios). Una frase se atribuye a quien habla solo con un verbo de declaración o «según». Las noticias de archivo vienen de la hemeroteca de GDELT y solo se citan: titular, fecha y enlace."
   methodology_text: >-
     1) Rastreamos cada 30 minutos cientos de medios, respetando robots.txt. 2) Agrupamos en una historia los
     artículos que cuentan lo mismo (similitud de titulares y entradillas, medida contra un conjunto etiquetado a
@@ -568,6 +627,65 @@ en:
   conclusion: Conclusion
   method: Method
   verifications_lead: Public log of every checked claim, with its verdict, source and corrections.
+  nc_title: What doesn't add up
+  nc_lead: Where what was published and the official data disagree, and where outlets give different figures for the same fact.
+  nc_page_lead: "The big story: claims that don't match official data, ranked by weight (how far off, how many outlets repeat them and how recent), facts on which outlets give different figures, who contradicts themselves and who adds up the most. Same method for everyone: we don't say anyone lies, we say which figure they gave, what the data says and where to check it."
+  nc_empty: Nothing checked fails to add up for now.
+  nc_data_says: data says
+  nc_said: Published
+  nc_data: Official data
+  nc_see_source: see the article
+  nc_dispute: Different figures
+  nc_all: Everything that doesn't add up
+  nc_falsehoods: Claims that don't match the data
+  nc_falsehoods_note: "Weight = verdict × deviation from official data × outlets repeating the figure × recency (halved every 30 days)."
+  nc_no_falsehoods: No false, misleading or inaccurate claims checked in this period.
+  nc_off_by: off by
+  nc_said_by: Said by
+  nc_published_by: Published by
+  nc_weight: weight
+  nc_disputes: Biggest discrepancies between outlets
+  nc_disputes_note: Stories in which several outlets give different figures for the same fact. The darker bar is the figure most outlets give.
+  nc_no_disputes: No disputed figures between outlets in recent days.
+  nc_contradictions: Contradictions
+  nc_contradictions_note: The same person, party or outlet gives different figures for the same indicator, territory and period.
+  nc_no_contradictions: No contradictions detected in what we checked.
+  nc_board: Who adds up the most
+  nc_board_note: False or misleading claims out of everything checked against official data in the last year. With few checks the number says little, so we always show the total.
+  nc_board_people: People and parties who say them
+  nc_board_outlets: Outlets that publish them
+  nc_no_board: No checks yet.
+  nc_who: Who
+  nc_bad: False or misleading
+  nc_checked: Checked
+  ent_title: People and entities
+  ent_lead: Who appears in the news, in how many stories and in which outlets; each profile has its timeline (with older stories from the archive), who they appear with, what they say and which of their claims we checked.
+  ent_filter: Filter by type
+  ent_period: Period
+  ent_all: All
+  ent_kind_persona: Person
+  ent_kind_partido: Party
+  ent_kind_institucion: Institution
+  ent_kind_organizacion: Organisation
+  ent_kind_lugar: Place
+  ent_days_7: 7 days
+  ent_days_30: 30 days
+  ent_days_365: 1 year
+  ent_empty: No entities in this period yet.
+  ent_news: stories
+  ent_since: first story
+  ent_bad_checked: false or misleading / checked
+  ent_timeline: Stories per month
+  ent_timeline_note: Stories naming them each month in the outlets of our registry
+  ent_from_archive: imported from the archive
+  ent_tracked: tracked
+  ent_archive: archive
+  ent_claims: Their checked claims
+  ent_together: Appears with
+  ent_outlets: Outlets that name them most
+  ent_quotes: What they say
+  ent_latest: Latest stories
+  ent_method: "Automatic extraction: names from our curated registry and proper names found in the text (a discovered entity is published once at least 2 outlets name it). A sentence is attributed to a speaker only with a reporting verb or \"according to\". Archive stories come from the GDELT archive and are only cited: headline, date and link."
   methodology_text: >-
     1) Every 30 minutes we crawl hundreds of outlets, respecting robots.txt. 2) We group articles telling the
     same story. 3) We compare who reports it, which figures each gives and when, what most report and some omit,

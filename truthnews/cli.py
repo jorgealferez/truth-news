@@ -76,6 +76,26 @@ def _cmd_analyze(args) -> int:
     return 0
 
 
+def _cmd_entities(args) -> int:
+    from truthnews.db import get_engine, session_scope
+    from truthnews.entities.store import process
+
+    with session_scope(get_engine()) as session:
+        out = process(session, limit=args.limit)
+    print(json.dumps(out, indent=2))
+    return 0
+
+
+def _cmd_archive(args) -> int:
+    from truthnews import archive
+    from truthnews.db import get_engine, session_scope
+
+    with session_scope(get_engine()) as session:
+        out = archive.run(session, budget=args.queries, max_seconds=args.max_seconds)
+    print(json.dumps(out, indent=2, default=str))
+    return 0
+
+
 def _cmd_serve(args) -> int:  # pragma: no cover - arranca un servidor
     import uvicorn
 
@@ -114,6 +134,13 @@ def build_parser() -> argparse.ArgumentParser:
         "--hours", type=int, default=72, help="verificar articulos ingeridos en las ultimas N horas"
     )
     an.set_defaults(func=_cmd_analyze)
+    en = sub.add_parser("entities", help="extrae personas y entidades de las noticias pendientes")
+    en.add_argument("--limit", type=int, default=2000)
+    en.set_defaults(func=_cmd_entities)
+    ar = sub.add_parser("archive", help="importa noticias antiguas de las entidades (GDELT)")
+    ar.add_argument("--queries", type=int, default=6)
+    ar.add_argument("--max-seconds", type=float, default=90.0)
+    ar.set_defaults(func=_cmd_archive)
     s = sub.add_parser("serve")
     s.add_argument("--host", default="0.0.0.0")
     s.add_argument("--port", default=8000, type=int)

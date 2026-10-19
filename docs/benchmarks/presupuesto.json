@@ -160,6 +160,34 @@
       "unidad": "proporcion",
       "direccion": "min",
       "objetivo": 0.95
+    },
+    {
+      "id": "entidades_precision",
+      "descripcion": "Entidades (ADR 0027): entidades extraidas que son correctas, sobre tests/fixtures/entities.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.95
+    },
+    {
+      "id": "entidades_exhaustividad",
+      "descripcion": "Entidades (ADR 0027): entidades etiquetadas que se extraen, sobre tests/fixtures/entities.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.9
+    },
+    {
+      "id": "hablante_precision",
+      "descripcion": "Entidades (ADR 0027): atribuciones de quien habla que son correctas, sobre tests/fixtures/entities.json",
+      "unidad": "proporcion",
+      "direccion": "min",
+      "objetivo": 0.9
+    },
+    {
+      "id": "entidades_noticias_por_s",
+      "descripcion": "Entidades (ADR 0027): noticias por segundo que procesa el extractor (titular y extracto reales)",
+      "unidad": "noticias/s",
+      "direccion": "min",
+      "objetivo": 500
     }
   ]
 }

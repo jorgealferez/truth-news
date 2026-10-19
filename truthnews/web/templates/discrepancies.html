@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_figure.html" import fig %}
+{% block title %}{{ t(lang, 'nc_title') }} — {{ site.site_name }}{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'nc_title') }}</h1>
+<p class="lead-text">{{ t(lang, 'nc_page_lead') }}</p>
+<nav class="jump" aria-label="{{ t(lang, 'jump_to') }}"><a href="#falsedades">{{ t(lang, 'nc_falsehoods') }}</a><a href="#discrepancias">{{ t(lang, 'nc_disputes') }}</a><a href="#contradicciones">{{ t(lang, 'nc_contradictions') }}</a><a href="#balance">{{ t(lang, 'nc_board') }}</a></nav>
+
+<section id="falsedades" class="section-block">
+  <h2>{{ t(lang, 'nc_falsehoods') }}</h2>
+  <p class="meta">{{ t(lang, 'nc_falsehoods_note') }}</p>
+  {% if not falsehoods %}<p class="empty">{{ t(lang, 'nc_no_falsehoods') }}</p>{% endif %}
+  <ol class="nc-list">
+  {% for f in falsehoods %}
+    <li class="nc-item">
+      <span class="badge v-{{ f.verdict }}">{{ t(lang, 'verdict_' ~ f.verdict) }}</span>
+      <p class="nc-one"><strong>{{ f.label }}</strong> ({{ f.geo }}): {{ t(lang, 'nc_said') }} <strong>{{ fig(f.claimed, f.unit) }}</strong> · {{ t(lang, 'nc_data_says') }} <strong>{{ fig(f.official, f.unit) }}</strong>{% if f.deviation is not none %} · {{ t(lang, 'nc_off_by') }} {{ (100 * f.deviation)|round|int }} %{% endif %}</p>
+      {% if f.official is not none %}{% set hi = [f.claimed, f.official]|max %}
+      <div class="nc-vs" role="img" aria-label="{{ t(lang, 'nc_said') }} {{ fig(f.claimed, f.unit) }}, {{ t(lang, 'nc_data') }} {{ fig(f.official, f.unit) }}">
+        <span class="nc-bar said" style="width:{{ (100 * f.claimed / hi) if hi else 0 }}%">{{ fig(f.claimed, f.unit) }}</span>
+        <span class="nc-bar data" style="width:{{ (100 * f.official / hi) if hi else 0 }}%">{{ fig(f.official, f.unit) }}</span>
+      </div>{% endif %}
+      <blockquote class="quote-cite">«{{ f.text }}»</blockquote>
+      <p class="meta">{% if f.speakers %}{{ t(lang, 'nc_said_by') }}: {% for id, name in f.speakers %}<a href="/entidad/{{ id }}">{{ name }}</a>{% if not loop.last %}, {% endif %}{% endfor %} · {% endif %}{{ t(lang, 'nc_published_by') }} {{ f.outlets|length }} {{ t(lang, 'outlets')|lower }}: {{ f.outlets|join(', ') }}</p>
+      <p class="meta">{% if f.source_url %}{{ t(lang, 'evidence') }}: <a href="{{ f.source_url }}" rel="nofollow noopener" target="_blank">{{ f.source }}{% if f.period %} · {{ f.period }}{% endif %}</a> · {% endif %}{% if f.article_id %}<a href="/noticia/{{ f.article_id }}">{{ t(lang, 'nc_see_source') }}</a> · {% endif %}{{ t(lang, 'nc_weight') }} {{ '%.1f'|format(f.score) }}</p>
+    </li>
+  {% endfor %}
+  </ol>
+</section>
+
+<section id="discrepancias" class="section-block">
+  <h2>{{ t(lang, 'nc_disputes') }}</h2>
+  <p class="meta">{{ t(lang, 'nc_disputes_note') }}</p>
+  {% if not discrepancies %}<p class="empty">{{ t(lang, 'nc_no_disputes') }}</p>{% endif %}
+  <ol class="nc-list">
+  {% for d in discrepancies %}
+    <li class="nc-item">
+      <p class="nc-one"><a href="{{ url('historia', d.story.id, d.story.title) }}"><strong>{{ d.story.title }}</strong></a> <span class="meta">· {{ d.n_outlets }} {{ t(lang, 'outlets')|lower }} · {{ d.story.last_seen|ago(lang) }}</span></p>
+      <ul class="bars">
+      {% for s in d.disputes %}{% for value, figs in s.groups %}
+        <li><span class="bar{{ ' alt' if value != s.mode }}" style="width:{{ (100 * value / s.high) if s.high else 0 }}%"></span><b>{{ s.noun }}: {{ value|num }}</b><span class="n">{{ figs|map(attribute='outlet')|unique|join(', ') }}</span></li>
+      {% endfor %}{% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+  </ol>
+</section>
+
+<section id="contradicciones" class="section-block">
+  <h2>{{ t(lang, 'nc_contradictions') }}</h2>
+  <p class="meta">{{ t(lang, 'nc_contradictions_note') }}</p>
+  {% if not contradictions %}<p class="empty">{{ t(lang, 'nc_no_contradictions') }}</p>{% endif %}
+  {% for c in contradictions %}
+  <div class="nc-item">
+    <p class="nc-one"><strong>{% if c.entity_id %}<a href="/entidad/{{ c.entity_id }}">{{ c.actor }}</a>{% else %}<a href="/medio/{{ c.outlet_slug }}">{{ c.actor }}</a>{% endif %}</strong> · {{ c.label }} ({{ c.geo }}, {{ c.period }})</p>
+    <ul class="ent-list">{% for value, text, when, aid in c.values %}<li><strong>{{ fig(value, c.unit) }}</strong> — «{{ text }}» <a class="meta" href="/noticia/{{ aid }}">{{ when.strftime('%d/%m/%Y') }}</a></li>{% endfor %}</ul>
+  </div>
+  {% endfor %}
+</section>
+
+<section id="balance" class="section-block">
+  <h2>{{ t(lang, 'nc_board') }}</h2>
+  <p class="meta">{{ t(lang, 'nc_board_note') }}</p>
+  <div class="two">
+  {% for title, rows in [(t(lang, 'nc_board_people'), board.personas), (t(lang, 'nc_board_outlets'), board.medios)] %}
+    <div>
+      <h3>{{ title }}</h3>
+      {% if not rows %}<p class="empty">{{ t(lang, 'nc_no_board') }}</p>{% endif %}
+      <table class="table"><thead><tr><th>{{ t(lang, 'nc_who') }}</th><th>{{ t(lang, 'nc_bad') }}</th><th>{{ t(lang, 'nc_checked') }}</th></tr></thead><tbody>
+      {% for r in rows[:15] %}<tr><td>{% if r.entity_id %}<a href="/entidad/{{ r.entity_id }}">{{ r.name }}</a>{% else %}<a href="/medio/{{ r.outlet_slug }}">{{ r.name }}</a>{% endif %}</td><td>{{ r.bad }}</td><td>{{ r.checked }}</td></tr>{% endfor %}
+      </tbody></table>
+    </div>
+  {% endfor %}
+  </div>
+</section>
+<p class="meta"><a href="/metodologia">{{ t(lang, 'methodology') }}</a> · ADR 0027</p>
+{% endblock %}

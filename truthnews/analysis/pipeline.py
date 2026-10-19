@@ -197,7 +197,10 @@ def article_text(a: Article) -> str:
 def verify_claims(session: Session, since: datetime, verifier: Verifier | None = None) -> dict:
     """Extrae y verifica afirmaciones de los articulos ingeridos desde `since`."""
     verifier = verifier or Verifier()
-    arts = list(session.scalars(select(Article).where(Article.fetched_at >= since)))
+    # Lo importado del archivo no se juzga con el dato de hoy (ADR 0028).
+    arts = list(
+        session.scalars(select(Article).where(Article.fetched_at >= since, Article.origin == "rss"))
+    )
     n_claims = 0
     verdicts: Counter = Counter()
     for a in arts:
