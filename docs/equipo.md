@@ -91,7 +91,8 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
 | ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
 | ADR 0045 | diseno | PR #151 | Rastreo (piezas publicitarias de los medios; sin migracion) |
-| siguiente libre | — | — | ADR 0046 + migracion 0020; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
+| ADR 0046 | diseno | PR (este) | Temas, SEO y sintesis (objetivos tactiles de 44 px en movil; sin migracion) |
+| siguiente libre | — | — | ADR 0047 + migracion 0020; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 
