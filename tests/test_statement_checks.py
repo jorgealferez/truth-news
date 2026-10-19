@@ -5,11 +5,14 @@ from datetime import UTC, datetime, timedelta
 
 from fastapi.testclient import TestClient
 
+from tests.test_ai import FakeAI
 from truthnews import registry
+from truthnews.ai import claims as ai_claims
+from truthnews.ai.client import AIError
 from truthnews.analysis import speakers, statement_checks
 from truthnews.analysis.verify import METHOD_VERSION, Observation, Verifier
 from truthnews.config import Settings
-from truthnews.models import Entity, PoliticalStatement, StatementCheck
+from truthnews.models import CrawlRun, Entity, PoliticalStatement, StatementCheck
 from truthnews.web.app import create_app
 
 NOW = datetime(2026, 10, 19, 12, tzinfo=UTC)
@@ -123,3 +126,66 @@ def test_records_mix_news_and_channels_and_page_says_so(engine, session):
     client = TestClient(create_app(Settings(database_url=str(engine.url)), engine=engine))
     html = client.get("/quien-dice-la-verdad").text
     assert "5 de sus canales" in html and 'id="sin-canal"' in html
+
+
+def ai_reply(*props):
+    return {
+        "afirmaciones": [
+            {
+                "id": i,
+                "comprobable": True,
+                "indicador": ind,
+                "territorio": geo,
+                "periodo": "",
+                "valor": v,
+                "sentido": "ninguno",
+                "motivo": "",
+            }
+            for i, ind, geo, v in props
+        ]
+    }
+
+
+def test_ai_judges_what_rules_miss_and_moves_the_cursor(session):
+
+    ent = party(session)
+    rules_miss = "Con nuestras medidas el paro baja hasta el 10,6 % este trimestre, el dato mas bajo."
+    st = statement(session, "ejemplo", rules_miss, 2)
+    statement(session, "ejemplo", "Un comunicado sin cifras.", 1)
+    run = CrawlRun()
+    session.add(run)
+    session.flush()
+    ai = FakeAI([ai_reply((0, "paro", "ES", 10.6))])
+    out = statement_checks.run_ai(session, ai, run.id, verifier(), now=NOW, actors=actors())
+    assert out["llamadas"] == 1 and out["frases_enviadas"] == 1 and out["claims"] == 1
+    check = session.query(StatementCheck).one()
+    assert check.extractor == "ia" and check.statement_id == st.id and check.speaker_entity_id == ent.id
+    assert check.verdict == "verdadero"
+    assert statement_checks.ai_cursor(session) == out["cursor"] >= st.id
+    # Lo ya enviado no se repite: siguiente ciclo sin frases nuevas, sin llamada.
+    again = statement_checks.run_ai(session, FakeAI([]), None, verifier(), now=NOW, actors=actors())
+    assert again["frases_candidatas"] == 0 and again["claims"] == 0
+
+
+def test_ai_unavailable_keeps_the_cursor(session):
+
+    statement(session, "ejemplo", "El paro baja hasta el 10,6 % este trimestre segun nuestros datos.", 2)
+    run = CrawlRun()
+    session.add(run)
+    session.flush()
+    out = statement_checks.run_ai(session, FakeAI([AIError("caida")]), run.id, verifier(), now=NOW)
+    assert out["claims"] == 0 and statement_checks.ai_cursor(session) == 0
+
+
+def test_ai_respects_the_call_cap(session, monkeypatch):
+
+    monkeypatch.setattr(ai_claims, "BATCH", 1)
+    a = statement(session, "ejemplo", "El paro baja hasta el 10,6 % este trimestre segun nuestros datos.", 3)
+    b = statement(session, "ejemplo", "La inflacion baja hasta el 2,1 % este mes segun nuestros datos.", 2)
+    run = CrawlRun()
+    session.add(run)
+    session.flush()
+    out = statement_checks.run_ai(
+        session, FakeAI([{"afirmaciones": []}]), run.id, verifier(), max_calls=1, now=NOW
+    )
+    assert out["llamadas"] == 1 and out["cursor"] == a.id < b.id  # la segunda queda para el siguiente ciclo
