@@ -96,6 +96,40 @@ def _cmd_archive(args) -> int:
     return 0
 
 
+def _cmd_social(args) -> int:
+    """`social preview`: las piezas que saldrian ahora, por red, sin escribir nada. `social run`: el paso
+    del worker (con `--dry`, en modo prueba aunque haya credenciales)."""
+    from dataclasses import replace
+
+    from truthnews.db import get_engine, session_scope
+    from truthnews.social import queue
+    from truthnews.social.compose import LIMITS, fit, length
+    from truthnews.social.config import SocialSettings
+    from truthnews.social.select import candidates
+
+    settings, social = get_settings(), SocialSettings()
+    with session_scope(get_engine(settings.database_url)) as session:
+        if args.sub == "run":
+            out = queue.run(
+                session,
+                settings.site_url,
+                replace(social, dry_run=social.dry_run or args.dry),
+                lang=settings.default_language,
+            )
+            print(json.dumps(out, indent=2, ensure_ascii=False))
+            return 0
+        found = candidates(
+            session, settings.site_url, social.min_score, social.window_hours, settings.default_language
+        )
+        for c in found[: args.limit]:
+            print(f"== {c.kind} {c.ref_id} (relevancia {c.score:.2f})")
+            for network in LIMITS:
+                text = fit(network, c.draft)
+                print(f"-- {network} ({length(network, text)}/{LIMITS[network][0]})\n{text}")
+        print(f"{len(found)} candidatas")
+    return 0
+
+
 def _cmd_serve(args) -> int:  # pragma: no cover - arranca un servidor
     import uvicorn
 
@@ -164,6 +198,15 @@ def build_parser() -> argparse.ArgumentParser:
     ar.add_argument("--queries", type=int, default=6)
     ar.add_argument("--max-seconds", type=float, default=90.0)
     ar.set_defaults(func=_cmd_archive)
+    so = sub.add_parser("social", help="redes: vista previa o paso del worker").add_subparsers(
+        dest="sub", required=True
+    )
+    pv = so.add_parser("preview", help="piezas que saldrian ahora, sin escribir nada")
+    pv.add_argument("--limit", type=int, default=5)
+    pv.set_defaults(func=_cmd_social)
+    sr = so.add_parser("run", help="el paso de redes del worker")
+    sr.add_argument("--dry", action="store_true", help="modo prueba aunque haya credenciales")
+    sr.set_defaults(func=_cmd_social)
     s = sub.add_parser("serve")
     s.add_argument("--host", default="0.0.0.0")
     s.add_argument("--port", default=8000, type=int)
