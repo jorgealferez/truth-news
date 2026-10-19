@@ -21,7 +21,7 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [ ] Clave con hablante o fuente citada (condicion de la direccion): la cifra de un ministro y la de una ONG no se funden
 - [ ] Quien informa primero y bien (encargo de la direccion 2026-10-19, ADR 0041): en historias con dato oficial, tiempo desde el primer articulo hasta que cada medio publica la cifra que coincide con el dato, y quien da antes una cifra que no cuadra; muestra minima por medio como en la fiabilidad. Carril: Comparativas — EN CURSO (session_01Ed8Nu3mgXDvmuLLX4NkckV, 2026-10-19)
   - [ ] Modulo `timeliness` (ADR 0041): tabla en el ranking de /medios (acierta, mediana de horas, se adelanta con cifra que no cuadra; minimo 5 historias) y linea en 'En claro'; produccion hoy sin muestra suficiente
-- [ ] Quien cambio su cifra tambien en el texto completo (content_hash), no solo titular y extracto. Carril: Comparativas
+- [ ] Quien cambio su cifra tambien en el texto completo (content_hash), no solo titular y extracto. Carril: Comparativas (cedido por la direccion 2026-10-19 12:40 al carril Entidades mientras Comparativas espera un permiso del usuario; no hay refetch.py en ninguna rama remota, medido 12:45 UTC) — EN CURSO (session_01Juk7hZcsWaeHLeGwUxFzuh, 2026-10-19)
 
 ## Esperando`: items que dependen de algo externo (CI, revision, servicio). Al mover uno aqui, el
   agente **programa un despertador** antes de cerrar el turno. Si no puede programarlo, el item no se
