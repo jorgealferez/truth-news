@@ -214,6 +214,8 @@ def extract(
             requires = ind.get("requires", [])
             if requires and not any(_word_in(normalize(r), sn) for r in requires):
                 continue
+            if any(_word_in(normalize(x), sn) for x in ind.get("excludes", [])):
+                continue  # otro indicador parecido (p. ej. pobreza o exclusion frente a riesgo de pobreza)
             pats = ind["patterns"].get(language) or ind["patterns"].get("es", [])
             value, verb = None, ""
             for p in pats:
@@ -226,7 +228,7 @@ def extract(
                     )
                     rx = rf"(?<!\w){pn}(?!\w)\s+{gap}{link}{_PCT}"
                     m = re.search(rx, sn)
-                    if m and "del pib" not in sn[m.end() : m.end() + 8]:
+                    if m and (ind.get("of_gdp") or "del pib" not in sn[m.end() : m.end() + 8]):
                         value = _number(m.group("num"))
                         verb = m.group("verb") or ""
                 else:
@@ -326,6 +328,8 @@ def check_proposal(
     requires = ind.get("requires", [])
     if requires and not any(_word_in(normalize(r), sn) for r in requires):
         return "falta el contexto que exige el indicador"
+    if any(_word_in(normalize(x), sn) for x in ind.get("excludes", [])):
+        return "la frase habla de otro indicador parecido"
     if _SUBGROUP.search(sn):
         return "dato de un colectivo: no hay serie general con la que compararlo"
     if _CHANGE.search(sn):
@@ -335,6 +339,8 @@ def check_proposal(
     if any(_word_in(r, sn) for r in _region_names()):
         return "dato regional: no hay serie nacional con la que compararlo"
     positions = _number_positions(sn, ind["unit"], value)
+    if ind["unit"] == "pct" and not ind.get("of_gdp"):
+        positions = [p for p in positions if "del pib" not in sn[p : p + 20]]  # "% del PIB" es otro dato
     if not positions:
         return "la cifra no aparece en la frase con su unidad"
     # Periodo: el que fijan las reglas manda; un ano suelto solo si esta escrito en la frase.

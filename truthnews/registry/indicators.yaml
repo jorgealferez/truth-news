@@ -37,6 +37,7 @@ pib_trimestral:
 deuda_publica:
   name: {es: Deuda pública (% del PIB), en: Government debt (% of GDP)}
   unit: pct
+  of_gdp: true  # "la deuda publica es del 101,8 % del PIB": aqui "del PIB" es la unidad, no otro dato
   patterns:
     es: ["deuda pública", "deuda de las administraciones"]
     en: ["public debt", "government debt", "national debt"]
@@ -44,6 +45,40 @@ deuda_publica:
   sources:
     - {connector: eurostat, dataset: gov_10q_ggdebt, params: {unit: PC_GDP, sector: S13, na_item: GD}, geos: EU}
     - {connector: worldbank, indicator: GC.DOD.TOTL.GD.ZS}
+deficit_publico:
+  name: {es: Déficit público (% del PIB), en: Government deficit (% of GDP)}
+  unit: pct
+  of_gdp: true
+  directional: false  # "sube el deficit" es ambiguo con el signo: solo se compara el nivel
+  patterns:
+    es: ["déficit público", "déficit de las administraciones públicas", "déficit fiscal"]
+    en: ["government deficit", "budget deficit", "fiscal deficit"]
+    pt: ["défice público", "défice orçamental", "déficit público"]
+  sources:
+    # Eurostat publica la capacidad (+) o necesidad (-) de financiacion (B9): el deficit es su opuesto.
+    - {connector: eurostat, dataset: gov_10dd_edpt1, params: {unit: PC_GDP, sector: S13, na_item: B9}, geos: EU, negate: true}
+riesgo_pobreza:
+  name: {es: Tasa de riesgo de pobreza, en: At-risk-of-poverty rate}
+  unit: pct
+  directional: false
+  patterns:
+    es: ["riesgo de pobreza", "tasa de pobreza"]
+    en: ["at risk of poverty", "at-risk-of-poverty", "poverty rate"]
+    pt: ["risco de pobreza", "taxa de pobreza"]
+  excludes: ["exclusión", "exclusion", "exclusão", "arope", "severa", "infantil", "extrema"]
+  sources:
+    - {connector: eurostat, dataset: ilc_li02, params: {unit: PC, age: TOTAL, sex: T, statinfo: MED_EI, rskpovth: B_60}, geos: EU}
+pobreza_exclusion:
+  name: {es: Riesgo de pobreza o exclusión social (AROPE), en: At risk of poverty or social exclusion (AROPE)}
+  unit: pct
+  directional: false
+  patterns:
+    es: ["riesgo de pobreza o exclusión social", "riesgo de pobreza o exclusión", "pobreza o exclusión social", "tasa arope"]
+    en: ["at risk of poverty or social exclusion", "poverty or social exclusion"]
+    pt: ["risco de pobreza ou exclusão social"]
+  excludes: ["infantil", "severa"]
+  sources:
+    - {connector: eurostat, dataset: ilc_peps01n, params: {unit: PC, age: TOTAL, sex: T}, geos: EU}
 precio_vivienda:
   name: {es: Precio de la vivienda (variación anual), en: House prices (annual change)}
   unit: pct

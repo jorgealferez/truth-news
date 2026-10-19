@@ -248,3 +248,17 @@ def test_reverify_ia_claims_without_calling_the_ai(session, article):
     out = pipeline.reverify_outdated(session, verifier())
     assert out == {"verdadero->sin-datos": 1}  # la frase ya no esta en el articulo: se retira con nota
     assert "Corregido" in ver.explanation
+
+
+def test_new_indicators_real_sentences():
+    # Frase real del rastreo del 2026-10-19 que las reglas no ven (la cifra va antes del indicador).
+    s = "Hay familias en dificultades: el 19,7% de la población española está en riesgo de pobreza."
+    c = check(s, "riesgo_pobreza", "ES", 19.7)
+    assert isinstance(c, ClaimCandidate) and c.indicator == "riesgo_pobreza"
+    arope = "El 25,7 % de la población está en riesgo de pobreza o exclusión social en España."
+    assert "parecido" in check(arope, "riesgo_pobreza", "ES", 25.7)
+    assert isinstance(check(arope, "pobreza_exclusion", "ES", 25.7), ClaimCandidate)
+    gdp = "En el segundo trimestre el sector aporta el 0,6 % del PIB según el informe."
+    assert "cifra" in check(gdp, "pib_trimestral", "ES", 0.6)
+    deficit = "El déficit público cerró en el 2,8 % del PIB, según Hacienda."
+    assert isinstance(check(deficit, "deficit_publico", "ES", 2.8), ClaimCandidate)

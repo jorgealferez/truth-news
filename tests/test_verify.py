@@ -102,3 +102,29 @@ def test_observation_periods():
     assert Observation("s", "l", "u", "2026-Q2", 1).period_end() == date(2026, 6, 28)
     assert Observation("s", "l", "u", "2025", 1).period_end() == date(2025, 12, 31)
     assert Observation("s", "l", "u", "2025", 1).is_stale(date(2027, 3, 1))
+
+
+def test_negated_series_for_deficit():
+    from truthnews.analysis.verify import negated
+
+    prev = Observation("eurostat", "B9", "https://x", "2024", -3.2)
+    obs = Observation(
+        "eurostat", "B9", "https://x", "2025", -2.4, previous=prev, history={"2024": -3.2, "2025": -2.4}
+    )
+    n = negated(obs)
+    assert (n.value, n.previous.value, n.history) == (2.4, 3.2, {"2024": 3.2, "2025": 2.4})
+    assert "signo" in n.extra and obs.value == -2.4 and negated(None) is None
+
+
+def test_deficit_is_judged_against_the_negated_series(monkeypatch):
+    from truthnews.analysis import verify as v
+    from truthnews.analysis.claims import extract
+
+    def fake_latest(dataset, geo, params, label=""):
+        assert dataset == "gov_10dd_edpt1"
+        return Observation("eurostat", label, "https://x", "2025", -2.4, history={"2025": -2.4})
+
+    monkeypatch.setattr(v.eurostat, "latest", fake_latest)
+    (claim,) = extract("El déficit público se situó en el 2,5 % del PIB.", "es", "ES", 2026)
+    res = v.Verifier().judge(claim)
+    assert res.verdict == "verdadero" and res.observations[0].value == 2.4

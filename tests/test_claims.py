@@ -27,6 +27,16 @@ CASES = [
     ("La tasa de paro se sitúa en el 10 % mientras Turquía sufre.", []),
     ("Tiene 49,3 millones de habitantes.", []),
     ("El PIB crece un 0,7 % este año.", []),  # sin trimestre: no es la serie trimestral
+    # Catalogo ampliado (2026-10-19): "% del PIB" es la unidad de deuda y deficit, no otro dato.
+    ("La deuda pública es del 101,8 % del PIB.", [("deuda_publica", "ES", 101.8, None)]),
+    ("El déficit público se situó en el 2,8 % del PIB.", [("deficit_publico", "ES", 2.8, None)]),
+    ("La tasa de riesgo de pobreza es del 19,5 % en el país.", [("riesgo_pobreza", "ES", 19.5, None)]),
+    (
+        "La tasa de riesgo de pobreza o exclusión social es del 25,7 % en el país.",
+        [("pobreza_exclusion", "ES", 25.7, None)],
+    ),
+    ("La tasa de riesgo de pobreza infantil es del 28,9 % en el país.", []),
+    ("La inflación es del 2 % del PIB en ese cálculo.", []),
 ]
 
 
