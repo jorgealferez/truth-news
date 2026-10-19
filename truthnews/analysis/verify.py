@@ -20,7 +20,7 @@ from truthnews.data import Observation, eurostat, ine, worldbank
 # v8: inflacion con el IPCA de Eurostat: la franja que puede explicar el IPC nacional no se juzga.
 # v9: subgrupos (colectivo, discapacidad, "entre quienes"...) no se juzgan contra la tasa general.
 # v10: deuda publica fuera de la UE sin la serie del gobierno central del Banco Mundial: no se juzga; un
-#      pais separado de la cifra por un contraste ("mientras Turquia...") no se le atribuye; una cifra
+#      pais solo es el de la cifra si va ligado a ella en la misma oracion (no "mientras Turquia"); una cifra
 #      aproximada ("unos 40 millones") dentro de la franja amplia es verdadera, no imprecisa.
 METHOD_VERSION = "v10"
 # Cifra dada como aproximada ("unos 40 millones"): dentro de la franja amplia no es imprecisa. Caso de la

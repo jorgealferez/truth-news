@@ -229,17 +229,28 @@ def _word_in(needle: str, haystack: str) -> bool:
     return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", haystack) is not None
 
 
-# Un pais separado de la cifra por un contraste no es el de la cifra. Caso de la revision de #157 (Global):
-# "la tasa de paro se situa en el 10 % mientras Turquia sufre" no habla del paro de Turquia.
+# Un pais solo es el de la cifra si va ligado a ella en la misma oracion: delante, como sujeto o complemento
+# del indicador ("en Francia la tasa de paro...", "la inflacion de Turquia se situa en..."), o justo detras
+# ("el 6,4 % en la eurozona"). Un contraste o una coordinacion entre medias lo separa. Caso de la revision de
+# #157 (Global): "la tasa de paro se situa en el 10 % mientras Turquia sufre" no habla del paro de Turquia.
 _CONTRAST = re.compile(
     r"\b(?:mientras|pero|aunque|sin embargo|en cambio|frente a|a diferencia de|whereas|while|but"
     r"|compared with|enquanto|porem|embora)\b|;"
 )
+_COORD = re.compile(r"\b(?:y|e|and)\b")
+_AFTER = 80  # caracteres como maximo de la cifra a un pais que va detras ("... social en Espana")
 
 
-def _apart(sn: str, places: list[int], figures: list[int]) -> bool:
-    """True si ninguna mencion del pais comparte oracion con la cifra (hay un contraste entre medias)."""
-    return all(_CONTRAST.search(sn[min(p, f) : max(p, f)]) for p in places for f in figures)
+def _linked(sn: str, places: list[int], figures: list[int]) -> bool:
+    """True si alguna mencion del pais va ligada a la cifra en la misma oracion (sin contraste ni "y")."""
+    for p in places:
+        for f in figures:
+            seg = sn[min(p, f) : max(p, f)]
+            if _CONTRAST.search(seg) or _COORD.search(seg):
+                continue
+            if p < f or p - f <= _AFTER:
+                return True
+    return False
 
 
 def _geo(sentence_n: str, default: str, explicit_only: bool = False, figure: int | None = None) -> str | None:
@@ -259,8 +270,8 @@ def _geo(sentence_n: str, default: str, explicit_only: bool = False, figure: int
         return None  # nombra un pais del que no tenemos serie (o ademas de otro): no se atribuye
     if named:
         iso = named.pop()
-        if figure is not None and _apart(sentence_n, _named_positions(sentence_n)[iso], [figure]):
-            return None  # el pais esta en otra parte de la frase: la cifra no es suya ni del medio
+        if figure is not None and not _linked(sentence_n, _named_positions(sentence_n)[iso], [figure]):
+            return None  # el pais no va ligado a la cifra: dudoso, no se juzga (ni se da al medio)
         return iso
     if explicit_only:
         return None
@@ -491,15 +502,15 @@ def check_proposal(
     if geo not in indicators()["geo_names"]:
         return "territorio desconocido"
     if len(named) > 1:
-        dist = {iso: min(abs(p - q) for p in ps for q in positions) for iso, ps in named.items()}
-        best = sorted(dist.items(), key=lambda kv: kv[1])
-        if geo != best[0][0] or best[0][1] == best[1][1]:
+        # Varios territorios: la cifra es del unico ligado a ella; si son varios o ninguno, no se juzga.
+        tied = {iso for iso, ps in named.items() if _linked(sn, ps, positions)}
+        if tied != {geo}:
             return "varios territorios: la cifra no es inequivocamente del propuesto"
     elif named:
         if geo not in named:
             return "el territorio no es el nombrado en la frase"
-        if _apart(sn, named[geo], positions):
-            return "el pais nombrado esta separado de la cifra por un contraste: no es suya"
+        if not _linked(sn, named[geo], positions):
+            return "el pais nombrado no va ligado a la cifra en la misma oracion"
     else:
         if ind.get("requires_explicit_geo") or geo != default_geo:
             return "territorio no nombrado en la frase"
