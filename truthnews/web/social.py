@@ -48,10 +48,20 @@ def _wrap(draw: ImageDraw.ImageDraw, text: str, font, width: int, max_lines: int
 
 
 def _mark(draw: ImageDraw.ImageDraw, x: int, y: int, size: int) -> None:
+    """El simbolo (ADR 0014, la "n medida") sobre una placa de papel: el arco de la n baja hasta una vara
+    ambar graduada. Misma geometria que `mark.svg`, en una rejilla de 64."""
+
+    def box(x0: float, y0: float, x1: float, y1: float) -> tuple[float, float, float, float]:
+        return (x + x0 * s, y + y0 * s, x + x1 * s, y + y1 * s)
+
     s = size / 64
-    draw.rounded_rectangle((x, y, x + size, y + size), radius=14 * s, fill=PAPER)
-    draw.rounded_rectangle((x + 13 * s, y + 20 * s, x + 51 * s, y + 28 * s), radius=4 * s, fill=INK)
-    draw.rounded_rectangle((x + 13 * s, y + 36 * s, x + 35 * s, y + 44 * s), radius=4 * s, fill=AMBER)
+    draw.rounded_rectangle(box(0, 0, 64, 64), radius=14 * s, fill=PAPER)
+    draw.pieslice(box(12, 10, 52, 50), 180, 360, fill=INK)
+    draw.pieslice(box(22, 20, 42, 40), 180, 360, fill=PAPER)
+    draw.rectangle(box(12, 30, 22, 54), fill=INK)
+    draw.rectangle(box(42, 32.4, 52, 54), fill=AMBER)
+    for ty, w in ((35.6, 5.2), (39.4, 3), (43.2, 5.2), (47, 3), (50.8, 5.2)):
+        draw.rectangle(box(42, ty, 42 + w, ty + 1.5), fill=PAPER)
 
 
 def story_image(

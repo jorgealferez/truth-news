@@ -1,6 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="NosMienten">
-  <title>NosMienten</title>
-  <rect width="64" height="64" rx="14" fill="#14161b"/>
-  <rect x="13" y="20" width="38" height="8" rx="4" fill="#fbfaf6"/>
-  <rect x="13" y="36" width="22" height="8" rx="4" fill="#e8a317"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="nosmienten.com"><title>nosmienten.com</title><path d="M12 54V30A20 20 0 0 1 52 30H42A10 10 0 0 0 22 30V54Z" fill="#14161b"/><rect x="42" y="32.4" width="10" height="21.6" fill="#e8a317"/><rect x="42" y="35.6" width="5.2" height="1.5" fill="#fbfaf6"/><rect x="42" y="39.4" width="3" height="1.5" fill="#fbfaf6"/><rect x="42" y="43.2" width="5.2" height="1.5" fill="#fbfaf6"/><rect x="42" y="47" width="3" height="1.5" fill="#fbfaf6"/><rect x="42" y="50.8" width="5.2" height="1.5" fill="#fbfaf6"/></svg>

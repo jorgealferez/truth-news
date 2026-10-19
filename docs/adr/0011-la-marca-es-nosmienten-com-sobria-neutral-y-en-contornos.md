@@ -1,6 +1,6 @@
 # ADR 0011 — La marca es nosmienten.com: sobria, neutral y dibujada en contornos
 
-- **Estado:** aceptado
+- **Estado:** aceptado; el simbolo lo revisa el ADR 0014
 - **Fecha:** 2026-10-18
 - **Fase:** 6
 - **Decide:** Constructor, auditado por el Critico
