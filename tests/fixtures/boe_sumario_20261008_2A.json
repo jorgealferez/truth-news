@@ -1,0 +1,352 @@
+{
+ "status": {
+  "code": "200",
+  "text": "ok"
+ },
+ "data": {
+  "sumario": {
+   "metadatos": {
+    "publicacion": "BOE",
+    "fecha_publicacion": "20261008"
+   },
+   "diario": [
+    {
+     "numero": "250",
+     "sumario_diario": {
+      "identificador": "BOE-S-2026-250",
+      "url_pdf": {
+       "szBytes": "407167",
+       "szKBytes": "398",
+       "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-S-2026-250.pdf"
+      }
+     },
+     "seccion": [
+      {
+       "codigo": "1",
+       "nombre": "I. Disposiciones generales",
+       "departamento": []
+      },
+      {
+       "codigo": "2A",
+       "nombre": "II. Autoridades y personal. - A. Nombramientos, situaciones e incidencias",
+       "departamento": [
+        {
+         "codigo": "9585",
+         "nombre": "MINISTERIO DE LA PRESIDENCIA, JUSTICIA Y RELACIONES CON LAS CORTES",
+         "epigrafe": [
+          {
+           "nombre": "Ceses",
+           "item": {
+            "identificador": "BOE-A-2026-20918",
+            "control": "2026/15587",
+            "titulo": "Real Decreto 817/2026, de 7 de octubre, por el que se dispone el cese de don Roberto Brezmes Caramanzana como Fiscal Jefe de la Fiscalía Provincial de Lugo.",
+            "url_pdf": {
+             "szBytes": "191937",
+             "szKBytes": "187",
+             "pagina_inicial": "133801",
+             "pagina_final": "133801",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20918.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20918",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20918"
+           }
+          },
+          {
+           "nombre": "Promociones",
+           "item": {
+            "identificador": "BOE-A-2026-20919",
+            "control": "2026/15590",
+            "titulo": "Real Decreto 820/2026, de 7 de octubre, por el que se promueve a la categoría de Fiscal de Sala a doña María Teresa Vicente Calvo.",
+            "url_pdf": {
+             "szBytes": "191963",
+             "szKBytes": "187",
+             "pagina_inicial": "133802",
+             "pagina_final": "133802",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20919.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20919",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20919"
+           }
+          },
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20920",
+             "control": "2026/15589",
+             "titulo": "Real Decreto 819/2026, de 7 de octubre, por el que se nombra Fiscal de Sala de la Fiscalía de Sala de Menores a doña María Teresa Vicente Calvo.",
+             "url_pdf": {
+              "szBytes": "191821",
+              "szKBytes": "187",
+              "pagina_inicial": "133803",
+              "pagina_final": "133803",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20920.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20920",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20920"
+            },
+            {
+             "identificador": "BOE-A-2026-20921",
+             "control": "2026/15591",
+             "titulo": "Real Decreto 821/2026, de 7 de octubre, por el que se nombra Fiscal de Sala Jefe de la Fiscalía del Tribunal Supremo (Sección Contencioso-Administrativa) a don Jesús José Tirado Estrada.",
+             "url_pdf": {
+              "szBytes": "192258",
+              "szKBytes": "188",
+              "pagina_inicial": "133804",
+              "pagina_final": "133804",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20921.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20921",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20921"
+            },
+            {
+             "identificador": "BOE-A-2026-20922",
+             "control": "2026/15592",
+             "titulo": "Real Decreto 822/2026, de 7 de octubre, por el que se nombra Teniente Fiscal de la Fiscalía de la Comunidad Autónoma de las Illes Balears a doña María Dolores Rial de la Calle.",
+             "url_pdf": {
+              "szBytes": "191571",
+              "szKBytes": "187",
+              "pagina_inicial": "133805",
+              "pagina_final": "133805",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20922.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20922",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20922"
+            },
+            {
+             "identificador": "BOE-A-2026-20923",
+             "control": "2026/15326",
+             "titulo": "Orden PJC/1061/2026, de 29 de septiembre, por la que se modifica la Orden PJC/742/2026, de 30 de junio, y se nombra personal funcionario de carrera y se adjudican destinos en el Cuerpo Especial de Ayudantes de Laboratorio del Instituto Nacional de Toxicología y Ciencias Forenses.",
+             "url_pdf": {
+              "szBytes": "212863",
+              "szKBytes": "208",
+              "pagina_inicial": "133806",
+              "pagina_final": "133807",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20923.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20923",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20923"
+            }
+           ]
+          },
+          {
+           "nombre": "Destinos",
+           "item": {
+            "identificador": "BOE-A-2026-20924",
+            "control": "2026/15588",
+            "titulo": "Real Decreto 818/2026, de 7 de octubre, por el que se adjudica plaza vacante de segunda categoría de la Fiscalía de la Comunidad Autónoma de Cantabria a doña María del Pilar Jiménez Bados.",
+            "url_pdf": {
+             "szBytes": "192218",
+             "szKBytes": "188",
+             "pagina_inicial": "133808",
+             "pagina_final": "133808",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20924.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20924",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20924"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "6110",
+         "nombre": "MINISTERIO DE DEFENSA",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20925",
+             "control": "2026/15328",
+             "titulo": "Resolución 430/38406/2026, de 29 de septiembre, de la Subsecretaría, por la que se nombra personal estatutario fijo en la categoría de Técnico/a Medio Sanitario: Cuidados Auxiliares de Enfermería en la Red Hospitalaria de la Defensa, y por la que se modifica la Resolución 430/38556/2025, de 23 de diciembre, por la que se publica la relación de personas aprobadas en el proceso selectivo de ingreso, por el sistema general de acceso libre, para el acceso a la condición de personal estatutario fijo, en plazas de la categoría de Técnico/a Medio Sanitario: Cuidados Auxiliares de Enfermería en la Red Hospitalaria de la Defensa, convocado por Resolución 400/38535/2024, de 10 de diciembre.",
+             "url_pdf": {
+              "szBytes": "241532",
+              "szKBytes": "236",
+              "pagina_inicial": "133809",
+              "pagina_final": "133814",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20925.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20925",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20925"
+            },
+            {
+             "identificador": "BOE-A-2026-20926",
+             "control": "2026/15329",
+             "titulo": "Resolución 430/38407/2026, de 29 de septiembre, de la Subsecretaría, por la que se modifica la Resolución 430/38142/2026, de 10 de marzo, por la que se nombra personal estatutario fijo en la categoría de Celador/a en la Red Hospitalaria de la Defensa.",
+             "url_pdf": {
+              "szBytes": "223642",
+              "szKBytes": "218",
+              "pagina_inicial": "133815",
+              "pagina_final": "133818",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20926.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20926",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20926"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "codigo": "4110",
+         "nombre": "MINISTERIO DE CULTURA",
+         "epigrafe": [
+          {
+           "nombre": "Ceses y nombramientos",
+           "item": {
+            "identificador": "BOE-A-2026-20927",
+            "control": "2026/15331",
+            "titulo": "Resolución de 2 de octubre de 2026, del Instituto de la Cinematografía y de las Artes Audiovisuales, O.A., por la que se dispone el cese y nombramiento de vocales en la Comisión de Calificación de Películas Cinematográficas.",
+            "url_pdf": {
+             "szBytes": "195137",
+             "szKBytes": "191",
+             "pagina_inicial": "133819",
+             "pagina_final": "133819",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20927.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20927",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20927"
+           }
+          },
+          {
+           "nombre": "Destinos",
+           "item": {
+            "identificador": "BOE-A-2026-20928",
+            "control": "2026/15390",
+            "titulo": "Resolución de 5 de octubre de 2026, de la Subsecretaría, por la que se resuelve la convocatoria de libre designación, efectuada por Resolución de 9 de septiembre de 2026.",
+            "url_pdf": {
+             "szBytes": "196661",
+             "szKBytes": "192",
+             "pagina_inicial": "133820",
+             "pagina_final": "133821",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20928.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20928",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20928"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "9595",
+         "nombre": "MINISTERIO PARA LA TRANSFORMACIÓN DIGITAL Y DE LA FUNCIÓN PÚBLICA",
+         "epigrafe": [
+          {
+           "nombre": "Destinos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20929",
+             "control": "2026/15333",
+             "titulo": "Resolución de 1 de octubre de 2026, de la Dirección de la Agencia Española de Supervisión de Inteligencia Artificial, por la que se resuelve el concurso específico, convocado por Resolución de 23 de marzo de 2026.",
+             "url_pdf": {
+              "szBytes": "235691",
+              "szKBytes": "230",
+              "pagina_inicial": "133822",
+              "pagina_final": "133824",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20929.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20929",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20929"
+            },
+            {
+             "identificador": "BOE-A-2026-20930",
+             "control": "2026/15334",
+             "titulo": "Resolución de 1 de octubre de 2026, de la Secretaría de Estado de Digitalización e Inteligencia Artificial, por la que se resuelve la convocatoria de libre designación, efectuada por Resolución de 3 de septiembre de 2026.",
+             "url_pdf": {
+              "szBytes": "209364",
+              "szKBytes": "204",
+              "pagina_inicial": "133825",
+              "pagina_final": "133827",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20930.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20930",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20930"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "codigo": "4510",
+         "nombre": "MINISTERIO FISCAL",
+         "epigrafe": [
+          {
+           "nombre": "Ceses y nombramientos",
+           "item": {
+            "identificador": "BOE-A-2026-20931",
+            "control": "2026/15444",
+            "titulo": "Decreto de 1 de septiembre de 2026, de la Fiscal General del Estado, por el que se dispone el cese de don Jaime Serrano-Jover González como Fiscal Delegado de la Fiscalía Especial contra la Corrupción y la Criminalidad Organizada en la Fiscalía Provincial de Santa Cruz de Tenerife y se nombra a don Rafael María Unceta González.",
+            "url_pdf": {
+             "szBytes": "203296",
+             "szKBytes": "199",
+             "pagina_inicial": "133828",
+             "pagina_final": "133830",
+             "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20931.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20931",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20931"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "310",
+         "nombre": "UNIVERSIDADES",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20932",
+             "control": "2026/15053",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Universidad Autónoma de Barcelona, por la que se nombra Catedrática de Universidad a doña Montserrat Sarrà Adroguer.",
+             "url_pdf": {
+              "szBytes": "192113",
+              "szKBytes": "188",
+              "pagina_inicial": "133831",
+              "pagina_final": "133831",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20932.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20932",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20932"
+            },
+            {
+             "identificador": "BOE-A-2026-20933",
+             "control": "2026/15054",
+             "titulo": "Resolución de 28 de septiembre de 2026, de la Universidad de Córdoba, por la que se nombran Profesoras y Profesores Titulares de Universidad.",
+             "url_pdf": {
+              "szBytes": "192889",
+              "szKBytes": "188",
+              "pagina_inicial": "133832",
+              "pagina_final": "133832",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20933.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20933",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20933"
+            },
+            {
+             "identificador": "BOE-A-2026-20934",
+             "control": "2026/15055",
+             "titulo": "Resolución de 28 de septiembre de 2026, de la Universidad del País Vasco/Euskal Herriko Unibertsitatea, por la que se nombra Profesor Titular de Universidad a don Josu Aranbarri Erkiaga.",
+             "url_pdf": {
+              "szBytes": "191764",
+              "szKBytes": "187",
+              "pagina_inicial": "133833",
+              "pagina_final": "133833",
+              "texto": "https://www.boe.es/boe/dias/2026/10/08/pdfs/BOE-A-2026-20934.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20934",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20934"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}
