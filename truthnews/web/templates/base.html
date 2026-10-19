@@ -11,8 +11,9 @@
   <link rel="apple-touch-icon" href="/static/icon-180.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="alternate" type="application/rss+xml" title="{{ site.site_name }}" href="/rss.xml">
-  {% set here = request.url.path %}{% for l in languages %}<link rel="alternate" hreflang="{{ l }}" href="{{ site.site_url }}{{ lang_path(here, l) }}">
-  {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.site_url }}{{ here }}">
+  {% if lang not in indexed_languages %}<meta name="robots" content="noindex, follow">
+  {% elif indexed_languages|length > 1 %}{% set here = request.url.path %}{% for l in indexed_languages %}<link rel="alternate" hreflang="{{ l }}" href="{{ site.site_url }}{{ lang_path(here, l) }}">
+  {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.site_url }}{{ here }}">{% endif %}
   <meta name="theme-color" content="#14161b">
   <meta property="og:site_name" content="{{ site.site_name }}">
   <meta property="og:type" content="website">

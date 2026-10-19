@@ -44,8 +44,8 @@ def test_rewrite_html_keeps_language_alternates_and_shared_files():
     assert f'hreflang="es" href="{SITE}/tema/3"' in out and 'href="/idioma/es?to=/"' in out
 
 
-@pytest.fixture()
-def client(engine, session):
+@pytest.fixture(params=[("es", "en")], ids=["indexed"])
+def client(request, engine, session):
     o = Outlet(slug="m", name="Medio", homepage="https://m.es", country="ES", language="es", scope="national")
     session.add(o)
     session.flush()
@@ -76,7 +76,14 @@ def client(engine, session):
         )
     )
     session.commit()
-    return TestClient(create_app(Settings(database_url="sqlite://"), engine=engine)), st
+    settings = Settings(database_url="sqlite://", indexed_languages=request.param)
+    return TestClient(create_app(settings, engine=engine)), st
+
+
+@pytest.fixture()
+def noindex_client(engine, session):
+    """Configuracion por defecto: solo el espanol se ofrece a buscadores (decision del usuario 2026-10-19)."""
+    return TestClient(create_app(Settings(database_url="sqlite://"), engine=engine))
 
 
 def test_english_pages_under_prefix(client):
@@ -131,3 +138,18 @@ def test_english_pages_use_marked_headline_translations(client, session):
     page = c.get("/en" + seo.path("historia", st.id, st.title)).text
     assert "<title>Riots in France — " in page
     assert "Riots in France" not in c.get("/contrastes").text  # en espanol, el titular original
+
+
+def test_untranslated_languages_are_served_but_not_offered_to_search_engines(noindex_client):
+    c = noindex_client
+    en = c.get("/en/medios").text
+    assert '<html lang="en">' in en and '<meta name="robots" content="noindex, follow">' in en
+    assert 'hreflang="es" href=' not in en.split("<body")[0]  # sin alternos en la cabecera
+    es = c.get("/medios").text
+    assert "noindex" not in es and '<link rel="alternate" hreflang' not in es
+    assert 'href="/en/medios"' in es  # el selector de idioma sigue llevando a la version inglesa
+    robots = c.get("/robots.txt").text
+    assert f"Sitemap: {SITE}/sitemap.xml" in robots and "sitemap-en" not in robots
+    assert c.get("/sitemap-en.xml").status_code == 404
+    sm = c.get("/sitemap.xml").text
+    assert "/en" not in sm and "xhtml:link" not in sm
