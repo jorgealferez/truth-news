@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'appointments') }} · {{ day.strftime('%d/%m/%Y') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'appointments_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/nombramientos?fecha={{ day.isoformat() }}">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'appointments') }}</h1>
+<p class="lead-text">{{ t(lang, 'appointments_lead') }}</p>
+<nav class="pager appt-days"><a href="/nombramientos?fecha={{ prev_day.isoformat() }}">← {{ t(lang, 'previous_day') }}</a>
+  <strong>{{ day.strftime('%d/%m/%Y') }}</strong>
+  {% if next_day %}<a href="/nombramientos?fecha={{ next_day.isoformat() }}">{{ t(lang, 'next_day') }} →</a>{% endif %}</nav>
+{% if not v.counts.total %}<p class="empty">{{ t(lang, 'no_appointments') }}</p>{% else %}
+<ul class="kpis"><li><b>{{ v.counts.nombramiento }}</b><span>{{ t(lang, 'appt_n_nombramiento') }}</span></li><li><b>{{ v.counts.cese }}</b><span>{{ t(lang, 'appt_n_cese') }}</span></li><li><b>{{ v.counts.total }}</b><span>{{ t(lang, 'appt_total') }}</span></li></ul>
+{% for dep, items in v.named %}<section class="block appt"><h2>{{ dep }}</h2>
+  <ul class="compact">{% for i in items %}<li><span class="tag">{{ t(lang, 'appt_kind_' ~ i.tipo) }}</span> <strong>{{ i.persona }}</strong>{% if i.cargo %} — {{ i.cargo }}{% endif %}
+    <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></li>{% endfor %}</ul></section>{% endfor %}
+{% if v.rest %}<details class="block fold"><summary><h2>{{ t(lang, 'appt_other') }}</h2> <span class="meta">{{ v.rest|length }}</span></summary>
+  <ul class="compact">{% for i in v.rest %}<li><span class="meta">{{ i.epigrafe or t(lang, 'appt_kind_' ~ i.tipo) }} · {{ i.departamento|capitalize }}</span><br>{{ i.titulo }} <a class="meta" href="{{ i.url }}" rel="noopener" target="_blank">{{ i.id }}</a></li>{% endfor %}</ul></details>{% endif %}
+{% endif %}
+<p class="meta">{{ t(lang, 'appt_source') }} <a href="https://www.boe.es/datosabiertos/" rel="noopener" target="_blank">boe.es/datosabiertos</a>.</p>
+{% endblock %}

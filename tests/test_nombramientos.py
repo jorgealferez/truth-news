@@ -88,3 +88,80 @@ def test_fetch_uses_open_data_api_and_fails_closed():
     assert nb.nombramientos(date(2026, 10, 11), transport=t) == []  # sin BOE ese dia
     assert nb.as_dicts(items[:1])[0]["id"] == items[0].id
     assert nb.parse({}, date(2026, 10, 7)) == []
+
+
+# --- Pagina /nombramientos ----------------------------------------------------------------------------
+
+
+class Clock:
+    def __init__(self):
+        self.now = 0.0
+
+    def __call__(self):
+        return self.now
+
+
+def boe_transport(calls):
+    def handler(request):
+        calls.append(str(request.url))
+        day = request.url.path.rsplit("/", 1)[-1]
+        if day in ("20261007", "20261008"):
+            return httpx.Response(200, json=load(day))
+        return httpx.Response(404)
+
+    return httpx.MockTransport(handler)
+
+
+def test_boe_days_caches_past_days_and_retries_empty_ones():
+    from truthnews.web.appointments import BoeDays
+
+    calls, clock = [], Clock()
+    days = BoeDays(boe_transport(calls), clock)
+    today = date(2026, 10, 9)
+    assert len(days.day(date(2026, 10, 7), today)) == 13
+    days.day(date(2026, 10, 7), today)
+    assert len(calls) == 1  # dia pasado con datos: no se vuelve a pedir
+    assert days.latest(today) == (date(2026, 10, 8), days.day(date(2026, 10, 8), today))
+    n = len(calls)
+    days.day(date(2026, 10, 9), today)
+    assert len(calls) == n  # vacio reciente: se recuerda 10 min
+    clock.now += 601
+    days.day(date(2026, 10, 9), today)
+    assert len(calls) == n + 1
+    assert BoeDays(boe_transport([]), clock).latest(date(2026, 10, 20)) == (date(2026, 10, 20), [])
+
+
+def test_boe_days_network_error_is_empty():
+    from truthnews.web.appointments import BoeDays
+
+    def boom(request):
+        raise httpx.ConnectError("caido", request=request)
+
+    assert BoeDays(httpx.MockTransport(boom)).day(date(2026, 10, 7), date(2026, 10, 9)) == []
+
+
+def test_appointments_page(engine):
+    from fastapi.testclient import TestClient
+
+    from truthnews.config import Settings
+    from truthnews.web.app import create_app
+    from truthnews.web.appointments import BoeDays
+
+    calls = []
+    tc = TestClient(
+        create_app(Settings(database_url="sqlite://"), engine=engine, boe_days=BoeDays(boe_transport(calls)))
+    )
+    page = tc.get("/nombramientos?fecha=2026-10-08").text
+    assert "Nombramientos y ceses" in page and "08/10/2026" in page
+    assert "María Dolores Rial de la Calle" in page and "Teniente Fiscal de la Fiscalía" in page
+    assert 'href="https://www.boe.es/diario_boe/txt.php?id=BOE-A-' in page and "Día siguiente" in page
+    assert "Destinos, ascensos y nombramientos colectivos" in page and ">ceses<" in page
+    assert "Ministerio de la Presidencia, Justicia y Relaciones con las Cortes" in page
+    assert "fecha=2026-10-07" in page and 'href="/nombramientos"' in page  # pie
+    empty = tc.get("/nombramientos?fecha=2026-10-11").text
+    assert "no publicó nombramientos" in empty
+    assert tc.get("/nombramientos").status_code == 200  # hoy o el ultimo BOE con datos
+    for bad in ("2026-13-01", "2999-01-01", "2001-01-01"):
+        assert tc.get(f"/nombramientos?fecha={bad}").status_code == 404
+    assert "/nombramientos" in tc.get("/sitemap.xml").text
+    assert "Appointments and dismissals" in tc.get("/nombramientos?fecha=2026-10-07&lang=en").text

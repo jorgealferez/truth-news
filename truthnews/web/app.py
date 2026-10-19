@@ -2,7 +2,7 @@
 # Sin `from __future__ import annotations`: FastAPI resuelve los alias Annotated locales al definir.
 
 import time
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
@@ -31,7 +31,7 @@ from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.social import images
-from truthnews.web import admin, citations, queries, seo, social, topicview
+from truthnews.web import admin, appointments, citations, queries, seo, social, topicview
 
 HERE = Path(__file__).resolve().parent
 SITEMAP_DAYS = 90
@@ -129,9 +129,11 @@ def create_app(
     settings: Settings | None = None,
     engine: Engine | None = None,
     ads_client: adsmod.AdsClient | None = None,
+    boe_days: appointments.BoeDays | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
     ads_client = ads_client or adsmod.AdsClient(settings.ads_service_url, settings.ads_site_key)
+    boe_days = boe_days or appointments.BoeDays()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
     app = FastAPI(title=settings.site_name, docs_url="/api/docs", redoc_url=None)
@@ -265,6 +267,7 @@ def create_app(
                 "/medios",
                 "/investigaciones",
                 "/metodologia",
+                "/nombramientos",
                 "/publicidad",
                 "/acerca",
             )
@@ -635,6 +638,28 @@ def create_app(
             cites=citations.cited_figures(a),
             claims=queries.article_claims(session, a.id),
             archive_url=citations.archive_url(a),
+        )
+
+    @app.get("/nombramientos", response_class=HTMLResponse)
+    def appointments_page(request: Request, fecha: str | None = None):
+        today = datetime.now(UTC).date()
+        if fecha:
+            try:
+                day = date.fromisoformat(fecha)
+            except ValueError:
+                raise HTTPException(404) from None
+            if day > today or day < date(2009, 1, 1):  # la API de datos abiertos empieza en 2009
+                raise HTTPException(404)
+            items = boe_days.day(day, today)
+        else:
+            day, items = boe_days.latest(today)
+        return render(
+            request,
+            "appointments.html",
+            day=day,
+            v=appointments.view(items),
+            prev_day=day - timedelta(days=1),
+            next_day=day + timedelta(days=1) if day < today else None,
         )
 
     @app.get("/publicidad", response_class=HTMLResponse)
