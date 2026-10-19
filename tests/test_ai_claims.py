@@ -73,7 +73,7 @@ def test_accepts_what_rules_miss():
         ),
         ("La tasa de paro es del 10,5 % según la encuesta oficial.", "paro", "FR", 10.5, None, "nombrado"),
         ("La tasa de paro en Francia es del 7,5 % según el instituto.", "paro", "ES", 7.5, None, "nombrado"),
-        ("La tasa de paro en Japón es del 2,5 % según el gobierno.", "paro", "ES", 2.5, None, "sin serie"),
+        ("La tasa de paro en Indonesia es del 4,9 % según datos.", "paro", "ES", 4.9, None, "sin serie"),
         (
             "La tasa de paro se sitúa en el 10 % mientras Francia sufre una crisis.",
             "paro",
@@ -414,3 +414,12 @@ def test_a_sentence_without_country_takes_it_from_its_context():
     s = "La inflación se situó en el 4,9 % en septiembre."
     assert [c.geo for c in extract(es, "es", "ES", 2026)] == ["ES"]
     assert check_proposal(s, es, "inflacion", "ES", 4.9, None, None, "ES", Y, 10).geo == "ES"
+
+
+def test_outlet_country_from_the_global_registry_is_a_known_territory():
+    """Un medio chileno (pais por defecto CL) ya no se rechaza como «territorio desconocido»."""
+    s = "La tasa de paro se sitúa en el 8,9 % según el instituto de estadística."
+    c = check_proposal(s, s, "paro", "CL", 8.9, None, None, "CL", Y, 10)
+    assert isinstance(c, ClaimCandidate) and c.geo == "CL"
+    # un pais fuera del registro sigue sin juzgarse
+    assert check_proposal(s, s, "paro", "LU", 8.9, None, None, "XX", Y, 10) != c

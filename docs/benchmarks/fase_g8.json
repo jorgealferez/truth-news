@@ -1,0 +1,240 @@
+{
+  "fase": "g8",
+  "titulo": "Datos para verificar fuera de Espana: 39 paises del registro en geo_names",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
+    "toolchains": {
+      "python": "3.13.16"
+    }
+  },
+  "medidas": {
+    "rastreo_descargas_prohibidas": 0,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "antes": "20 de los 59 paises del registro en geo_names: una afirmacion propuesta por la IA de un medio de los otros 39 se rechazaba como «territorio desconocido» y una frase que los nombraba se descartaba",
+    "despues": "59 de 59 (CL, EC y PA solo con su nombre oficial; TR sin 'turkey'): nombres ambiguos fuera",
+    "medida": "truthnews.data.worldbank.latest en vivo, 2026-10-19 06:45 UTC, api.worldbank.org (API publica; robots.txt: 404, sin restricciones; Eurostat: robots.txt de ec.europa.eu permite /eurostat/api/ para TruthNewsBot, comprobado 2026-10-19)",
+    "series": {
+      "paro": "SL.UEM.TOTL.ZS",
+      "inflacion": "FP.CPI.TOTL.ZG",
+      "pib_anual": "NY.GDP.MKTP.KD.ZG"
+    },
+    "eu_tambien_eurostat": [
+      "CZ",
+      "DK",
+      "FI",
+      "HU",
+      "RO"
+    ],
+    "fraccion_con_dato_2025_o_posterior": {
+      "total": "108/117",
+      "por_indicador": {
+        "paro": "38/39",
+        "inflacion": "35/39",
+        "pib_anual": "35/39"
+      }
+    },
+    "ultimo_periodo_por_pais": {
+      "AE": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2024"
+      },
+      "AU": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "BO": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "BR": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CA": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CH": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CL": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CO": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CR": {
+        "paro": null,
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "CZ": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "DK": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "DO": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "DZ": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "EC": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "EG": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "FI": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "GT": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "HU": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": null
+      },
+      "IN": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "JP": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "KE": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "KR": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": null
+      },
+      "NG": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "NO": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "PA": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "PE": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "PH": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": null
+      },
+      "PK": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "PY": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "QA": {
+        "paro": "2025",
+        "inflacion": "2024",
+        "pib_anual": "2025"
+      },
+      "RO": {
+        "paro": "2025",
+        "inflacion": null,
+        "pib_anual": "2025"
+      },
+      "SA": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "SG": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "SN": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "TN": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "TR": {
+        "paro": "2025",
+        "inflacion": null,
+        "pib_anual": "2025"
+      },
+      "UY": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      },
+      "VE": {
+        "paro": "2025",
+        "inflacion": "2016",
+        "pib_anual": "2025"
+      },
+      "ZA": {
+        "paro": "2025",
+        "inflacion": "2025",
+        "pib_anual": "2025"
+      }
+    },
+    "deuda_y_deficit": "no se anaden: las series GC.* del Banco Mundial son del gobierno central y los medios citan las administraciones publicas (S13); decision de Verificaciones 2026-10-19. Medido: deuda GC.DOD con dato 2025 en 0 de 39",
+    "produccion": "afirmaciones de fuera de Espana juzgables antes y despues: NO VERIFICADO hasta el despliegue (se mide con el log 'afirmaciones con IA' y el panel)"
+  }
+}
