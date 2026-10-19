@@ -92,6 +92,10 @@ precio_vivienda:
   name: {es: Precio de la vivienda (variación anual), en: House prices (annual change)}
   unit: pct
   change_is_level: true
+  # Otras medidas del precio (portales, tasadoras, notarios: euros/m2 de oferta o tasacion) y segmentos
+  # (usada, nueva, alquiler) no son el indice oficial: compararlas con el seria injusto con el medio.
+  excludes: [idealista, fotocasa, tinsa, "pisos.com", notarios, registradores, tasación, tasacion, "metro cuadrado",
+    "m2", "€/m2", alquiler, usada, "segunda mano", "obra nueva", nueva]
   patterns:
     es: ["precio de la vivienda", "precios de la vivienda", "precio de los pisos", "precio de la casa"]
     en: ["house prices", "home prices", "housing prices"]

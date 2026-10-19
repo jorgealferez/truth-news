@@ -299,3 +299,10 @@ def test_regional_unemployment():
     assert isinstance(
         check("El paro en la Comunidad de Madrid es del 9 % hoy.", "paro", "ES-MD", 9.0), ClaimCandidate
     )
+
+
+def test_private_house_price_measures_are_not_the_official_index():
+    s = "El precio de la vivienda sube un 12,1 % en un año, según el portal Idealista."
+    assert "parecido" in check(s, "precio_vivienda", "ES", 12.1)
+    ok = "El precio de la vivienda sube un 12,1 % en el segundo trimestre, según el INE."
+    assert isinstance(check(ok, "precio_vivienda", "ES", 12.1), ClaimCandidate)

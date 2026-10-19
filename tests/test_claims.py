@@ -46,6 +46,10 @@ CASES = [
     ("La inflación sube un 0,3 % en el mes en el país.", []),
     ("La deuda pública crece un 4 % en el año en el país.", []),
     ("El precio de la vivienda sube un 12,1 % en el país.", [("precio_vivienda", "ES", 12.1, None)]),
+    # Otra medida del precio no es el indice oficial: no se juzga (seria injusto con el medio).
+    ("El precio de la vivienda sube un 12,1 % según Idealista en el país.", []),
+    ("El precio de la vivienda usada sube un 9 % en el país.", []),
+    ("El precio de la vivienda sube un 8 % en el metro cuadrado de oferta.", []),
 ]
 
 
