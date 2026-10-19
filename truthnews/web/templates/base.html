@@ -11,6 +11,8 @@
   <link rel="apple-touch-icon" href="/static/icon-180.png">
   <link rel="manifest" href="/site.webmanifest">
   <link rel="alternate" type="application/rss+xml" title="{{ site.site_name }}" href="/rss.xml">
+  {% set here = request.url.path %}{% for l in languages %}<link rel="alternate" hreflang="{{ l }}" href="{{ site.site_url }}{{ lang_path(here, l) }}">
+  {% endfor %}<link rel="alternate" hreflang="x-default" href="{{ site.site_url }}{{ here }}">
   <meta name="theme-color" content="#14161b">
   <meta property="og:site_name" content="{{ site.site_name }}">
   <meta property="og:type" content="website">
@@ -30,7 +32,7 @@
   <div class="wrap top">
     <span class="date">{{ t(lang, 'motto') }}</span>
     <nav class="langs" aria-label="{{ t(lang, 'language') }}">
-      {% for l in languages %}<a href="/idioma/{{ l }}" class="{{ 'on' if l == lang }}" hreflang="{{ l }}">{{ l|upper }}</a>{% endfor %}
+      {% for l in languages %}<a href="{{ lang_path(request.url.path, l) if l != site.default_language else '/idioma/' ~ l ~ '?to=' ~ (request.url.path|urlencode) }}" class="{{ 'on' if l == lang }}" hreflang="{{ l }}" lang="{{ l }}">{{ l|upper }}</a>{% endfor %}
     </nav>
   </div>
   <div class="wrap brand">

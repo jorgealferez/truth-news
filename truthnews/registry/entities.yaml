@@ -178,7 +178,11 @@ nombres_de_pila: [
   susana, teresa, tomas, valentin, vanesa, veronica, vicente, victor, victoria, virginia, xavier, yolanda,
   alexander, alexandre, andrew, anne, boris, charles, david, donald, elizabeth, emmanuel, francois, friedrich,
   george, hillary, jacques, james, jean, jeff, john, joseph, kamala, keir, marine, mark, michael, nancy,
-  olaf, peter, pierre, richard, robert, sarah, stephen, thomas, ursula, vladimir, william, wolfgang, xi
+  olaf, peter, pierre, richard, robert, sarah, stephen, thomas, ursula, vladimir, william, wolfgang, xi,
+  ada, agustina, aina, ainhoa, aitana, amaia, anabel, bernardo, candela, cindy, claudio, cristiano, dani,
+  dario, edurne, eneko, estefania, eugenia, fabian, fermin, gorka, ibai, iker, inmaculada, iratxe, jon,
+  josu, leire, maite, marcelino, matias, noelia, pello, ramiro, sebastian, telmo, unai, vito, xabier, xose,
+  yago, anthony, ben, chris, emma, kate, kevin, lisa, mike, paul, steve, tim, tony
 ]
 
 # Primera palabra de una organizacion o institucion: "Tribunal Superior de Justicia de Madrid".
