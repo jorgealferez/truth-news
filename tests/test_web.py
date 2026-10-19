@@ -197,6 +197,11 @@ def test_comparator_pages(client, session):
         "caos",
         "El dato oficial es 10,0 %.",
         "https://ec.europa.eu/x",
+        "Cómo lo cuenta cada medio",
+        "Origen",
+        'class="meter"',
+        'class="bars"',
+        "Portada</a> › ",
     ]:
         assert needle in page, needle
     assert client.get("/historia/99999").status_code == 404

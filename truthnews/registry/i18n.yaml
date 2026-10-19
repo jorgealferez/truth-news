@@ -2,6 +2,33 @@
 es:
   tagline: Comparamos lo que cuentan los medios con lo que dicen los datos
   motto: Sin bandos. Con datos.
+  home: Portada
+  menu: Menú
+  site_sections: Navegar
+  skip_to_content: Saltar al contenido
+  tab_contrasts: Contrastes
+  tab_checks: Verificado
+  jump_to: Ir a
+  more_contrasts_in: Más contrastes en
+  what_differs: Lo que difiere
+  nothing_differs: Nada que marcar
+  nothing_differs_text: "Los {n} medios cuentan lo mismo en cifras y protagonistas, y no hay afirmaciones con datos oficiales que comprobar. Cuando algo cambie, la historia volverá a portada."
+  does_not_mention: no menciona
+  same_figure_in: misma cifra en
+  shared_names_note: "Personas, lugares e instituciones que citan la mayoría de los {n} medios (cuántos lo citan):"
+  see_all: Ver todos
+  range_from: de
+  range_to: a
+  depending_on_outlet: según el medio
+  most_repeated: la más repetida,
+  who_says_what: Quién dice qué
+  origin: Origen
+  in_hours: "en {h} h"
+  other_figures: cifras más
+  who_is_pointed: A quién señala cada versión
+  blame_differs: Los medios no señalan a los mismos
+  omit_what: Callan, entre otros,
+  how_each_tells_it: Cómo lo cuenta cada medio
   latest: Última hora
   sections: Secciones
   countries: Países
@@ -99,6 +126,33 @@ es:
 en:
   tagline: We compare what the media report with what the data say
   motto: No sides. Just data.
+  home: Home
+  menu: Menu
+  site_sections: Browse
+  skip_to_content: Skip to content
+  tab_contrasts: Contrasts
+  tab_checks: Checked
+  jump_to: Jump to
+  more_contrasts_in: More contrasts in
+  what_differs: What differs
+  nothing_differs: Nothing to flag
+  nothing_differs_text: "All {n} outlets report the same figures and names, and there are no claims to check against official data. If that changes, the story comes back to the front page."
+  does_not_mention: does not mention
+  same_figure_in: same figure in
+  shared_names_note: "People, places and institutions named by most of the {n} outlets (how many name each):"
+  see_all: See all
+  range_from: from
+  range_to: to
+  depending_on_outlet: depending on the outlet
+  most_repeated: most repeated,
+  who_says_what: Who says what
+  origin: Origin
+  in_hours: "in {h} h"
+  other_figures: more figures
+  who_is_pointed: Who each version points at
+  blame_differs: Outlets do not point at the same people
+  omit_what: Left out, among others,
+  how_each_tells_it: How each outlet tells it
   latest: Latest
   sections: Sections
   countries: Countries
