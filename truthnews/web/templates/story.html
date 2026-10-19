@@ -15,6 +15,7 @@
 <article class="story wide">
   <p class="kicker">{{ category_name(st.category, lang) }} · {{ n_out }} {{ t(lang, 'n_outlets') }}</p>
   <h1>{{ st.title }}</h1>
+  {% if not plain.empty %}{% include "_plain.html" %}{% endif %}
 
   {% if spread %}<section class="origin" aria-label="{{ t(lang, 'origin') }}">
     <p class="origin-head"><span class="label">{{ t(lang, 'origin') }}</span> <a href="/medio/{{ spread.first.outlet.slug }}"><b>{{ spread.first.outlet.name }}</b></a> · {{ spread.first.published_at.strftime('%d/%m %H:%M') }} → {{ n_out }} {{ t(lang, 'n_outlets') }} {{ t(lang, 'in_hours')|replace('{h}', spread.hours|string) }}</p>

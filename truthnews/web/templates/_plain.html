@@ -1,0 +1,20 @@
+<section class="plain" aria-label="{{ t(lang, 'in_plain') }}">
+  <h2>{{ t(lang, 'in_plain') }}</h2>
+  {% for tr in plain.truths %}<div class="plain-truth">
+    <p class="pt-k">{{ t(lang, 'plain_truth') }}</p>
+    <p class="pt-v"><b>{{ tr.official_text }}</b> <span>{{ tr.label }}{% if tr.period %} · {{ tr.period }}{% endif %}</span></p>
+    {% set n = tr.right|length + tr.wrong|length %}
+    <div class="meter" role="img" aria-label="{{ tr.right|length }}/{{ n }}"><span class="v-verdadero" style="width:{{ (100 * tr.right|length / n)|round|int }}%"></span><span class="v-falso" style="width:{{ (100 * tr.wrong|length / n)|round|int }}%"></span></div>
+    {% if tr.right %}<p class="meta">✓ {{ tr.right|length }}/{{ n }} {{ t(lang, 'plain_truth_ok') }} {{ tr.right|join(', ') }}</p>{% endif %}
+    {% if tr.wrong %}<p class="meta">✗ {{ tr.wrong|length }}/{{ n }} {{ t(lang, 'plain_truth_wrong') }} {% for o, said, verdict in tr.wrong %}{{ o }} ({{ said }}, {{ t(lang, 'verdict_' ~ verdict)|lower }}){% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
+    <p class="meta"><a href="{{ tr.url }}" rel="nofollow noopener" target="_blank">{{ tr.source }} ↗</a></p>
+  </div>{% endfor %}
+  <ul class="plain-list">
+    {% for d in plain.differ %}<li class="pl-differ">≠ {{ t(lang, 'plain_differ')|replace('{noun}', d.noun|capitalize)|replace('{low}', d.low|num)|replace('{high}', d.high|num) }}
+      {% if d.mode is not none %}{{ t(lang, 'plain_mode')|replace('{v}', d.mode|num)|replace('{n}', d.mode_n|string) }}{% endif %}
+      {{ t(lang, 'plain_latest')|replace('{v}', d.latest.value|num)|replace('{o}', d.latest.outlet)|replace('{h}', d.latest.published_at.strftime('%d/%m %H:%M')) }}</li>{% endfor %}
+    {% for noun, value, n in plain.agree %}<li class="pl-agree">= {{ t(lang, 'plain_agree')|replace('{noun}', noun|capitalize)|replace('{v}', value|num)|replace('{n}', n|string) }}</li>{% endfor %}
+    {% if plain.blame_differs %}<li class="pl-differ">≠ {{ t(lang, 'plain_blame') }}</li>{% endif %}
+  </ul>
+  <p class="meta">{{ t(lang, 'plain_note') }}</p>
+</section>

@@ -11,6 +11,16 @@ es:
   jump_to: Ir a
   more_contrasts_in: Más contrastes en
   what_differs: Lo que difiere
+  in_plain: En claro
+  plain_truth: "La verdad según los datos"
+  plain_truth_ok: "lo cuentan bien:"
+  plain_truth_wrong: "dan otra cifra:"
+  plain_differ: "{noun}: los medios dan de {low} a {high}."
+  plain_mode: "La cifra que más repiten: {v} ({n} medios)."
+  plain_latest: "La última publicada: {v} ({o}, {h})."
+  plain_agree: "{noun}: {v}, la misma cifra en {n} medios."
+  plain_blame: No coinciden en a quién señalan.
+  plain_note: Calculado con el mismo método para todos los medios. Una cifra distinta puede ser un balance actualizado; un veredicto exige un dato oficial.
   nothing_differs: Nada que marcar
   nothing_differs_text: "Los {n} medios cuentan lo mismo en cifras y protagonistas, y no hay afirmaciones con datos oficiales que comprobar. Cuando algo cambie, la historia volverá a portada."
   does_not_mention: no menciona
@@ -258,6 +268,16 @@ en:
   jump_to: Jump to
   more_contrasts_in: More contrasts in
   what_differs: What differs
+  in_plain: In plain words
+  plain_truth: "What the data say"
+  plain_truth_ok: "got it right:"
+  plain_truth_wrong: "gave another figure:"
+  plain_differ: "{noun}: outlets give from {low} to {high}."
+  plain_mode: "Most repeated figure: {v} ({n} outlets)."
+  plain_latest: "Latest published: {v} ({o}, {h})."
+  plain_agree: "{noun}: {v}, the same figure in {n} outlets."
+  plain_blame: They disagree on whom they point at.
+  plain_note: Same method for every outlet. A different figure may be an updated toll; a verdict needs an official figure.
   nothing_differs: Nothing to flag
   nothing_differs_text: "All {n} outlets report the same figures and names, and there are no claims to check against official data. If that changes, the story comes back to the front page."
   does_not_mention: does not mention

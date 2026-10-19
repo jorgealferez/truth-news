@@ -26,6 +26,7 @@ from truthnews import registry
 from truthnews.ai import translate
 from truthnews.analysis import abroad
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
+from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
 from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
@@ -439,6 +440,7 @@ def create_app(
             related=related,
             thread=queries.thread_for_story(session, st.id),
             outlets_view=outlets_view,
+            plain=in_plain_words(comp, claims),
             share=social.share_links(
                 settings.site_url + seo.path("historia", st.id, st.title), share_text(st, comp)
             ),
