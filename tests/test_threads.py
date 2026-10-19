@@ -271,6 +271,14 @@ def test_thread_pages(engine, session):
     home = client.get("/").text
     assert "Por qué está pasando" in home and "De Ghali a Ceuta" in home
     assert f"{seo.path('hilo', th.id, th.title)}</loc>" in client.get("/sitemaps/hilos-1.xml").text
+    from truthnews.web import structured
+
+    (art,) = structured.of_type(page, "NewsArticle")
+    assert art["headline"] == th.title and art["datePublished"].endswith("+00:00")
+    assert art["dateModified"] >= art["datePublished"] and "IA, verificada" in art["author"]["name"]
+    assert art["image"] == [f"http://localhost:8000/og/historia/{st.id}.png"]
+    (crumbs,) = structured.of_type(page, "BreadcrumbList")
+    assert [i["position"] for i in crumbs["itemListElement"]] == [1, 2, 3]
 
 
 def test_thread_piece_is_grounded_and_not_repeated(session):

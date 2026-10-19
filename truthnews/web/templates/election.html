@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% set e = v.e %}
+{% block title %}{{ e.name }} · {{ e.date.strftime('%d/%m/%Y') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'el_page_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/elecciones/{{ e.slug }}">{% endblock %}
+{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › <a href="/elecciones">{{ t(lang, 'el_title') }}</a> › {{ e.name }}</p>{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ e.name }}</h1>
+<p class="lead-text">{{ e.date.strftime('%d/%m/%Y') }} · {{ t(lang, 'el_phase_' ~ v.phase) }}{% if v.days_left > 0 %} · {{ t(lang, 'el_days_left')|replace('{n}', v.days_left|string) }}{% endif %}</p>
+<p class="meta"><span class="tag">{{ t(lang, 'el_status_' ~ e.status) }}</span> {{ t(lang, 'el_status_note_' ~ e.status) }}</p>
+
+<section class="block" id="calendario"><h2>{{ t(lang, 'el_dates' if e.status == 'convocada' else 'el_dates_other') }}</h2>
+  <ul class="compact">{% for d in v.dates %}<li{% if d.past %} class="meta"{% endif %}><strong>{{ d.date.strftime('%d/%m/%Y') }}</strong> — {{ t(lang, d.key) }}</li>{% endfor %}</ul>
+  <p class="meta">{{ t(lang, 'el_source') }} {% for s in e.sources %}<a href="{{ s.url }}" rel="noopener" target="_blank">{{ s.label }}</a>{% if not loop.last %} · {% endif %}{% endfor %}</p>
+</section>
+
+{% if v.candidacies %}<section class="block" id="candidaturas"><h2>{{ t(lang, 'el_candidacies_' ~ v.candidacies.kind) }}</h2>
+  <p class="meta">{{ t(lang, 'el_candidacies_note')|replace('{n}', v.candidacies.rows|length|string) }} <a href="{{ v.candidacies.url }}" rel="noopener" target="_blank">{{ v.candidacies.id }}</a> ({{ v.candidacies.published.strftime('%d/%m/%Y') }})</p>
+  <table class="table"><thead><tr><th>{{ t(lang, 'el_formation') }}</th><th class="num">{{ t(lang, 'el_congress') }}</th><th class="num">{{ t(lang, 'el_senate') }}</th></tr></thead><tbody>
+  {% for r in v.candidacies.rows %}<tr><td>{% if r.slug %}<a href="#partido-{{ r.slug }}"><strong>{{ r.f.acronym }}</strong></a>{% else %}<strong>{{ r.f.acronym }}</strong>{% endif %} <span class="meta">{{ r.f.name }}</span>
+    {% if r.f.heads %}<details class="who-more"><summary>{{ t(lang, 'el_heads') }}</summary><ul class="who-omits">{% for circ, who in r.f.heads.items() %}<li>{{ circ }}: {{ who }}</li>{% endfor %}</ul></details>{% endif %}</td>
+    <td class="num">{{ r.f.congreso|length }}</td><td class="num">{{ r.f.senado|length }}</td></tr>{% endfor %}
+  </tbody></table>
+</section>{% endif %}
+
+{% if v.parties %}<section class="block" id="partidos"><h2>{{ t(lang, 'el_parties') }}</h2>
+  <p class="meta">{{ t(lang, 'el_parties_note') }}</p>
+  {% for p in v.parties %}<details class="block fold el-party" id="partido-{{ p.actor.slug }}"><summary><h3>{{ p.actor.name }}</h3> <span class="meta">{{ t(lang, 'el_n_statements')|replace('{n}', p.n_statements|string) }} · {{ t(lang, 'el_n_checked')|replace('{n}', p.n_checked|string) }}</span></summary>
+    <p class="meta">{{ p.actor.full_name }} · <a href="{{ p.actor.homepage }}" rel="noopener" target="_blank">{{ p.actor.homepage }}</a></p>
+    <p><strong>{{ t(lang, 'el_program') }}:</strong> {% if p.doc %}<a href="{{ p.doc.url }}" rel="noopener" target="_blank">{{ p.doc.title }}</a> <span class="meta">{% if p.doc.n_pages %}{{ p.doc.n_pages }} {{ t(lang, 'el_pages') }} · {% endif %}{{ t(lang, 'el_doc_' ~ p.doc.status) }}</span>{% elif p.program %}<a href="{{ p.program }}" rel="noopener" target="_blank">{{ p.program }}</a>{% else %}<span class="meta">{{ t(lang, 'el_program_missing') }}</span>{% endif %}</p>
+    {% if p.promises %}<p><strong>{{ t(lang, 'el_promises') }}</strong> <a class="meta" href="/elecciones/{{ e.slug }}/promesas?partido={{ p.actor.slug }}">{{ t(lang, 'el_see_all')|replace('{n}', p.n_promises|string) }}</a></p>
+    <ul class="compact">{% for pr in p.promises %}<li>«{{ pr.text }}» {% include "_promise_cite.html" %}</li>{% endfor %}</ul>{% endif %}
+    {% if p.figure_changes %}<p><strong>{{ t(lang, 'el_figure_changes') }}</strong></p><ul class="compact">{% for fc in p.figure_changes %}{% set c1, s1 = fc.before %}{% set c2, s2 = fc.after %}
+      <li>{{ t(lang, 'el_figure_change_line')|replace('{period}', c1.period) }}: «{{ c1.text }}» <a class="meta" href="{{ s1.url }}" rel="noopener" target="_blank">{{ s1.published_at.strftime('%d/%m/%Y') }}</a> → «{{ c2.text }}» <a class="meta" href="{{ s2.url }}" rel="noopener" target="_blank">{{ s2.published_at.strftime('%d/%m/%Y') }}</a></li>{% endfor %}</ul>{% endif %}
+    {% if p.comparable %}<p class="meta"><a href="/elecciones/{{ e.slug }}/promesas?partido={{ p.actor.slug }}#cambios">{{ t(lang, 'el_compare') }}</a></p>{% endif %}
+    {% if p.previous %}<p class="meta">{{ t(lang, 'el_previous')|replace('{y}', p.previous.election_year|string) }}: <a href="/elecciones/{{ e.slug }}/promesas?partido={{ p.actor.slug }}&amp;anio={{ p.previous.election_year }}">{{ p.previous.title }}</a> · <a href="{{ p.previous.url }}" rel="noopener" target="_blank">{{ t(lang, 'el_original') }}</a></p>{% endif %}
+    {% if p.n_checked %}<p>{% for vd, n in p.verdicts if n %}<span class="tag v-{{ vd }}">{{ t(lang, 'verdict_' ~ vd) }} {{ n }}</span> {% endfor %}<a class="meta" href="/quien-dice-la-verdad">{{ t(lang, 'speakers_title') }}</a></p>{% endif %}
+    {% if p.statements %}<ul class="compact">{% for s in p.statements %}<li>«{{ s.text }}» <a class="meta" href="{{ s.url }}" rel="noopener" target="_blank">{{ s.channel }} · {{ s.published_at.strftime('%d/%m %H:%M') }}</a>{% if s.story_id and p.contexts.get(s.story_id) %} <span class="meta">· {{ t(lang, 'el_context') }}: <a href="{{ url('historia', s.story_id, p.contexts[s.story_id]) }}">{{ p.contexts[s.story_id] }}</a></span>{% endif %}</li>{% endfor %}</ul>
+    {% elif not p.channels %}<p class="meta">{{ t(lang, 'el_no_channel') }}{% if p.actor.note %} ({{ p.actor.note }}){% endif %}</p>
+    {% else %}<p class="meta">{{ t(lang, 'el_no_statements') }}</p>{% endif %}
+  </details>{% endfor %}
+</section>{% endif %}
+
+<section class="block" id="cobertura"><h2>{{ t(lang, 'el_coverage') }}</h2>
+  {% if v.stories %}<ul class="compact">{% for st in v.stories %}<li><a href="{{ url('historia', st.id, st.title) }}">{{ st_tr.get(st.id, st.title) }}</a> <span class="meta">{{ st.n_outlets }} {{ t(lang, 'outlets')|lower }} · {{ st.last_seen|ago(lang) }}</span></li>{% endfor %}</ul>
+  {% else %}<p class="meta">{{ t(lang, 'el_no_coverage') }}</p>{% endif %}
+</section>
+<p class="meta">{{ t(lang, 'el_how') }} {{ t(lang, 'el_no_ads') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+{% endblock %}

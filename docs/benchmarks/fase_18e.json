@@ -1,0 +1,30 @@
+{
+  "fase": "18e",
+  "titulo": "Elecciones: candidaturas presentadas y proclamadas desde el BOE (todas las formaciones que concurren)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local, documento real del BOE",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "documento": "BOE-A-2023-15066, candidaturas proclamadas para las generales del 23-J de 2023 (1,1 MB)",
+    "resultado": "95 formaciones en 52 circunscripciones del Congreso; 581 listas al Congreso con su cabeza de lista (546 leidas); 0.08 s de analisis",
+    "comprobacion": "PP y VOX en las 52 circunscripciones; PSOE en 40 y SUMAR en 42 porque en Cataluna, Galicia o Euskadi concurren con otras siglas (PSC, PSdeG...), tal como las publica el BOE",
+    "tests": "tests/test_elections.py: parser con un extracto real (Albacete, Las Palmas con circunscripciones insulares del Senado, Ceuta) e integracion calendario-pagina",
+    "jec": "Junta Electoral Central, 'Elecciones en curso' (2026-10-19): 1 proceso, Elecciones Generales 29/11/2026, coincide con el BOE; robots.txt pide Visit-time 20:00-06:59 y se respeta",
+    "mundo": "IFES ElectionGuide (2026-10-19): 17 elecciones con fecha declarada en paises reconocidos por world.yaml (Bulgaria, Brasil, Israel, EE. UU., Serbia, Nigeria, Haiti, Nueva Zelanda, Suiza, Estonia...); 11 filas de territorios no reconocidos (Guam, Islas Virgenes de EE. UU....) se descartan; las tentativas '(t)' no cuentan"
+  },
+  "criterios_de_salida": {
+    "C15": "toda eleccion convocada de Espana (BOE, JEC) y las nacionales con fecha declarada del resto del mundo (ElectionGuide) aparecen solas en /elecciones; candidaturas de Espana desde el BOE"
+  },
+  "no_verificable": [
+    "Candidaturas del 29-N: el BOE las publica a partir del 28/10/2026; se mide entonces en produccion",
+    "Autonomicas y locales de otros paises: fuera del calendario de ElectionGuide (solo nacionales); se cubren por los medios (>= 2 medios, 'anunciada')"
+  ]
+}

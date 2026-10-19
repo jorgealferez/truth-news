@@ -1,0 +1,175 @@
+{
+ "data": {
+  "sumario": {
+   "metadatos": {
+    "publicacion": "BOE",
+    "fecha_publicacion": "20261006"
+   },
+   "diario": [
+    {
+     "numero": "248",
+     "sumario_diario": {
+      "identificador": "BOE-S-2026-248",
+      "url_pdf": {
+       "szBytes": "452096",
+       "szKBytes": "442",
+       "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-S-2026-248.pdf"
+      }
+     },
+     "seccion": [
+      {
+       "codigo": "1",
+       "nombre": "I. Disposiciones generales",
+       "departamento": [
+        {
+         "codigo": "7723",
+         "nombre": "JEFATURA DEL ESTADO",
+         "epigrafe": [
+          {
+           "nombre": "Cortes Generales. Disolución y convocatoria de elecciones",
+           "item": {
+            "identificador": "BOE-A-2026-20742",
+            "control": "2026/15385",
+            "titulo": "Real Decreto 806/2026, de 5 de octubre, de disolución del Congreso de los Diputados y del Senado y de convocatoria de elecciones.",
+            "url_pdf": {
+             "szBytes": "231775",
+             "szKBytes": "226",
+             "pagina_inicial": "130564",
+             "pagina_final": "130567",
+             "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20742.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20742",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20742"
+           }
+          }
+         ]
+        },
+        {
+         "codigo": "7320",
+         "nombre": "MINISTERIO DEL INTERIOR",
+         "epigrafe": [
+          {
+           "nombre": "Controles fronterizos",
+           "item": {
+            "identificador": "BOE-A-2026-20743",
+            "control": "2026/15237",
+            "titulo": "Orden INT/1033/2026, de 1 de octubre, por la que se prorroga el restablecimiento temporal de los controles fronterizos en las fronteras interiores aéreas y marítimas españolas con respecto a los vuelos y enlaces marítimos de pasajeros procedentes de la República Italiana.",
+            "url_pdf": {
+             "szBytes": "195904",
+             "szKBytes": "191",
+             "pagina_inicial": "130568",
+             "pagina_final": "130568",
+             "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20743.pdf"
+            },
+            "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20743",
+            "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20743"
+           }
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "codigo": "2A",
+       "nombre": "II. Autoridades y personal. - A. Nombramientos, situaciones e incidencias",
+       "departamento": [
+        {
+         "codigo": "1820",
+         "nombre": "CONSEJO GENERAL DEL PODER JUDICIAL",
+         "epigrafe": [
+          {
+           "nombre": "Nombramientos",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20748",
+             "control": "2026/15324",
+             "titulo": "Acuerdo de 30 de septiembre de 2026, del Pleno del Consejo General del Poder Judicial, por el que se nombra Jueza sustituta para el año judicial 2026/2027, en el ámbito del Tribunal Superior de Justicia de Galicia.",
+             "url_pdf": {
+              "szBytes": "191206",
+              "szKBytes": "187",
+              "pagina_inicial": "130596",
+              "pagina_final": "130596",
+              "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20748.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20748",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20748"
+            },
+            {
+             "identificador": "BOE-A-2026-20749",
+             "control": "2026/15325",
+             "titulo": "Acuerdo de 30 de septiembre de 2026, del Pleno del Consejo General del Poder Judicial, por el que se nombra Magistrado suplente para el año judicial 2026/2027, en el ámbito del Tribunal Superior de Justicia de Madrid.",
+             "url_pdf": {
+              "szBytes": "191142",
+              "szKBytes": "187",
+              "pagina_inicial": "130597",
+              "pagina_final": "130597",
+              "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20749.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20749",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20749"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "codigo": "9585",
+         "nombre": "MINISTERIO DE LA PRESIDENCIA, JUSTICIA Y RELACIONES CON LAS CORTES",
+         "epigrafe": [
+          {
+           "nombre": "Situaciones",
+           "item": [
+            {
+             "identificador": "BOE-A-2026-20750",
+             "control": "2026/15126",
+             "titulo": "Resolución de 24 de septiembre de 2026, de la Dirección General de Seguridad Jurídica y Fe Pública, por la que se declara la jubilación del notario de Valencia don Fernando Corbí Coloma.",
+             "url_pdf": {
+              "szBytes": "192111",
+              "szKBytes": "188",
+              "pagina_inicial": "130598",
+              "pagina_final": "130598",
+              "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20750.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20750",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20750"
+            },
+            {
+             "identificador": "BOE-A-2026-20751",
+             "control": "2026/15127",
+             "titulo": "Resolución de 25 de septiembre de 2026, de la Dirección General de Seguridad Jurídica y Fe Pública, por la que se declara la jubilación del notario de Alicante don Delfín Martínez Pérez.",
+             "url_pdf": {
+              "szBytes": "192135",
+              "szKBytes": "188",
+              "pagina_inicial": "130599",
+              "pagina_final": "130599",
+              "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20751.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20751",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20751"
+            },
+            {
+             "identificador": "BOE-A-2026-20752",
+             "control": "2026/15128",
+             "titulo": "Resolución de 28 de septiembre de 2026, de la Dirección General de Seguridad Jurídica y Fe Pública, por la que se declara la jubilación del notario de Collado Villalba don Daniel Agundez Leal.",
+             "url_pdf": {
+              "szBytes": "192325",
+              "szKBytes": "188",
+              "pagina_inicial": "130600",
+              "pagina_final": "130600",
+              "texto": "https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20752.pdf"
+             },
+             "url_html": "https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-20752",
+             "url_xml": "https://www.boe.es/diario_boe/xml.php?id=BOE-A-2026-20752"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ }
+}

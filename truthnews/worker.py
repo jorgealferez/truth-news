@@ -23,6 +23,8 @@ from truthnews.config import Settings, get_settings
 from truthnews.crawler import political
 from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
+from truthnews.elections import calendar as el_calendar
+from truthnews.elections import programs
 from truthnews.entities import store as entities
 from truthnews.investigate import process_pending, seed_defaults
 from truthnews.models import CrawlRun, Outlet, utcnow
@@ -121,6 +123,14 @@ def _run_cycle(settings: Settings) -> dict:
             summary["political"] = {"error": str(exc)[:300]}
     # Lo que dicen los partidos en sus canales, juzgado con el mismo juez que las noticias (ADR 0031).
     summary["statement_checks"] = _guarded(engine, "declaraciones juzgadas", statement_checks.run)
+    # Programas electorales y promesas (ADR 0037): descubrir en las webs de los partidos e importar unos
+    # pocos; las promesas de las declaraciones, solo dentro de la ventana de una eleccion (ADR 0036).
+    if settings.programs_enabled:
+        windows = [
+            (datetime.combine(e.opens(), datetime.min.time(), UTC), e.country)
+            for e in _elections(settings).active()
+        ]
+        summary["programs"] = _guarded(engine, "programas", lambda s: programs.run(s, settings, windows))
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
         with session_scope(engine) as session:
             ai = AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000)
@@ -178,6 +188,17 @@ def _run_cycle(settings: Settings) -> dict:
     dict.__setitem__(summary, "seconds", summary.seconds)  # duracion por paso, para ver el mas lento
     log.info("ciclo terminado: %s", summary)
     return summary
+
+
+_calendar: el_calendar.Calendar | None = None
+
+
+def _elections(settings: Settings) -> el_calendar.Calendar:
+    """Calendario del worker: el BOE se barre en segundo plano y no frena el ciclo (ADR 0036)."""
+    global _calendar
+    if _calendar is None:
+        _calendar = el_calendar.Calendar(settings.elections_lookback_days)
+    return _calendar
 
 
 def _guarded(engine, name: str, step) -> dict:

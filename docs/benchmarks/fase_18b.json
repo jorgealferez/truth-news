@@ -1,0 +1,34 @@
+{
+  "fase": "18b",
+  "titulo": "Elecciones: programas electorales y promesas citadas (ADR 0037, migracion 0018)",
+  "fecha": "2026-10-19",
+  "entorno": {
+    "maquina": "local, contra las webs oficiales de los partidos en vivo (robots.txt respetado) y PostgreSQL 16 local",
+    "toolchains": {
+      "python": "3.13"
+    }
+  },
+  "medidas": {
+    "programas_precision_promesas": 100,
+    "programas_promesas_sin_cita": 0,
+    "programas_descubrimiento_segundos": 21.5,
+    "tests_fallidos": 0,
+    "ruff_avisos": 0
+  },
+  "detalle": {
+    "comando": "python tools/measure_programas.py generales 2023 (2026-10-19 06:3x UTC)",
+    "descubrimiento": "45 programas enlazados en 3 de 12 partidos (BNG 34, Coalicion Canaria 10, Sumar 1); ilegibles para el rastreador: ERC, Podemos y Vox (403) y PSOE (pagina de comprobacion de ~900 bytes), sin eludir nada; EH Bildu, Junts, PNV, PP y UPN no enlazan programas en portada ni en las paginas conocidas",
+    "importacion_generales_2023": "Sumar 'Un programa para ti' 182 paginas, 687 promesas (sin las cabeceras de lista que acaban en ':'; 706 antes de quitarlas); BNG programa xerais 68 paginas, 21 promesas (el gallego del BNG usa sobre todo infinitivos: limite conocido del extractor por reglas); decalogo BNG 4 paginas, 0",
+    "precision": "muestra aleatoria de 20 promesas de Sumar 2023: 20/20 son compromisos; 3/20 cortadas por un salto de pagina o de columna",
+    "tiempos": "descubrimiento 21.5 s, importacion 10.8 s",
+    "postgres": "migracion 0018 aplicada, alembic check sin diferencias, downgrade a 0017 (0 tablas) y upgrade de nuevo en PostgreSQL 16",
+    "tests": "tests/test_programs.py (11) y tests/test_elections.py (11)"
+  },
+  "criterios_de_salida": {
+    "C15": "en curso: 18a y 18b hechos; faltan cumplimiento (18c), contradicciones (18d) y mas ambitos y paises (18e)"
+  },
+  "no_verificable": [
+    "Programas de las generales del 29-N: no publicados aun por ningun partido el 2026-10-19; el worker los descubre cuando aparezcan",
+    "Programas de PSOE, Vox, ERC y Podemos: sus webs bloquean al rastreador; se enlazan si se conoce la URL y robots.txt lo permite"
+  ]
+}

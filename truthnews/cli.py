@@ -117,6 +117,11 @@ def _cmd_social(args) -> int:
 
     settings, social = get_settings(), SocialSettings()
     with session_scope(get_engine(settings.database_url)) as session:
+        if args.sub == "balance":
+            from truthnews.social import balance
+
+            print(json.dumps(balance.measure(session, hours=args.hours), indent=2, ensure_ascii=False))
+            return 0
         if args.sub == "run":
             out = queue.run(
                 session,
@@ -214,6 +219,9 @@ def build_parser() -> argparse.ArgumentParser:
     pv = so.add_parser("preview", help="piezas que saldrian ahora, sin escribir nada")
     pv.add_argument("--limit", type=int, default=5)
     pv.set_defaults(func=_cmd_social)
+    sb = so.add_parser("balance", help="a quien afectan las piezas negativas publicadas (ADR 0043)")
+    sb.add_argument("--hours", type=int, default=24)
+    sb.set_defaults(func=_cmd_social)
     sr = so.add_parser("run", help="el paso de redes del worker")
     sr.add_argument("--dry", action="store_true", help="modo prueba aunque haya credenciales")
     sr.set_defaults(func=_cmd_social)

@@ -70,7 +70,13 @@ def test_assign_stories_and_identity_is_kept(session, world):
     big = session.scalars(select(Story).where(Story.n_outlets == 3)).one()
     assert big.n_articles == 3 and big.category == "economia"
     again = pipeline.assign_stories(session)
-    assert again == {"articles": 4, "stories_created": 0, "stories_updated": 2, "stories_relaunched": 0}
+    assert again == {
+        "articles": 4,
+        "stories_created": 0,
+        "stories_updated": 2,
+        "stories_relaunched": 0,
+        "promotional_removed": 0,
+    }
     assert session.scalar(select(func.count(Story.id))) == 2
 
 
@@ -89,7 +95,7 @@ def test_reverify_outdated_methods_and_note_corrections(session, world):
     pipeline.assign_stories(session)
     pipeline.verify_claims(session, NOW - timedelta(days=1), fake_verifier(10.0))
     ver = session.scalars(select(Verification)).one()
-    assert ver.verdict == "falso" and ver.method.endswith("/v9")
+    assert ver.verdict == "falso" and ver.method.endswith("/v10")
     assert pipeline.reverify_outdated(session, fake_verifier(12.5)) == {}  # ya en la version vigente
     ver.method = "nivel"  # veredicto de la version anterior del metodo
     session.flush()

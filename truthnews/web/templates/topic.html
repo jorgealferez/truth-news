@@ -2,8 +2,12 @@
 {% set a = pieces.get('analisis') %}{% set o = pieces.get('opinion') %}
 {% block title %}{{ title }} — {{ site.site_name }}{% endblock %}
 {% block description %}{{ a.dek if a else tp.title }}{% endblock %}
-{% block head %}<link rel="canonical" href="{{ site.site_url }}{{ url('tema', tp.id, title) }}">
-<meta property="og:title" content="{{ title }}"><meta property="og:type" content="article">{% endblock %}
+{% block canonical %}{{ site.site_url }}{{ url('tema', tp.id, title) }}{% endblock %}
+{% from "_crumbs.html" import breadcrumbs with context %}
+{% block og_type %}{{ 'article' if a else 'website' }}{% endblock %}
+{% block head %}<meta property="og:title" content="{{ title }}">{% if a %}<meta property="article:published_time" content="{{ ld.iso(a.created_at) }}">
+{{ jsonld(ld.news_article(site, url=site.site_url ~ url('tema', tp.id, title), headline=a.title or title, description=a.dek, published=a.created_at, modified=a.created_at, lang=lang, section=category_name(tp.category, lang))) }}{% endif %}{% endblock %}
+{% block crumbs %}{{ breadcrumbs([(t(lang, 'home'), '/'), (t(lang, 'analysis'), '/analisis'), (category_name(tp.category, lang), '/seccion/' ~ tp.category), (title[:60], None)]) }}{% endblock %}
 {% macro outlet_link(out, fallback='') %}{% if out %}<a href="/medio/{{ out.slug }}">{{ out.name }}</a>{% else %}<span>{{ fallback }}</span>{% endif %}{% endmacro %}
 {% block content %}
 <article class="story wide topic">
