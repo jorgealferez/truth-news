@@ -15,8 +15,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 - Un item se marca `[x]` solo con su pull request mergeado (o su entregable verificado).
 - `
 - [ ] Migracion al holding (peticion del usuario 2026-10-19: "todo esto deberia acabar migrandose ... sin perjuicio del servicio y sin que caiga absolutamente nada ni se pierda informacion ... que todo el servicio unicamente nuestro sea un frontend con nuestra logica de negocio, pero que utilice su BFF, su microservicio, su base de datos y todo"): arranca cuando cierren los items de arriba, sin pararlos; plan en ADR 0025 y `docs/migracion-holding.md` (fases 11 a 17, dominios D1 a D7, doble escritura, backfill, conciliacion, sombra, corte por bandera). Parte del holding con referencia cruzada en PENDIENTES.microservices-ecosystem.md ("[squad:nosmienten] propuesta"). Carril: Migracion al holding (docs/equipo.md) — EN CURSO (session_01DgF9WootYzqTr7jwzkbDSj, 2026-10-19)
-  - [ ] Fase 11 — plan, ADR 0025, alcance de la carta e items cruzados (este PR)
-  - [ ] Coordinacion: propuesta enviada al orquestador del holding (session_01JEomBbrRwabYbNac8Wvkr6) y a la direccion (session_012mRsejPRjvr7vC2Aq3edZ4), 2026-10-19
+  - [x] Fase 11 — plan, ADR 0025, alcance de la carta e items cruzados — #47 (squash b1eccb6)
+  - [x] Coordinacion: propuesta enviada al orquestador del holding (session_01JEomBbrRwabYbNac8Wvkr6) y a la direccion (session_012mRsejPRjvr7vC2Aq3edZ4), 2026-10-19; propuesta escrita en PENDIENTES.microservices-ecosystem.md (rama claude/nosmienten-propuesta), esperando el turno del orquestador; despertador send_later 2026-10-19 02:30Z
   - [ ] Credenciales: clave de aplicacion `nosmienten` (tipo bff) y `HOLDING_PLATFORM_API_KEY` (missing): las crea una persona
   - [ ] Fases 12 a 17 en orden, cuando terminen los items en curso
 
