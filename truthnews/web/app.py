@@ -37,6 +37,8 @@ from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.analysis.plain import in_plain_words
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
+from truthnews.elections import calendar as el_calendar
+from truthnews.elections import views as el_views
 from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread
 from truthnews.social import images
@@ -149,6 +151,7 @@ def create_app(
     boe_days: appointments.BoeDays | None = None,
     igae_extract: budget.LatestExtract | None = None,
     boe_index: appointments.BoeIndex | None = None,
+    elections: el_calendar.Calendar | None = None,
     council_index: council.CouncilIndex | None = None,
 ) -> FastAPI:
     settings = settings or get_settings()
@@ -156,6 +159,7 @@ def create_app(
     boe_days = boe_days or appointments.BoeDays()
     boe_index = boe_index or appointments.BoeIndex(boe_days, settings.boe_index_days)
     igae_extract = igae_extract or budget.LatestExtract()
+    elections = elections or el_calendar.Calendar(settings.elections_lookback_days)
     council_index = council_index or council.CouncilIndex()
     engine = engine or get_engine(settings.database_url)
     make_session = session_factory(engine)
@@ -191,6 +195,8 @@ def create_app(
         piece_url=seo.piece_path,
         investigation_title=investigation_title,
         verdict_line=vview.sentence,
+        # Seccion temporal (ADR 0036): solo hay enlace mientras alguna eleccion este en ventana.
+        elections_nav=lambda: elections.active(),
         ld=ld,
         jsonld=ld.jsonld,
     )
@@ -864,6 +870,52 @@ def create_app(
     def budget_page(request: Request):
         ex = igae_extract.get()
         return render(request, "budget.html", ex=ex, v=budget.view(ex) if ex else None)
+
+    @app.get("/elecciones", response_class=HTMLResponse)
+    def elections_page(request: Request, session: SessionDep):
+        now = datetime.now(UTC)
+        active = sorted(elections.active(session, now), key=lambda e: (e.country != "ES", e.date))
+        return render(request, "elections.html", active=active, today=now.date())
+
+    @app.get("/elecciones/{slug}", response_class=HTMLResponse)
+    def election_page(request: Request, slug: str, session: SessionDep):
+        now = datetime.now(UTC)
+        e = elections.get(slug, session, now)
+        if e is None:
+            raise HTTPException(404)
+        # Sin publicidad en paginas de elecciones (ads.py): ni se llama al servicio.
+        return render(
+            request, "election.html", v=el_views.page(session, e, now, elections.candidacies(e))
+        )
+
+    @app.get("/elecciones/{slug}/promesas", response_class=HTMLResponse)
+    def election_promises(
+        request: Request,
+        slug: str,
+        session: SessionDep,
+        partido: str | None = None,
+        tema: str | None = None,
+        anio: Annotated[int | None, Query(ge=1977, le=2100)] = None,
+    ):
+        now = datetime.now(UTC)
+        e = elections.get(slug, session, now)
+        if e is None:
+            raise HTTPException(404)
+        actors = [a for a in registry.load_political() if a.country == e.country]
+        actor = next((a for a in actors if a.slug == partido), None)
+        if partido and actor is None:
+            raise HTTPException(404)
+        return render(
+            request,
+            "promises.html",
+            e=e,
+            actor=actor,
+            actors=actors,
+            topic=tema,
+            names={a.slug: a.name for a in actors},
+            v=el_views.promises_page(session, e, partido, tema, anio),
+            cmp=el_views.compare_programs(session, e, partido) if partido else None,
+        )
 
     @app.get("/publicidad", response_class=HTMLResponse)
     def advertising(request: Request):

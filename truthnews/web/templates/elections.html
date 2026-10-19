@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'el_title') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'el_lead') }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/elecciones">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'el_title') }}</h1>
+<p class="lead-text">{{ t(lang, 'el_lead') }}</p>
+{% if not active %}<p class="empty">{{ t(lang, 'el_none') }}</p>{% else %}
+<ul class="compact el-list">{% for e in active %}
+  <li><a href="/elecciones/{{ e.slug }}"><strong>{{ e.name }}</strong></a>
+    <span class="meta">{{ e.date.strftime('%d/%m/%Y') }} · {{ t(lang, 'el_status_' ~ e.status) }} · {{ t(lang, 'el_phase_' ~ e.phase(today)) }}{% if e.days_left(today) > 0 %} · {{ t(lang, 'el_days_left')|replace('{n}', e.days_left(today)|string) }}{% endif %}</span></li>{% endfor %}
+</ul>{% endif %}
+<p class="meta">{{ t(lang, 'el_how') }} <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+{% endblock %}

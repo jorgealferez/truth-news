@@ -49,6 +49,7 @@
   <div class="wrap bar">
     <a href="/" class="mini" aria-label="{{ t(lang, 'home') }}"><img src="/static/mark.svg" alt="" width="26" height="26"></a>
     <div class="scroller">
+      {% set all_els = elections_nav() %}{% set home_els = all_els|selectattr('country', 'equalto', 'ES')|list %}{% set els = home_els if home_els else all_els %}{% if els|length == 1 and all_els|length == 1 %}<a href="/elecciones/{{ els[0].slug }}" class="hl el-nav">{{ t(lang, 'el_nav')|replace('{d}', els[0].date.strftime('%d/%m')) }}</a>{% elif els|length == 1 %}<a href="/elecciones/{{ els[0].slug }}" class="hl el-nav">{{ t(lang, 'el_nav')|replace('{d}', els[0].date.strftime('%d/%m')) }}</a><a href="/elecciones" class="hl">{{ t(lang, 'el_world') }}</a>{% elif els %}<a href="/elecciones" class="hl el-nav">{{ t(lang, 'el_title') }}</a>{% endif %}
       <a href="/discrepancias" class="hl">{{ t(lang, 'nc_title') }}</a>
       <a href="/contrastes" class="hl">{{ t(lang, 'contrasts') }}</a>
       <a href="/analisis" class="hl">{{ t(lang, 'analysis') }}</a>

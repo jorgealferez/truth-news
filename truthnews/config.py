@@ -92,6 +92,12 @@ class Settings:
     ai_claims_effort: str = field(default_factory=lambda: os.environ.get("AI_CLAIMS_EFFORT", "medium"))
     # Dias de BOE (nombramientos y ceses) que la web guarda en memoria para confirmar noticias; 0 = nada.
     boe_index_days: int = field(default_factory=lambda: int(os.environ.get("BOE_INDEX_DAYS", "30")))
+    # Elecciones (ADR 0036): dias de BOE en los que la web busca convocatorias; 0 = solo el registro.
+    elections_lookback_days: int = field(
+        default_factory=lambda: int(os.environ.get("ELECTIONS_LOOKBACK_DAYS", "75"))
+    )
+    # Programas electorales (ADR 0037): descubrir e importar en las webs de los partidos; 0 = apagado.
+    programs_enabled: bool = field(default_factory=lambda: os.environ.get("PROGRAMS_ENABLED", "1") == "1")
     # Entidades y archivo (ADR 0028/0030): noticias por tanda; tramos GKG de 15 min por ciclo (0 = apagado),
     # cada cuanto se toma un tramo hacia atras y de que paises son los medios que se importan.
     entities_batch: int = field(default_factory=lambda: int(os.environ.get("ENTITIES_BATCH", "2000")))

@@ -43,6 +43,7 @@ pequenos.
 | Publicidad (solo cliente de `ads-service`) | sesion `nosmienten:publicidad` | `truthnews/ads.py`, `_ad.html`, `advertising.html`, `static/ads.js`, estilos `.ad*` de `site.css`; la plataforma (anunciantes, campanas, subasta, medicion) vive en microservices-ecosystem (squad publicidad): aqui nada de tablas ni migraciones |
 | Entidades, archivo historico y grandes falsedades | sesion "Entidades" (`session_01Juk7hZcsWaeHLeGwUxFzuh`) | `truthnews/entities/`, `truthnews/archive.py`, `entity.html`, `entities.html`, `discrepancies.html`, `_discrepancias.html` |
 | Hilos, worker, produccion | direccion | `truthnews/ai/threads.py`, `worker.py`, `config.py`, Railway |
+| Elecciones (ADR 0036/0037) | sesion `session_01RNYgqswu6mxYxkFCMnBbiD` | `truthnews/elections/`, `registry/elections.yaml`, `elections.html`, `election.html`, `promises.html`, `_promise_cite.html`, paso `programas` del worker; reutiliza `political_statement` y `statement_check` (Datos politicos) sin duplicar el juez |
 | Migracion al holding (ADR 0025) | sesion `session_01DgF9WootYzqTr7jwzkbDSj` | `docs/migracion-holding.md`, `truthnews/ports/`, `truthnews/holding/`; la parte del holding (BFF, `newsroom-service`, ampliaciones) vive en microservices-ecosystem (squad nosmienten). Arranca cuando cierren los items en curso |
 
 Ficheros compartidos: `story.html`, `base.html`, `home.html`, `site.css`, `app.py`, `queries.py`,
@@ -80,11 +81,11 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
 | ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
-| ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
-| ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
+| ADR 0036 | diseno | PR #139 | Elecciones (seccion temporal, calendario: BOE, JEC, IFES y medios; candidaturas; sin migracion) |
+| ADR 0037 + migracion 0018 | datos | PR #139 | Elecciones (program, promise, promise_check) |
 | ADR 0038 | diseno | PR (este) | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList; sin migracion) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
-| ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno frente al BOE; sin migracion) |
+| ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno; 18c BLOQUEADO por decision del usuario, ledger) |
 | ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
 | ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
 | ADR 0043 | diseno | PR #138 | Redes (equilibrio de lo que se publica) |
