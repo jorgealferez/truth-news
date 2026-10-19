@@ -163,6 +163,7 @@ def corpus(session):
             title=title,
             summary=summary,
             published_at=NOW - timedelta(hours=i),
+            fetched_at=NOW,  # el reloj de la prueba, no el real: si no, cruzar :00/:15/:30/:45 la rompe
             language="es",
             country="ES",
             category="politica",
