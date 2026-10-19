@@ -62,19 +62,23 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0016 | diseno | en main | Comparativas (mismo hecho) |
 | ADR 0017 + migracion 0009 | datos | en main | Global (traducciones) |
 | ADR 0018 + migracion 0008 | datos | en main | Redes (cola de publicaciones) |
-| ADR 0019 + migracion 0010 | datos | reservado | Verificaciones |
-| ADR 0020 + migracion 0011 | datos | PR #34 | Temas, SEO y sintesis (pieza por hilo) |
-| ADR 0021 + migracion 0012 | datos | reservado | Comparativas (fiabilidad por medio) |
-| ADR 0022 + migracion 0013 | datos | reservado | Global (cobertura exterior: misma historia en otros paises) |
-| ADR 0024 + migracion 0014 | datos | reservado | Global (fuentes politicas) |
-| ADR 0023 | diseno | reservado | Verificaciones (consulta puntual de interes publico) |
-| ADR 0025 | diseno | PR (este) | Migracion al holding (plan) |
-| ADR 0026 | diseno | en este PR | Ultimo minuto (session_01VVUuDkKCf1JjwvouACQM38) |
-| ADR 0027 | diseno | PR (este) | Entidades (lo que no cuadra: gravedad y quien lo dice) |
-| ADR 0028 + migracion 0015 | datos | PR (este) | Entidades (entidades, menciones, hablante y archivo) |
-| ADR 0030 | diseno | PR (este) | Entidades (archivo desde los ficheros GKG de GDELT) |
-| ADR 0031 + migracion 0016 | datos | PR #103 | Datos politicos (declaraciones de los partidos juzgadas, `statement_check`) |
-| siguiente libre | — | — | pedir a la direccion |
+| ADR 0019 + migracion 0010 | datos | en main | Verificaciones (afirmaciones extraidas por IA) |
+| ADR 0020 + migracion 0011 | datos | en main | Temas, SEO y sintesis (pieza por hilo) |
+| ADR 0021 | diseno | en main | Comparativas (fiabilidad por medio; sin migracion) |
+| ADR 0022 + migracion 0013 | datos | en main | Global (cobertura exterior) |
+| ADR 0023 | — | libre | (no usar: se libero; los numeros nuevos siguen hacia arriba) |
+| migracion 0012 | — | libre | (no usar: se libero; las migraciones nuevas siguen hacia arriba) |
+| ADR 0024 + migracion 0014 | datos | en main | Global (fuentes politicas) |
+| ADR 0025 | diseno | en main | Migracion al holding (plan) |
+| ADR 0026 | diseno | en main | Ultimo minuto |
+| ADR 0027 | diseno | en main | Entidades (lo que no cuadra) |
+| ADR 0028 + migracion 0015 | datos | en main | Entidades (entidades, menciones, hablante y archivo) |
+| ADR 0029 | diseno | en main | Comparativas / Verificaciones (consulta puntual de interes publico) |
+| ADR 0030 | diseno | en main | Entidades (archivo desde los ficheros GKG de GDELT) |
+| ADR 0031 + migracion 0016 | datos | en main | Datos politicos (declaraciones juzgadas, `statement_check`) |
+| ADR 0032 + migracion 0017 | datos | reservado | Comparativas (quien cambio su cifra, solo si necesita esquema) |
+| ADR 0033 + migracion 0018 | datos | reservado | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
+| siguiente libre | — | — | ADR 0034 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
 
 ## Como se trabaja
 
