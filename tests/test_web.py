@@ -290,6 +290,11 @@ def test_comparator_pages(client, session):
         'class="meter"',
         'class="bars"',
         "Portada</a> › ",
+        "En claro",
+        "La verdad según los datos",
+        "<b>10,0 %</b>",
+        "Otro Medio (12,0 %, falso)",
+        "Detenidos: los medios dan de 2.000 a 2.400.",
     ]:
         assert needle in page, needle
     # Cada cifra en disputa despliega que medios la dan, con enlace a su noticia.
