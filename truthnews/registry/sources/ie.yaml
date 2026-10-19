@@ -1,0 +1,6 @@
+country: IE
+default_language: en
+outlets:
+  - {slug: rte-news, name: RTÉ News, homepage: "https://www.rte.ie/news/", scope: national, kind: tv, owner: RTÉ (pública), feeds: [{url: "https://www.rte.ie/feeds/rss/?index=/news/"}]}
+  - {slug: irish-times, name: The Irish Times, homepage: "https://www.irishtimes.com", scope: national, feeds: [{url: "https://www.irishtimes.com/arc/outboundfeeds/feed-irish-news/?from=0&size=20"}]}
+  - {slug: irish-independent, name: Irish Independent, homepage: "https://www.independent.ie", scope: national, feeds: [{url: "https://www.independent.ie/rss"}]}

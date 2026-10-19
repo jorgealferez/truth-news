@@ -1,0 +1,7 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): kyodo-news (HTTP 404).
+country: JP
+default_language: en
+outlets:
+  - {slug: nhk, name: NHK, homepage: "https://www3.nhk.or.jp/news/", scope: national, kind: tv, language: ja, owner: NHK (pública), feeds: [{url: "https://www3.nhk.or.jp/rss/news/cat0.xml"}]}
+  - {slug: japan-times, name: The Japan Times, homepage: "https://www.japantimes.co.jp", scope: national, feeds: [{url: "https://www.japantimes.co.jp/feed/"}]}

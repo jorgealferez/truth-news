@@ -1,0 +1,8 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): cbc-news (ReadTimeout).
+country: CA
+default_language: en
+outlets:
+  - {slug: radio-canada, name: Radio-Canada, homepage: "https://ici.radio-canada.ca/info", scope: national, kind: tv, language: fr, owner: CBC/Radio-Canada (pública), feeds: [{url: "https://ici.radio-canada.ca/rss/4159"}]}
+  - {slug: globe-and-mail, name: The Globe and Mail, homepage: "https://www.theglobeandmail.com", scope: national, feeds: [{url: "https://www.theglobeandmail.com/arc/outboundfeeds/rss/category/canada/"}]}
+  - {slug: global-news-ca, name: Global News, homepage: "https://globalnews.ca", scope: national, kind: tv, feeds: [{url: "https://globalnews.ca/feed/"}]}

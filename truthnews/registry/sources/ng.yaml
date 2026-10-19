@@ -1,0 +1,6 @@
+country: NG
+default_language: en
+outlets:
+  - {slug: premium-times, name: Premium Times, homepage: "https://www.premiumtimesng.com", scope: national, feeds: [{url: "https://www.premiumtimesng.com/feed"}]}
+  - {slug: punch-ng, name: Punch, homepage: "https://punchng.com", scope: national, feeds: [{url: "https://punchng.com/feed/"}]}
+  - {slug: vanguard-ng, name: Vanguard, homepage: "https://www.vanguardngr.com", scope: national, feeds: [{url: "https://www.vanguardngr.com/feed/"}]}
