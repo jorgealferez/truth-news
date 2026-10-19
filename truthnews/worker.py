@@ -23,11 +23,11 @@ from truthnews.crawler.ingest import crawl, sync_registry
 from truthnews.db import get_engine, session_scope
 from truthnews.entities import store as entities
 from truthnews.investigate import process_pending, seed_defaults
-from truthnews.models import CrawlRun, Outlet
+from truthnews.models import CrawlRun, Outlet, utcnow
 from truthnews.social import queue as social
 
 log = logging.getLogger(__name__)
-RECENT_CYCLE_MIN = 25  # los agentes despliegan a menudo; cada arranque no debe pagar un ciclo completo
+FULL_CYCLE = "terminado"  # marca en CrawlRun.stats del ciclo completo que llego al final
 BREAKING_LANE = "rapido"  # marca en CrawlRun.stats de los rastreos del carril de ultimo minuto
 _busy = threading.Lock()  # el ciclo completo y el carril rapido nunca se solapan
 
@@ -137,6 +137,10 @@ def _run_cycle(settings: Settings) -> dict:
             log.exception("redes: el paso fallo")
             session.rollback()
             summary["social"] = {"error": str(exc)[:300]}
+    with session_scope(engine) as session:  # solo cuenta un ciclo que llega aqui (no uno cortado a medias)
+        row = session.get(CrawlRun, summary["run"])
+        if row is not None:
+            row.stats = {**(row.stats or {}), "cycle": FULL_CYCLE, "cycle_finished": utcnow().isoformat()}
     log.info("ciclo terminado: %s", summary)
     return summary
 
@@ -151,24 +155,33 @@ def _guarded(engine, name: str, step) -> dict:
         return {"error": str(exc)[:300]}
 
 
-def recent_cycle(settings: Settings, now: datetime | None = None) -> bool:
-    """Hubo un ciclo hace menos de RECENT_CYCLE_MIN: un redespliegue no debe repetirlo (ni su coste de IA)."""
-    now = now or datetime.now(UTC)
+def last_full_cycle(settings: Settings) -> datetime | None:
+    """Fin del ultimo ciclo completo terminado. Un ciclo cortado por un redespliegue no cuenta: antes se
+    contaba su inicio y, con despliegues cada pocos minutos, el ciclo se aplazaba sin terminar nunca."""
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        rows = session.execute(
-            select(CrawlRun.started_at, CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(50)
-        )
-        # Los rastreos del carril rapido no cuentan: no hacen el trabajo del ciclo completo (IA, redes).
-        last = next((at for at, stats in rows if (stats or {}).get("lane") != BREAKING_LANE), None)
+        rows = session.execute(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(200))
+        done = next((st for (st,) in rows if (st or {}).get("cycle") == FULL_CYCLE), None)
+    if done is None:
+        return None
+    at = datetime.fromisoformat(done["cycle_finished"])
+    return at if at.tzinfo else at.replace(tzinfo=UTC)
+
+
+def next_cycle_at(settings: Settings, now: datetime | None = None) -> datetime | None:
+    """Siguiente ciclo completo: ultimo terminado + intervalo; None si ya toca (o nunca hubo uno)."""
+    now = now or datetime.now(UTC)
+    last = last_full_cycle(settings)
     if last is None:
-        return False
-    last = last if last.tzinfo else last.replace(tzinfo=UTC)
-    return now - last < timedelta(minutes=RECENT_CYCLE_MIN)
+        return None
+    due = last + timedelta(minutes=settings.crawl_interval_minutes)
+    return due if due > now else None
 
 
-def add_jobs(scheduler, settings: Settings) -> None:
-    """Ciclo completo cada crawl_interval_minutes y carril de ultimo minuto cada breaking_interval_minutes."""
+def add_jobs(scheduler, settings: Settings, first_cycle: datetime | None = None) -> None:
+    """Ciclo completo cada crawl_interval_minutes (el primero en `first_cycle`, si se da) y carril de
+    ultimo minuto cada breaking_interval_minutes."""
+    extra = {"next_run_time": first_cycle} if first_cycle else {}
     scheduler.add_job(
         run_cycle,
         "interval",
@@ -177,8 +190,9 @@ def add_jobs(scheduler, settings: Settings) -> None:
         id="crawl",
         max_instances=1,
         coalesce=True,
-        # Sin next_run_time=None: en APScheduler 3 eso deja el trabajo en pausa y el ciclo horario solo
-        # ocurria al redesplegar. El primero cae a +intervalo; el del arranque se lanza a mano abajo.
+        # Nunca next_run_time=None: en APScheduler 3 eso deja el trabajo en pausa y el ciclo horario solo
+        # ocurria al redesplegar. Sin `first_cycle`, el primero cae a +intervalo.
+        **extra,
     )
     if settings.breaking_interval_minutes > 0:
         scheduler.add_job(
@@ -195,13 +209,12 @@ def add_jobs(scheduler, settings: Settings) -> None:
 def main(settings: Settings | None = None) -> None:  # pragma: no cover - bucle infinito
     settings = settings or get_settings()
     scheduler = BlockingScheduler(timezone="UTC")
-    add_jobs(scheduler, settings)
-    if recent_cycle(settings):
-        log.info(
-            "worker: ciclo reciente (redespliegue); el siguiente, en %s min", settings.crawl_interval_minutes
-        )
+    due = next_cycle_at(settings)
+    add_jobs(scheduler, settings, first_cycle=due)
+    if due:
+        log.info("worker: el ultimo ciclo completo es reciente; el siguiente, a las %s", f"{due:%H:%M} UTC")
     else:
-        log.info("worker: primer ciclo inmediato, despues cada %s min", settings.crawl_interval_minutes)
+        log.info("worker: toca ciclo completo ya, despues cada %s min", settings.crawl_interval_minutes)
         try:
             run_cycle(settings)
         except Exception:
