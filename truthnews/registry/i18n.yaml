@@ -1,6 +1,16 @@
 # Textos de interfaz por idioma. Anadir un idioma = anadir una clave con todas las cadenas.
 es:
   tagline: Comparamos lo que cuentan los medios con lo que dicen los datos
+  today_title: Hoy en 1 minuto
+  today_lead: Las claves del día con la cifra que circula frente al dato oficial, el veredicto y la fuente. Solo lo que ya hemos contrastado.
+  today_empty: Hoy todavía no hay nada contrastado con datos oficiales. No rellenamos.
+  today_said: Cifra que circula
+  today_official: Dato oficial
+  today_source: Fuente
+  today_more: Ver la verificación
+  today_dispute: Cifras en disputa
+  today_method: Cada frase se arma solo con los datos guardados (quién lo dijo, la cifra, el dato oficial, su periodo y su fuente); sin texto añadido.
+  today_image: Imagen para redes
   motto: Sin bandos. Con datos.
   home: Portada
   menu: Menú
@@ -615,6 +625,16 @@ en:
   legal_registry: Registry entry
   legal_site: Website
   tagline: We compare what the media report with what the data say
+  today_title: Today in 1 minute
+  today_lead: The day's key points with the figure going around against the official data, the verdict and the source. Only what we have already checked.
+  today_empty: Nothing has been checked against official data yet today. We do not fill the gap.
+  today_said: Figure going around
+  today_official: Official data
+  today_source: Source
+  today_more: See the fact check
+  today_dispute: Disputed figures
+  today_method: Each sentence is built only from the stored data (who said it, the figure, the official data, its period and its source); no added text.
+  today_image: Image for social media
   motto: No sides. Just data.
   home: Home
   menu: Menu

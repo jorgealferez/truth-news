@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'today_title') }} — {{ date_label }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'today_lead') }}{% endblock %}
+{% block og_image %}{{ site.site_url }}/og/hoy-horizontal.png{% endblock %}
+{% block head %}<link rel="alternate" type="application/rss+xml" title="{{ t(lang, 'today_title') }}" href="/hoy.xml">{% endblock %}
+{% block content %}
+<h1 class="page-title">{{ t(lang, 'today_title') }} <span class="meta">{{ date_label }}</span></h1>
+<p class="lead-text">{{ t(lang, 'today_lead') }}</p>
+{% if not items %}<p class="empty">{{ t(lang, 'today_empty') }}</p>{% endif %}
+<ol class="today">{% for k in items %}
+  <li class="claim">
+    <p>{% if k.verdict %}<span class="badge v-{{ k.verdict }}">{{ t(lang, 'verdict_' ~ k.verdict) }}</span>{% else %}<span class="badge">{{ t(lang, 'today_dispute') }}</span>{% endif %}
+      <strong>{{ k.sentence }}</strong></p>
+    <p class="meta">{{ t(lang, 'today_said') }}: {{ k.said }}{% if k.official %} · {{ t(lang, 'today_official') }}: {{ k.official }}{% if k.period %} ({{ k.period }}){% endif %}{% endif %}
+      · {{ t(lang, 'today_source') }}: {% if k.source_url %}<a href="{{ k.source_url }}" rel="nofollow noopener" target="_blank">{{ k.source }}</a>{% else %}{{ k.source }}{% endif %}
+      · <a href="{{ k.path }}">{{ t(lang, 'today_more') }} →</a></p>
+  </li>{% endfor %}
+</ol>
+<p class="meta">{{ t(lang, 'today_method') }} <a href="/hoy.xml">RSS</a> · <a href="/og/hoy-vertical.png">{{ t(lang, 'today_image') }}</a></p>
+<div class="share" aria-label="{{ t(lang, 'share') }}">
+  <button type="button" class="share-native" hidden data-title="{{ t(lang, 'today_title') }}" data-url="{{ site.site_url }}/hoy">↗ {{ t(lang, 'share') }}</button>
+  {% for id, name, href in share %}<a class="share-{{ id }}" href="{{ href }}" target="_blank" rel="noopener nofollow">{{ name }}</a>{% endfor %}
+  <button type="button" class="share-copy" data-url="{{ site.site_url }}/hoy" data-done="{{ t(lang, 'copied') }}">{{ t(lang, 'copy_link') }}</button>
+</div>
+{% endblock %}

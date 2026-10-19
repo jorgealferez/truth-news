@@ -42,7 +42,7 @@ from truthnews.elections import calendar as el_calendar
 from truthnews.elections import views as el_views
 from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread
-from truthnews.social import images
+from truthnews.social import images, today
 from truthnews.social import select as select_social
 from truthnews.web import (
     admin,
@@ -440,6 +440,80 @@ def create_app(
         return Response(xml, media_type="application/rss+xml")
 
     image_cache: dict[tuple, bytes] = {}
+
+    def today_view(session: Session, lang: str) -> tuple[list, str]:
+        now = datetime.now(UTC)
+        return today.keys(session, now, lang), now.strftime("%d/%m/%Y")
+
+    @app.get("/hoy", response_class=HTMLResponse)
+    def today_page(request: Request, session: SessionDep):
+        # Hoy en 1 minuto (ADR 0047): las claves del dia, solo con lo contrastado; si no hay, se dice.
+        lang = lang_of(request)
+        items, date_label = today_view(session, lang)
+        url = f"{settings.site_url}/hoy"
+        return render(
+            request,
+            "today.html",
+            items=items,
+            date_label=date_label,
+            share=social.share_links(url, f"{registry.t(lang, 'today_title')} — {date_label}"),
+        )
+
+    @app.get("/hoy.xml", include_in_schema=False)
+    def today_rss(session: SessionDep):
+        lang = settings.default_language
+        items, _ = today_view(session, lang)
+        rows = [
+            {
+                "title": k.sentence,
+                "link": settings.site_url + k.path,
+                "description": " · ".join(
+                    x
+                    for x in (
+                        registry.t(lang, "verdict_" + k.verdict) if k.verdict else None,
+                        k.official and f"{registry.t(lang, 'today_official')}: {k.official} ({k.period})",
+                        f"{registry.t(lang, 'today_source')}: {k.source}",
+                    )
+                    if x
+                ),
+                "date": k.when if k.when.tzinfo else k.when.replace(tzinfo=UTC),
+            }
+            for k in items
+        ]
+        title = f"{settings.site_name} — {registry.t(lang, 'today_title')}"
+        xml = social.rss_xml(title, f"{settings.site_url}/hoy", registry.t(lang, "today_lead"), rows)
+        return Response(xml, media_type="application/rss+xml")
+
+    @app.get("/og/hoy-{fmt}.png", include_in_schema=False)
+    def today_og(fmt: str, session: SessionDep):
+        if fmt not in social.TODAY_SIZES:
+            raise HTTPException(404)
+        lang = settings.default_language
+        items, date_label = today_view(session, lang)
+        key = ("hoy", fmt, date_label, tuple((k.kind, k.ref_id) for k in items))
+        if key not in image_cache:
+            if len(image_cache) > 500:
+                image_cache.clear()
+            image_cache[key] = social.today_image(
+                [
+                    (
+                        k.verdict,
+                        registry.t(lang, "verdict_" + k.verdict)
+                        if k.verdict
+                        else registry.t(lang, "today_dispute"),
+                        k.sentence,
+                    )
+                    for k in items
+                ],
+                registry.t(lang, "today_title"),
+                date_label,
+                f"{settings.site_domain}/hoy",
+                registry.t(lang, "today_empty"),
+                fmt,
+            )
+        return Response(
+            image_cache[key], media_type="image/png", headers={"Cache-Control": "public, max-age=900"}
+        )
 
     @app.get("/og/historia/{story_id}.png", include_in_schema=False)
     def story_og(story_id: int, session: SessionDep):
