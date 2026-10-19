@@ -1,6 +1,6 @@
 {
   "fase": "2h",
-  "titulo": "Comparativas: base de medida de las disputas (datos etiquetados de produccion y validacion fuera de muestra)",
+  "titulo": "Comparativas: fixture de disputas con produccion, validacion fuera de muestra y reglas de territorio, partido, dinero, lo que les paso, solo castellano y a quien le paso",
   "fecha": "2026-10-19",
   "entorno": {
     "maquina": "contenedor remoto de Claude Code (Linux 6.18)",
@@ -10,57 +10,19 @@
   },
   "medidas": {
     "disputas_precision": 1.0,
-    "disputas_exhaustividad": 1.0
+    "disputas_exhaustividad": 1.0,
+    "disputas_agrupacion": 0.993
   },
   "detalle": {
-    "datos": {
-      "tests/fixtures/disputes.json": "15 historias del 17-18/10 (sin cambios; puerta del ADR 0016)",
-      "tests/fixtures/disputes_produccion.json": "13 historias del 18-19/10 (197 articulos) donde los medios dan cifras distintas, con URL, fecha, frases citadas y cifra oficial cuando los textos la citan",
-      "tests/fixtures/disputes_validacion.json": {
-        "fuera_de_muestra_1": {
-          "tomada": "2026-10-19 13:20 UTC",
-          "historias": [
-            14095,
-            14089,
-            14068,
-            14053,
-            13575,
-            12557,
-            11138,
-            11037,
-            10586,
-            10017,
-            9640,
-            8990,
-            8961,
-            8537,
-            8502
-          ],
-          "seleccion": "Las 400 historias mas recientes no abiertas antes, con al menos 3 medios y con cifras del mismo sustantivo en al menos dos medios; seleccion automatica",
-          "uso": "medida limpia con las reglas 1-3 del ADR 0053 (territorio, partido, dinero; precision 0,333); despues se uso para ajustar las reglas 4 (lo que les paso) y 5 (solo castellano), asi que ya no es fuera de muestra para ellas"
-        },
-        "fuera_de_muestra_2": {
-          "tomada": "2026-10-19 14:15 UTC",
-          "historias": [
-            8022,
-            7624,
-            6990,
-            6641,
-            5034,
-            4917,
-            14737,
-            4588,
-            2109,
-            1655,
-            1138,
-            951,
-            278
-          ],
-          "seleccion": "Todas las historias de los sitemaps historias-1..4 de nosmienten.com no abiertas antes (ni en el diseno ni en la muestra 1), con al menos 3 medios y con cifras del mismo sustantivo en al menos dos medios; seleccion automatica fijada antes de medir. Idioma por dominio (.pt = portugues)",
-          "uso": "medida limpia con las reglas 1-5 del ADR 0053 (precision 0,667, exhaustividad 0,667); despues se uso para ajustar la regla 6 (a quien le paso), asi que ya no es fuera de muestra para ella"
-        }
-      }
+    "muestras": {
+      "fixture_17_18_oct": "diseno: 15 historias del 17-18/10 (152 articulos, titular y resumen), tests/fixtures/disputes.json",
+      "produccion_19_oct": "diseno: 13 historias del 18-19/10 (197 articulos) elegidas porque los medios daban cifras distintas, tests/fixtures/disputes_produccion.json; URL del medio, ficha, fecha, frases del texto citadas y cifra oficial cuando los textos la citan (detenidos en Francia 2.397 y 997 policias heridos, balance provisional; renta media 15.948 euros, INE; luz 215,12 euros/MWh); sin cifra oficial: migrantes en Ceuta (10.000 frente a 15.000) y muertos de la dana Adam",
+      "fuera_de_muestra_1": "validacion (2026-10-19 13:20 UTC): 15 historias; medida limpia con las reglas 1-3 del ADR 0053 (territorio, partido, dinero; precision 0,333); despues se uso para ajustar las reglas 4 (lo que les paso) y 5 (solo castellano), asi que ya no es fuera de muestra para ellas",
+      "fuera_de_muestra_2": "validacion (2026-10-19 14:15 UTC): 13 historias; medida limpia con las reglas 1-5 del ADR 0053 (precision 0,667, exhaustividad 0,667); despues se uso para ajustar la regla 6 (a quien le paso), asi que ya no es fuera de muestra para ella",
+      "seleccion_validacion": "Historias de produccion nunca abiertas al disenar, elegidas sin mirar el comparador: con al menos 3 medios y cifras del mismo sustantivo en al menos dos; etiquetadas antes de medir. tests/fixtures/disputes_validacion.json"
     },
+    "deteccion_de_discrepancias": "Disputa correcta si todas sus cifras hablan del mismo hecho segun la etiqueta; exhaustividad sobre los hechos contados con cifras distintas (> 10 %) por al menos dos medios. Sin IA: solo reglas",
+    "agrupacion": "Por cada par de medios con el mismo sustantivo: acierto si el comparador los pone en el mismo hecho y la etiqueta dice que lo son, o los separa y no lo son",
     "base_codigo_de_main": {
       "nota": "compare.py y evaluate.py de main: el evaluador de main solo lee titular y resumen (no 'texto' ni 'idioma')",
       "disputes.json (15, 17-18/10)": {
@@ -102,59 +64,622 @@
         "errores": []
       }
     },
-    "medidas_limpias_reglas_propuestas_pr_215": {
-      "nota": "PR #215 (ADR 0053, no mergeado): evaluador leyendo las frases del texto. Limpia = medida antes de usar la muestra para ajustar",
-      "fuera_de_muestra_1_reglas_1_3": {
-        "disputas": 3,
-        "precision": 0.333,
-        "precision_pares": 0.5,
+    "antes": {
+      "codigo": "compare.py de origin/main (reglas del ADR 0016), con el evaluador leyendo las frases del texto",
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
         "exhaustividad": 1.0,
-        "esperadas": 1,
-        "errores": [
-          "9640:muertos",
-          "9640:migrantes"
-        ]
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 352,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
       },
-      "fuera_de_muestra_2_reglas_1_5": {
-        "disputas": 3,
-        "precision": 0.667,
-        "precision_pares": 0.5,
-        "exhaustividad": 0.667,
-        "esperadas": 3,
-        "errores": [
-          "2109:heridos"
-        ]
+      "produccion_19_oct": {
+        "disputas": 13,
+        "precision": 0.462,
+        "precision_pares": 0.138,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos ·2",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.593,
+        "juntos_por_error": 143,
+        "separados_por_error": 0
       },
-      "fuera_de_muestra_1_codigo_de_main_con_texto": {
+      "diseno_total": {
+        "disputas": 18,
+        "precision": 0.611,
+        "precision_pares": 0.514,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [
+          "7367:euros",
+          "8448:euros",
+          "10022:euros",
+          "11478:euros",
+          "11626:muertos ·2",
+          "12084:escanos",
+          "12084:escanos ·2"
+        ],
+        "agrupacion_pares": 703,
+        "agrupacion_aciertos": 0.797,
+        "juntos_por_error": 143,
+        "separados_por_error": 0
+      },
+      "fuera_de_muestra_1": {
         "disputas": 5,
         "precision": 0.2,
         "precision_pares": 0.438,
         "exhaustividad": 1.0,
         "esperadas": 1,
-        "errores": [
+        "errores_disputa": [
           "11138:euros ·2",
           "9640:muertos",
           "9640:migrantes",
           "8537:euros"
-        ]
+        ],
+        "agrupacion_pares": 77,
+        "agrupacion_aciertos": 0.909,
+        "juntos_por_error": 7,
+        "separados_por_error": 0
       },
-      "fuera_de_muestra_2_codigo_de_main_con_texto": {
+      "fuera_de_muestra_2": {
         "disputas": 3,
         "precision": 0.667,
         "precision_pares": 0.5,
         "exhaustividad": 0.667,
         "esperadas": 3,
-        "errores": [
+        "errores_disputa": [
           "2109:heridos"
-        ]
+        ],
+        "agrupacion_pares": 91,
+        "agrupacion_aciertos": 0.901,
+        "juntos_por_error": 3,
+        "separados_por_error": 6
       }
     },
-    "comando": "python -c \"import json; from truthnews.analysis.evaluate import dispute_quality; [print(f, dispute_quality(json.load(open(f)))) for f in ('tests/fixtures/disputes.json', 'tests/fixtures/disputes_produccion.json', 'tests/fixtures/disputes_validacion.json')]\""
+    "reglas_1_3_territorio_partido_dinero": {
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 352,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
+      },
+      "produccion_19_oct": {
+        "disputas": 6,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.986,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "diseno_total": {
+        "disputas": 11,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [],
+        "agrupacion_pares": 703,
+        "agrupacion_aciertos": 0.993,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "fuera_de_muestra_1": {
+        "disputas": 3,
+        "precision": 0.333,
+        "precision_pares": 0.5,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores_disputa": [
+          "9640:muertos",
+          "9640:migrantes"
+        ],
+        "agrupacion_pares": 77,
+        "agrupacion_aciertos": 0.935,
+        "juntos_por_error": 2,
+        "separados_por_error": 3
+      },
+      "fuera_de_muestra_2": {
+        "disputas": 3,
+        "precision": 0.667,
+        "precision_pares": 0.5,
+        "exhaustividad": 0.667,
+        "esperadas": 3,
+        "errores_disputa": [
+          "2109:heridos"
+        ],
+        "agrupacion_pares": 91,
+        "agrupacion_aciertos": 0.901,
+        "juntos_por_error": 3,
+        "separados_por_error": 6
+      }
+    },
+    "reglas_1_5": {
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 355,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
+      },
+      "produccion_19_oct": {
+        "disputas": 6,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.986,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "diseno_total": {
+        "disputas": 11,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [],
+        "agrupacion_pares": 706,
+        "agrupacion_aciertos": 0.993,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "fuera_de_muestra_1": {
+        "disputas": 2,
+        "precision": 0.5,
+        "precision_pares": 0.8,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores_disputa": [
+          "9640:migrantes"
+        ],
+        "agrupacion_pares": 73,
+        "agrupacion_aciertos": 0.945,
+        "juntos_por_error": 1,
+        "separados_por_error": 3
+      },
+      "fuera_de_muestra_2": {
+        "disputas": 3,
+        "precision": 0.667,
+        "precision_pares": 0.5,
+        "exhaustividad": 0.667,
+        "esperadas": 3,
+        "errores_disputa": [
+          "2109:heridos"
+        ],
+        "agrupacion_pares": 89,
+        "agrupacion_aciertos": 0.899,
+        "juntos_por_error": 3,
+        "separados_por_error": 6
+      }
+    },
+    "despues_reglas_1_6": {
+      "fixture_17_18_oct": {
+        "disputas": 5,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 5,
+        "errores_disputa": [],
+        "agrupacion_pares": 355,
+        "agrupacion_aciertos": 1.0,
+        "juntos_por_error": 0,
+        "separados_por_error": 0
+      },
+      "produccion_19_oct": {
+        "disputas": 6,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 6,
+        "errores_disputa": [],
+        "agrupacion_pares": 351,
+        "agrupacion_aciertos": 0.986,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "diseno_total": {
+        "disputas": 11,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 1.0,
+        "esperadas": 11,
+        "errores_disputa": [],
+        "agrupacion_pares": 706,
+        "agrupacion_aciertos": 0.993,
+        "juntos_por_error": 5,
+        "separados_por_error": 0
+      },
+      "fuera_de_muestra_1": {
+        "disputas": 2,
+        "precision": 0.5,
+        "precision_pares": 0.8,
+        "exhaustividad": 1.0,
+        "esperadas": 1,
+        "errores_disputa": [
+          "9640:migrantes"
+        ],
+        "agrupacion_pares": 73,
+        "agrupacion_aciertos": 0.945,
+        "juntos_por_error": 1,
+        "separados_por_error": 3
+      },
+      "fuera_de_muestra_2": {
+        "disputas": 2,
+        "precision": 1.0,
+        "precision_pares": 1.0,
+        "exhaustividad": 0.667,
+        "esperadas": 3,
+        "errores_disputa": [],
+        "agrupacion_pares": 89,
+        "agrupacion_aciertos": 0.933,
+        "juntos_por_error": 0,
+        "separados_por_error": 6
+      }
+    },
+    "cada_regla_por_separado": {
+      "solo_dinero": {
+        "fixture_17_18_oct": {
+          "disputas": 5,
+          "precision": 1.0,
+          "precision_pares": 1.0,
+          "exhaustividad": 1.0,
+          "esperadas": 5,
+          "errores_disputa": [],
+          "agrupacion_pares": 352,
+          "agrupacion_aciertos": 1.0,
+          "juntos_por_error": 0,
+          "separados_por_error": 0
+        },
+        "produccion_19_oct": {
+          "disputas": 9,
+          "precision": 0.667,
+          "precision_pares": 0.5,
+          "exhaustividad": 1.0,
+          "esperadas": 6,
+          "errores_disputa": [
+            "11626:muertos ·2",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 351,
+          "agrupacion_aciertos": 0.92,
+          "juntos_por_error": 28,
+          "separados_por_error": 0
+        },
+        "diseno_total": {
+          "disputas": 14,
+          "precision": 0.786,
+          "precision_pares": 0.868,
+          "exhaustividad": 1.0,
+          "esperadas": 11,
+          "errores_disputa": [
+            "11626:muertos ·2",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 703,
+          "agrupacion_aciertos": 0.96,
+          "juntos_por_error": 28,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_1": {
+          "disputas": 3,
+          "precision": 0.333,
+          "precision_pares": 0.571,
+          "exhaustividad": 1.0,
+          "esperadas": 1,
+          "errores_disputa": [
+            "9640:muertos",
+            "9640:migrantes"
+          ],
+          "agrupacion_pares": 66,
+          "agrupacion_aciertos": 0.939,
+          "juntos_por_error": 1,
+          "separados_por_error": 3
+        },
+        "fuera_de_muestra_2": {
+          "disputas": 3,
+          "precision": 0.667,
+          "precision_pares": 0.5,
+          "exhaustividad": 0.667,
+          "esperadas": 3,
+          "errores_disputa": [
+            "2109:heridos"
+          ],
+          "agrupacion_pares": 89,
+          "agrupacion_aciertos": 0.899,
+          "juntos_por_error": 3,
+          "separados_por_error": 6
+        }
+      },
+      "solo_territorio": {
+        "fixture_17_18_oct": {
+          "disputas": 5,
+          "precision": 1.0,
+          "precision_pares": 1.0,
+          "exhaustividad": 1.0,
+          "esperadas": 5,
+          "errores_disputa": [],
+          "agrupacion_pares": 352,
+          "agrupacion_aciertos": 1.0,
+          "juntos_por_error": 0,
+          "separados_por_error": 0
+        },
+        "produccion_19_oct": {
+          "disputas": 12,
+          "precision": 0.5,
+          "precision_pares": 0.147,
+          "exhaustividad": 1.0,
+          "esperadas": 6,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 351,
+          "agrupacion_aciertos": 0.621,
+          "juntos_por_error": 133,
+          "separados_por_error": 0
+        },
+        "diseno_total": {
+          "disputas": 17,
+          "precision": 0.647,
+          "precision_pares": 0.531,
+          "exhaustividad": 1.0,
+          "esperadas": 11,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 703,
+          "agrupacion_aciertos": 0.811,
+          "juntos_por_error": 133,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_1": {
+          "disputas": 5,
+          "precision": 0.2,
+          "precision_pares": 0.467,
+          "exhaustividad": 1.0,
+          "esperadas": 1,
+          "errores_disputa": [
+            "11138:euros ·2",
+            "9640:muertos",
+            "9640:migrantes",
+            "8537:euros"
+          ],
+          "agrupacion_pares": 66,
+          "agrupacion_aciertos": 0.909,
+          "juntos_por_error": 6,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_2": {
+          "disputas": 3,
+          "precision": 0.667,
+          "precision_pares": 0.5,
+          "exhaustividad": 0.667,
+          "esperadas": 3,
+          "errores_disputa": [
+            "2109:heridos"
+          ],
+          "agrupacion_pares": 89,
+          "agrupacion_aciertos": 0.899,
+          "juntos_por_error": 3,
+          "separados_por_error": 6
+        }
+      },
+      "solo_partido": {
+        "fixture_17_18_oct": {
+          "disputas": 5,
+          "precision": 1.0,
+          "precision_pares": 1.0,
+          "exhaustividad": 1.0,
+          "esperadas": 5,
+          "errores_disputa": [],
+          "agrupacion_pares": 352,
+          "agrupacion_aciertos": 1.0,
+          "juntos_por_error": 0,
+          "separados_por_error": 0
+        },
+        "produccion_19_oct": {
+          "disputas": 11,
+          "precision": 0.545,
+          "precision_pares": 0.151,
+          "exhaustividad": 1.0,
+          "esperadas": 6,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "11626:muertos ·2"
+          ],
+          "agrupacion_pares": 351,
+          "agrupacion_aciertos": 0.63,
+          "juntos_por_error": 130,
+          "separados_por_error": 0
+        },
+        "diseno_total": {
+          "disputas": 16,
+          "precision": 0.688,
+          "precision_pares": 0.539,
+          "exhaustividad": 1.0,
+          "esperadas": 11,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "11626:muertos ·2"
+          ],
+          "agrupacion_pares": 703,
+          "agrupacion_aciertos": 0.815,
+          "juntos_por_error": 130,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_1": {
+          "disputas": 5,
+          "precision": 0.2,
+          "precision_pares": 0.467,
+          "exhaustividad": 1.0,
+          "esperadas": 1,
+          "errores_disputa": [
+            "11138:euros ·2",
+            "9640:muertos",
+            "9640:migrantes",
+            "8537:euros"
+          ],
+          "agrupacion_pares": 66,
+          "agrupacion_aciertos": 0.909,
+          "juntos_por_error": 6,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_2": {
+          "disputas": 3,
+          "precision": 0.667,
+          "precision_pares": 0.5,
+          "exhaustividad": 0.667,
+          "esperadas": 3,
+          "errores_disputa": [
+            "2109:heridos"
+          ],
+          "agrupacion_pares": 89,
+          "agrupacion_aciertos": 0.899,
+          "juntos_por_error": 3,
+          "separados_por_error": 6
+        }
+      },
+      "solo_lo_que_les_paso": {
+        "fixture_17_18_oct": {
+          "disputas": 5,
+          "precision": 1.0,
+          "precision_pares": 1.0,
+          "exhaustividad": 1.0,
+          "esperadas": 5,
+          "errores_disputa": [],
+          "agrupacion_pares": 355,
+          "agrupacion_aciertos": 1.0,
+          "juntos_por_error": 0,
+          "separados_por_error": 0
+        },
+        "produccion_19_oct": {
+          "disputas": 13,
+          "precision": 0.462,
+          "precision_pares": 0.144,
+          "exhaustividad": 1.0,
+          "esperadas": 6,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "11626:muertos ·2",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 351,
+          "agrupacion_aciertos": 0.593,
+          "juntos_por_error": 143,
+          "separados_por_error": 0
+        },
+        "diseno_total": {
+          "disputas": 18,
+          "precision": 0.611,
+          "precision_pares": 0.523,
+          "exhaustividad": 1.0,
+          "esperadas": 11,
+          "errores_disputa": [
+            "7367:euros",
+            "8448:euros",
+            "10022:euros",
+            "11478:euros",
+            "11626:muertos ·2",
+            "12084:escanos",
+            "12084:escanos ·2"
+          ],
+          "agrupacion_pares": 706,
+          "agrupacion_aciertos": 0.797,
+          "juntos_por_error": 143,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_1": {
+          "disputas": 4,
+          "precision": 0.25,
+          "precision_pares": 0.538,
+          "exhaustividad": 1.0,
+          "esperadas": 1,
+          "errores_disputa": [
+            "11138:euros ·2",
+            "9640:migrantes",
+            "8537:euros"
+          ],
+          "agrupacion_pares": 73,
+          "agrupacion_aciertos": 0.918,
+          "juntos_por_error": 6,
+          "separados_por_error": 0
+        },
+        "fuera_de_muestra_2": {
+          "disputas": 3,
+          "precision": 0.667,
+          "precision_pares": 0.5,
+          "exhaustividad": 0.667,
+          "esperadas": 3,
+          "errores_disputa": [
+            "2109:heridos"
+          ],
+          "agrupacion_pares": 89,
+          "agrupacion_aciertos": 0.899,
+          "juntos_por_error": 3,
+          "separados_por_error": 6
+        }
+      }
+    },
+    "comando": "python -c \"import json; from truthnews.analysis.evaluate import dispute_quality, grouping_quality; [print(f, dispute_quality(json.load(open(f))), grouping_quality(json.load(open(f)))) for f in ('tests/fixtures/disputes.json', 'tests/fixtures/disputes_produccion.json', 'tests/fixtures/disputes_validacion.json')]\"",
+    "advertencia": "Las medidas de diseno estan dentro de la muestra. La muestra fuera_de_muestra_1 se midio limpia con las reglas 1-3 y despues se uso para ajustar las reglas 4-5; la fuera_de_muestra_2 se midio limpia con las reglas 1-5 y despues se uso para ajustar la regla 6. Ninguna de las dos llega a 0,8 limpia: no se mergea hasta medir una tercera muestra limpia con las reglas 1-6. Las muestras con n pequeno (pocas disputas) dan una precision muy ruidosa: se publican los recuentos."
   },
   "criterios_de_salida": {},
   "no_verificable": [],
-  "fuera_de_alcance": [],
-  "pendientes": [
-    "Reglas del ADR 0053 (#215): solo entran si una muestra limpia llega a >= 0,8 de precision sin bajar la exhaustividad"
-  ]
+  "fuera_de_alcance": [
+    "La parte y el todo del mismo sustantivo sin territorio ni partido ('seis migrantes' de un naufragio frente a 'doce' de los dos) siguen juntandose",
+    "Dos casos distintos con cifras parecidas del mismo sustantivo y sin territorio ni partido solo se separan si son dinero"
+  ],
+  "pendientes": []
 }

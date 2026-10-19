@@ -1,6 +1,8 @@
 """Medida de la calidad de las disputas de cifras sobre historias reales etiquetadas (ADR 0016).
 
-Fixture: `tests/fixtures/disputes.json`. Cada historia trae sus articulos (titular y resumen) y, en
+Fixture: `tests/fixtures/disputes.json`. Cada historia trae sus articulos (titular, resumen, `idioma` si no es
+castellano y, en las de
+produccion del 19/10, `texto`: las frases del texto completo citadas en la ficha del articulo) y, en
 `hechos`, de que hecho habla cada cifra: {sustantivo: {medio: {cifra: hecho}}}. Una disputa es correcta
 si todas sus cifras hablan del mismo hecho; una cifra sin etiqueta cuenta como error.
 """
@@ -20,9 +22,9 @@ def _articles(story: dict) -> list:
             outlet=SimpleNamespace(name=a["outlet"]),
             title=a["title"],
             summary=a["summary"],
-            content_text=None,
+            content_text=a.get("texto"),
             published_at=datetime.fromisoformat(a["published_at"]),
-            language="es",
+            language=a.get("idioma", "es"),
         )
         for a in story["articulos"]
     ]
@@ -72,5 +74,42 @@ def dispute_quality(fixture: dict) -> dict:
         "precision_pares": round(good_pairs / pairs, 3) if pairs else 1.0,
         "exhaustividad": round(found / expected, 3) if expected else 1.0,
         "esperadas": expected,
+        "errores": errors,
+    }
+
+
+def grouping_quality(fixture: dict) -> dict:
+    """Agrupacion de cifras en hechos: por cada par de medios con el mismo sustantivo, si el comparador los
+    pone en el mismo hecho y si la etiqueta dice que lo son. No cuentan los pares con una cifra sin etiqueta.
+    """
+    together = apart = wrong_together = wrong_apart = 0
+    errors: list[str] = []
+    for story in fixture["historias"]:
+        comp = compare(_articles(story))
+        for noun, facts in comp.facts.items():
+            placed = [(i, f) for i, fact in enumerate(facts) for f in fact]
+            for (ia, a), (ib, b) in combinations(placed, 2):
+                fa = _fact(story["hechos"], noun, a.outlet, a.value)
+                fb = _fact(story["hechos"], noun, b.outlet, b.value)
+                if fa is None or fb is None:
+                    continue
+                if ia == ib and fa == fb:
+                    together += 1
+                elif ia != ib and fa != fb:
+                    apart += 1
+                elif ia == ib:
+                    wrong_together += 1
+                    errors.append(f"{story['historia']}:{noun}:{a.outlet}={a.value:g}+{b.outlet}={b.value:g}")
+                else:
+                    wrong_apart += 1
+                    errors.append(f"{story['historia']}:{noun}:{a.outlet}={a.value:g}/{b.outlet}={b.value:g}")
+    pairs = together + apart + wrong_together + wrong_apart
+    return {
+        "pares": pairs,
+        "aciertos": round((together + apart) / pairs, 3) if pairs else 1.0,
+        "juntos_bien": together,
+        "separados_bien": apart,
+        "juntos_por_error": wrong_together,
+        "separados_por_error": wrong_apart,
         "errores": errors,
     }

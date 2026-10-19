@@ -74,6 +74,32 @@ _PERSONAS_CONTEXT = (
     ("detenidos", re.compile(r"\b(detenid|detencion|arrestad)")),
     ("evacuados", re.compile(r"\b(evacuad|desalojad|realojad)")),
 )
+# Con quien le paso no basta: "mueren 12 inmigrantes" son 12 muertos y "1.000 policias y gendarmes heridos"
+# son 1.000 heridos. Si la frase dice que les paso, cuenta eso (ADR 0053); si no, el sustantivo.
+_PEOPLE = {"migrantes", "soldados", "agentes", "policias", "manifestantes"}
+# A quien le paso es parte del hecho: "seis carabineros heridos" y "cuatro manifestantes heridos" son dos
+# recuentos (caso real 2109, Chile, 19/10). Sinonimos de policia cuentan como policia.
+_SUBJECTS = {
+    "policias": "policias",
+    "agentes": "policias",
+    "gendarmes": "policias",
+    "carabineros": "policias",
+    "guardias": "policias",
+    "oficiales": "policias",
+    "soldados": "soldados",
+    "militares": "soldados",
+    "migrantes": "migrantes",
+    "inmigrantes": "migrantes",
+    "manifestantes": "manifestantes",
+    "menores": "menores",
+    "ninos": "menores",
+    "civiles": "civiles",
+    "presos": "presos",
+    "reclusos": "presos",
+}
+_DIED_BEFORE = re.compile(
+    r"\b(mata|matan|mato|mataron|mueren|murieron|fallecen|fallecieron|pierden la vida)\b"
+)
 # Dos cifras del mismo sustantivo solo se comparan si hablan del mismo hecho (ADR 0016). Un balance que se
 # actualiza o una discrepancia real se mueven dentro de un orden de magnitud; "12 migrantes" ocultados en una
 # casa frente a "500" desalojados, o "50 detenidos" en Milan frente a "2.000" en Francia, son hechos
@@ -81,8 +107,63 @@ _PERSONAS_CONTEXT = (
 SAME_FACT_RATIO = 3.0
 SAME_FACT_MIN_GAP = 10
 _ATTRIBUTED = re.compile(r"\bsegun\b")
+# Ni el territorio ni el partido cambian el orden de magnitud: "300 muertes en Aragon" y "500 en Castilla y
+# Leon", o "entre 16 y 20 escanos" de Vox y "hasta diez" de Adelante, son hechos distintos. Se lee la frase
+# de la cifra (comunidades autonomas, provincias y Espana; el partido mas cercano antes de la cifra) y dos
+# cifras con territorios que no se cruzan, o de partidos distintos, no se comparan (ADR 0053).
+_TERRITORIES = {
+    "espana": r"espana",
+    "andalucia": r"andalucia|almeria|cadiz|cordoba|granada|huelva|jaen|malaga|sevilla",
+    "aragon": r"aragon|huesca|teruel|zaragoza",
+    "asturias": r"asturias|oviedo|gijon",
+    "baleares": r"baleares|illes balears|mallorca|menorca|ibiza|formentera",
+    "canarias": r"canarias|tenerife|gran canaria|lanzarote|fuerteventura",
+    "cantabria": r"cantabria|santander",
+    "castilla y leon": r"castilla y leon|avila|burgos|palencia|salamanca|segovia|soria|valladolid|zamora",
+    "castilla-la mancha": (
+        r"castilla-la mancha|castilla la mancha|albacete|ciudad real|cuenca|guadalajara|toledo"
+    ),
+    "cataluna": r"cataluna|catalunya|barcelona|girona|gerona|lleida|lerida|tarragona",
+    "comunitat valenciana": r"comunitat valenciana|comunidad valenciana|valencia|alicante|castellon",
+    "extremadura": r"extremadura|badajoz|caceres",
+    "galicia": r"galicia|a coruna|la coruna|lugo|ourense|orense|pontevedra",
+    "madrid": r"madrid",
+    "murcia": r"murcia",
+    "navarra": r"navarra|nafarroa|pamplona",
+    "pais vasco": r"pais vasco|euskadi|euskal herria|alava|araba|gipuzkoa|guipuzcoa|bizkaia|vizcaya|bilbao",
+    "la rioja": r"la rioja|logrono",
+    "ceuta": r"ceuta",
+    "melilla": r"melilla",
+}
+_TERRITORY = [(t, re.compile(rf"(?<!\w)(?:{rx})(?!\w)")) for t, rx in _TERRITORIES.items()]
+_PARTIES = {
+    "pp": r"pp(?:-a)?|populares|partido popular",
+    "psoe": r"psoe(?:-a)?|socialistas",
+    "vox": r"vox",
+    "sumar": r"sumar",
+    "podemos": r"podemos",
+    "adelante andalucia": r"adelante andalucia|andalucistas",
+    "por andalucia": r"por andalucia",
+    "junts": r"junts",
+    "erc": r"erc|esquerra",
+    "pnv": r"pnv",
+    "bildu": r"bildu",
+    "bng": r"bng",
+}
+_PARTY = re.compile(
+    r"(?<![\w-])(" + "|".join(f"(?P<p{i}>{rx})" for i, rx in enumerate(_PARTIES.values())) + r")(?![\w])"
+)
+_PARTY_NOUNS = {"escanos", "votos"}
+_DATELINE = re.compile(r"\b[a-z]+(?: [a-z]+)?, \d{1,2} (?:de )?[a-z]+\.? \((?:efe|ep|europa press)\)\.?-?")
+_SENTENCE_END = re.compile(r"[.!?](?:\s|$)")
+# Una cantidad de dinero no es un recuento: en una misma noticia conviven medias, umbrales, multas y precios
+# ("por debajo de 700 euros" y "superan los 1.000"; 300 euros/MWh en la hora mas cara y 215 de media). Sin
+# indicador ni periodo (eso lo hacen las verificaciones, ADR 0019) no se sabe si dos cifras son el mismo
+# dato: se dice en que coinciden los medios, pero no se abre disputa (ADR 0053).
+MEASURES = {"euros"}
 _LIVE = re.compile(r"\b(en directo|directo|ultima hora|minuto a minuto|live)\b")
 LEAD_CHARS = 400  # las cifras se toman del titular, el resumen y el arranque del texto
+SCOPE_CHARS = 300  # texto que se lee tras el arranque para completar la frase de una cifra
 LOADED = {
     "es": [
         "caos",
@@ -205,6 +286,9 @@ class Figure:
     outlet: str
     published_at: object
     text: str
+    territory: frozenset[str] = frozenset()
+    party: str | None = None
+    subject: str | None = None
 
 
 @dataclass
@@ -217,6 +301,7 @@ class Comparison:
     omissions: dict[str, list[str]] = field(default_factory=dict)
     loaded: dict[str, list[str]] = field(default_factory=dict)
     blame: dict[str, list[str]] = field(default_factory=dict)  # medio -> a quien culpa
+    facts: dict[str, list[list[Figure]]] = field(default_factory=dict)  # sustantivo -> cifras por hecho
     basis: str = "titulares y resumenes"
 
     @property
@@ -272,30 +357,74 @@ def _value(raw: str, scale: str) -> float:
 
 def figures(text: str) -> list[tuple[str, float, str, str]]:
     """(sustantivo canonico, valor, calificador, fragmento) de cada cifra contable del texto."""
+    return [f[:4] for f in _figures(normalize(text))]
+
+
+def _scope(tn: str, start: int, end: int, noun: str) -> tuple[frozenset[str], str | None]:
+    """Territorios de la frase de la cifra y, en escanos y votos, el partido mas cercano antes de ella."""
+    s = max((m.end() for m in _SENTENCE_END.finditer(tn, 0, start)), default=0)
+    e = _SENTENCE_END.search(tn, end)
+    sentence = _DATELINE.sub(" ", tn[s : e.start() if e else len(tn)])
+    territory = frozenset(t for t, rx in _TERRITORY if rx.search(sentence))
+    party = None
+    if noun in _PARTY_NOUNS:
+        names = list(_PARTIES)
+        found = [
+            (m.start() + s, names[int(next(k for k, v in m.groupdict().items() if v)[1:])])
+            for m in _PARTY.finditer(sentence)
+        ]
+        before = [p for pos, p in found if pos < start]
+        after = [p for pos, p in found if pos >= end]
+        party = before[-1] if before else (after[0] if after else None)
+    return territory, party
+
+
+def _figures(
+    tn: str, limit: int | None = None
+) -> list[tuple[str, float, str, str, frozenset[str], str | None, str | None]]:
+    """Como `figures`, sobre texto ya normalizado, con el territorio, el partido y a quien le paso. `limit`:
+    solo cuentan las cifras que empiezan antes de esa posicion (el resto del texto solo da contexto)."""
     out = []
-    tn = normalize(text)
-    for m in _FIGURE.finditer(tn):
+    for m in _FIGURE.finditer(tn, 0, len(tn) if limit is None else limit):
         value = _value(m.group(2), m.group(3) or "")
         if value < 2 and m.group(2) in ("un", "una", "uno"):
             continue
         frag = tn[max(0, m.start() - 30) : m.end() + 10].strip()
         noun = _COUNTABLE[m.group(4)]
-        if noun == "personas":
+        between = tn[m.end(3) if m.group(3) else m.end(2) : m.start(4)].split()
+        subject = _SUBJECTS.get(m.group(4)) or (_SUBJECTS.get(between[0]) if between else None)
+        if noun == "personas" or noun in _PEOPLE:
             # Solo la frase de la cifra, y primero lo que la sigue: en "cuatro muertos. Otras 39 personas
             # resultaron heridas" los 39 son heridos, no muertos.
             before = re.split(r"[.;:!?]\s", tn[max(0, m.start() - 20) : m.start()])[-1]
             after = re.split(r"[.;:!?](?:\s|$)", tn[m.end() : m.end() + 25])[0]
-            noun = next(
-                (n for part in (after, before) for n, rx in _PERSONAS_CONTEXT if rx.search(part)), None
-            )
-            if noun is None:
-                continue
-        out.append((noun, value, (m.group(1) or "").strip(), frag))
+            if noun == "personas":
+                event = next(
+                    (n for part in (after, before) for n, rx in _PERSONAS_CONTEXT if rx.search(part)), None
+                )
+                if event is None:
+                    continue
+            else:
+                # Con quien (migrantes, policias...) solo vale lo que les pasa: "500 policias heridos" o
+                # "mueren 12 inmigrantes". Un participio de antes es de la cifra anterior: en "1.800 personas
+                # detenidas y 500 policias" los 500 no son detenidos.
+                event = next((n for n, rx in _PERSONAS_CONTEXT if rx.search(after)), None)
+                if event is None and _DIED_BEFORE.search(before):
+                    event = "muertos"
+            noun = event or noun
+        scope = _scope(tn, m.start(), m.end(), noun)
+        out.append((noun, value, (m.group(1) or "").strip(), frag, *scope, subject))
     return out
 
 
 def same_fact(a: Figure, b: Figure) -> bool:
     """Si dos cifras del mismo sustantivo pueden hablar del mismo hecho (ADR 0016)."""
+    if a.territory and b.territory and not a.territory & b.territory:
+        return False
+    if a.party and b.party and a.party != b.party:
+        return False
+    if a.subject and b.subject and a.subject != b.subject and a.noun not in _PEOPLE:
+        return False
     low, high = sorted((a.value, b.value))
     if high <= SAME_FACT_RATIO * low or high - low <= SAME_FACT_MIN_GAP:
         return True
@@ -359,17 +488,36 @@ def compare(articles: list) -> Comparison:
         for a in sorted(arts, key=lambda x: x.published_at):
             if _LIVE.search(normalize(a.title)):
                 continue  # un directo mezcla datos de muchos momentos: no se compara
+            if (a.language or "es") != "es":
+                continue  # las cifras se leen en castellano: en portugues "dos votos" no son dos (ADR 0053)
             lead = f"{a.title}. {a.summary or ''} {(a.content_text or '')[:LEAD_CHARS]}"
+            # La frase de una cifra del arranque puede seguir despues del corte: se lee entera.
+            context = lead + (a.content_text or "")[LEAD_CHARS : LEAD_CHARS + SCOPE_CHARS]
             seen: set[str] = set()
-            for noun, value, qual, frag in figures(lead):
+            for noun, value, qual, frag, territory, party, subject in _figures(
+                normalize(context), len(normalize(lead))
+            ):
                 if noun in seen:
                     continue
                 seen.add(noun)
                 prev = per_noun[noun].get(outlet)
                 if prev is None or a.published_at >= prev.published_at:
-                    per_noun[noun][outlet] = Figure(noun, value, qual, outlet, a.published_at, frag)
+                    per_noun[noun][outlet] = Figure(
+                        noun, value, qual, outlet, a.published_at, frag, territory, party, subject
+                    )
     for noun, by in per_noun.items():
-        for i, fact in enumerate(same_facts(list(by.values()))):
+        if noun in MEASURES:
+            by_value: dict[float, list[Figure]] = defaultdict(list)
+            for f in by.values():
+                by_value[f.value].append(f)
+            comp.facts[noun] = list(by_value.values())
+            for value, figs in by_value.items():
+                if len(figs) >= 2:
+                    comp.consensus.append(f"{noun}: {int(value):,}".replace(",", "."))
+                    comp.agreed_figures.append((noun, int(value), len(figs)))
+            continue
+        comp.facts[noun] = same_facts(list(by.values()))
+        for i, fact in enumerate(comp.facts[noun]):
             if len(fact) < 2:
                 continue
             values = [f.value for f in fact]

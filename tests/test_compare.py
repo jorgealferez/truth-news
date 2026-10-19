@@ -137,13 +137,90 @@ def test_dispute_precision_on_real_labeled_stories():
     import json
     from pathlib import Path
 
-    from truthnews.analysis.evaluate import dispute_quality
+    from truthnews.analysis.evaluate import dispute_quality, grouping_quality
 
-    fixture = json.loads((Path(__file__).parent / "fixtures" / "disputes.json").read_text(encoding="utf-8"))
+    fixtures = Path(__file__).parent / "fixtures"
+    fixture = {
+        "historias": [
+            h
+            for name in ("disputes.json", "disputes_produccion.json")
+            for h in json.loads((fixtures / name).read_text(encoding="utf-8"))["historias"]
+        ]
+    }
     q = dispute_quality(fixture)
     # Medido 2026-10-19 (ADR 0016): antes 0,50 de precision (4 de 8 disputas mezclaban hechos distintos).
+    # Con las 13 historias de produccion del 18-19/10 (ADR 0053): antes 0,611 (7 de 18 mal), despues 1,00.
     assert q["precision"] >= 0.95 and q["precision_pares"] >= 0.95, q["errores"]
-    assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 5
+    assert q["exhaustividad"] >= 0.95 and q["esperadas"] == 11
+    g = grouping_quality(fixture)
+    # Pares de cifras puestos en el mismo hecho o separados como dice la etiqueta: antes 0,797, despues 0,99.
+    assert g["aciertos"] >= 0.98, g["errores"]
+
+
+def test_dispute_validation_set_is_measured():
+    # Fuera de muestra (ADR 0053): se mide y se publica en docs/benchmarks, no se ajusta para que pase.
+    import json
+    from pathlib import Path
+
+    from truthnews.analysis.evaluate import dispute_quality, grouping_quality
+
+    path = Path(__file__).parent / "fixtures" / "disputes_validacion.json"
+    validation = json.loads(path.read_text(encoding="utf-8"))
+    ids = {i for m in validation["muestras"] for i in m["historias"]}
+    assert ids == {h["historia"] for h in validation["historias"]}
+    assert dispute_quality(validation)["esperadas"] >= 1 and grouping_quality(validation)["pares"] > 0
+
+
+def test_territory_party_and_money_keep_facts_apart():
+    from truthnews.analysis.compare import _figures
+    from truthnews.classify import normalize
+
+    # Casos reales del 19/10: el ozono por comunidad, el CIS andaluz por partido, el alquiler en euros.
+    arts = [
+        art("A", "El ozono causa cada año hasta 300 muertes en Aragón"),
+        art("B", "El aire tóxico de Navarra: un exceso de 190 muertes en verano"),
+        art("C", "La dana deja dos muertos en Cataluña y la Comunidad Valenciana"),
+        art("D", "La dana deja tres muertos en la Comunidad Valenciana"),
+    ]
+    assert [[f.outlet for f in figs] for figs in compare(arts).disputes.values()] == [["C", "D"]]
+    arts = [
+        art("A", "Vox, con el 16,1 %, lograría entre 16 y 20 escaños"),
+        art("B", "Vox sube, mientras Adelante Andalucía alcanzaría hasta diez escaños"),
+        art("C", "El PP lograría entre 52 y 53 escaños"),
+        art("D", "Los populares obtendrían 47 escaños, según otra encuesta"),
+    ]
+    disputes = compare(arts).disputes
+    assert [[f.outlet for f in figs] for figs in disputes.values()] == [["C", "D"]]
+    arts = [
+        art("A", "Solo trece provincias siguen por debajo de los 700 euros de alquiler"),
+        art("B", "Los alquileres superan los 1.000 euros en doce provincias"),
+        art("C", "Los alquileres superan los 1.000 euros en doce provincias"),
+    ]
+    comp = compare(arts)
+    assert comp.disputes == {} and comp.agreed_figures == [("euros", 1000, 2)]
+    # Lo que les paso decide, no quienes son: "mueren 12 inmigrantes" son muertos (caso real 9640), y la
+    # cifra anterior no cuenta como contexto ("2.397 detenidos y 997 policias heridos").
+    assert [f[:2] for f in figures("Mueren 12 inmigrantes en dos naufragios")] == [("muertos", 12.0)]
+    assert [f[:2] for f in figures("Con 2.397 detenidos y 997 policías heridos")] == [
+        ("detenidos", 2397.0),
+        ("heridos", 997.0),
+    ]
+    assert [f[:2] for f in figures("Llegan 39 migrantes a Cartagena")] == [("migrantes", 39.0)]
+    assert [f[:2] for f in figures("Han sido detenidas dos personas")] == [("detenidos", 2.0)]
+    # Las cifras se leen en castellano: en portugues "dos votos" no son dos.
+    pt = art("B", "Lula obteve 47,03% dos votos e 2.400 detenidos")
+    pt.language = "pt"
+    assert compare([art("A", "2.000 detenidos en Francia"), pt]).disputes == {}
+    # El lugar de la data ("Madrid, 19 oct (EFE).-") no es el territorio de la cifra.
+    ((*_, territory, party, subject),) = _figures(
+        normalize("Madrid, 19 oct (EFE).- Detenidas 40 personas en Sevilla")
+    )
+    assert territory == {"andalucia"} and party is None and subject is None
+    # A quien le paso es parte del hecho (caso real 2109, Chile): carabineros y manifestantes heridos.
+    arts = [art("A", "Seis carabineros heridos en Santiago"), art("B", "Hay cuatro manifestantes heridos")]
+    assert compare(arts).disputes == {}
+    arts = [art("A", "Seis carabineros heridos"), art("B", "14 agentes heridos, según el ministro")]
+    assert [f.value for f in compare(arts).disputes["heridos"]] == [6.0, 14.0]
 
 
 def test_personas_context_stays_in_its_sentence():
