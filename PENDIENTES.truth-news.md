@@ -33,7 +33,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
   - [x] Extraccion con IA validada por el codigo (ADR 0019, migracion 0010) — #41; antes, produccion: 0,17 afirmaciones juzgadas por ciclo (18 ciclos); despues, produccion (ciclo 26, 2026-10-19 01:46 UTC): 91 articulos nuevos, 0 por reglas, 0 frases candidatas para la IA (0 llamadas, 0 coste); esperado ~1 candidata por ciclo (0,015 por articulo): la palanca es el catalogo y el texto completo
     - [x] Medida con IA en produccion (02:45-02:55 UTC, 4 ciclos): 1,25 afirmaciones juzgadas por ciclo (antes 0,17), ~2-4 k tokens de entrada por llamada
     - [x] Revision humana de lo publicado: v6 publicada con sus notas (El Debate, elDinero) — #102
-    - [ ] Nuevo veredicto injusto (La Informacion: 'eleva su expectativa de inflacion al 3,7 % en 2026') corregido en el metodo v7 — PR en curso
+    - [x] La Informacion ('eleva su expectativa de inflacion al 3,7 % en 2026') corregido y publicado con nota — #107
+    - [ ] Inflacion de otros paises con el IPCA: la franja que puede explicar el IPC nacional no se juzga (La Gaceta de Salamanca, Francia 3,1 % frente a 3,4 %) — metodo v8, PR en curso
   - [ ] Ampliar indicadores y fuentes (medido: 472 frases con % en 2 782 articulos, solo 42 tocan el catalogo): pobreza, deficit, vivienda/alquiler, tipos, INE por comunidad y EPA
     - [x] Deficit, riesgo de pobreza y AROPE (Eurostat) — #44
     - [x] Una variacion no se juzga como nivel (metodo v4) — #57
