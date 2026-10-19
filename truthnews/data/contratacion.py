@@ -49,6 +49,16 @@ _KINDS = (
 _ORGANO = re.compile(r"^anuncio[^:]*?\bde:\s*(.+?)\s+Objeto:", re.I)
 _OBJETO = re.compile(r"\bObjeto:\s*(.+?)(?:\.\s+Expediente:|\.?$)", re.I | re.S)
 _NIF = re.compile(r"^(?:[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]|\d{8}[A-Z]|[XYZ]\d{7}[A-Z])$")
+# NIF de persona juridica (letra de sociedad, entidad o administracion); el de persona fisica es 8 cifras y
+# letra o empieza por X, Y, Z, K, L o M.
+_CIF = re.compile(r"^[ABCDEFGHJNPQRSUVW]\d{7}[0-9A-J]$")
+# Formas juridicas y tipos de entidad que identifican a una persona juridica por su nombre.
+_ENTITY = re.compile(
+    r"(?<!\w)(s\.?\s?a\.?(\s?u\.?)?|s\.?\s?l\.?(\s?[ul]\.?)?|s\.?\s?l\.?\s?p\.?|s\.?\s?coop\.?|u\.?\s?t\.?\s?e\.?|"
+    r"a\.?\s?i\.?\s?e\.?|fund\.|sociedad|cooperativa|fundaci[oó]n|asociaci[oó]n|ayuntamiento|universidad|consorcio|"
+    r"mutua|gmbh|ag|ltd|limited|inc|llc|bv|nv|spa|srl|sas|sarl|plc|corporaci[oó]n|empresa)(?!\w)",
+    re.I,
+)
 _EXPEDIENTE = re.compile(r"\bExpediente:\s*(.+?)\.?\s*$", re.I)
 
 
@@ -74,13 +84,21 @@ class Adjudicacion:
     url: str
     importe: float | None = None
     moneda: str = "EUR"
-    adjudicatarios: list[tuple[str, str]] = field(default_factory=list)  # (nombre, NIF o "")
+    adjudicatarios: list[tuple[str, str]] = field(default_factory=list)  # (nombre, NIF o ""), solo empresas
+    personas_fisicas: int = 0  # adjudicatarios que no constan como persona juridica: no se nombran
 
 
 def _as_list(node) -> list:
     if isinstance(node, list):
         return node
     return [node] if node else []
+
+
+def is_legal_person(name: str, nif: str = "") -> bool:
+    """Persona juridica si su NIF es de sociedad o entidad, o si su nombre lleva forma juridica o tipo."""
+    if nif:
+        return bool(_CIF.match(nif))
+    return bool(_ENTITY.search(name))
 
 
 def kind_of(titulo: str) -> str:
@@ -183,7 +201,8 @@ def parse_ted(payload: dict) -> list[Adjudicacion]:
         # TED no da los identificadores en el orden de los nombres (medido: aviso 692450-2026). El NIF solo
         # se atribuye con un unico adjudicatario y un unico identificador con forma de NIF espanol.
         nif = nifs[0] if len(names) == 1 and len(nifs) == 1 and _NIF.match(nifs[0]) else ""
-        winners = [(name, nif if len(names) == 1 else "") for name in names]
+        # Solo se nombran personas juridicas (RGPD: minimizacion); un autonomo se cuenta, no se nombra.
+        winners = [(name, nif) for name in names if is_legal_person(name, nif)]
         html = (n.get("links") or {}).get("html") or {}
         out.append(
             Adjudicacion(
@@ -195,6 +214,7 @@ def parse_ted(payload: dict) -> list[Adjudicacion]:
                 importe=_amount(n.get("result-value-notice")) or _amount(n.get("total-value")),
                 moneda=(_as_list(n.get("total-value-cur")) or ["EUR"])[0],
                 adjudicatarios=winners,
+                personas_fisicas=len(names) - len(winners),
             )
         )
     return out

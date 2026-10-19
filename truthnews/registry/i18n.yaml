@@ -435,7 +435,9 @@ es:
   contracts_amount: adjudicados (euros)
   contracts_with_amount: con importe publicado
   contracts_top_firms: Empresas que más suman
-  contracts_lots_note: Los avisos con varios adjudicatarios (lotes) no se suman a cada empresa para no inflar su total.
+  contracts_lots_note: >-
+    Los avisos con varios adjudicatarios (lotes) no se suman a cada empresa para no inflar su total. Solo se
+    nombran personas jurídicas: los adjudicatarios que no constan como empresa se cuentan, no se nombran.
   contracts_repeat: Empresas con varios contratos en el periodo
   contracts_buyers: Quién contrata más
   contracts_largest: Contratos de mayor importe
@@ -449,6 +451,7 @@ es:
   contracts_kind_rectificacion: Rectificación
   contracts_kind_otro: Anuncio
   contracts_file: Expediente
+  contracts_natural_person: adjudicatario que no consta como empresa (no se nombra)
   contracts_no_boe: Ese día el BOE no publicó anuncios de contratación (o aún no está disponible).
   contracts_no_ted: Las adjudicaciones de TED no están disponibles ahora mismo. Vuelve a intentarlo más tarde.
   contracts_source: >-
@@ -965,7 +968,9 @@ en:
   contracts_amount: awarded (euros)
   contracts_with_amount: with a published value
   contracts_top_firms: Companies with the highest totals
-  contracts_lots_note: Notices with several winners (lots) are not added to each company, so as not to inflate its total.
+  contracts_lots_note: >-
+    Notices with several winners (lots) are not added to each company, so as not to inflate its total. Only legal
+    entities are named: winners not listed as a company are counted, not named.
   contracts_repeat: Companies with several contracts in the period
   contracts_buyers: Who buys the most
   contracts_largest: Largest contracts
@@ -979,6 +984,7 @@ en:
   contracts_kind_rectificacion: Correction
   contracts_kind_otro: Notice
   contracts_file: File
+  contracts_natural_person: winner not listed as a company (not named)
   contracts_no_boe: That day the BOE published no procurement notices (or it is not available yet).
   contracts_no_ted: TED awards are not available right now. Please try again later.
   contracts_source: >-

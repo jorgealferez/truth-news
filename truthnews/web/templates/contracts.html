@@ -21,7 +21,7 @@
 <details class="block fold"><summary><h3>{{ t(lang, 'contracts_buyers') }}</h3></summary>
   <ol class="compact">{% for b in ted.buyers %}<li>{{ b.nombre }} — {{ b.importe|num }} € · {{ b.n }} {{ t(lang, 'contracts_n_contracts') }}</li>{% endfor %}</ol></details>
 <details class="block fold"><summary><h3>{{ t(lang, 'contracts_largest') }}</h3></summary>
-  <ol class="compact">{% for a in ted.largest %}<li><strong>{{ a.importe|num }} €</strong> — <a href="{{ a.url }}" rel="noopener" target="_blank">{{ a.objeto }}</a> <span class="meta">{{ a.comprador }} → {% for name, nif in a.adjudicatarios %}{{ name }}{% if not loop.last %}; {% endif %}{% endfor %} · {{ a.fecha }}</span></li>{% endfor %}</ol></details>
+  <ol class="compact">{% for a in ted.largest %}<li><strong>{{ a.importe|num }} €</strong> — <a href="{{ a.url }}" rel="noopener" target="_blank">{{ a.objeto }}</a> <span class="meta">{{ a.comprador }} → {% for name, nif in a.adjudicatarios %}{{ name }}{% if not loop.last %}; {% endif %}{% endfor %}{% if a.personas_fisicas %}{% if a.adjudicatarios %}; {% endif %}{{ t(lang, 'contracts_natural_person') }}{% endif %} · {{ a.fecha }}</span></li>{% endfor %}</ol></details>
 {% endif %}</section>
 
 <section class="block" id="boe"><h2>{{ t(lang, 'contracts_boe') }}</h2>

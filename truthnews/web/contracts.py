@@ -1,6 +1,6 @@
 """Contratacion publica para la web: BOE (seccion V.A) y adjudicaciones en TED, en memoria y citadas.
 
-Sin tablas (ADR 0040). Un dia pasado del BOE con datos no cambia y se guarda mientras viva el proceso; las
+Sin tablas (ADR 0042). Un dia pasado del BOE con datos no cambia y se guarda mientras viva el proceso; las
 adjudicaciones de TED de los ultimos `TED_DAYS` dias se piden como mucho cada 6 h (cada 10 min si fallo).
 El cruce con las noticias rastreadas solo enlaza menciones del nombre propio de la empresa o del organo:
 no afirma relacion alguna entre el contrato y la noticia.

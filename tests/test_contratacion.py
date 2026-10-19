@@ -63,6 +63,31 @@ def test_parse_ted_awards():
     assert items["692026-2026"].adjudicatarios == [] and items["692026-2026"].importe is None
 
 
+def test_natural_persons_are_counted_not_named():
+    payload = {
+        "notices": [
+            {
+                "publication-number": "1-2026",
+                "winner-name": {"spa": ["JOSE PEREZ GARCIA"]},
+                "winner-identifier": ["12345678Z"],
+            },
+            {
+                "publication-number": "2-2026",
+                "winner-name": {
+                    "spa": ["Ana Ruiz Gil", "Obras Norte, S.L.", "FORMACIO I TREBALL, FUND. PRIV."]
+                },
+            },
+        ]
+    }
+    a, b = ct.parse_ted(payload)
+    assert a.adjudicatarios == [] and a.personas_fisicas == 1
+    assert [n for n, _ in b.adjudicatarios] == ["Obras Norte, S.L.", "FORMACIO I TREBALL, FUND. PRIV."]
+    assert b.personas_fisicas == 1
+    assert ct.is_legal_person("Quien Sea", "B12345674") and not ct.is_legal_person("Obras, S.L.", "X1234567L")
+    v = cw.ted_view([a, b])
+    assert all("PEREZ" not in f["nombre"] and "Ruiz" not in f["nombre"] for f in v["firms"])
+
+
 def test_ted_fetch_paginates_and_fails_closed():
     calls = []
 

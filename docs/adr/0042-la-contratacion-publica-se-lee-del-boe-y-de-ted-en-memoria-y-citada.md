@@ -1,4 +1,4 @@
-# ADR 0040 — La contratación pública se lee del BOE y de TED, en memoria y citada, y se cruza con la prensa sin afirmar relación
+# ADR 0042 — La contratación pública se lee del BOE y de TED, en memoria y citada, y se cruza con la prensa sin afirmar relación
 
 - **Estado:** aceptado
 - **Fecha:** 2026-10-19
@@ -43,7 +43,13 @@ Cuando hay varios adjudicatarios, TED no da los identificadores en el orden de l
    que se reducen a palabras genéricas («grupo», «servicios»...) o a una sola palabra de menos de 6 letras. La
    página dice que la mención no implica relación con el contrato. Ni se afirma ni se insinúa irregularidad
    alguna.
-6. **Dónde se ve**: en `/contratos`, enlazada en el pie y en el sitemap, en es y en. Cada fila enlaza su anuncio
+6. **Personas físicas**: solo se nombran personas jurídicas, por minimización (RGPD, art. 5.1.c) y por
+   indicación de la dirección del 2026-10-19. Una persona jurídica se reconoce por un NIF de sociedad o entidad
+   o, sin NIF, por la forma jurídica o el tipo de entidad en el nombre. El resto se cuenta como «adjudicatario
+   que no consta como empresa», sin nombre. En la muestra del 05/10 al 18/10/2026 fueron 18 de 250 avisos,
+   entre ellos los autónomos y algunas empresas cuyo nombre no lleva forma jurídica: se pierde algo de
+   cobertura a cambio de no publicar nunca a una persona.
+7. **Dónde se ve**: en `/contratos`, enlazada en el pie y en el sitemap, en es y en. Cada fila enlaza su anuncio
    oficial.
 
 ## Alternativas consideradas
@@ -70,6 +76,7 @@ Pendiente, como subitems del ledger:
 - el parseo del sumario real del 16/10/2026 (58 anuncios);
 - las adjudicaciones reales de TED;
 - que no se atribuye NIF con lotes;
+- que no se nombra a personas físicas;
 - que no se inflan los importes;
 - las cachés y el cierre ante fallos;
 - la página en es y en, con el cruce con la prensa.
