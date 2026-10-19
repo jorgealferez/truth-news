@@ -204,6 +204,10 @@ def test_comparator_pages(client, session):
         "Portada</a> › ",
     ]:
         assert needle in page, needle
+    # Cada cifra en disputa despliega que medios la dan, con enlace a su noticia.
+    who = " ".join(part.split("</p>", 1)[0] for part in page.split('class="who-list"')[1:])
+    assert f'href="/noticia/{a2.id}">Otro Medio</a>' in who and ">Medio Uno</a>" in who
+    assert "<details><summary" in page and "ver qué medios" in page
     assert client.get("/historia/99999").status_code == 404
     assert "Historia comparada" in client.get("/contrastes?seccion=politica").text
     assert client.get("/contrastes?page=2").status_code == 200
