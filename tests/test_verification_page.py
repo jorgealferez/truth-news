@@ -53,7 +53,8 @@ def test_sentence_misleading_nodata_and_english():
         "(2026-07 → 2026-08, INE)."
     )
     assert verdicts.sentence(fake_claim("sin-datos", evidence=())).startswith("Sin datos suficientes")
-    assert verdicts.sentence(fake_claim("falso"), "en").startswith("False: Diario <Ejemplo> says 4,3 %")
+    en = "False: Diario <Ejemplo> says 4.3%, but the official figure (2026-08, INE) is 2.9%: 1.4 points"
+    assert verdicts.sentence(fake_claim("falso"), "en").startswith(en)
     abs_claim = fake_claim("falso", value=50_000_000, unit="abs", evidence=(("2025", 49_000_000, {}),))
     assert "2,0 %" in verdicts.sentence(abs_claim)
 

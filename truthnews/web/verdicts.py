@@ -22,21 +22,22 @@ SOURCE_NAMES = {
 INK, CLAIM, GRID = "#14161b", "#8a5a00", "#e3e0d8"
 
 
-def dato(value: float | None, unit: str | None = None) -> str:
-    """Un dato oficial legible: 10,0 % o 1.234,5 (es)."""
+def dato(value: float | None, unit: str | None = None, lang: str = "es") -> str:
+    """Un dato oficial legible: 10,0 % o 1.234,5 (es); 10.0% o 1,234.5 (en)."""
     if value is None:
         return "—"
     if unit == "pct":
-        return f"{value:.1f}".replace(".", ",") + " %"
+        return f"{value:.1f}%" if lang == "en" else f"{value:.1f}".replace(".", ",") + " %"
     text = f"{value:,.1f}" if value % 1 else f"{value:,.0f}"
-    return text.replace(",", "_").replace(".", ",").replace("_", ".")
+    return text if lang == "en" else text.replace(",", "_").replace(".", ",").replace("_", ".")
 
 
 def _gap(claim, official: float, lang: str) -> str:
+    sep = "." if lang == "en" else ","
     if claim.unit == "pct":
-        return f"{abs(claim.value - official):.1f}".replace(".", ",") + " " + t(lang, "points_unit")
+        return f"{abs(claim.value - official):.1f}".replace(".", sep) + " " + t(lang, "points_unit")
     rel = abs(claim.value - official) / max(abs(official), 1e-9) * 100
-    return f"{rel:.1f}".replace(".", ",") + " %"
+    return dato(rel, "pct", lang)
 
 
 def sentence(claim, lang: str = "es") -> str:
@@ -46,13 +47,13 @@ def sentence(claim, lang: str = "es") -> str:
     who = claim.outlet.name
     ev = [e for e in v.evidence if e.value is not None]
     if v.verdict == "sin-datos" or not ev:
-        return t(lang, "vs_sin-datos").format(who=who, said=dato(claim.value, claim.unit), ind=name)
+        return t(lang, "vs_sin-datos").format(who=who, said=dato(claim.value, claim.unit, lang), ind=name)
     off = ev[0]
     ctx = {
         "who": who,
-        "said": dato(claim.value, claim.unit),
+        "said": dato(claim.value, claim.unit, lang),
         "ind": name,
-        "official": dato(off.value, claim.unit),
+        "official": dato(off.value, claim.unit, lang),
         "period": off.period or "",
         "source": source_name(off.source, lang),
         "gap": _gap(claim, off.value, lang),
@@ -110,7 +111,7 @@ def chart(claim, lang: str = "es") -> Markup:
         f'preserveAspectRatio="xMidYMid meet"><title id="vc-t">{escape(title)}</title>'
     ]
     for v in (lo + (hi - lo) * f for f in (0.12 / 1.24, 0.5, 1 - 0.12 / 1.24)):
-        out.append(_hline(y(v), GRID, 1) + _text(PAD_L - 6, y(v) + 4, "vc-ax", dato(v, unit), "end"))
+        out.append(_hline(y(v), GRID, 1) + _text(PAD_L - 6, y(v) + 4, "vc-ax", dato(v, unit, lang), "end"))
     if len(pts) > 1:
         path = " ".join(f"{'M' if i == 0 else 'L'}{x(i):.1f},{y(v):.1f}" for i, (_, v) in enumerate(pts))
         out.append(f'<path d="{path}" fill="none" stroke="{INK}" stroke-width="2" stroke-linejoin="round"/>')
@@ -119,16 +120,17 @@ def chart(claim, lang: str = "es") -> Markup:
         r = 5 if i == ci else 3.5
         out.append(
             f'<circle cx="{x(i):.1f}" cy="{y(v):.1f}" r="{r}" fill="{INK}" stroke="#fbfaf6" stroke-width="2">'
-            f"<title>{escape(p)}: {escape(dato(v, unit))}</title></circle>"
+            f"<title>{escape(p)}: {escape(dato(v, unit, lang))}</title></circle>"
         )
     for i in sorted({0, len(pts) - 1}):
         anchor = "start" if i == 0 and len(pts) > 1 else "end" if len(pts) > 1 else "middle"
         out.append(_text(x(i), H - 8, "vc-ax", pts[i][0], anchor))
     yc, yo = y(claim.value), y(pts[ci][1])
+    said = dato(claim.value, unit, lang)
     out.append(
         _hline(yc, CLAIM, 2, ' stroke-dasharray="6 4"')
         + f'<path d="M{x(ci):.1f},{yc - 7:.1f} l7,7 l-7,7 l-7,-7 z" fill="{CLAIM}" stroke="#fbfaf6" '
-        f'stroke-width="2"><title>{escape(claim.outlet.name)}: {escape(dato(claim.value, unit))}</title>'
+        f'stroke-width="2"><title>{escape(claim.outlet.name)}: {escape(said)}</title>'
         "</path>"
     )
     # Etiquetas directas a la derecha; si se pisan, se separan en vertical.
@@ -137,9 +139,9 @@ def chart(claim, lang: str = "es") -> Markup:
         lc, lo_ = (lc - 19, lo_ + 19) if yc <= yo else (lc + 19, lo_ - 19)
     lx = W - PAD_R + 8
     out.append(
-        _text(lx, lc, "vc-lab vc-claim", dato(claim.value, unit))
+        _text(lx, lc, "vc-lab vc-claim", said)
         + _text(lx, lc + 16, "vc-ax", _short(claim.outlet.name))
-        + _text(lx, lo_, "vc-lab", dato(pts[ci][1], unit))
+        + _text(lx, lo_, "vc-lab", dato(pts[ci][1], unit, lang))
         + _text(lx, lo_ + 16, "vc-ax", f"{t(lang, 'official_short')} {pts[ci][0]}")
     )
     out.append("</svg>")

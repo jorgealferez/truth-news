@@ -11,8 +11,8 @@
   </figure>
   <details class="fold"><summary>{{ t(lang, 'chart_table') }}</summary>
     <table class="vtable"><thead><tr><th>{{ t(lang, 'period_col') }}</th><th>{{ t(lang, 'value_col') }}</th></tr></thead>
-      <tbody>{% for p, val in series %}<tr><td>{{ p }}</td><td>{{ val|dato(c.unit) }}</td></tr>{% endfor %}
-      <tr class="vt-claim"><td>{{ c.outlet.name }}</td><td>{{ c.value|dato(c.unit) }}</td></tr></tbody></table>
+      <tbody>{% for p, val in series %}<tr><td>{{ p }}</td><td>{{ val|dato(c.unit, lang) }}</td></tr>{% endfor %}
+      <tr class="vt-claim"><td>{{ c.outlet.name }}</td><td>{{ c.value|dato(c.unit, lang) }}</td></tr></tbody></table>
   </details>{% endif %}
   <section class="block">
     <h2>{{ t(lang, 'said_by') }}</h2>
@@ -20,7 +20,7 @@
   </section>
   <details class="block fold" open><summary><h2>{{ t(lang, 'method') }}</h2></summary>
     <p>{{ v.explanation }}</p>
-    {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit) }}</b> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
+    {% for e in v.evidence %}<p class="dato-oficial">{% if e.value is not none %}<span class="dato-k">{{ t(lang, 'official_figure') }}</span> <b>{{ e.value|dato(c.unit, lang) }}</b> · {% endif %}<a href="{{ e.url }}" rel="nofollow noopener" target="_blank">{{ e.source }} · {{ e.label }} · {{ e.period }}</a></p>{% endfor %}
     {% if c.extractor == 'ia' %}<p class="meta">{{ t(lang, 'claim_extracted_ai') }}</p>{% endif %}
     <p class="meta">{{ v.method }} · {{ v.checked_at.strftime('%d/%m/%Y %H:%M') }} UTC · <a href="/metodologia">{{ t(lang, 'methodology') }}</a>{% if c.story_id %} · <a href="/historia/{{ c.story_id }}">{{ t(lang, 'see_story') }}</a>{% endif %}</p>
   </details>
