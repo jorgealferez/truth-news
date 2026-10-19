@@ -51,3 +51,23 @@ def test_database_url_normalization(monkeypatch):
     assert get_settings().database_url == "postgresql+psycopg://u:p@h/db"
     monkeypatch.setenv("FETCH_FULL_TEXT", "no")
     assert get_settings().fetch_full_text is False
+
+
+def test_recent_cycle_skips_duplicate_runs_after_redeploys(tmp_path, monkeypatch):
+    from datetime import UTC, datetime, timedelta
+
+    from truthnews.config import Settings
+    from truthnews.db import session_scope
+    from truthnews.migrate import upgrade
+    from truthnews.models import CrawlRun
+
+    url = f"sqlite:///{tmp_path / 'w.db'}"
+    upgrade(url)
+    get_engine.cache_clear()
+    settings = Settings(database_url=url)
+    assert worker.recent_cycle(settings) is False
+    with session_scope(get_engine(url)) as s:
+        s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=10)))
+    assert worker.recent_cycle(settings) is True
+    assert worker.recent_cycle(settings, now=datetime.now(UTC) + timedelta(minutes=30)) is False
+    get_engine.cache_clear()
