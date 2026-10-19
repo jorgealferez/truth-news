@@ -30,6 +30,24 @@ es:
   omit_what: Callan, entre otros,
   how_each_tells_it: Cómo lo cuenta cada medio
   share: Compartir
+  thread: El hilo
+  sources_cited: fuentes citadas
+  why_now: Por qué ahora
+  connections: Lo que conecta los hechos
+  timeline: Qué pasó antes, durante y después
+  who_said_what: Quién dijo qué
+  what_we_dont_know: Lo que no sabemos
+  sources: Fuentes
+  strength_probada: Probada por las fuentes
+  strength_probable: Probable
+  strength_especulativa: Especulativa
+  ev_dijo: Dijo
+  ev_hizo: Hizo
+  ev_dato: Dato
+  ev_consecuencia: Consecuencia
+  thread_method: Elaborado con IA a partir de fuentes con fecha y enlace; lo que no cita una fuente se descarta y las cifras se comprueban contra ellas. Actualizado el
+  thread_cta: El hilo completo
+  why_happening: Por qué está pasando
   copy_link: Copiar enlace
   copied: Copiado
   latest: Última hora
@@ -157,6 +175,24 @@ en:
   omit_what: Left out, among others,
   how_each_tells_it: How each outlet tells it
   share: Share
+  thread: The thread
+  sources_cited: sources cited
+  why_now: Why now
+  connections: What connects the facts
+  timeline: What happened before, during and after
+  who_said_what: Who said what
+  what_we_dont_know: What we don't know
+  sources: Sources
+  strength_probada: Proven by the sources
+  strength_probable: Likely
+  strength_especulativa: Speculative
+  ev_dijo: Said
+  ev_hizo: Did
+  ev_dato: Data
+  ev_consecuencia: Consequence
+  thread_method: Produced with AI from dated, linked sources; anything without a source is dropped and figures are checked against them. Updated on
+  thread_cta: The full thread
+  why_happening: Why it is happening
   copy_link: Copy link
   copied: Copied
   latest: Latest

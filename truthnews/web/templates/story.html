@@ -19,6 +19,7 @@
   </section>{% endif %}
 
   {% include "_share.html" %}
+  {% if thread %}{% with th = thread %}{% include "_thread_teaser.html" %}{% endwith %}{% endif %}
   <section class="cards" aria-label="{{ t(lang, 'what_differs') }}">
     {% for d in comp.dispute_summaries() %}{% set maxv = d.high or 1 %}
     <div class="card-v">

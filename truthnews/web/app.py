@@ -25,7 +25,7 @@ from truthnews import registry
 from truthnews.analysis.compare import QUALIFIER_LABEL, compare
 from truthnews.config import Settings, get_settings
 from truthnews.db import get_engine, session_factory
-from truthnews.models import Article, Investigation, Outlet, Story, Topic
+from truthnews.models import Article, Investigation, Outlet, Story, Thread, Topic
 from truthnews.web import admin, queries, social
 
 HERE = Path(__file__).resolve().parent
@@ -210,6 +210,12 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             (f"{base}/tema/{tid}", up) for tid, up in session.execute(select(Topic.id, Topic.updated_at))
         ]
         urls += [
+            (f"{base}/hilo/{hid}", up)
+            for hid, up in session.execute(
+                select(Thread.id, Thread.updated_at).where(Thread.status == "publicado")
+            )
+        ]
+        urls += [
             (f"{base}/investigacion/{iid}", up)
             for iid, up in session.execute(
                 select(Investigation.id, Investigation.updated_at).where(Investigation.status == "publicada")
@@ -292,6 +298,7 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             outlet_names=queries.story_outlet_names(session, ids),
             verdicts=queries.verdict_counts(session, ids),
             wire=wire,
+            threads=queries.front_threads(session, ids),
             totals=totals_cached(session),
             pieces=queries.latest_pieces(session, kind="analisis", limit=4),
         )
@@ -347,10 +354,19 @@ def create_app(settings: Settings | None = None, engine: Engine | None = None) -
             comp=comp,
             claims=claims,
             related=related,
+            thread=queries.thread_for_story(session, st.id),
             outlets_view=story_outlets(arts, comp, claims),
             share=social.share_links(f"{settings.site_url}/historia/{st.id}", share_text(st, comp)),
             spread=spread(arts),
         )
+
+    @app.get("/hilo/{thread_id}", response_class=HTMLResponse)
+    def thread(request: Request, thread_id: int, session: SessionDep):
+        th = session.get(Thread, thread_id)
+        if th is None or th.status != "publicado":
+            raise HTTPException(404)
+        sources = {s["id"]: s for s in th.sources}
+        return render(request, "thread.html", th=th, c=th.content, sources=sources)
 
     @app.get("/contrastes", response_class=HTMLResponse)
     def contrasts(request: Request, session: SessionDep, page: PageQ = 1, seccion: str | None = None):

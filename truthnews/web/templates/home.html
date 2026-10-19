@@ -11,6 +11,8 @@
   <div class="grid">{% for p in pieces %}{% with lead = loop.first %}{% include "_piece_card.html" %}{% endwith %}{% endfor %}</div>
 </section>
 {% endif %}
+{% if threads %}<section class="threads-band"><h2 class="band-title">{{ t(lang, 'why_happening') }}</h2>
+  <div class="threads-grid">{% for th in threads %}{% include "_thread_teaser.html" %}{% endfor %}</div></section>{% endif %}
 <section class="intro"><h1>{{ t(lang, 'contrasts') }}</h1><p>{{ t(lang, 'contrasts_lead') }}</p></section>
 <div class="front-grid">
   <div class="main-col">

@@ -287,3 +287,38 @@ class Investigation(Base):
     error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+THREAD_STATUSES = ("publicado", "revision", "error")
+
+
+class Thread(Base):
+    """Hilo de una historia: cronologia, quien dijo que y conexiones, todo citado (ADR 0013)."""
+
+    __tablename__ = "thread"
+    __table_args__ = (
+        CheckConstraint(f"status IN {THREAD_STATUSES!r}", name="ck_thread_status"),
+        Index("ix_thread_status_updated", "status", "updated_at"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    anchor_story_id: Mapped[int | None] = mapped_column(
+        ForeignKey("story.id", ondelete="SET NULL", name="fk_thread_anchor_story_id"),
+        nullable=True,
+        index=True,
+    )
+    title: Mapped[str] = mapped_column(String(300))
+    status: Mapped[str] = mapped_column(String(16), default="revision")
+    country: Mapped[str] = mapped_column(String(2), default="ES")
+    language: Mapped[str] = mapped_column(String(8), default="es")
+    plan: Mapped[dict] = mapped_column(JSON, default=dict)
+    content: Mapped[dict] = mapped_column(JSON, default=dict)
+    sources: Mapped[list] = mapped_column(JSON, default=list)
+    grounding: Mapped[dict] = mapped_column(JSON, default=dict)
+    model: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    usage: Mapped[dict] = mapped_column(JSON, default=dict)
+    error: Mapped[str | None] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+    anchor: Mapped[Story | None] = relationship()

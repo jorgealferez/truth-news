@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ th.title }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ c.resumen }}{% endblock %}
+{% block head %}<link rel="canonical" href="{{ site.site_url }}/hilo/{{ th.id }}">{% endblock %}
+{% block crumbs %}<p class="crumbs"><a href="/">{{ t(lang, 'home') }}</a> › {{ t(lang, 'thread') }}{% if th.anchor %} › <a href="/historia/{{ th.anchor.id }}">{{ th.anchor.title[:60] }}{% if th.anchor.title|length > 60 %}…{% endif %}</a>{% endif %}</p>{% endblock %}
+{% macro cite(ids) %}{% for i in ids %}{% set s = sources.get(i) %}{% if s %}<a class="cite" href="{{ s.url }}"{% if not s.url.startswith('/') %} target="_blank" rel="noopener nofollow"{% endif %} title="{{ s.titular or s.titulo }}{% if s.medio %} — {{ s.medio }}{% endif %}{% if s.fecha %} · {{ s.fecha }}{% endif %}">{{ i }}</a>{% endif %}{% endfor %}{% endmacro %}
+{% block content %}
+<article class="story wide thread">
+  <p class="kicker">{{ t(lang, 'thread') }} · {{ th.sources|length }} {{ t(lang, 'sources_cited') }}</p>
+  <h1>{{ th.title }}</h1>
+  <p class="dek big">{{ c.resumen }}</p>
+  {% if c.por_que_ahora %}<div class="why-now"><p class="label">{{ t(lang, 'why_now') }}</p><p>{{ c.por_que_ahora }}</p></div>{% endif %}
+
+  {% if c.conexiones %}<section class="block"><h2>{{ t(lang, 'connections') }}</h2>
+    <div class="links">{% for l in c.conexiones %}
+      <div class="link-card s-{{ l.solidez }}">
+        <p class="link-ends"><span>{{ l.de }}</span><b aria-hidden="true">→</b><span>{{ l.a }}</span></p>
+        <p>{{ l.explicacion }}</p>
+        <p class="meta"><span class="solidez">{{ t(lang, 'strength_' ~ l.solidez) }}</span> {{ cite(l.fuentes) }}</p>
+      </div>{% endfor %}
+    </div></section>{% endif %}
+
+  <section class="block"><h2>{{ t(lang, 'timeline') }}</h2>
+    <ol class="timeline">{% for e in c.cronologia %}
+      <li class="ev ev-{{ e.tipo }}"><span class="when">{{ e.fecha }}</span>
+        <p><span class="ev-type">{{ t(lang, 'ev_' ~ e.tipo) }}</span>{% if e.quien %} <b>{{ e.quien }}</b>{% endif %}</p>
+        <p>{{ e.hecho }} {{ cite(e.fuentes) }}</p></li>{% endfor %}
+    </ol></section>
+
+  {% if c.que_dijo_quien %}<details class="block fold"{{ ' open' if c.que_dijo_quien|length <= 4 }}><summary><h2>{{ t(lang, 'who_said_what') }}</h2> <span class="meta">{{ c.que_dijo_quien|length }}</span></summary>
+    <div class="quotes">{% for q in c.que_dijo_quien %}<blockquote><p>«{{ q.que }}»</p><footer><b>{{ q.quien }}</b> · {{ q.fecha }} {{ cite(q.fuentes) }}</footer></blockquote>{% endfor %}</div>
+  </details>{% endif %}
+
+  {% if c.lo_que_no_sabemos %}<section class="block unknowns"><h2>{{ t(lang, 'what_we_dont_know') }}</h2>
+    <ul class="compact">{% for x in c.lo_que_no_sabemos %}<li>{{ x }}</li>{% endfor %}</ul></section>{% endif %}
+
+  <details class="block fold"><summary><h2>{{ t(lang, 'sources') }}</h2> <span class="meta">{{ th.sources|length }}</span></summary>
+    <ol class="sources">{% for s in th.sources %}<li><span class="cite">{{ s.id }}</span> {% if s.fecha %}<span class="meta">{{ s.fecha }}</span> {% endif %}<a href="{{ s.url }}"{% if not s.url.startswith('/') %} target="_blank" rel="noopener nofollow"{% endif %}>{{ s.titular or s.titulo }}</a>{% if s.medio %} <span class="meta">{{ s.medio }}</span>{% endif %}</li>{% endfor %}</ol>
+  </details>
+  <p class="meta">{{ t(lang, 'thread_method') }} {{ th.updated_at.strftime('%d/%m/%Y %H:%M') }} UTC · <a href="/metodologia">{{ t(lang, 'methodology') }}</a></p>
+</article>
+{% endblock %}

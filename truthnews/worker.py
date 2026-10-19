@@ -7,7 +7,8 @@ import logging
 
 from apscheduler.schedulers.blocking import BlockingScheduler
 
-from truthnews.ai.client import AIClient
+from truthnews.ai import threads
+from truthnews.ai.client import AIClient, AIError
 from truthnews.ai.pipeline import run as ai_step
 from truthnews.analysis.pipeline import run as analyze
 from truthnews.config import Settings, get_settings
@@ -35,6 +36,17 @@ def run_cycle(settings: Settings | None = None) -> dict:
         started = run.started_at
     with session_scope(engine) as session:
         summary["analysis"] = analyze(session, since=started)
+    if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
+        with session_scope(engine) as session:
+            try:
+                summary["threads"] = threads.run(
+                    session,
+                    AIClient(settings.ai_model, settings.ai_effort),
+                    settings.default_country,
+                    settings.ai_max_threads_per_cycle,
+                )
+            except AIError as exc:
+                summary["threads"] = {"error": str(exc)}
     with session_scope(engine) as session:
         summary["ai"] = ai_step(session, settings)
     with session_scope(engine) as session:
