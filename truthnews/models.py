@@ -323,11 +323,18 @@ class Piece(Base):
     __table_args__ = (
         CheckConstraint(f"kind IN {PIECE_KINDS!r}", name="ck_piece_kind"),
         CheckConstraint(f"status IN {PIECE_STATUSES!r}", name="ck_piece_status"),
+        CheckConstraint("topic_id IS NOT NULL OR thread_id IS NOT NULL", name="ck_piece_parent"),
         Index("ix_piece_status_created", "status", "created_at"),
     )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    topic_id: Mapped[int] = mapped_column(ForeignKey("topic.id", ondelete="CASCADE"), index=True)
+    # Una pieza nace de un tema (ADR 0008) o de un hilo (ADR 0020).
+    topic_id: Mapped[int | None] = mapped_column(
+        ForeignKey("topic.id", ondelete="CASCADE"), index=True, nullable=True
+    )
+    thread_id: Mapped[int | None] = mapped_column(
+        ForeignKey("thread.id", ondelete="CASCADE", name="fk_piece_thread_id"), index=True, nullable=True
+    )
     kind: Mapped[str] = mapped_column(String(16))
     status: Mapped[str] = mapped_column(String(16))
     language: Mapped[str] = mapped_column(String(8), default="es")
@@ -341,7 +348,8 @@ class Piece(Base):
     usage: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
-    topic: Mapped[Topic] = relationship(back_populates="pieces")
+    topic: Mapped[Topic | None] = relationship(back_populates="pieces")
+    thread: Mapped[Thread | None] = relationship(back_populates="pieces")
 
 
 INVESTIGATION_STATUSES = ("pendiente", "en-curso", "publicada", "error")
@@ -400,6 +408,7 @@ class Thread(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
     anchor: Mapped[Story | None] = relationship()
+    pieces: Mapped[list[Piece]] = relationship(back_populates="thread", cascade="all, delete-orphan")
 
 
 SOCIAL_NETWORKS = ("x", "bluesky", "mastodon", "telegram")

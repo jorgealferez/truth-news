@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from truthnews.ai.client import AIClient, AIError
-from truthnews.ai.writer import numbers_in
+from truthnews.ai.writer import numbers_in, write_thread_piece
 from truthnews.analysis.compare import compare
 from truthnews.data import gdelt, wikipedia
 from truthnews.investigate import related_stories
@@ -276,7 +276,7 @@ def build_thread(
 
 def run(session: Session, ai: AIClient, country: str = "ES", limit: int = 2, **sources) -> dict:
     """Hilos para las historias de cabecera que no lo tienen o lo tienen de hace mas de 12 h."""
-    done = revision = failed = 0
+    done = revision = failed = pieces = 0
     for st in queries.top_stories(session, country=country, limit=8):
         if done + failed >= limit:
             break
@@ -296,4 +296,14 @@ def run(session: Session, ai: AIClient, country: str = "ES", limit: int = 2, **s
         session.commit()  # cada hilo queda guardado aunque el ciclo se corte
         done += 1
         revision += thread.status == "revision"
-    return {"threads": done, "threads_in_revision": revision, "threads_failed": failed}
+        try:  # su pieza propia (ADR 0020): si falla, el hilo ya esta guardado
+            pieces += write_thread_piece(session, thread, ai) is not None
+            session.commit()
+        except AIError as exc:
+            log.warning("pieza del hilo %s no generada: %s", thread.id, exc)
+    return {
+        "threads": done,
+        "threads_in_revision": revision,
+        "threads_failed": failed,
+        "thread_pieces": pieces,
+    }

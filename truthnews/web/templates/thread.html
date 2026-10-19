@@ -10,6 +10,23 @@
   <h1>{{ th.title }}</h1>
   <p class="dek big">{{ c.resumen }}</p>
   {% if c.por_que_ahora %}<div class="why-now"><p class="label">{{ t(lang, 'why_now') }}</p><p>{{ c.por_que_ahora }}</p></div>{% endif %}
+  {% if topic %}<p class="chips"><span>{{ t(lang, 'related_topic') }}</span> <a href="{{ url('tema', topic.id, topic.title) }}">{{ topic.title }}</a></p>{% endif %}
+
+  {% if piece %}{% set k = piece.synthesis.get('claves', {}) %}<section class="block thread-piece" id="analisis">
+    <p class="kicker">{{ t(lang, 'analysis') }} · {{ t(lang, 'thread_piece') }}</p>
+    <h2>{{ piece.title }}</h2>
+    {% if k.get('en_una_frase') %}<p class="one-liner">{{ k.en_una_frase }}</p>{% endif %}
+    <p class="dek">{{ piece.dek }}</p>
+    {% if k.get('origen') or k.get('que_falla') or k.get('que_falta') %}<div class="essentials">
+      {% if k.get('origen') %}<div class="ess origin-card"><p class="ess-k">① {{ t(lang, 'key_origin') }}</p><p>{{ k.origen }}</p></div>{% endif %}
+      {% if k.get('que_falla') %}<div class="ess fails"><p class="ess-k">② {{ t(lang, 'key_fails') }}</p><ul class="xlist">{% for f in k.que_falla %}<li>{{ f }}</li>{% endfor %}</ul></div>{% endif %}
+      {% if k.get('que_falta') %}<div class="ess missing"><p class="ess-k">③ {{ t(lang, 'key_missing') }}</p><ul class="qlist">{% for f in k.que_falta %}<li>{{ f }}</li>{% endfor %}</ul></div>{% endif %}
+    </div>{% endif %}
+    <details class="fold prose"><summary><h2>{{ t(lang, 'read_full_analysis') }}</h2></summary>
+      {% for sec in piece.body %}{% if sec.subtitulo %}<h3>{{ sec.subtitulo }}</h3>{% endif %}{% for par in sec.parrafos %}<p>{{ par }}</p>{% endfor %}<p class="meta">{{ cite(sec.fuentes) }}</p>{% endfor %}
+    </details>
+    <p class="meta">{{ t(lang, 'thread_piece_method') }} · {{ piece.model }}</p>
+  </section>{% endif %}
 
   {% if c.conexiones %}<section class="block"><h2>{{ t(lang, 'connections') }}</h2>
     <div class="links">{% for l in c.conexiones %}

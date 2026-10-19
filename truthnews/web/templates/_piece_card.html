@@ -1,6 +1,7 @@
 <article class="pcard{{ ' lead' if lead }}">
-  <p class="kicker"><a href="/analisis?tipo={{ p.kind }}">{{ t(lang, p.kind) }}</a> · <a href="/seccion/{{ p.topic.category }}">{{ category_name(p.topic.category, lang) }}</a> · {{ p.topic.n_outlets }} {{ t(lang, 'n_outlets') }}</p>
-  <h3><a href="{{ url('tema', p.topic_id, p.title) }}">{{ p.title }}</a></h3>
+  {% if p.topic %}<p class="kicker"><a href="/analisis?tipo={{ p.kind }}">{{ t(lang, p.kind) }}</a> · <a href="/seccion/{{ p.topic.category }}">{{ category_name(p.topic.category, lang) }}</a> · {{ p.topic.n_outlets }} {{ t(lang, 'n_outlets') }}</p>
+  {% else %}<p class="kicker"><a href="/analisis?tipo={{ p.kind }}">{{ t(lang, p.kind) }}</a> · {{ t(lang, 'thread_piece') }} · {{ p.thread.sources|length }} {{ t(lang, 'sources_cited') }}</p>{% endif %}
+  <h3><a href="{{ piece_url(p) }}">{{ p.title }}</a></h3>
   <p class="dek">{{ p.dek }}</p>
   <p class="meta">{{ p.created_at|ago(lang) }}</p>
 </article>
