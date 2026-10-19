@@ -79,12 +79,17 @@ ida y vuelta y `alembic check` antes del PR).
 | ADR 0032 | diseno | en main | Comparativas (quien cambio su cifra; sin migracion) |
 | ADR 0033 + migracion 0017 | datos | PR #125 | Redes (cuentas en ingles: x_en, bluesky_en, mastodon_en, telegram_en) |
 | ADR 0034 | diseno | en main | Temas, SEO y sintesis (sitemaps: indice, 1000 URLs por fichero, Google News) |
-| ADR 0035 | diseno | reservado | Comparativas (afirmaciones que se repiten; sin migracion) |
+| ADR 0035 | diseno | PR (este) | Comparativas (afirmaciones que se repiten; sin migracion) |
 | ADR 0036 | diseno | reservado | Elecciones (seccion temporal, calendario; sin migracion) |
 | ADR 0037 + migracion 0018 | datos | reservado | Elecciones (eleccion, programa, promesa) |
 | ADR 0038 | diseno | reservado | Temas, SEO y sintesis (datos estructurados: ClaimReview, NewsArticle, BreadcrumbList) |
 | ADR 0039 | diseno | en main | Cumplimiento (aviso legal, privacidad, cookies, transparencia; sin migracion) |
-| siguiente libre | — | — | ADR 0040 + migracion 0019; pedir a la direccion. Cabeza de alembic en main: 0016 |
+| ADR 0040 | diseno | reservado | Elecciones (cumplimiento de promesas de quien goberno frente al BOE; sin migracion) |
+| ADR 0041 | diseno | reservado | Comparativas (quien informa primero y bien) |
+| ADR 0042 | diseno | reservado | Contratacion y transparencia (/contratos: BOE V.A y TED; sin migracion) |
+| ADR 0043 | diseno | reservado | Redes (equilibrio de lo que se publica, solo si cambia la regla) |
+| ADR 0044 + migracion 0019 | datos | reservado | Global (indicadores Eurostat y Banco Mundial, solo si necesita esquema) |
+| siguiente libre | — | — | ADR 0045 + migracion 0020; pedir a la direccion. Cabeza de alembic en main: ver `alembic heads` |
 
 ## Como se trabaja
 

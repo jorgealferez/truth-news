@@ -1,0 +1,10 @@
+{# Una afirmacion repetida (carril Comparativas, ADR 0035). Entrada: r (repeated.Repeated). #}
+{% set ex = r.example %}{% set ev = r.evidence %}
+<div class="rep-card" id="{{ r.slug }}">
+  <p class="rep-head"><b class="rep-v">{{ ex.value|dato(ex.unit) }}</b> <span>{{ ev.label if ev else ex.indicator }} · {{ ex.geo }}{% if ex.period %} · {{ ex.period }}{% endif %}</span>
+    {% if r.verdict %}<span class="badge v-{{ r.verdict }}">{{ t(lang, 'verdict_' ~ r.verdict) }}</span>{% else %}<span class="badge v-sin-datos">{{ t(lang, 'rep_no_verdict') }}</span>{% endif %}</p>
+  <p class="meta">{{ t(lang, 'rep_in')|replace('{n}', r.outlets|length|string)|replace('{d}', r.days|string) }} · {{ t(lang, 'rep_since') }} {{ r.first.strftime('%d/%m/%Y') }} {{ t(lang, 'rep_until') }} {{ r.last.strftime('%d/%m/%Y') }}</p>
+  <ul class="rep-list">{% for c in r.claims|sort(attribute='article.published_at') %}
+    <li><b>{{ c.outlet.name }}</b> <span class="meta">{{ c.article.published_at.strftime('%d/%m %H:%M') }}</span> «{{ c.text }}» <a class="meta" href="{{ url('noticia', c.article_id, c.article.title) }}?ficha=1">→</a></li>{% endfor %}</ul>
+  {% if ev %}<p class="meta">{{ t(lang, 'evidence') }}: <a href="{{ ev.url }}" rel="nofollow noopener" target="_blank">{{ ev.source }} · {{ ev.label }}{% if ev.period %} · {{ ev.period }}{% endif %}</a></p>{% endif %}
+</div>
