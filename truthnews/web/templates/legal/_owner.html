@@ -1,0 +1,10 @@
+{# Datos del titular (LSSI art. 10). Lo que falta se marca como pendiente. #}
+{% set p = t(lang, 'legal_pending') %}
+<dl class="legal-owner">
+  <dt>{{ t(lang, 'legal_owner') }}</dt><dd>{{ site.legal_owner or p }}</dd>
+  <dt>{{ t(lang, 'legal_tax_id') }}</dt><dd>{{ site.legal_tax_id or p }}</dd>
+  <dt>{{ t(lang, 'legal_address') }}</dt><dd>{{ site.legal_address or p }}</dd>
+  <dt>{{ t(lang, 'legal_email') }}</dt><dd>{% if site.legal_email %}<a href="mailto:{{ site.legal_email }}">{{ site.legal_email }}</a>{% else %}{{ p }}{% endif %}</dd>
+  {% if site.legal_registry %}<dt>{{ t(lang, 'legal_registry') }}</dt><dd>{{ site.legal_registry }}</dd>{% endif %}
+  <dt>{{ t(lang, 'legal_site') }}</dt><dd>{{ site.site_domain }}</dd>
+</dl>

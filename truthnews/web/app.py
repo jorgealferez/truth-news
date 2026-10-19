@@ -33,7 +33,18 @@ from truthnews.entities import views as entity_views
 from truthnews.models import Article, Investigation, Outlet, Story, Thread
 from truthnews.social import images
 from truthnews.social import select as select_social
-from truthnews.web import admin, appointments, budget, citations, queries, seo, sitemaps, social, topicview
+from truthnews.web import (
+    admin,
+    appointments,
+    budget,
+    citations,
+    legal,
+    queries,
+    seo,
+    sitemaps,
+    social,
+    topicview,
+)
 from truthnews.web import verdicts as vview
 from truthnews.web.langprefix import LangPrefix, localize
 
@@ -831,6 +842,22 @@ def create_app(
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):
         return render(request, "about.html")
+
+    def legal_page(slug: str):
+        def page(request: Request):
+            return render(
+                request,
+                "legal.html",
+                slug=slug,
+                body=f"legal/{slug}.{legal.content_lang(lang_of(request))}.html",
+                storage=legal.STORAGE,
+                missing=legal.missing_owner_data(settings),
+            )
+
+        return page
+
+    for slug in legal.PAGES:
+        app.add_api_route(f"/{slug}", legal_page(slug), response_class=HTMLResponse, methods=["GET"])
 
     @app.get("/idioma/{lang}")
     def set_lang(lang: str, request: Request, to: str | None = None):

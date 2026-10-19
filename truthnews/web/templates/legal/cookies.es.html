@@ -1,0 +1,15 @@
+<h2>Lo que guardamos en tu navegador</h2>
+<p>Esta es la lista completa. Un test del código impide añadir nada sin declararlo aquí.</p>
+<table class="legal-table">
+  <thead><tr><th>Nombre</th><th>Tipo</th><th>Para qué</th><th>Duración</th><th>Por qué no pedimos consentimiento</th></tr></thead>
+  <tbody>{% for s in storage %}
+    <tr><td><code>{{ s.name }}</code></td><td>{{ 'Cookie propia' if s.kind == 'cookie' else 'Almacenamiento local' }}</td><td>{{ s.purpose.es }}</td><td>{{ s.duration.es }}</td><td>{{ s.exempt.es }}</td></tr>{% endfor %}
+  </tbody>
+</table>
+<h2>Por qué no ves un aviso de cookies</h2>
+<p>El artículo 22.2 de la LSSI y la Directiva 2002/58/CE solo exigen tu consentimiento para guardar o leer información en tu dispositivo cuando no es estrictamente necesaria para un servicio que has pedido. Lo de la tabla es de ese tipo (Guía sobre el uso de las cookies de la AEPD, 2023). No usamos cookies de análisis, de publicidad, de redes sociales ni de terceros, y la publicidad se elige por el tema de la página, sin perfiles. Si algún día añadimos algo que sí lo necesite, te lo preguntaremos antes de usarlo, con la misma facilidad para aceptar que para rechazar.</p>
+<p>Los anuncios con imagen la cargan del dominio del anunciante, sin enviarle la página desde la que la ves.</p>
+<h2>Cómo borrarlo</h2>
+<p><button type="button" class="btn" data-legal-clear>Borrar lo guardado por {{ site.site_domain }} en este navegador</button> <span data-legal-cleared hidden>Hecho.</span></p>
+<p>También puedes borrarlo o bloquearlo desde la configuración de tu navegador. Sin la cookie de idioma, la web se muestra en el idioma por defecto; sin la marca de última visita, no verás la etiqueta «Nuevo».</p>
+<script src="/static/legal.js" defer></script>
