@@ -26,10 +26,6 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
-- [ ] Marca v2: icono, favicon e imagen completa mas profesionales para nosmienten.com, clara y agnostica a partidos e ideologias: "solo un medio donde verificar datos" (peticion del usuario 2026-10-19) — EN CURSO (session_019tfotVGz2vatjyiJ7sJGne, 2026-10-19)
-  - [x] ADR 0014: simbolo "n medida" (arco de la n que baja hasta una vara graduada), elegido por el usuario entre nivel de burbuja y monograma; logotipo, paleta e imagen social como estaban ("mas formal")
-  - [x] mark.svg, favicon.svg/ico simplificado, iconos sobre papel (apple opaco, maskable en el manifest), avatar 400 para redes, og-default e imagen por historia con el simbolo nuevo
-  - [ ] Registro de la marca (OEPM/EUIPO) y busqueda de anterioridades: tramite del usuario, NO VERIFICADO desde aqui
 - [ ] Hilo y consecuencias: archivo historico (GDELT, hemerotecas y sitemaps de los medios, anos atras) cruzado con la actualidad; linea temporal por tema (que se decia, que paso, que hubo por el camino, quien dijo que, que vino despues); conexiones entre hechos aparentemente sueltos con su evidencia (p. ej. Ceuta, presion diplomatica de Marruecos, EEUU/OTAN y Espana); analisis profundo con IA sin dar nada por sentado; en portada lo que ocurre ahora con su porque y su antes/despues (peticion del usuario 2026-10-19) — EN CURSO (session_012mRsejPRjvr7vC2Aq3edZ4, 2026-10-19)
   - [x] ADR 0013 y migracion 0006 (tabla thread); conectores de hemeroteca GDELT (artlist por periodo) y Wikipedia
   - [x] Constructor de hilos: plan con hipotesis, corpus citado (S/G/W), cronologia, quien dijo que, conexiones con solidez, control de fundamento
@@ -51,6 +47,10 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Hecho
 
+- [x] Marca v2: icono, favicon e imagen completa mas profesionales para nosmienten.com, clara y agnostica a partidos e ideologias: "solo un medio donde verificar datos" (peticion del usuario 2026-10-19) (#14)
+  - [x] ADR 0014: simbolo "n medida" (arco de la n que baja hasta una vara graduada), elegido por el usuario entre nivel de burbuja y monograma; logotipo, paleta e imagen social como estaban ("mas formal")
+  - [x] mark.svg, favicon.svg/ico simplificado, iconos sobre papel (apple opaco, maskable en el manifest), avatar 400 para redes, og-default e imagen por historia con el simbolo nuevo
+  - [ ] Registro de la marca (OEPM/EUIPO) y busqueda de anterioridades: tramite del usuario, NO VERIFICADO desde aqui
 - [x] Fase 0 — Encuadre (#1)
 - [x] Fase 1 — Nucleo: registro, rastreador, web segmentada, configuracion de Railway (#2)
 - [x] Fase 1a — Despliegue temprano en Railway: produccion rastreando cada 30 min (#3)
