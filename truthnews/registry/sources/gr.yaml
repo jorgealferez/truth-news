@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): kathimerini-en (HTTP 403).
+country: GR
+default_language: el
+outlets:
+  - {slug: ertnews, name: ERTNews, homepage: "https://www.ertnews.gr", scope: national, kind: tv, owner: ERT (pública), feeds: [{url: "https://www.ertnews.gr/feed/"}]}

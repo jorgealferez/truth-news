@@ -1,0 +1,6 @@
+country: AT
+default_language: de
+outlets:
+  - {slug: orf, name: ORF, homepage: "https://orf.at", scope: national, kind: tv, owner: ORF (pública), feeds: [{url: "https://rss.orf.at/news.xml"}]}
+  - {slug: der-standard, name: Der Standard, homepage: "https://www.derstandard.at", scope: national, feeds: [{url: "https://www.derstandard.at/rss"}]}
+  - {slug: die-presse, name: Die Presse, homepage: "https://www.diepresse.com", scope: national, feeds: [{url: "https://www.diepresse.com/rss"}]}

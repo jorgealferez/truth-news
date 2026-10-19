@@ -251,3 +251,129 @@ DO:
   default_language: es
   regions: {}
   autonomous_communities: []
+AT:
+  name: {es: Austria, en: Austria, pt: Áustria}
+  languages: [de]
+  default_language: de
+  regions: {}
+  autonomous_communities: []
+CH:
+  name: {es: Suiza, en: Switzerland, pt: Suíça}
+  languages: [de, fr, it]
+  default_language: de
+  regions: {}
+  autonomous_communities: []
+SE:
+  name: {es: Suecia, en: Sweden, pt: Suécia}
+  languages: [sv]
+  default_language: sv
+  regions: {}
+  autonomous_communities: []
+"NO":
+  name: {es: Noruega, en: Norway, pt: Noruega}
+  languages: [nb]
+  default_language: nb
+  regions: {}
+  autonomous_communities: []
+DK:
+  name: {es: Dinamarca, en: Denmark, pt: Dinamarca}
+  languages: [da]
+  default_language: da
+  regions: {}
+  autonomous_communities: []
+FI:
+  name: {es: Finlandia, en: Finland, pt: Finlândia}
+  languages: [fi]
+  default_language: fi
+  regions: {}
+  autonomous_communities: []
+GR:
+  name: {es: Grecia, en: Greece, pt: Grécia}
+  languages: [el, en]
+  default_language: el
+  regions: {}
+  autonomous_communities: []
+RO:
+  name: {es: Rumanía, en: Romania, pt: Roménia}
+  languages: [ro]
+  default_language: ro
+  regions: {}
+  autonomous_communities: []
+CZ:
+  name: {es: Chequia, en: Czechia, pt: Chéquia}
+  languages: [cs]
+  default_language: cs
+  regions: {}
+  autonomous_communities: []
+HU:
+  name: {es: Hungría, en: Hungary, pt: Hungria}
+  languages: [hu]
+  default_language: hu
+  regions: {}
+  autonomous_communities: []
+KR:
+  name: {es: Corea del Sur, en: South Korea, pt: Coreia do Sul}
+  languages: [ko, en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+PH:
+  name: {es: Filipinas, en: Philippines, pt: Filipinas}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+SG:
+  name: {es: Singapur, en: Singapore, pt: Singapura}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+PK:
+  name: {es: Pakistán, en: Pakistan, pt: Paquistão}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+KE:
+  name: {es: Kenia, en: Kenya, pt: Quénia}
+  languages: [en]
+  default_language: en
+  regions: {}
+  autonomous_communities: []
+SN:
+  name: {es: Senegal, en: Senegal, pt: Senegal}
+  languages: [fr]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+TN:
+  name: {es: Túnez, en: Tunisia, pt: Tunísia}
+  languages: [fr, ar]
+  default_language: fr
+  regions: {}
+  autonomous_communities: []
+BO:
+  name: {es: Bolivia, en: Bolivia, pt: Bolívia}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+PY:
+  name: {es: Paraguay, en: Paraguay, pt: Paraguai}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+GT:
+  name: {es: Guatemala, en: Guatemala, pt: Guatemala}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []
+PA:
+  name: {es: Panamá, en: Panama, pt: Panamá}
+  languages: [es]
+  default_language: es
+  regions: {}
+  autonomous_communities: []

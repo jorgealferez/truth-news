@@ -1,0 +1,6 @@
+# Medido 2026-10-19 con tools/check_feeds.py y fuera hasta tener un feed valido (no se elude ningun
+# bloqueo): tvn-pa (HTTP 404).
+country: PA
+default_language: es
+outlets:
+  - {slug: la-prensa-pa, name: La Prensa Panamá, homepage: "https://www.prensa.com", scope: national, feeds: [{url: "https://www.prensa.com/arc/outboundfeeds/rss/?outputType=xml"}]}
