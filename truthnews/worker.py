@@ -223,20 +223,23 @@ def _guarded(engine, name: str, step) -> dict:
 
 
 def last_full_cycle(settings: Settings) -> datetime | None:
-    """Fin del ultimo ciclo completo terminado. Un ciclo cortado por un redespliegue no cuenta: antes se
-    contaba su inicio y, con despliegues cada pocos minutos, el ciclo se aplazaba sin terminar nunca."""
+    """Inicio del ultimo ciclo completo terminado. Un ciclo cortado por un redespliegue no cuenta: antes se
+    contaba su inicio y, con despliegues cada pocos minutos, el ciclo se aplazaba sin terminar nunca. Se ancla
+    en el inicio (no en el fin) para que tras un reinicio el hueco sea el intervalo y no duracion + intervalo
+    (medido en produccion 2026-10-19: huecos de 52 y 56 min con intervalo de 30)."""
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        rows = session.execute(select(CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(200))
-        done = next((st for (st,) in rows if (st or {}).get("cycle") == FULL_CYCLE), None)
-    if done is None:
+        rows = session.execute(
+            select(CrawlRun.started_at, CrawlRun.stats).order_by(CrawlRun.id.desc()).limit(200)
+        )
+        at = next((start for start, st in rows if (st or {}).get("cycle") == FULL_CYCLE), None)
+    if at is None:
         return None
-    at = datetime.fromisoformat(done["cycle_finished"])
     return at if at.tzinfo else at.replace(tzinfo=UTC)
 
 
 def next_cycle_at(settings: Settings, now: datetime | None = None) -> datetime | None:
-    """Siguiente ciclo completo: ultimo terminado + intervalo; None si ya toca (o nunca hubo uno)."""
+    """Siguiente ciclo completo: inicio del ultimo terminado + intervalo; None si ya toca (o nunca hubo)."""
     now = now or datetime.now(UTC)
     last = last_full_cycle(settings)
     if last is None:

@@ -60,7 +60,7 @@ def test_database_url_normalization(monkeypatch):
 
 
 def test_only_finished_full_cycles_defer_the_next_one(tmp_path, monkeypatch):
-    """Un ciclo cortado por un redespliegue no aplaza el siguiente; uno terminado lo fija a +intervalo."""
+    """Un ciclo cortado no aplaza el siguiente; uno terminado lo fija a su inicio + intervalo."""
     from datetime import UTC, datetime, timedelta
 
     from truthnews.config import Settings
@@ -76,12 +76,15 @@ def test_only_finished_full_cycles_defer_the_next_one(tmp_path, monkeypatch):
     with session_scope(get_engine(url)) as s:  # empezado hace 2 min y cortado: no cuenta
         s.add(CrawlRun(started_at=datetime.now(UTC) - timedelta(minutes=2)))
     assert worker.last_full_cycle(settings) is None and worker.next_cycle_at(settings) is None
-    done = datetime.now(UTC) - timedelta(minutes=10)
+    # Ciclo que empezo hace 25 min y termino hace 3: el siguiente se ancla en su inicio (+30), no en su fin
+    # (+30 desde el fin daria huecos de duracion + intervalo, ~55 min, tras cada reinicio).
+    start = datetime.now(UTC) - timedelta(minutes=25)
+    done = start + timedelta(minutes=22)
     with session_scope(get_engine(url)) as s:
-        s.add(CrawlRun(stats={"cycle": "terminado", "cycle_finished": done.isoformat()}))
+        s.add(CrawlRun(started_at=start, stats={"cycle": "terminado", "cycle_finished": done.isoformat()}))
         s.add(CrawlRun(stats={"lane": "rapido"}))  # el carril rapido tampoco cuenta
-    assert worker.next_cycle_at(settings) == done + timedelta(minutes=30)
-    assert worker.next_cycle_at(settings, now=done + timedelta(minutes=31)) is None
+    assert worker.next_cycle_at(settings) == start + timedelta(minutes=30)
+    assert worker.next_cycle_at(settings, now=start + timedelta(minutes=31)) is None
     get_engine.cache_clear()
 
 
