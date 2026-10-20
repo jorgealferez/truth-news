@@ -38,13 +38,30 @@ STORAGE: tuple[Stored, ...] = (
         },
     ),
     Stored(
+        name="zona",
+        kind="cookie",
+        purpose={
+            "es": "Recordar la zona que eliges en el banner de Ridelta (a mano o con «usar mi ubicación») "
+            "para enseñarte el sitio de tu provincia. Solo guarda el nombre de la zona; la ubicación se "
+            "calcula en tu navegador y nunca se envía.",
+            "en": "Remember the area you choose in the Ridelta banner (by hand or with “use my location”) "
+            "to show you your province's site. It only stores the area name; your location is worked out in "
+            "your browser and never sent.",
+        },
+        duration={"es": "1 año", "en": "1 year"},
+        exempt={
+            "es": "Personalización pedida por ti (preferencia de zona): exenta de consentimiento.",
+            "en": "Customisation you asked for (area preference): exempt from consent.",
+        },
+    ),
+    Stored(
         name="nm_last_visit",
         kind="localStorage",
         purpose={
-            "es": "Marcar como «Nuevo» lo publicado desde tu última visita a la portada. "
-            "Se queda en tu navegador y nunca se envía al servidor.",
-            "en": "Mark as “New” what was published since your last visit to the home page. "
-            "It stays in your browser and is never sent to the server.",
+            "es": "Marcar como «Nuevo» lo publicado desde tu última visita a la portada. Se queda en tu "
+            "navegador y nunca se envía al servidor.",
+            "en": "Mark as “New” what was published since your last visit to the home page. It stays in "
+            "your browser and is never sent to the server.",
         },
         duration={"es": "Hasta que lo borres", "en": "Until you delete it"},
         exempt={

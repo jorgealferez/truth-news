@@ -428,6 +428,39 @@ es:
   ad_why_default: Se muestra por el tema de esta página. No usamos datos personales.
   ad_policy_link: Cómo funciona la publicidad
   ad_own_brand: Marca del grupo Simvix
+  house_pause: Pausar
+  house_zone_q: "Tu zona:"
+  house_zone_none: elegir
+  house_locate: Usar mi ubicación
+  house_forget: Olvidar mi zona
+  house_why_chosen: >-
+    Es la zona que elegiste en este banner. Solo guardamos su nombre en una cookie de preferencia; tu
+    ubicación, si la usaste, se calculó en tu navegador y no nos llegó.
+  house_why_content: Se muestra por la zona de la que trata esta página. No usamos datos personales.
+  house_why_generic: No sabemos tu zona, así que te llevamos a la web general. Puedes elegir la tuya aquí.
+  house_why_teaser: Pieza patrocinada de una marca propia, elegida por la zona de esta página o la que elegiste.
+  house_why_sponsored: Banner de la marca que patrocina esta pieza.
+  sponsored_title: Contenido patrocinado
+  sponsored_label: Contenido patrocinado
+  sponsored_by: Patrocinado por
+  sponsored_read: Leer
+  sponsored_links: Dónde reservar
+  sponsored_more: Más contenido patrocinado
+  sponsored_your_zone: Tu zona
+  sponsored_all: Todas las piezas
+  sponsored_lead: >-
+    Piezas pagadas por Ridelta, marca propia del grupo, sobre cómo funciona su servicio en cada zona. No son
+    información de nosmienten.com ni pasan por nuestra verificación.
+  sponsored_note: >-
+    Esto es publicidad: lo escribe y lo paga Ridelta, marca del grupo al que pertenece nosmienten.com. No es
+    una pieza informativa ni una verificación, y no influye en lo que publicamos.
+  advertising_zone_h: Publicidad propia por zona
+  advertising_zone: >-
+    Cuando no hay otro anuncio, el hueco lo ocupa Ridelta, marca propia de traslados con conductor, con la web
+    de tu provincia: la que elijas en el banner (a mano o con «Usar mi ubicación», que se calcula en tu
+    navegador y nunca nos llega), la de la zona de la que trata la página o, si no se sabe, la general. Tu
+    elección se guarda en la cookie de preferencia «zona». Sus piezas de contenido patrocinado están en
+    /patrocinado, etiquetadas como tales y separadas de nuestras noticias.
   about_ads: >-
     Mostramos poca publicidad, siempre etiquetada, elegida solo por el contenido de la página y sin influir
     nunca en los veredictos.
@@ -1112,6 +1145,38 @@ en:
   ad_why_default: Shown because of the topic of this page. We use no personal data.
   ad_policy_link: How advertising works
   ad_own_brand: Simvix group brand
+  house_pause: Pause
+  house_zone_q: "Your area:"
+  house_zone_none: choose
+  house_locate: Use my location
+  house_forget: Forget my area
+  house_why_chosen: >-
+    It is the area you chose in this banner. We only store its name in a preference cookie; your location, if
+    you used it, was worked out in your browser and never reached us.
+  house_why_content: Shown because of the area this page is about. We use no personal data.
+  house_why_generic: We do not know your area, so this goes to the general site. You can choose yours here.
+  house_why_teaser: Sponsored piece by an own brand, chosen by this page's area or the one you chose.
+  house_why_sponsored: Banner of the brand sponsoring this piece.
+  sponsored_title: Sponsored content
+  sponsored_label: Sponsored content
+  sponsored_by: Sponsored by
+  sponsored_read: Read
+  sponsored_links: Where to book
+  sponsored_more: More sponsored content
+  sponsored_your_zone: Your area
+  sponsored_all: All pieces
+  sponsored_lead: >-
+    Pieces paid for by Ridelta, an own brand of the group, about how its service works in each area. They are
+    not nosmienten.com journalism and are not fact-checked by us.
+  sponsored_note: >-
+    This is advertising: written and paid for by Ridelta, a brand of the group that owns nosmienten.com. It
+    is not news or a fact-check, and it does not influence what we publish.
+  advertising_zone_h: Own advertising by area
+  advertising_zone: >-
+    When there is no other ad, the slot shows Ridelta, our own private-hire brand, with your province's site:
+    the one you choose in the banner (by hand or with "Use my location", worked out in your browser and never
+    sent to us), the area the page is about or, if unknown, the general site. Your choice is kept in the
+    "zona" preference cookie. Its sponsored pieces are at /patrocinado, labelled and kept apart from our news.
   about_ads: >-
     We show a little advertising, always labelled, chosen only from the page content and never influencing
     verdicts.

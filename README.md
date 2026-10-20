@@ -58,6 +58,14 @@ Prueba a mano: `python -m truthnews social preview` muestra las piezas que saldr
 red sin escribir nada; `python -m truthnews social run --dry` ejecuta el paso en modo prueba. La cola se
 revisa en `/admin` (sección Redes).
 
+### Publicidad propia de Ridelta por zona (ADR 0055)
+
+Los huecos de publicidad que ads-service deja vacíos llevan un banner rotativo de Ridelta con la web de la
+zona del lector: la que elige en el banner (a mano o con «Usar mi ubicación», resuelta en su navegador), la
+de la zona de la que trata la página o, si no se sabe, `ridelta.com`. Las piezas de contenido patrocinado
+por zona están en `/patrocinado`, siempre etiquetadas y con enlaces `rel="sponsored"` y UTM. Zonas, dominios
+y municipios en `truthnews/registry/house_ads.yaml` (copiados de vtc-clm); `HOUSE_ADS_ENABLED=0` lo apaga.
+
 ## Añadir un país o un idioma (sin código)
 
 - País: una entrada en `truthnews/registry/countries.yaml` y un `truthnews/registry/sources/<iso>.yaml`.

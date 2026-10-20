@@ -109,6 +109,8 @@ class Settings:
     # Publicidad (cliente de ads-service, microservices-ecosystem). Sin URL o sin clave no se pinta nada.
     ads_service_url: str = field(default_factory=lambda: os.environ.get("ADS_SERVICE_URL", ""))
     ads_site_key: str = field(default_factory=lambda: os.environ.get("ADS_SITE_KEY", ""))
+    # Publicidad propia de Ridelta por zona (ADR 0055): rellena los huecos que ads-service deja vacios.
+    house_ads_enabled: bool = field(default_factory=lambda: os.environ.get("HOUSE_ADS_ENABLED", "1") == "1")
     # Extraccion de afirmaciones con IA (ADR 0019): llamadas de 40 frases por ciclo y esfuerzo propio.
     ai_claims_max_calls: int = field(default_factory=lambda: int(os.environ.get("AI_CLAIMS_MAX_CALLS", "3")))
     ai_claims_effort: str = field(default_factory=lambda: os.environ.get("AI_CLAIMS_EFFORT", "medium"))

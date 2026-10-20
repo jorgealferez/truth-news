@@ -1,6 +1,7 @@
 {# Publicidad (cliente de ads-service): siempre etiquetada (LSSI art. 20), con estilo distinto del editorial
    y sin animaciones. Sin anuncio no se pinta nada. Variables: ad, slot. #}
-{% if ad %}
+{% if ad and ad.house %}{% include "_house.html" %}
+{% elif ad %}
 <aside class="ad ad-{{ slot }} ad-{{ ad.format }}" data-ad-view="{{ ad.view_url }}" aria-label="{{ ad.label }}">
   <p class="ad-label"><span class="ad-tag">{{ ad.label }}</span>{% if ad.advertiser.kind == 'own' %} <span class="ad-own">{{ ad.advertiser.group_disclosure or t(lang, 'ad_own_brand') }}</span>{% endif %}</p>
   <a class="ad-link" href="{{ ad.click_url }}" rel="sponsored noopener" target="_blank">

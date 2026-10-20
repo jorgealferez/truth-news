@@ -20,7 +20,7 @@ from xml.sax.saxutils import escape
 from sqlalchemy import Select, func, select
 from sqlalchemy.orm import Session
 
-from truthnews import registry
+from truthnews import house, registry
 from truthnews.models import Claim, Investigation, Outlet, Story, Thread, Topic, Verification
 from truthnews.web import queries, seo
 
@@ -260,6 +260,9 @@ def page_entries(session: Session, now: datetime) -> list[Entry]:
         Entry(f"/medio/{slug}", None, "daily", 0.5)
         for slug in session.scalars(select(Outlet.slug).order_by(Outlet.id))
     ]
+    # Contenido patrocinado (ADR 0055): en el sitemap general, nunca en el de Google News.
+    out.append(Entry("/patrocinado", None, "monthly", 0.2))
+    out += [Entry(f"/patrocinado/{a['slug']}", None, "monthly", 0.2) for a in house.articles()]
     return out
 
 

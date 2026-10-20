@@ -22,7 +22,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
 from truthnews import ads as adsmod
-from truthnews import registry
+from truthnews import house, registry
 from truthnews.ai import statements, translate
 from truthnews.analysis import (
     abroad,
@@ -208,6 +208,7 @@ def create_app(
         elections_nav=lambda: elections.active(),
         ld=ld,
         jsonld=ld.jsonld,
+        house_zones=house.provinces(),
     )
 
     def get_session():
@@ -297,20 +298,36 @@ def create_app(
             resp.set_cookie("lang", lang, max_age=60 * 60 * 24 * 365, samesite="lax")
         return resp
 
-    def ads_for(request: Request, slots, title: str, category, texts, country: str) -> dict:
-        """Anuncios por el contenido de la pagina (ads-service); {} si no hay servicio o falla."""
-        if not ads_client.enabled or adsmod.sensitive([title, *texts]):
+    def ads_for(request: Request, slots, title: str, category, texts, country: str, regions=()) -> dict:
+        """Anuncios por el contenido de la pagina (ads-service) y, en los huecos vacios, publicidad propia
+        de Ridelta por zona (ADR 0055). {} en paginas sobre elecciones; nunca lanza."""
+        texts = list(texts)
+        if adsmod.sensitive([title, *texts]):
             return {}
-        context = adsmod.page_context(
-            f"{settings.site_url}{request.url.path}", title, category, texts, country, lang_of(request)
-        )
-        ip = adsmod.client_ip(request.headers, request.client.host if request.client else None)
-        viewer = adsmod.viewer_hash(ip, request.headers.get("user-agent", ""))
-        return ads_client.serve(slots, context, viewer)
+        served: dict = {}
+        if ads_client.enabled:
+            context = adsmod.page_context(
+                f"{settings.site_url}{request.url.path}", title, category, texts, country, lang_of(request)
+            )
+            ip = adsmod.client_ip(request.headers, request.client.host if request.client else None)
+            viewer = adsmod.viewer_hash(ip, request.headers.get("user-agent", ""))
+            served = ads_client.serve(slots, context, viewer)
+        if not settings.house_ads_enabled:
+            return served
+        zone, why = house.resolve(request.cookies.get("zona"), [title, *texts], regions)
+        return house.fill(slots, served, zone, why, lang_of(request))
 
-    def list_ads(request: Request, heading: str, items, country: str, category=None) -> dict:
+    def list_ads(request: Request, heading: str, items, country: str, category=None, regions=()) -> dict:
         texts = [a.title for a in items] + [a.summary or "" for a in items[:10]]
-        return ads_for(request, ("list-native", "footer-strip"), heading, category, texts, country)
+        return ads_for(
+            request,
+            ("list-native", "footer-strip"),
+            heading,
+            category,
+            texts,
+            country,
+            regions or [a.region for a in items],
+        )
 
     @app.get("/favicon.ico", include_in_schema=False)
     def favicon():
@@ -344,7 +361,7 @@ def create_app(
     @app.get("/robots.txt", include_in_schema=False)
     def robots():
         return PlainTextResponse(
-            "User-agent: *\nDisallow: /admin\nDisallow: /api/\n"
+            "User-agent: *\nDisallow: /admin\nDisallow: /api/\nDisallow: /zona/\n"
             + "".join(
                 f"Sitemap: {settings.site_url}/sitemap{s}.xml\n"
                 for s in ["", *(f"-{p}" for p in indexed_prefixed)]
@@ -777,6 +794,7 @@ def create_app(
                 st.category,
                 [a.title for a in arts] + [a.summary or "" for a in arts],
                 st.country,
+                [a.region for a in arts],
             ),
         )
 
@@ -870,7 +888,7 @@ def create_app(
             items=items,
             page=page,
             heading=heading,
-            ads=list_ads(request, heading, items, iso),
+            ads=list_ads(request, heading, items, iso, regions=[code]),
         )
 
     @app.get("/medios", response_class=HTMLResponse)
@@ -1081,6 +1099,60 @@ def create_app(
     @app.get("/publicidad", response_class=HTMLResponse)
     def advertising(request: Request):
         return render(request, "advertising.html")
+
+    @app.get("/patrocinado", response_class=HTMLResponse)
+    def sponsored_index(request: Request):
+        zone, _why = house.resolve(request.cookies.get("zona"), [])
+        mine = house.articles_for(zone) if zone.kind != "generic" else []
+        rest = [a for a in house.articles() if a not in mine]
+        return render(
+            request,
+            "sponsored_index.html",
+            zone=zone,
+            mine=mine,
+            rest=rest,
+            zones=house.zones(),
+            ads=ads_for(request, ("footer-strip",), "", None, [], settings.default_country),
+        )
+
+    @app.get("/patrocinado/{slug}", response_class=HTMLResponse)
+    def sponsored(request: Request, slug: str):
+        art = house.article(slug)
+        if art is None:
+            raise HTTPException(404)
+        zone = house.zones()[art["zone"]]
+        links = [(label, house.link(url, zone, "patrocinado", slug)) for label, url in art["links"]]
+        more = [a for a in house.articles_for(zone) if a["slug"] != slug][:4]
+        return render(
+            request,
+            "sponsored.html",
+            art=art,
+            zone=zone,
+            links=links,
+            more=more,
+            ads={"footer-strip": house.banner(zone, "sponsored", lang_of(request))}
+            if settings.house_ads_enabled
+            else {},
+        )
+
+    @app.get("/zona/{slug}")
+    def set_zone(slug: str, request: Request, to: str | None = None):
+        """La zona que elige el lector en el banner (a mano o con su ubicacion, resuelta en el navegador)."""
+        safe = to if to and to.startswith("/") and not to.startswith("//") else None
+        resp = RedirectResponse(safe or request.headers.get("referer") or "/", status_code=303)
+        resp.headers["X-Robots-Tag"] = "noindex"
+        if slug == "olvidar":
+            resp.delete_cookie("zona")
+        elif house.chosen(slug):
+            resp.set_cookie("zona", slug, max_age=60 * 60 * 24 * 365, samesite="lax")
+        return resp
+
+    @app.get("/zonas.json", include_in_schema=False)
+    def zones_json():
+        return JSONResponse(
+            {"radius_km": house.config()["radius_km"], "zones": house.zone_choices()},
+            headers={"Cache-Control": "public, max-age=86400"},
+        )
 
     @app.get("/acerca", response_class=HTMLResponse)
     def about(request: Request):

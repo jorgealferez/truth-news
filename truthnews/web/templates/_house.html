@@ -1,0 +1,28 @@
+{# Publicidad propia de Ridelta por zona (ADR 0055). Siempre etiquetada (LSSI art. 20) y con rel sponsored.
+   Banner: varias piezas que rotan (house.js; se para al pasar el raton o con el foco, y no rota con
+   movimiento reducido) y un selector de zona. Listado (ad.teaser): enlace a la pieza patrocinada. #}
+<aside class="ad ad-{{ slot }} ad-house{{ ' ad-native' if ad.teaser else ' ad-strip' }}" data-house aria-label="{{ ad.label }}">
+  <p class="ad-label"><span class="ad-tag">{{ ad.label }}</span> <span class="ad-own">{{ ad.advertiser.name }} · {{ t(lang, 'ad_own_brand') }}</span></p>
+  {% if ad.teaser %}
+  <a class="ad-link" href="{{ ad.url }}"><span class="ad-text"><span class="ad-head">{{ ad.headline }}</span> <span class="ad-body">{{ ad.body }}</span>
+    <span class="ad-foot"><span class="ad-cta">{{ t(lang, 'sponsored_read') }} ›</span></span></span></a>
+  {% else %}
+  <div class="house-rot" data-house-rot>
+  {% for c in ad.creatives %}
+    <a class="ad-link house-item" href="{{ c.url }}" rel="sponsored noopener" target="_blank"{% if not loop.first %} hidden{% endif %} data-house-item="{{ c.key }}">
+      <span class="ad-text"><span class="ad-head">{{ c.headline }}</span> <span class="ad-body">{{ c.body }}</span>
+        <span class="ad-foot"><span class="ad-cta">{{ c.cta }} ›</span> <span class="ad-url">{{ c.display_url }}</span></span></span>
+    </a>
+  {% endfor %}
+  </div>
+  <div class="house-bar">
+    {% if ad.creatives | length > 1 %}<button type="button" class="house-pause" data-house-pause hidden aria-pressed="false">{{ t(lang, 'house_pause') }}</button>{% endif %}
+    <details class="house-zone"><summary>{{ t(lang, 'house_zone_q') }} <strong>{{ ad.zone_name if ad.zone != 'ridelta' else t(lang, 'house_zone_none') }}</strong></summary>
+      <p><button type="button" class="btn" data-house-locate data-path="{{ request.url.path }}" hidden>{{ t(lang, 'house_locate') }}</button>
+        <span data-house-msg hidden></span></p>
+      <p class="house-zones">{% for z in house_zones %}<a href="/zona/{{ z.slug }}?to={{ request.url.path | urlencode }}" rel="nofollow">{{ z.name }}</a> {% endfor %}{% if request.cookies.get('zona') %}· <a href="/zona/olvidar?to={{ request.url.path | urlencode }}" rel="nofollow">{{ t(lang, 'house_forget') }}</a>{% endif %}</p>
+    </details>
+  </div>
+  {% endif %}
+  <details class="ad-why"><summary>{{ t(lang, 'ad_why') }}</summary><p>{{ t(lang, ad.why_key) }} <a href="/publicidad">{{ t(lang, 'ad_policy_link') }}</a></p></details>
+</aside>

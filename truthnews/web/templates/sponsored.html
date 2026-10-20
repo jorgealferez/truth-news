@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{# Contenido patrocinado de Ridelta (ADR 0055): etiquetado arriba y abajo, con aspecto propio, fuera de los
+   sitemaps de noticias y con los enlaces de salida marcados como patrocinados. #}
+{% block title %}{{ art.title }} · {{ t(lang, 'sponsored_title') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ art.dek }}{% endblock %}
+{% block canonical %}{{ site.site_url }}/patrocinado/{{ art.slug }}{% endblock %}
+{% block content %}
+<article class="story sponsored">
+  <p class="sponsored-flag"><span class="ad-tag">{{ t(lang, 'sponsored_label') }}</span> {{ t(lang, 'sponsored_by') }} <strong>Ridelta</strong> · {{ t(lang, 'ad_own_brand') }}</p>
+  <h1>{{ art.title }}</h1>
+  <p class="lead-text">{{ art.dek }}</p>
+  {% for heading, paras in art.sections %}
+    {% if heading %}<h2>{{ heading }}</h2>{% endif %}
+    {% for p in paras if p %}<p>{{ p }}</p>{% endfor %}
+  {% endfor %}
+  <h2>{{ t(lang, 'sponsored_links') }}</h2>
+  <ul class="sponsored-links">{% for label, href in links %}<li><a href="{{ href }}" rel="sponsored noopener" target="_blank">{{ label }}</a></li>{% endfor %}</ul>
+  <p class="sponsored-note">{{ t(lang, 'sponsored_note') }} <a href="/publicidad">{{ t(lang, 'ad_policy_link') }}</a></p>
+  {% if more %}<h2>{{ t(lang, 'sponsored_more') }}</h2>
+  <ul class="sponsored-more">{% for a in more %}<li><a href="/patrocinado/{{ a.slug }}">{{ a.title }}</a></li>{% endfor %}</ul>{% endif %}
+</article>
+{% endblock %}
