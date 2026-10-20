@@ -1,0 +1,417 @@
+# Banners propios y contenido patrocinado de Ridelta por zona (ADR 0055).
+# Datos copiados de vtc-clm (solo lectura): src/lib/provinces.ts, src/lib/provincias-cyl.ts y src/lib/geo.ts,
+# version de main del 2026-10-20. Solo zonas con servicio contratado (Castilla-La Mancha y Castilla y Leon:
+# pie legal de ridelta.com); Madrid y los sitios de mercado (taximadrid.ridelta.com...) quedan fuera mientras
+# su pie no diga que se presta servicio alli. Para anadir una zona: una entrada en zones y su slug en regions.
+#   generic_domain: destino cuando no se sabe la zona del lector.
+#   apps_in_stores: false mientras ridelta.com/apps diga "en preparacion para las tiendas"; no se anuncia una
+#                   app de tienda que no existe (la web se instala como app).
+#   radius_km: distancia maxima de la ubicacion del lector al municipio mas cercano de una zona.
+#   towns: [nombre, lat, lon] de los municipios de origen de cada zona (geolocalizacion y lectura del contenido).
+brand: Ridelta
+generic_domain: ridelta.com
+apps_in_stores: false
+radius_km: 45
+# Ciudades de Espana donde opera Cabify, segun vtc-clm (src/lib/mundo/ciudades-cabify.ts: lista de cabify.com
+# aportada por el titular el 2026-10-19). Sostiene la frase "donde no llegan las grandes plataformas": un test
+# falla si algun municipio de una zona aparece aqui. Uber u otras no se nombran: no hay lista en vtc-clm.
+big_platform:
+  name: Cabify
+  source: su web, cabify.com, consultada el 19 de octubre de 2026
+  cities: [Alicante, A Coruña, Barcelona, Benidorm, Bilbao, Madrid, Málaga, Marbella, Murcia, Santander, Sevilla,
+    Valencia, Zaragoza]
+regions:
+- slug: castilla-la-mancha
+  name: Castilla-La Mancha
+  domain: vtcclm.com
+  region: ES-CM
+  provinces: [toledo, ciudad-real, albacete, guadalajara, cuenca]
+- slug: castilla-y-leon
+  name: Castilla y León
+  domain: vtccyl.com
+  region: ES-CL
+  provinces: [valladolid, burgos, leon, salamanca, segovia, zamora, palencia, avila, soria]
+zones:
+- slug: toledo
+  name: Toledo
+  hub: castilla-la-mancha
+  domain: taxitoledo.app
+  capital: Toledo
+  roads: A-42, A-4 y AP-41
+  headline: Tu chófer privado en Toledo, Illescas, Ocaña y Seseña
+  intro: Traslados al aeropuerto de Barajas, estaciones de AVE y Madrid con precio cerrado antes de salir, vehículo confirmado
+    y conductor profesional.
+  demand: La Sagra toledana está a menos de una hora del aeropuerto por la A-42 y la M-50, así que el traslado a Barajas
+    es el servicio más pedido, seguido de la estación de AVE de Toledo y los polígonos logísticos de Illescas.
+  places: [Estación de AVE de Toledo, Hospital Universitario de Toledo, Hospital Nacional de Parapléjicos (Toledo), Puy
+      du Fou España, Casco histórico de Toledo, Estación de tren de Talavera de la Reina, Hospital Nuestra Señora del
+      Prado, Estación de autobuses de Toledo, Molinos de viento de Consuegra, Plataforma logística de Illescas]
+  towns:
+  - [Illescas, 40.1233, -3.8481]
+  - [Seseña, 40.0972, -3.7003]
+  - [Ocaña, 39.9556, -3.4967]
+  - [Toledo, 39.8628, -4.0273]
+  - [Yuncos, 40.0917, -3.8533]
+  - [Esquivias, 40.0764, -3.7683]
+  - [Numancia de la Sagra, 40.0533, -3.8461]
+  - [Borox, 40.0533, -3.6975]
+  - [Añover de Tajo, 39.9922, -3.7717]
+  - [Talavera de la Reina, 39.9636, -4.8303]
+  - [Torrijos, 39.98, -4.2833]
+  - [Ugena, 40.1489, -3.8672]
+  - [Carranque, 40.1642, -3.9256]
+  - [El Viso de San Juan, 40.1725, -3.9153]
+  - [Yeles, 40.1194, -3.8003]
+  - [Bargas, 39.9394, -4.0197]
+  - [Olías del Rey, 39.9264, -3.9933]
+  - [Fuensalida, 40.0489, -4.2003]
+  - [Sonseca, 39.6789, -3.9744]
+  - [Consuegra, 39.4622, -3.6083]
+  - [Madridejos, 39.4686, -3.5314]
+  - [Quintanar de la Orden, 39.5911, -3.0453]
+  - [Villacañas, 39.6258, -3.3358]
+- slug: ciudad-real
+  name: Ciudad Real
+  hub: castilla-la-mancha
+  domain: taxiciudadreal.app
+  capital: Ciudad Real
+  roads: A-4, A-41 y A-43
+  headline: VTC con conductor en Ciudad Real y La Mancha
+  intro: Traslados desde Ciudad Real, Puertollano, Valdepeñas, Tomelloso y Alcázar de San Juan al aeropuerto de Barajas,
+    a Madrid y a las estaciones de AVE de la provincia.
+  demand: La provincia tiene dos estaciones de alta velocidad —Ciudad Real y Puertollano— en la línea Madrid-Sevilla,
+    así que buena parte de los servicios son enlaces con el AVE y traslados directos a Barajas por la A-4.
+  places: [Estación de AVE de Ciudad Real, Estación de Puertollano, Hospital General Universitario de Ciudad Real, Corral
+      de Comedias de Almagro, Lagunas de Ruidera, Hospital General Mancha Centro, Hospital Santa Bárbara de Puertollano,
+    Hospital General de Valdepeñas, Estación de tren de Alcázar de San Juan, Parque Nacional de las Tablas de Daimiel,
+    Parque Arqueológico de Alarcos, Castillo de Calatrava la Nueva]
+  towns:
+  - [Ciudad Real, 38.9848, -3.9273]
+  - [Puertollano, 38.6872, -4.1072]
+  - [Alcázar de San Juan, 39.3894, -3.2094]
+  - [Valdepeñas, 38.7622, -3.3847]
+  - [Tomelloso, 39.1578, -3.0206]
+  - [Manzanares, 38.9992, -3.3697]
+  - [Daimiel, 39.0714, -3.6147]
+  - [Almagro, 38.8894, -3.7122]
+  - [Campo de Criptana, 39.4056, -3.1247]
+  - [La Solana, 38.9394, -3.2394]
+  - [Socuéllamos, 39.2872, -2.7947]
+  - [Miguelturra, 38.9758, -3.8931]
+  - [Bolaños de Calatrava, 38.9083, -3.6672]
+  - [Argamasilla de Alba, 39.1275, -3.0958]
+  - [Malagón, 39.1653, -3.8531]
+- slug: albacete
+  name: Albacete
+  hub: castilla-la-mancha
+  domain: taxialbacete.app
+  capital: Albacete
+  roads: A-31, A-30 y A-35
+  headline: VTC con conductor en Albacete y su provincia
+  intro: Traslados desde Albacete, Villarrobledo, Hellín y Almansa al aeropuerto de Barajas, a Alicante y Valencia, y
+    a la estación de AVE de Los Llanos.
+  demand: 'Albacete es nudo entre Madrid, Levante y Andalucía: la A-31 lleva a Alicante, la A-30 a Murcia y la alta velocidad
+    a Madrid en poco más de hora y media. Eso genera tanto enlaces con el AVE como traslados a los aeropuertos de Alicante
+    y Valencia.'
+  places: [Estación Albacete-Los Llanos, Hospital General de Albacete, Recinto Ferial de Albacete, Aeropuerto de Albacete,
+    Hospital de Hellín, Hospital General de Almansa, Hospital General de Villarrobledo, Nacimiento del río Mundo (Los
+      Chorros), Alcalá del Júcar]
+  towns:
+  - [Albacete, 38.9943, -1.8585]
+  - [Villarrobledo, 39.2686, -2.6014]
+  - [Hellín, 38.5106, -1.7006]
+  - [Almansa, 38.8683, -1.0975]
+  - [La Roda, 39.2078, -2.1581]
+  - [Tarazona de la Mancha, 39.2408, -1.9089]
+  - [Caudete, 38.7081, -0.9933]
+  - [Casas-Ibáñez, 39.2842, -1.4694]
+  - [Tobarra, 38.59, -1.6931]
+  - [Madrigueras, 39.2261, -1.7986]
+  - [Chinchilla de Monte-Aragón, 38.9219, -1.7217]
+- slug: guadalajara
+  name: Guadalajara
+  hub: castilla-la-mancha
+  domain: taxiguadalajara.app
+  capital: Guadalajara
+  roads: A-2, R-2 y CM-1001
+  headline: VTC con conductor en Guadalajara y el Corredor del Henares
+  intro: Traslados desde Guadalajara, Azuqueca, Alovera, Cabanillas y El Casar al aeropuerto de Barajas y a Madrid, con
+    salida directa por la A-2.
+  demand: 'El Corredor del Henares es la zona de Castilla-La Mancha más cerca de Barajas: por la A-2 el aeropuerto queda
+    a media hora. A eso se suman los desplazamientos de trabajo de los polígonos de Azuqueca, Alovera y Cabanillas.'
+  places: [Estación Guadalajara-Yebes, Hospital Universitario de Guadalajara, Alcalá de Henares, Estación de tren de
+      Guadalajara (Cercanías), Sigüenza, Brihuega, Pastrana, Hayedo de Tejera Negra]
+  towns:
+  - [Guadalajara, 40.632, -3.161]
+  - [Azuqueca de Henares, 40.5647, -3.2661]
+  - [El Casar, 40.7031, -3.4322]
+  - [Sigüenza, 41.0692, -2.6408]
+  - [Alovera, 40.5914, -3.2489]
+  - [Cabanillas del Campo, 40.6303, -3.2364]
+  - [Marchamalo, 40.6511, -3.1994]
+  - [Torrejón del Rey, 40.6233, -3.3547]
+  - [Villanueva de la Torre, 40.5561, -3.3164]
+  - [Yunquera de Henares, 40.73, -3.1739]
+  - [Chiloeches, 40.5514, -3.2222]
+  - [Molina de Aragón, 40.8447, -1.8853]
+- slug: cuenca
+  name: Cuenca
+  hub: castilla-la-mancha
+  domain: taxicuenca.app
+  capital: Cuenca
+  roads: A-3, A-40 y N-320
+  headline: VTC con conductor en Cuenca y La Manchuela
+  intro: Traslados desde Cuenca, Tarancón, San Clemente y Motilla del Palancar al aeropuerto de Barajas, a Madrid, a
+    Valencia y a la estación de AVE Fernando Zóbel.
+  demand: La estación de AVE Cuenca-Fernando Zóbel está fuera de la ciudad, así que el enlace en vehículo es casi obligado.
+    Tarancón, además, está a menos de una hora de Madrid por la A-3, lo que la convierte en origen habitual de traslados
+    al aeropuerto.
+  places: [Estación Cuenca-Fernando Zóbel, Hospital Virgen de la Luz, Ciudad Encantada (Cuenca), Casas Colgadas y casco
+      antiguo de Cuenca, Castillo de Belmonte, Parque Arqueológico de Segóbriga, Monasterio de Uclés]
+  towns:
+  - [Cuenca, 40.0704, -2.1374]
+  - [Tarancón, 40.0094, -3.0056]
+  - [San Clemente, 39.4033, -2.43]
+  - [Motilla del Palancar, 39.5661, -1.8886]
+  - [Quintanar del Rey, 39.34, -1.9317]
+  - [Mota del Cuervo, 39.5931, -2.8722]
+  - [Las Pedroñeras, 39.465, -2.6714]
+  - [Horcajo de Santiago, 39.8322, -3.0133]
+  - [Villanueva de la Jara, 39.4108, -1.9422]
+  - [Huete, 40.145, -2.6903]
+- slug: valladolid
+  name: Valladolid
+  hub: castilla-y-leon
+  domain: taxivalladolid.app
+  capital: Valladolid
+  roads: A-62, A-6, A-601 y A-11
+  headline: VTC con conductor en Valladolid, Medina del Campo y Tordesillas
+  intro: Traslados desde Valladolid, Laguna de Duero, Medina del Campo y Tordesillas al aeropuerto de Barajas, al de
+    Villanubla y a la estación de Campo Grande, con precio cerrado antes de salir.
+  demand: 'Valladolid es la capital administrativa de la comunidad y la que más viaje de trabajo genera: Campo Grande
+    deja Madrid a una hora larga en alta velocidad y Villanubla tiene pocos vuelos, así que la mayoría de los traslados
+    largos acaban en Barajas por la A-6. A eso se suman la Feria de Valladolid y las consultas del Río Hortega y del
+    Clínico, que atienden a media provincia.'
+  places: [Estación de Valladolid-Campo Grande, Aeropuerto de Valladolid-Villanubla, Hospital Universitario Río Hortega,
+    Hospital Clínico Universitario de Valladolid, Feria de Valladolid, Castillo de Peñafiel y Museo del Vino, Estación
+      de Medina del Campo AV]
+  towns:
+  - [Valladolid, 41.6523, -4.7245]
+  - [Laguna de Duero, 41.5842, -4.7203]
+  - [Arroyo de la Encomienda, 41.6317, -4.7936]
+  - [Medina del Campo, 41.3117, -4.9111]
+  - [Tordesillas, 41.5003, -5.0006]
+  - [Peñafiel, 41.5964, -4.1167]
+  - [Medina de Rioseco, 41.8817, -5.0417]
+  - [Olmedo, 41.2861, -4.6936]
+  - [Íscar, 41.3625, -4.5333]
+  - [Tudela de Duero, 41.5836, -4.5803]
+  - [Simancas, 41.5917, -4.8286]
+  - [Cigales, 41.7578, -4.6986]
+- slug: burgos
+  name: Burgos
+  hub: castilla-y-leon
+  domain: taxiburgos.app
+  capital: Burgos
+  roads: A-1, AP-1, A-62 y N-234
+  headline: VTC con conductor en Burgos, Aranda de Duero y Miranda de Ebro
+  intro: Traslados desde Burgos, Aranda de Duero y Miranda de Ebro al aeropuerto de Barajas, a Bilbao y a la estación
+    de Rosa de Lima, y salidas a las bodegas de la Ribera del Duero con conductor.
+  demand: 'Burgos está en la A-1 entre Madrid y el País Vasco, así que el traslado largo es el de siempre; y tiene dos
+    demandas que no tiene ninguna otra provincia: las bodegas de la Ribera del Duero desde Aranda, donde el cliente precisamente
+    no quiere conducir, y el turismo de la catedral, Atapuerca y el Museo de la Evolución Humana.'
+  places: [Estación de Burgos-Rosa de Lima, Aeropuerto de Burgos, Hospital Universitario de Burgos, Catedral de Burgos,
+    Museo de la Evolución Humana (Burgos), Yacimientos de Atapuerca, Monasterio de Santo Domingo de Silos, Covarrubias]
+  towns:
+  - [Burgos, 42.3439, -3.6969]
+  - [Aranda de Duero, 41.6706, -3.6892]
+  - [Miranda de Ebro, 42.6861, -2.9464]
+  - [Briviesca, 42.5508, -3.32]
+  - [Lerma, 42.0281, -3.7583]
+  - [Medina de Pomar, 42.9264, -3.4869]
+  - [Villarcayo, 42.9361, -3.5711]
+  - [Roa, 41.6975, -3.9272]
+  - [Salas de los Infantes, 42.0222, -3.2844]
+  - [Espinosa de los Monteros, 43.0781, -3.5533]
+- slug: leon
+  name: León
+  hub: castilla-y-leon
+  domain: taxileon.app
+  capital: León
+  roads: A-66, A-6, A-231 y N-120
+  headline: VTC con conductor en León, Ponferrada y El Bierzo
+  intro: Traslados desde León, Ponferrada, Astorga y La Bañeza al aeropuerto de Barajas, a la estación de León y a Asturias
+    y Galicia, con precio cerrado y conductor profesional.
+  demand: 'La provincia son dos mercados con una hora y media de autovía entre ellos: León capital, con alta velocidad
+    a Madrid y el hospital de referencia de la provincia, y El Bierzo, que está más cerca de Galicia que de su propia
+    capital y sube al aeropuerto de Barajas o baja al de Santiago según el vuelo. El Camino de Santiago y Las Médulas
+    añaden traslados de etapa que el transporte público no cubre.'
+  places: [Estación de León, Aeropuerto de León, Complejo Asistencial Universitario de León, Hospital El Bierzo (Ponferrada),
+    Catedral de León, Las Médulas, Castillo de los Templarios de Ponferrada, Cuevas de Valporquero]
+  towns:
+  - [León, 42.5987, -5.5671]
+  - [San Andrés del Rabanedo, 42.6081, -5.6117]
+  - [Ponferrada, 42.5461, -6.5961]
+  - [Astorga, 42.4589, -6.0531]
+  - [La Bañeza, 42.2989, -5.8967]
+  - [Bembibre, 42.6167, -6.4167]
+  - [Villablino, 42.9375, -6.3189]
+  - [Villafranca del Bierzo, 42.6064, -6.8103]
+  - [La Robla, 42.8014, -5.6225]
+  - [Sahagún, 42.3714, -5.0289]
+  - [Valencia de Don Juan, 42.2939, -5.5164]
+- slug: salamanca
+  name: Salamanca
+  hub: castilla-y-leon
+  domain: taxisalamanca.app
+  capital: Salamanca
+  roads: A-62, A-66, A-50 y N-630
+  headline: VTC con conductor en Salamanca, Béjar y Ciudad Rodrigo
+  intro: Traslados desde Salamanca, Santa Marta de Tormes, Béjar y Ciudad Rodrigo al aeropuerto de Barajas, a Madrid
+    y a la estación de Salamanca, con precio cerrado antes de salir.
+  demand: 'Salamanca tiene dos flujos constantes y muy distintos: el universitario —treinta mil estudiantes que llegan
+    y se van en fechas señaladas, muchos desde Barajas— y el turismo de fin de semana de la Plaza Mayor. El aeropuerto
+    de Matacán tiene poco tráfico regular, así que el vuelo casi siempre sale de Madrid, a dos horas y media por la A-50
+    y la A-6.'
+  places: [Estación de Salamanca, Aeropuerto de Salamanca-Matacán, Complejo Asistencial Universitario de Salamanca, Plaza
+      Mayor de Salamanca, Universidad de Salamanca, Estación de esquí de La Covatilla (Béjar), La Alberca]
+  towns:
+  - [Salamanca, 40.9701, -5.6635]
+  - [Santa Marta de Tormes, 40.945, -5.6292]
+  - [Béjar, 40.3861, -5.7644]
+  - [Ciudad Rodrigo, 40.5978, -6.5297]
+  - [Guijuelo, 40.5567, -5.6728]
+  - [Peñaranda de Bracamonte, 40.8972, -5.2]
+  - [Alba de Tormes, 40.8278, -5.5117]
+  - [Villares de la Reina, 41.0072, -5.6392]
+  - [Carbajosa de la Sagrada, 40.9322, -5.6519]
+  - [Ledesma, 41.0875, -5.9983]
+  - [Vitigudino, 41.0106, -6.4356]
+- slug: segovia
+  name: Segovia
+  hub: castilla-y-leon
+  domain: taxisegovia.app
+  capital: Segovia
+  roads: AP-61, A-601, N-110 y SG-20
+  headline: VTC con conductor en Segovia, El Espinar y Cuéllar
+  intro: Traslados desde Segovia, El Espinar, San Rafael y Cuéllar al aeropuerto de Barajas, a Madrid y a la estación
+    de Segovia-Guiomar, con precio cerrado y vehículo confirmado.
+  demand: 'Segovia es la provincia de Castilla y León más pegada a Madrid: Guiomar deja Chamartín en menos de media hora
+    en alta velocidad y Barajas queda a poco más de una hora por la AP-61 y la A-6. Eso genera dos cosas a la vez: traslados
+    al aeropuerto de quien vive aquí y visitas de un día al acueducto y a La Granja de quien llega de Madrid y no quiere
+    aparcar en el casco.'
+  places: [Estación de Segovia-Guiomar, Acueducto de Segovia, Alcázar de Segovia, Palacio Real de La Granja de San Ildefonso,
+    Hospital General de Segovia, Castillo de Coca, Pedraza]
+  towns:
+  - [Segovia, 40.9429, -4.1088]
+  - [El Espinar, 40.7306, -4.245]
+  - [Cuéllar, 41.4014, -4.3139]
+  - [La Granja de San Ildefonso, 40.9006, -4.0031]
+  - [Cantalejo, 41.2589, -3.9278]
+  - [Riaza, 41.2761, -3.4728]
+  - [Sepúlveda, 41.2967, -3.7478]
+  - [Palazuelos de Eresma, 40.9294, -4.0592]
+  - [San Cristóbal de Segovia, 40.9481, -4.0775]
+  - [Carbonero el Mayor, 41.1236, -4.2656]
+  - [Nava de la Asunción, 41.1553, -4.4833]
+- slug: zamora
+  name: Zamora
+  hub: castilla-y-leon
+  domain: taxizamora.app
+  capital: Zamora
+  roads: A-66, A-6, A-52 y A-11
+  headline: VTC con conductor en Zamora, Benavente y Toro
+  intro: Traslados desde Zamora, Benavente, Toro y Puebla de Sanabria al aeropuerto de Barajas, a Madrid y a la estación
+    de Zamora, con precio cerrado antes de salir.
+  demand: 'Benavente es el cruce de la A-6, la A-52 y la A-66, y por ahí pasa quien va de Madrid a Galicia y a Asturias:
+    mucho traslado de enlace y mucha recogida de avería o de cambio de conductor. Zamora capital mueve la alta velocidad
+    a Chamartín, el hospital y una Semana Santa que llena la ciudad entera.'
+  places: [Estación de Zamora, Hospital Virgen de la Concha (Zamora), Catedral de Zamora, Lago de Sanabria, Fermoselle]
+  towns:
+  - [Zamora, 41.5033, -5.7446]
+  - [Benavente, 42.0022, -5.6781]
+  - [Toro, 41.5222, -5.3931]
+  - [Puebla de Sanabria, 42.0553, -6.6339]
+  - [Morales del Vino, 41.4522, -5.7433]
+  - [Villalpando, 41.8694, -5.4083]
+  - [Fuentesaúco, 41.2331, -5.4981]
+  - [Corrales del Vino, 41.3181, -5.7317]
+  - [Alcañices, 41.6994, -6.3464]
+  - [Bermillo de Sayago, 41.3656, -6.1108]
+- slug: palencia
+  name: Palencia
+  hub: castilla-y-leon
+  domain: taxipalencia.app
+  capital: Palencia
+  roads: A-62, A-67, A-65 y N-611
+  headline: VTC con conductor en Palencia, Venta de Baños y Aguilar de Campoo
+  intro: Traslados desde Palencia, Venta de Baños, Villamuriel y Aguilar de Campoo al aeropuerto de Barajas, a Madrid,
+    a Santander y a la estación de Palencia.
+  demand: 'Venta de Baños es el nudo ferroviario de la meseta norte y Palencia está a diez minutos, así que buena parte
+    del servicio es enlace con el tren a horas en las que no hay autobús. El norte de la provincia —Aguilar de Campoo
+    y el románico— funciona al revés: sube turismo de fin de semana y baja gente a consultas del Río Carrión.'
+  places: [Estación de Palencia, Hospital Río Carrión (Palencia), Catedral de Palencia (La Bella Desconocida), Villa
+      Romana La Olmeda, Frómista]
+  towns:
+  - [Palencia, 42.0095, -4.5286]
+  - [Venta de Baños, 41.9214, -4.4914]
+  - [Villamuriel de Cerrato, 41.9581, -4.5158]
+  - [Dueñas, 41.8778, -4.5486]
+  - [Aguilar de Campoo, 42.795, -4.26]
+  - [Guardo, 42.7869, -4.845]
+  - [Carrión de los Condes, 42.3383, -4.6031]
+  - [Baltanás, 41.9369, -4.2461]
+  - [Paredes de Nava, 42.1531, -4.6922]
+  - [Saldaña, 42.5211, -4.7375]
+  - [Herrera de Pisuerga, 42.5961, -4.3322]
+- slug: avila
+  name: Ávila
+  hub: castilla-y-leon
+  domain: taxiavila.app
+  capital: Ávila
+  roads: AP-6, A-51, A-6 y N-110
+  headline: VTC con conductor en Ávila, Arenas de San Pedro y Arévalo
+  intro: Traslados desde Ávila, Arévalo, Arenas de San Pedro y el valle del Tiétar al aeropuerto de Barajas, a Madrid
+    y a la estación de Ávila, con precio cerrado antes de salir.
+  demand: 'Ávila capital está a hora y media de Barajas por la N-110 y la AP-6, y la muralla trae visita de un día durante
+    todo el año. El sur de la provincia —Arenas de San Pedro, Candeleda, el valle del Tiétar— es zona de segunda residencia
+    de Madrid: mucho traslado de fin de semana y de puente, con maleta y sin coche.'
+  places: [Estación de Ávila, Muralla de Ávila, Complejo Asistencial de Ávila (Nuestra Señora de Sonsoles), Sierra de
+      Gredos (Plataforma de Gredos), Toros de Guisando]
+  towns:
+  - [Ávila, 40.6565, -4.6818]
+  - [Arévalo, 41.0625, -4.7208]
+  - [Arenas de San Pedro, 40.2106, -5.0886]
+  - [Candeleda, 40.155, -5.24]
+  - [Sotillo de la Adrada, 40.3153, -4.525]
+  - [Las Navas del Marqués, 40.5967, -4.3389]
+  - [El Tiemblo, 40.415, -4.5008]
+  - [Cebreros, 40.4583, -4.4642]
+  - [Madrigal de las Altas Torres, 41.0908, -5.0006]
+  - [Piedrahíta, 40.4636, -5.3283]
+  - [El Barco de Ávila, 40.3572, -5.5233]
+- slug: soria
+  name: Soria
+  hub: castilla-y-leon
+  domain: taxisoria.app
+  capital: Soria
+  roads: A-15, A-11, N-111 y N-122
+  headline: VTC con conductor en Soria, Almazán y El Burgo de Osma
+  intro: Traslados desde Soria, Almazán, Ólvega y El Burgo de Osma al aeropuerto de Barajas, a Madrid y a la estación
+    de Medinaceli, con precio cerrado y conductor profesional.
+  demand: 'Soria es la provincia peor comunicada por tren de toda la comunidad: el enlace con Madrid se hace por carretera
+    o por la estación de Medinaceli, así que el traslado largo aquí no compite con la alta velocidad, la sustituye. El
+    polo industrial de Ólvega y Ágreda añade desplazamiento de trabajo hacia Zaragoza y Logroño.'
+  places: [Estación de Soria, Estación de Medinaceli, Hospital Santa Bárbara (Soria), Yacimiento de Numancia (Garray),
+    Cañón del Río Lobos, Laguna Negra de Urbión]
+  towns:
+  - [Soria, 41.7636, -2.465]
+  - [Almazán, 41.4869, -2.5303]
+  - [El Burgo de Osma, 41.5861, -3.0664]
+  - [Ólvega, 41.7761, -1.9994]
+  - [Ágreda, 41.8556, -1.9339]
+  - [San Esteban de Gormaz, 41.5742, -3.2064]
+  - [Covaleda, 41.9339, -2.8797]
+  - [San Leonardo de Yagüe, 41.8289, -3.0686]
+  - [Duruelo de la Sierra, 41.9544, -2.93]
+  - [Arcos de Jalón, 41.2153, -2.2747]

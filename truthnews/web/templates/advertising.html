@@ -6,6 +6,6 @@
 {% block content %}
 <article class="story"><h1>{{ t(lang, 'advertising_title') }}</h1>
 <p class="lead-text">{{ t(lang, 'advertising_lead') }}</p>
-{% for k in ['what', 'label', 'context', 'independence', 'contact'] %}<h2>{{ t(lang, 'advertising_' ~ k ~ '_h') }}</h2><p>{{ t(lang, 'advertising_' ~ k) }}</p>{% endfor %}
+{% for k in ['what', 'label', 'context', 'zone', 'independence', 'contact'] %}<h2>{{ t(lang, 'advertising_' ~ k ~ '_h') }}</h2><p>{{ t(lang, 'advertising_' ~ k) }}</p>{% endfor %}
 </article>
 {% endblock %}

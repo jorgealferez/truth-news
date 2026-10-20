@@ -218,7 +218,9 @@ def seeded(session):
 
 def app_with(engine, handler):
     client, calls = fake(handler)
-    return TestClient(create_app(Settings(database_url="sqlite://"), engine=engine, ads_client=client)), calls
+    # Solo ads-service: la publicidad propia que rellena los huecos vacios se prueba en test_house.py.
+    settings = Settings(database_url="sqlite://", house_ads_enabled=False)
+    return TestClient(create_app(settings, engine=engine, ads_client=client)), calls
 
 
 def test_story_inline_after_comparison_labelled_and_sponsored(engine, seeded):

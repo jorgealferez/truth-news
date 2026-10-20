@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{{ t(lang, 'sponsored_title') }} — {{ site.site_name }}{% endblock %}
+{% block description %}{{ t(lang, 'sponsored_lead') }}{% endblock %}
+{% block canonical %}{{ site.site_url }}/patrocinado{% endblock %}
+{% block content %}
+<article class="story sponsored">
+  <p class="sponsored-flag"><span class="ad-tag">{{ t(lang, 'sponsored_label') }}</span> {{ t(lang, 'sponsored_by') }} <strong>Ridelta</strong> · {{ t(lang, 'ad_own_brand') }}</p>
+  <h1>{{ t(lang, 'sponsored_title') }}</h1>
+  <p class="lead-text">{{ t(lang, 'sponsored_lead') }}</p>
+  {% if mine %}<h2>{{ t(lang, 'sponsored_your_zone') }}: {{ zone.name }}</h2>
+  <ul class="sponsored-more">{% for a in mine %}<li><a href="/patrocinado/{{ a.slug }}">{{ a.title }}</a></li>{% endfor %}</ul>{% endif %}
+  <h2>{{ t(lang, 'sponsored_all') }}</h2>
+  <ul class="sponsored-more">{% for a in rest %}<li><a href="/patrocinado/{{ a.slug }}">{{ a.title }}</a> <span class="meta">{{ zones[a.zone].name }}</span></li>{% endfor %}</ul>
+  <p class="sponsored-note">{{ t(lang, 'sponsored_note') }} <a href="/publicidad">{{ t(lang, 'ad_policy_link') }}</a></p>
+</article>
+{% endblock %}

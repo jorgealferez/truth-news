@@ -239,6 +239,15 @@ a { color:inherit; text-decoration:none; } a:hover { text-decoration:underline; 
 .ad-head { overflow-wrap:anywhere; }
 @media (max-width: 760px) { .ad { margin:14px 0; } .ad-link img { width:64px; height:64px; } }
 @media (prefers-reduced-motion: reduce) { .ad * { transition:none !important; } }
+/* Publicidad propia de Ridelta por zona (ADR 0055): mismo aspecto que un anuncio, rotacion sin movimiento */
+.ad-house .house-item { min-height:3.2em; } .ad-house .house-item[hidden] { display:none; } .house-bar { display:flex; flex-wrap:wrap; gap:6px 14px; align-items:center; margin-top:6px; font-size:12px; }
+.house-pause { font:inherit; font-size:12px; background:none; border:0; padding:0; color:var(--muted); text-decoration:underline; cursor:pointer; }
+.house-zone summary { cursor:pointer; color:var(--muted); } .house-zone p { margin:6px 0 0; } .house-zones a { display:inline-block; margin:2px 8px 2px 0; text-decoration:underline; }
+@media (pointer:coarse) { .house-zones a, .house-pause, .house-zone summary { min-height:44px; display:inline-flex; align-items:center; } }
+.sponsored { background:#faf9f5; border:1px solid var(--line); border-radius:6px; padding:14px 18px; }
+.sponsored-flag { font:12px/1.4 system-ui, sans-serif; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 10px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+.sponsored-flag strong { text-transform:none; letter-spacing:0; } .sponsored-note { font:13px/1.4 system-ui, sans-serif; color:var(--muted); margin-top:18px; }
+.sponsored-links, .sponsored-more { padding-left:18px; } .sponsored-links li, .sponsored-more li { margin:6px 0; }
 /* La misma historia en otros paises (ADR 0022): una columna en movil, rejilla en escritorio */
 .abroad { display:grid; gap:10px; } @media (min-width:720px) { .abroad { grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); } }
 .abroad-c { border:1px solid var(--line); border-radius:6px; padding:10px 12px; background:#fff; } .abroad-c ul { list-style:none; margin:0; padding:0; } .abroad-c li { margin:6px 0; font-size:15px; line-height:1.35; }
