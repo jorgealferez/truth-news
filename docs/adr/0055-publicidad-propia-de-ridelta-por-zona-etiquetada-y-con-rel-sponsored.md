@@ -43,10 +43,20 @@ Lo que habia:
    animacion; se para al pasar el raton, con el foco y con un boton de pausa (WCAG 2.2.2), y no rota con
    `prefers-reduced-motion`. Sin JavaScript queda la primera pieza y el selector de zonas con enlaces.
 4. **Contenido patrocinado** en `/patrocinado` (indice) y `/patrocinado/<slug>`: una pieza general, una por
-   comunidad y dos por provincia (como funciona en la provincia; ir al aeropuerto o al AVE), 31 en total.
+   comunidad y dos por provincia (como funciona en la provincia; ir al aeropuerto o al AVE).
    El hueco de listado lleva a la pieza de la zona. Se escriben **con tono de servicio, utiles y legibles,
    pero etiquetadas** arriba ("Contenido patrocinado · Patrocinado por Ridelta") y abajo, con aspecto
    distinto del editorial, fuera de la portada, del RSS, del sitemap de Google News y de las verificaciones.
+   **Pieza de cabecera y enfoque rural** (peticion del usuario del mismo dia: "que se vea que apostamos por
+   zonas rurales ... donde no llegan las grandes"): `/patrocinado/donde-no-llegan-las-grandes` va primera
+   (32 piezas en total), cada pieza provincial lleva "Donde no llegan las grandes" con sus municipios
+   pequenos y cada banner provincial una pieza "Donde no llegan las grandes plataformas, llegamos". Se apoya
+   en un dato que se puede comprobar: ninguna de las 14 provincias ni de sus 168 municipios de origen esta en
+   la lista de ciudades de Cabify en Espana (13, copiada de vtc-clm, `src/lib/mundo/ciudades-cabify.ts`, con
+   fuente y fecha en la pieza). `outside_big` lo comprueba por zona y la frase desaparece de la zona donde
+   deje de ser cierta. No se escribe "los primeros" ni "los unicos": no hay forma de probarlo y un superlativo
+   sin prueba es publicidad enganosa (Ley 3/1991 arts. 5 y 10; LGP art. 3). Uber y otras no se nombran: no
+   hay lista suya en vtc-clm.
 5. **Enlaces con `rel="sponsored"` y UTM** (`utm_source=nosmienten`, `utm_medium=banner|patrocinado`,
    `utm_campaign=ridelta-<zona>`): la visibilidad y las visitas se miden en el destino.
 6. **Solo se afirma lo que hace el servicio.** Las frases salen de vtc-clm (titulares, demanda, carreteras,

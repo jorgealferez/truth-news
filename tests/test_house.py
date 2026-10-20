@@ -72,7 +72,7 @@ def test_resolve_order_choice_then_content_then_generic():
 def test_creatives_rotate_to_the_zone_site_with_utm():
     toledo = house.zones()["toledo"]
     cs = house.creatives(toledo)
-    assert len(cs) == 4 and len({c["key"] for c in cs}) == 4
+    assert len(cs) == 5 and len({c["key"] for c in cs}) == 5
     assert cs[0]["url"].startswith("https://taxitoledo.app/pedir?")
     q = parse_qs(urlsplit(cs[0]["url"]).query)
     assert q == {
@@ -112,14 +112,14 @@ def test_fill_keeps_ads_service_first_and_fills_the_rest():
 
 def test_one_generic_two_per_province_one_per_region():
     arts = house.articles()
-    assert len(arts) == 1 + 2 + 14 * 2
+    assert len(arts) == 2 + 2 + 14 * 2
     assert len({a["slug"] for a in arts}) == len(arts)
-    assert arts[0]["slug"] == "como-funciona-ridelta"
+    assert [a["slug"] for a in arts[:2]] == ["donde-no-llegan-las-grandes", "como-funciona-ridelta"]
     for a in arts:
         assert a["title"] and a["dek"] and a["links"] and all(u.startswith("https://") for _, u in a["links"])
     toledo = house.articles_for(house.zones()["toledo"])
     assert [a["zone"] for a in toledo][:3] == ["toledo", "toledo", "castilla-la-mancha"]
-    assert toledo[-1]["slug"] == "como-funciona-ridelta"
+    assert {a["slug"] for a in toledo[-2:]} == {"donde-no-llegan-las-grandes", "como-funciona-ridelta"}
 
 
 def test_articles_invent_no_prices_or_availability():
@@ -297,3 +297,19 @@ def test_zones_json_for_the_browser_and_policy_pages(engine):
     assert "getCurrentPosition" in js and "prefers-reduced-motion" in js and 'credentials: "omit"' in js
     assert "Publicidad propia por zona" in tc.get("/publicidad").text
     assert "<code>zona</code>" in tc.get("/cookies").text
+
+
+def test_where_the_big_platforms_do_not_go_stays_true():
+    """La frase solo sale si ningun municipio de la zona esta en la lista de la gran plataforma."""
+    assert all(house.outside_big(p) for p in house.provinces())
+    assert all(house.outside_big(r) for r in house.regions())
+    rural = house.article("donde-no-llegan-las-grandes")
+    text = json.dumps(rural, ensure_ascii=False)
+    assert "Cabify" in text and "cabify.com, consultada el 19 de octubre de 2026" in text
+    assert "los primeros" not in text and "únicos" not in text  # sin superlativos que no se pueden probar
+    toledo = house.zones()["toledo"]
+    assert house.small_towns(toledo)[-1] == "Villacañas" and "Illescas" not in house.small_towns(toledo)
+    assert any(c["key"] == "pueblos" for c in house.creatives(toledo))
+    # Si la plataforma llegara a una zona, su pieza deja de decirlo
+    fake = house.Zone(slug="x", name="X", domain="x.app", kind="province", towns=(("Valencia", 39.4, -0.3),))
+    assert not house.outside_big(fake)

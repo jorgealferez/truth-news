@@ -215,6 +215,26 @@ def _apps_line(lang: str) -> tuple[str, str]:
     )
 
 
+def big_platform() -> dict:
+    """La gran plataforma de referencia y su lista de ciudades (registro), para decir donde no llega."""
+    return config()["big_platform"]
+
+
+def outside_big(zone: Zone) -> bool:
+    """Ningun municipio de la zona esta en la lista de ciudades de la gran plataforma."""
+    cities = {normalize(c) for c in big_platform()["cities"]}
+    names = [t[0] for t in zone.towns] if zone.kind == "province" else []
+    for p in province_zones(zone) if zone.kind == "region" else []:
+        names += [t[0] for t in p.towns]
+    return bool(names) and not any(normalize(n) in cities for n in names)
+
+
+def small_towns(zone: Zone, n: int = 5) -> list[str]:
+    """Los municipios de la zona que no son cabecera: los ultimos de su lista de origenes (vtc-clm)."""
+    names = [t[0] for t in zone.towns]
+    return names[3:][-n:] if len(names) > 3 else names
+
+
 def creatives(zone: Zone, lang: str = "es") -> list[dict]:
     """Los banners de una zona, en orden de rotacion. Solo afirman lo que hace el servicio (ADR 0055)."""
     es = lang == "es"
@@ -245,6 +265,21 @@ def creatives(zone: Zone, lang: str = "es") -> list[dict]:
                 ),
                 "Ver la web de la zona" if es else "Open the local site",
                 zone.site,
+            ),
+            (
+                "pueblos",
+                (
+                    "Donde no llegan las grandes plataformas, llegamos"
+                    if es
+                    else "Where the big platforms do not go, we do"
+                ),
+                (
+                    f"También desde {_list(small_towns(zone, 3))}, con precio cerrado antes de salir."
+                    if es
+                    else f"Also from {', '.join(small_towns(zone, 3))}, with a fixed price before you leave."
+                ),
+                "Ver mi precio" if es else "See my price",
+                f"{zone.site}/pedir",
             ),
             (
                 "licencia",
@@ -400,6 +435,7 @@ def _list(items: Iterable[str]) -> str:
 
 def _province_articles(z: Zone) -> list[dict]:
     b = brand()
+    big = big_platform()
     hub = hub_of(z)
     towns = [t[0] for t in z.towns]
     generic = zones()[GENERIC]
@@ -462,6 +498,21 @@ def _province_articles(z: Zone) -> list[dict]:
                     if z.places
                     else "",
                 ],
+            ),
+            (
+                "Donde no llegan las grandes",
+                [
+                    f"{big['name']} no tiene {z.name} en su lista de ciudades de España, según "
+                    f"{big['source']}; y "
+                    f"ninguno de los {len(towns)} municipios de origen de {z.domain} aparece en ella. {b} sí "
+                    f"sale desde aquí: también desde {_list(small_towns(z))}, con el mismo precio cerrado "
+                    "antes de salir y conductores con licencia, igual que en la capital de la provincia.",
+                    "La siguiente zona se abre igual que esta: con taxistas, VTC y flotas que ya trabajan "
+                    f"en ella. Si conduces o tienes flota donde {b} todavía no está, la puerta es "
+                    f"{generic.domain}.",
+                ]
+                if outside_big(z)
+                else [],
             ),
             ("En el móvil", [apps]),
             (
@@ -594,10 +645,69 @@ def _generic_article() -> dict:
     }
 
 
+def _rural_article() -> dict:
+    """La pieza de cabecera: la apuesta por las zonas donde no operan las grandes plataformas."""
+    b = brand()
+    big = big_platform()
+    g = zones()[GENERIC]
+    provs = [p for p in provinces() if outside_big(p)]
+    n_towns = sum(len(p.towns) for p in provs)
+    regs = regions()
+    return {
+        "slug": "donde-no-llegan-las-grandes",
+        "zone": GENERIC,
+        "title": f"Donde no llegan las grandes: {b} apuesta por las provincias y los pueblos que las "
+        "plataformas de ciudad dejan fuera",
+        "dek": f"{len(provs)} provincias y {n_towns} municipios de origen en {_list(r.name for r in regs)}, "
+        f"ninguno en la lista de ciudades de {big['name']}: así funciona un servicio de traslados pensado "
+        "para quien vive lejos de las grandes capitales.",
+        "sections": [
+            (
+                "",
+                [
+                    f"Las grandes plataformas de transporte con conductor eligen ciudades: {big['name']} "
+                    f"nombra {len(big['cities'])} en España, de {_list(big['cities'][:4])} a "
+                    f"{big['cities'][-1]}, según {big['source']}. {b} ha hecho el camino contrario: "
+                    "empezar por las provincias que no están en esas listas.",
+                    f"Hoy son {len(provs)}: {_list([p.name for p in provs])}. Ninguna de sus capitales ni de "
+                    f"sus {n_towns} municipios de origen aparece en la lista de {big['name']}.",
+                ],
+            ),
+            (
+                "Lo que cambia para quien vive en un pueblo",
+                [
+                    "Ir a Barajas, a la estación de AVE o a una consulta en Madrid desde un pueblo suele "
+                    "depender de que alguien te lleve. Con un traslado de precio cerrado se sabe lo que "
+                    "cuesta antes de salir, con IVA y desglosado, y no cambia por el tráfico ni por esperas "
+                    "razonables.",
+                    "Cada traslado lo presta un taxista o VTC con su propia licencia o autorización, su "
+                    "seguro y su vehículo, comprobados antes de recibir el primer servicio.",
+                ]
+                + [
+                    f"En {p.name}, por ejemplo, se sale también desde {_list(small_towns(p, 4))}."
+                    for p in provs[:: max(1, len(provs) // 4)][:4]
+                ],
+            ),
+            (
+                "Una web para cada provincia",
+                [f"{p.name}: {p.domain}." for p in provs],
+            ),
+            (
+                "Así se abre la siguiente",
+                [
+                    "Con taxistas, VTC y flotas que ya trabajan en la zona. Si conduces o tienes flota "
+                    f"donde {b} todavía no está, el contacto está en {g.domain}.",
+                ],
+            ),
+        ],
+        "links": [(f"{g.domain}/cobertura", f"{g.site}/cobertura")] + [(p.domain, p.site) for p in provs],
+    }
+
+
 @lru_cache(maxsize=1)
 def articles() -> list[dict]:
-    """Todas las piezas patrocinadas, la generica primero."""
-    out = [_generic_article()]
+    """Todas las piezas patrocinadas: la de cabecera (sin grandes plataformas) y la generica primero."""
+    out = [_rural_article(), _generic_article()]
     for r in regions():
         out.append(_region_article(r))
     for z in provinces():

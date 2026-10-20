@@ -12,6 +12,14 @@ brand: Ridelta
 generic_domain: ridelta.com
 apps_in_stores: false
 radius_km: 45
+# Ciudades de Espana donde opera Cabify, segun vtc-clm (src/lib/mundo/ciudades-cabify.ts: lista de cabify.com
+# aportada por el titular el 2026-10-19). Sostiene la frase "donde no llegan las grandes plataformas": un test
+# falla si algun municipio de una zona aparece aqui. Uber u otras no se nombran: no hay lista en vtc-clm.
+big_platform:
+  name: Cabify
+  source: su web, cabify.com, consultada el 19 de octubre de 2026
+  cities: [Alicante, A Coruña, Barcelona, Benidorm, Bilbao, Madrid, Málaga, Marbella, Murcia, Santander, Sevilla,
+    Valencia, Zaragoza]
 regions:
 - slug: castilla-la-mancha
   name: Castilla-La Mancha
