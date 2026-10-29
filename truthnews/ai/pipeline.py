@@ -16,6 +16,7 @@ from truthnews.ai.writer import ask_piece, prepare_piece, store_pieces
 from truthnews.analysis import abroad
 from truthnews.analysis.verify import Verifier
 from truthnews.config import Settings
+from truthnews.focus import Focus
 from truthnews.models import Piece, Topic, utcnow
 
 log = logging.getLogger(__name__)
@@ -64,8 +65,15 @@ def run(
         session.commit()
     except AIError as exc:
         log.warning("temas no generados: %s", exc)
-        return {"error": str(exc), "coste_usd": spent.mark("temas")}
+        spent.mark("temas")
+        # El foco no depende de la bolsa general: con los temas que ya hay, sus piezas salen igual (ADR 0056).
+        if focus_out := _focus_pieces(session, settings, ai if injected else None, verifier):
+            spent.mark("foco")
+        return {"error": str(exc), **focus_out, "coste_usd": spent.parts}
     spent.mark("temas")
+    if focus_out := _focus_pieces(session, settings, ai if injected else None, verifier):
+        out.update(focus_out)
+        spent.mark("foco")
     topics = session.scalars(
         select(Topic)
         .where(Topic.country == settings.default_country)
@@ -85,6 +93,25 @@ def run(
     out["coste_usd"] = spent.mark("piezas")
     log.info("IA: %s", out)
     return out
+
+
+def _focus_pieces(session: Session, settings: Settings, ai: AIClient | None, verifier) -> dict:
+    """Piezas de los temas del foco, antes que las demas, con su bolsa, su cupo y su cadencia (ADR 0056)."""
+    focus = Focus(settings.ai_focus)
+    if not focus or settings.ai_focus_max_pieces <= 0:
+        return {}
+    topics = focus.topics(session, settings.default_country, limit=settings.ai_focus_max_pieces * 2)
+    ai = ai or AIClient(settings.ai_model, settings.ai_effort, pool=cost.FOCUS)
+    written, revision, failed = write_batch(
+        session,
+        ai,
+        topics,
+        verifier or Verifier(),
+        settings.ai_focus_max_pieces,
+        settings.ai_piece_concurrency,
+        timedelta(minutes=settings.ai_focus_refresh_minutes),
+    )
+    return {"focus_topics": len(topics), "focus_pieces": written, "focus_in_revision": revision}
 
 
 class _Spent:

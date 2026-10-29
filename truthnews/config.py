@@ -106,6 +106,27 @@ class Settings:
     ai_daily_budget_verify_usd: float = field(
         default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_VERIFY_USD", "1.5"))
     )
+    # Foco (ADR 0056): interruptor para un suceso grave. AI_FOCUS lleva los terminos separados por comas; lo
+    # que case pasa primero por piezas, hilos, afirmaciones e investigacion, con bolsa y cadencia propias.
+    ai_focus: tuple[str, ...] = field(
+        default_factory=lambda: tuple(
+            t.strip() for t in os.environ.get("AI_FOCUS", "").split(",") if t.strip()
+        )
+    )
+    ai_focus_question: str = field(default_factory=lambda: os.environ.get("AI_FOCUS_QUESTION", ""))
+    ai_focus_budget_usd: float = field(  # bolsa diaria del foco; 0 = gasta de la general
+        default_factory=lambda: float(os.environ.get("AI_FOCUS_BUDGET_USD", "15"))
+    )
+    ai_focus_max_pieces: int = field(default_factory=lambda: int(os.environ.get("AI_FOCUS_MAX_PIECES", "3")))
+    ai_focus_max_threads: int = field(
+        default_factory=lambda: int(os.environ.get("AI_FOCUS_MAX_THREADS", "2"))
+    )
+    ai_focus_claims_calls: int = field(
+        default_factory=lambda: int(os.environ.get("AI_FOCUS_CLAIMS_CALLS", "4"))
+    )
+    ai_focus_refresh_minutes: int = field(
+        default_factory=lambda: int(os.environ.get("AI_FOCUS_REFRESH_MINUTES", "30"))
+    )
     # Publicidad (cliente de ads-service, microservices-ecosystem). Sin URL o sin clave no se pinta nada.
     ads_service_url: str = field(default_factory=lambda: os.environ.get("ADS_SERVICE_URL", ""))
     ads_site_key: str = field(default_factory=lambda: os.environ.get("ADS_SITE_KEY", ""))
