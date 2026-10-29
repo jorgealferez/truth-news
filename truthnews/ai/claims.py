@@ -11,6 +11,7 @@ import json
 import logging
 import re
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime
 from functools import lru_cache
@@ -217,8 +218,10 @@ def run(
     since: datetime,
     verifier: Verifier | None = None,
     max_calls: int = 3,
+    only: Callable[[Article], bool] | None = None,
 ) -> dict:
-    """Propone afirmaciones de los articulos ingeridos desde `since`, las valida y las juzga."""
+    """Propone afirmaciones de los articulos ingeridos desde `since` (con `only`, solo los que pasen el
+    filtro, p. ej. los del foco, ADR 0056), las valida y las juzga."""
     verifier = verifier or Verifier()
     arts = list(
         session.scalars(
@@ -228,6 +231,8 @@ def run(
             .order_by(Article.published_at.desc())
         )
     )
+    if only is not None:
+        arts = [a for a in arts if only(a)]
     known = {
         (aid, text)
         for aid, text in session.execute(

@@ -244,16 +244,13 @@ def process_pending(
     ai: AIClient | None = None,
     timeline: Callable[..., list[dict]] = gdelt.timeline,
     limit: int = 2,
+    question: str | None = None,
 ) -> dict:
     verifier = verifier or Verifier()
-    pending = list(
-        session.scalars(
-            select(Investigation)
-            .where(Investigation.status == "pendiente")
-            .order_by(Investigation.created_at)
-            .limit(limit)
-        )
-    )
+    q = select(Investigation).where(Investigation.status == "pendiente")
+    if question is not None:  # solo la de esa pregunta (la del foco, ADR 0056)
+        q = q.where(Investigation.question == question)
+    pending = list(session.scalars(q.order_by(Investigation.created_at).limit(limit)))
     done = failed = 0
     for inv in pending:
         inv.status, inv.updated_at = "en-curso", utcnow()

@@ -274,18 +274,25 @@ def build_thread(
     return thread
 
 
-def run(session: Session, ai: AIClient, country: str = "ES", limit: int = 2, **sources) -> dict:
-    """Hilos para las historias de cabecera que no lo tienen o lo tienen de hace mas de 12 h."""
+def run(
+    session: Session,
+    ai: AIClient,
+    country: str = "ES",
+    limit: int = 2,
+    stories: list[Story] | None = None,
+    refresh: timedelta = REFRESH_AFTER,
+    **sources,
+) -> dict:
+    """Hilos para las historias de cabecera (o las dadas, p. ej. las del foco, ADR 0056) que no lo tienen o
+    lo tienen de hace mas de `refresh`."""
     done = revision = failed = pieces = 0
-    for st in queries.top_stories(session, country=country, limit=8):
+    candidates = queries.top_stories(session, country=country, limit=8) if stories is None else stories
+    for st in candidates:
         if done + failed >= limit:
             break
         existing = session.scalars(select(Thread).where(Thread.anchor_story_id == st.id)).first()
         updated = existing.updated_at if existing else None
-        if (
-            updated
-            and (updated if updated.tzinfo else updated.replace(tzinfo=UTC)) > utcnow() - REFRESH_AFTER
-        ):
+        if updated and (updated if updated.tzinfo else updated.replace(tzinfo=UTC)) > utcnow() - refresh:
             continue
         try:
             thread = build_thread(session, st, ai, **sources)

@@ -35,6 +35,7 @@ def call_cost(model: str, usage: dict) -> float:
 VERIFY = (
     "verificacion"  # bolsa de las llamadas que juzgan afirmaciones: su propio tope (decision del usuario)
 )
+FOCUS = "foco"  # bolsa del suceso en foco (ADR 0056): agotar la general no lo para
 
 
 class Meter:
@@ -50,6 +51,8 @@ class Meter:
         daily_budget: float = 0.0,
         verify_spent_before: float = 0.0,
         verify_budget: float = 0.0,
+        focus_spent_before: float = 0.0,
+        focus_budget: float = 0.0,
     ):
         self.spent_before = spent_before  # lo gastado hoy en ciclos anteriores (bolsa general)
         self.daily_budget = daily_budget  # 0 = sin tope
@@ -57,22 +60,30 @@ class Meter:
         self.verify_budget = verify_budget  # 0 = sin bolsa propia
         self.spent = 0.0  # todo lo de este ciclo, las dos bolsas
         self.verify_spent = 0.0  # lo de este ciclo cargado a la bolsa de verificacion
+        self.focus_spent_before = focus_spent_before
+        self.focus_budget = focus_budget  # 0 = sin bolsa propia
+        self.focus_spent = 0.0
         self.calls = 0
         self.by_model: Counter = Counter()
         self._lock = threading.Lock()
 
     def _own_pool(self, pool: str) -> bool:
-        return pool == VERIFY and self.verify_budget > 0
+        return (pool == VERIFY and self.verify_budget > 0) or (pool == FOCUS and self.focus_budget > 0)
+
+    def _general(self) -> float:
+        return self.spent_before + self.spent - self.verify_spent - self.focus_spent
 
     def check(self, pool: str = "general") -> None:
-        if self._own_pool(pool):
+        if self._own_pool(pool) and pool == VERIFY:
             total, budget, name = (
                 self.verify_spent_before + self.verify_spent,
                 self.verify_budget,
                 " de verificacion",
             )
+        elif self._own_pool(pool):
+            total, budget, name = self.focus_spent_before + self.focus_spent, self.focus_budget, " del foco"
         else:
-            total, budget, name = self.spent_before + self.spent - self.verify_spent, self.daily_budget, ""
+            total, budget, name = self._general(), self.daily_budget, ""
         if budget > 0 and total >= budget:
             raise BudgetExceeded(f"presupuesto diario de IA{name} agotado ({total:.2f} de {budget:.2f} USD)")
 
@@ -80,8 +91,10 @@ class Meter:
         cost = call_cost(model, usage)
         with self._lock:
             self.spent += cost
-            if self._own_pool(pool):
+            if self._own_pool(pool) and pool == VERIFY:
                 self.verify_spent += cost
+            elif self._own_pool(pool):
+                self.focus_spent += cost
             self.calls += 1
             self.by_model[model] += cost
         return cost
@@ -90,12 +103,15 @@ class Meter:
         return {
             "usd": round(self.spent, 4),
             "verificacion_usd": round(self.verify_spent, 4),
+            "foco_usd": round(self.focus_spent, 4),
             "llamadas": self.calls,
             "por_modelo": {m: round(v, 4) for m, v in self.by_model.items()},
-            "hoy_usd": round(self.spent_before + self.spent - self.verify_spent, 4),
+            "hoy_usd": round(self._general(), 4),
             "hoy_verificacion_usd": round(self.verify_spent_before + self.verify_spent, 4),
+            "hoy_foco_usd": round(self.focus_spent_before + self.focus_spent, 4),
             "tope_diario_usd": self.daily_budget,
             "tope_verificacion_usd": self.verify_budget,
+            "tope_foco_usd": self.focus_budget,
         }
 
 
@@ -105,8 +121,15 @@ METER = Meter()
 
 
 def start_cycle(
-    spent_before: float, daily_budget: float, verify_spent_before: float = 0.0, verify_budget: float = 0.0
+    spent_before: float,
+    daily_budget: float,
+    verify_spent_before: float = 0.0,
+    verify_budget: float = 0.0,
+    focus_spent_before: float = 0.0,
+    focus_budget: float = 0.0,
 ) -> Meter:
     global METER
-    METER = Meter(spent_before, daily_budget, verify_spent_before, verify_budget)
+    METER = Meter(
+        spent_before, daily_budget, verify_spent_before, verify_budget, focus_spent_before, focus_budget
+    )
     return METER

@@ -26,6 +26,7 @@ from truthnews.db import get_engine, session_scope
 from truthnews.elections import calendar as el_calendar
 from truthnews.elections import fulfilment, programs
 from truthnews.entities import store as entities
+from truthnews.focus import Focus, ensure_investigation
 from truthnews.investigate import process_pending, seed_defaults
 from truthnews.models import CrawlRun, Outlet, utcnow
 from truthnews.social import queue as social
@@ -113,16 +114,32 @@ def spent_today(session, now: datetime | None = None) -> tuple[float, float]:
     for st in session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day)):
         ai_cost = (st or {}).get("ai_cost") or {}
         v = float(ai_cost.get("verificacion_usd") or 0)
-        general += float(ai_cost.get("usd") or 0) - v
+        general += float(ai_cost.get("usd") or 0) - v - float(ai_cost.get("foco_usd") or 0)
         verify += v
     return general, verify
+
+
+def focus_spent_today(session, now: datetime | None = None) -> float:
+    """USD de la bolsa del foco gastados hoy (ADR 0056)."""
+    now = now or datetime.now(UTC)
+    day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    rows = session.scalars(select(CrawlRun.stats).where(CrawlRun.started_at >= day))
+    return sum(float(((st or {}).get("ai_cost") or {}).get("foco_usd") or 0) for st in rows)
 
 
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
         general, verify = spent_today(session)
-        cost.start_cycle(general, settings.ai_daily_budget_usd, verify, settings.ai_daily_budget_verify_usd)
+        cost.start_cycle(
+            general,
+            settings.ai_daily_budget_usd,
+            verify,
+            settings.ai_daily_budget_verify_usd,
+            focus_spent_today(session),
+            settings.ai_focus_budget_usd,
+        )
+    focus = Focus(settings.ai_focus)
     summary = _Timed()
     with session_scope(engine) as session:
         sync_registry(session)
@@ -174,6 +191,18 @@ def _run_cycle(settings: Settings) -> dict:
             else None
         )
         summary["fulfilment"] = _guarded(engine, "cumplimiento", lambda s: fulfilment.run(s, settings, ai=ai))
+    if settings.ai_enabled and focus and settings.ai_focus_claims_calls > 0:  # el foco primero (ADR 0056)
+        summary["focus_claims"] = _guarded(
+            engine,
+            "afirmaciones del foco",
+            lambda s: ai_claims.run(
+                s,
+                AIClient(settings.ai_model, settings.ai_claims_effort, max_tokens=16000, pool=cost.FOCUS),
+                utcnow() - timedelta(hours=72),
+                max_calls=settings.ai_focus_claims_calls,
+                only=focus.article,
+            ),
+        )
     if settings.ai_enabled:  # mas afirmaciones juzgadas: la prioridad del usuario (2026-10-19)
 
         def _claims(session):
@@ -200,6 +229,19 @@ def _run_cycle(settings: Settings) -> dict:
                 countries=settings.archive_countries,
             ),
         )
+    if settings.ai_enabled and focus and settings.ai_focus_max_threads > 0:
+        summary["focus_threads"] = _guarded(
+            engine,
+            "hilos del foco",
+            lambda s: threads.run(
+                s,
+                AIClient(settings.ai_model, settings.ai_effort, pool=cost.FOCUS),
+                settings.default_country,
+                settings.ai_focus_max_threads,
+                stories=focus.stories(s, settings.default_country),
+                refresh=timedelta(minutes=settings.ai_focus_refresh_minutes),
+            ),
+        )
     if settings.ai_enabled:  # los hilos van primero: son lo que mas aporta (peticion del usuario 2026-10-19)
         summary["threads"] = _guarded(
             engine,
@@ -215,8 +257,24 @@ def _run_cycle(settings: Settings) -> dict:
 
     def _investigations(session):
         seed_defaults(session)
+        out = {}
+        if focus and settings.ai_focus_question:  # la del foco, con su bolsa y antes que las demas
+            out["foco"] = ensure_investigation(
+                session,
+                settings.ai_focus_question,
+                settings.default_country,
+                timedelta(minutes=settings.ai_focus_refresh_minutes),
+            )
+            fai = (
+                AIClient(settings.ai_model, settings.ai_effort, pool=cost.FOCUS)
+                if settings.ai_enabled
+                else None
+            )
+            out["foco_proceso"] = process_pending(
+                session, ai=fai, question=settings.ai_focus_question.strip()
+            )
         ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
-        return process_pending(session, ai=ai)
+        return {**out, **process_pending(session, ai=ai)}
 
     summary["investigations"] = _guarded(engine, "investigaciones", _investigations)
     with session_scope(engine) as session:  # redes al final: publica lo que este ciclo dejo listo (ADR 0018)
