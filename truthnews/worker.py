@@ -271,7 +271,10 @@ def _run_cycle(settings: Settings) -> dict:
                 else None
             )
             out["foco_proceso"] = process_pending(
-                session, ai=fai, question=settings.ai_focus_question.strip()
+                session,
+                ai=fai,
+                question=settings.ai_focus_question.strip(),
+                stories=focus.stories(session, settings.default_country, limit=20),
             )
         ai = AIClient(settings.ai_model, settings.ai_effort) if settings.ai_enabled else None
         return {**out, **process_pending(session, ai=ai)}

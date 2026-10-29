@@ -170,3 +170,15 @@ def test_focus_pieces_use_their_own_quota_and_cadence(session, monkeypatch):
     ((topics, n, refresh),) = calls
     assert [x.id for x in topics] == [t.id] and n == 2 and refresh == timedelta(minutes=15)
     assert out == {"focus_topics": 1, "focus_pieces": 1, "focus_in_revision": 0}
+
+
+def test_focus_investigation_gets_the_dossier_of_its_stories_only(session):
+    accident, budget = _world(session)
+    session.add(Investigation(question=Q))
+    session.flush()
+    process_pending(session, ai=None, timeline=lambda q, s: [], question=Q, stories=[accident])
+    r = session.query(Investigation).one().report
+    assert [h["id"] for h in r["historias"]] == [accident.id] and r["datos"] == []
+    (brief,) = r["dossier"]
+    assert brief["titular"] == accident.title and len(brief["medios"]) == 3
+    assert "foco" in r["metodo"]
