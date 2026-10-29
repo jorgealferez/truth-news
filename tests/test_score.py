@@ -172,3 +172,29 @@ def test_backfill_scores_recent_unscored_stories_only(session):
     assert score_stories(session, since=NOW) == {"scored": 1, "with_contrast": 1}
     assert stories[0].contrast["disputas"] == ["heridos"] and stories[1].contrast is None
     assert score_stories(session, since=NOW) == {"scored": 0, "with_contrast": 0}
+
+
+def test_tie_between_old_stories_does_not_break_assignment(session):
+    # Produccion 2026-10-29: dos historias antiguas con la misma similitud (0,0) hacian que max() comparase
+    # objetos Story y el analisis entero caia en cada ciclo (TypeError) desde el 19/10.
+    outs = _outlets(session)
+    old_when = NOW - timedelta(days=5)
+    for title in ("Subasta de pisos en Bilbao", "Cierre de fabricas en Vigo"):
+        st = Story(
+            title=title,
+            category="sociedad",
+            country="ES",
+            first_seen=old_when,
+            last_seen=old_when,
+            n_articles=2,
+            n_outlets=2,
+            contrast_score=5.0,
+        )
+        session.add(st)
+    for i, o in enumerate(outs[:2]):
+        _article(
+            session, 30 + i, o, "Choque de dos trenes de alta velocidad en Toledo", NOW - timedelta(minutes=i)
+        )
+    session.flush()
+    out = pipeline.assign_stories(session)
+    assert out["stories_relaunched"] == 0 and out["stories_created"] == 1

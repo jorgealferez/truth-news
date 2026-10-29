@@ -113,7 +113,12 @@ def assign_stories(session: Session, now: datetime | None = None, window: timede
         story = session.get(Story, votes.most_common(1)[0][0]) if votes else None
         if story is None and len({a.outlet_id for a in members}) >= 2 and older:
             vec = vectorize(Doc(key=lead.id, title=lead.title), idf)
-            sim, best = max(((cosine(vec, v), st) for st, v in older if st.id not in used), default=(0, None))
+            # key: con dos historias empatadas en similitud, max() compararia objetos Story (TypeError).
+            sim, best = max(
+                ((cosine(vec, v), st) for st, v in older if st.id not in used),
+                key=lambda t: t[0],
+                default=(0, None),
+            )
             if best is not None and sim >= RELAUNCH_THRESHOLD:
                 story, best.relaunched_at = best, now
                 relaunched += 1
