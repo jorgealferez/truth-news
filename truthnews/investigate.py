@@ -153,6 +153,12 @@ EN_TERMS = {
     "corrupcion": "corruption",
     "clima": "climate",
     "incendios": "wildfires",
+    "tren": "train",
+    "trenes": "train",
+    "ferroviario": "rail",
+    "accidente": "accident",
+    "choque": "collision",
+    "descarrilamiento": "derailment",
 }
 EN_PHRASES = {
     "estados unidos": "united states",

@@ -88,6 +88,8 @@ def test_countries_and_query():
         '"united states" russia israel'
     )
     assert gdelt_query("¿Algo sin terminos conocidos?") == ""
+    # Accidentes ferroviarios (2026-10-29, choque AVE-Iryo en Toledo): antes la consulta salia vacia.
+    assert gdelt_query("¿Que paso en el choque de trenes de Toledo?") == "collision train"
 
 
 def test_related_stories_need_terms_and_several_outlets(session):
