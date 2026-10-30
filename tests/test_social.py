@@ -24,6 +24,9 @@ from truthnews.social.select import candidates
 
 SITE = "https://nosmienten.com"
 NOW = datetime.now(UTC)
+# Base para las pruebas que miran "mas tarde ese mismo dia": a las 20:00 UTC como muy tarde, para que
+# NOW + 1 h no cambie de dia ni en UTC ni en Madrid (entre las 23:00 y las 00:00 UTC fallaban, 2026-10-29).
+SAME_DAY = min(NOW, NOW.replace(hour=20, minute=0, second=0, microsecond=0))
 ALL_CREDS = {
     "BLUESKY_HANDLE": "nosmienten.com",
     "BLUESKY_APP_PASSWORD": "app-pass",
@@ -201,19 +204,19 @@ def test_dry_run_registers_without_sending_no_duplicates_and_quota(session, cont
     calls = []
     client = httpx.Client(transport=httpx.MockTransport(lambda r: calls.append(r) or httpx.Response(500)))
     cfg = settings(quota={"x": 1, "bluesky": 6, "mastodon": 6, "telegram": 8}, per_cycle=2)
-    first = run(session, SITE, cfg, client=client, now=NOW)
+    first = run(session, SITE, cfg, client=client, now=SAME_DAY)
     assert first["x"] == {"modo": "prueba", "nuevas": 1, "enviadas": 0, "errores": 0}
     assert first["telegram"]["nuevas"] == 2 and not calls
     posts = session.query(SocialPost).all()
     assert {p.status for p in posts} == {"prueba"} and all(p.link.startswith(SITE) for p in posts)
-    second = run(session, SITE, cfg, client=client, now=NOW + timedelta(minutes=60))
+    second = run(session, SITE, cfg, client=client, now=SAME_DAY + timedelta(minutes=60))
     assert second["x"]["nuevas"] == 0  # cupo diario agotado
     assert (
         second["telegram"]["nuevas"] == 2
     )  # los dos siguientes (hoy, verificacion, hilo, historia), sin repetir
     keys = [(p.network, p.kind, p.ref_id) for p in session.query(SocialPost)]
     assert len(keys) == len(set(keys))
-    tomorrow = run(session, SITE, cfg, client=client, now=NOW + timedelta(days=1))
+    tomorrow = run(session, SITE, cfg, client=client, now=SAME_DAY + timedelta(days=1))
     assert tomorrow["x"]["nuevas"] == 1
     assert run(session, SITE, settings(enabled=False)) == {"activo": False}
 
@@ -606,16 +609,16 @@ def test_active_hours_setting(monkeypatch):
 def test_daily_piece_once_a_day_only_with_checked_data(session):
     from truthnews.social.select import today_piece
 
-    assert today_piece(session, SITE, NOW, "es") == []  # nada contrastado: no hay pieza
+    assert today_piece(session, SITE, SAME_DAY, "es") == []  # nada contrastado: no hay pieza
     st = _story(session, "Desalojo en la calle Mayor", [400, 1000])
     _verification(session, st, verdict="falso")
     session.commit()
-    (c,) = today_piece(session, SITE, NOW, "es")
-    assert c.kind == "hoy" and c.ref_id == int(f"{NOW:%Y%m%d}") and c.draft.url == f"{SITE}/hoy"
+    (c,) = today_piece(session, SITE, SAME_DAY, "es")
+    assert c.kind == "hoy" and c.ref_id == int(f"{SAME_DAY:%Y%m%d}") and c.draft.url == f"{SITE}/hoy"
     assert c.draft.lines[0].startswith("Falso:")
-    out = run(session, SITE, settings(per_cycle=1), now=NOW)
+    out = run(session, SITE, settings(per_cycle=1), now=SAME_DAY)
     assert out["x"]["nuevas"] == 1 and out["x_en"]["nuevas"] == 0
     post = session.query(SocialPost).filter_by(network="telegram", kind="hoy").one()
     assert post.image_url == f"{SITE}/og/hoy-vertical.png" and "Hoy en 1 minuto" in post.text
-    run(session, SITE, settings(per_cycle=1), now=NOW + timedelta(hours=1))
+    run(session, SITE, settings(per_cycle=1), now=SAME_DAY + timedelta(hours=1))
     assert session.query(SocialPost).filter_by(network="telegram", kind="hoy").count() == 1
