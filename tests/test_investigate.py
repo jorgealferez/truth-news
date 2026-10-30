@@ -252,3 +252,24 @@ def test_admin_text_coverage_by_section_last_24h(admin_client, session):
     assert text_coverage(session) == [{"category": "internacional", "total": 3, "with_text": 1, "pct": 33.3}]
     page = admin_client.get("/admin", auth=("admin", "secreto")).text
     assert "Artículos con texto completo (últimas 24 h)" in page and "33.3" in page
+
+
+def test_failed_refresh_keeps_the_published_analysis(session):
+    """Produccion 2026-10-30: el foco reabre la investigacion cada 30 min; con el tope de IA agotado el
+    informe nuevo, sin analisis, borraba el publicado (/investigacion/3 se quedo sin respuesta)."""
+    inv = Investigation(question="¿Que pasa con el paro en Alemania?")
+    session.add(inv)
+    session.flush()
+    process_pending(
+        session,
+        verifier=FakeVerifier(),
+        ai=FakeAI({"conclusion": "Eurostat da 7.25"}),
+        timeline=fake_timeline,
+    )
+    assert "analisis" in inv.report
+    inv.status = "pendiente"
+    process_pending(
+        session, verifier=FakeVerifier(), ai=FakeAI(error="presupuesto agotado"), timeline=fake_timeline
+    )
+    assert inv.status == "publicada" and inv.report["analisis"] == {"conclusion": "Eurostat da 7.25"}
+    assert inv.report["actualizacion_fallida"] == "presupuesto agotado"
