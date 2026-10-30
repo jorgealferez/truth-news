@@ -35,6 +35,8 @@ Reglas de edicion (resumen; la version completa esta en la skill):
 
 ## Activo
 
+- [ ] Tope de 2 EUR al dia de IA (peticion del usuario 2026-10-30: "Limita el gasto diario en tokens de Claude anthropic a 2EUR ya que estamos consumiendo mas de 25EUR al dia"): topes en Railway (general 1,5 + verificacion 0,2 + foco 0 = 1,7 USD; piezas de una en una), mismos valores por defecto en config, el gasto de un ciclo cortado cuenta (se guarda tras cada paso); ADR 0054 revisado — EN CURSO (session_01QHK9MHxN7VfLQMdGyhenyi, 2026-10-30)
+  - [x] Variables puestas en el worker de Railway (2026-10-30 ~01:25 UTC)
 - [x] Analisis caido en produccion y accidente AVE-Iryo de Toledo (peticion del usuario 2026-10-29: "activa toda la IA para que analice al fondo el accidente de ave e iryo y lo publique"): el worker cae en cada ciclo desde el ~19/10 con `TypeError: '>' not supported between instances of 'Story' and 'Story'` en `assign_stories` (empate de similitud al relanzar), asi que no se agrupan historias ni corre ninguna IA; arreglo con test que falla sin el; vocabulario ferroviario en la consulta GDELT de las investigaciones; tras el despliegue, investigacion a demanda sobre el choque (requiere ADMIN_PASSWORD, que este entorno no tiene) — EN CURSO (session_01QHK9MHxN7VfLQMdGyhenyi, 2026-10-29)
   - [x] Arreglo del analisis: #253 squash d5bf448, desplegado en web y worker (Railway, 22:13 UTC)
   - [x] Foco (peticion del usuario 2026-10-29: "forzar que ahora mismo todo lo que tenga que ver con eso se active y lo analice a fondo"): interruptor `AI_FOCUS` con bolsa propia, prioridad y cadencia de 30 min en afirmaciones, hilos, piezas e investigacion automatica (`AI_FOCUS_QUESTION`), ADR 0056, sin migracion; despues poner las variables en el worker y medir

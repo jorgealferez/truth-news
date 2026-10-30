@@ -80,7 +80,7 @@ class Settings:
         default_factory=lambda: int(os.environ.get("AI_MAX_PIECES_PER_CYCLE", "6"))
     )
     ai_piece_concurrency: int = field(  # llamadas de piezas a la vez; 1 = en serie
-        default_factory=lambda: int(os.environ.get("AI_PIECE_CONCURRENCY", "3"))
+        default_factory=lambda: int(os.environ.get("AI_PIECE_CONCURRENCY", "1"))
     )
     ai_max_threads_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_THREADS_PER_CYCLE", "2"))
@@ -97,14 +97,15 @@ class Settings:
         default_factory=lambda: int(os.environ.get("AI_PIECE_REFRESH_MINUTES", "120"))
     )
     # Tope de gasto de IA por dia UTC, en USD; al llegar, los pasos de IA se saltan hasta el dia siguiente.
-    # 0 = sin tope.
+    # 0 = sin tope. Decision del usuario 2026-10-30: 2 EUR al dia en total (general 1,5 + verificacion 0,2 +
+    # foco 0, que gasta de la general), con margen para la ultima llamada antes del tope.
     ai_daily_budget_usd: float = field(
-        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_USD", "40"))
+        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_USD", "1.5"))
     )
     # Bolsa aparte para juzgar afirmaciones (decision del usuario 2026-10-19): agotar el tope general no para
     # las verificaciones. 0 = sin bolsa propia (las verificaciones gastan del tope general).
     ai_daily_budget_verify_usd: float = field(
-        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_VERIFY_USD", "1.5"))
+        default_factory=lambda: float(os.environ.get("AI_DAILY_BUDGET_VERIFY_USD", "0.2"))
     )
     # Foco (ADR 0056): interruptor para un suceso grave. AI_FOCUS lleva los terminos separados por comas; lo
     # que case pasa primero por piezas, hilos, afirmaciones e investigacion, con bolsa y cadencia propias.
@@ -115,7 +116,7 @@ class Settings:
     )
     ai_focus_question: str = field(default_factory=lambda: os.environ.get("AI_FOCUS_QUESTION", ""))
     ai_focus_budget_usd: float = field(  # bolsa diaria del foco; 0 = gasta de la general
-        default_factory=lambda: float(os.environ.get("AI_FOCUS_BUDGET_USD", "15"))
+        default_factory=lambda: float(os.environ.get("AI_FOCUS_BUDGET_USD", "0"))
     )
     ai_focus_max_pieces: int = field(default_factory=lambda: int(os.environ.get("AI_FOCUS_MAX_PIECES", "3")))
     ai_focus_max_threads: int = field(
