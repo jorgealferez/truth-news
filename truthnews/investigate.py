@@ -295,6 +295,10 @@ def process_pending(
                     report["modelo"] = res.model
                 except AIError as exc:
                     report["analisis_error"] = str(exc)
+                    previous = inv.report or {}
+                    if "analisis" in previous:  # sin IA (tope agotado, rechazo) no se pierde lo ya publicado
+                        log.warning("investigacion %s: se conserva el analisis anterior (%s)", inv.id, exc)
+                        report = {**previous, "actualizacion_fallida": str(exc)}
             inv.report, inv.status, inv.error = report, "publicada", None
             done += 1
         except Exception as exc:  # una investigacion fallida no tumba el ciclo; queda registrada
