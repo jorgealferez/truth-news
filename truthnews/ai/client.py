@@ -9,6 +9,8 @@ from typing import Any
 from truthnews.ai import cost
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
+# Claude Haiku 5.5 no tiene respaldo en el servidor ante un rechazo: con fallbacks el rechazo se queda igual.
+NO_FALLBACK = ("claude-haiku-",)
 
 
 class AIError(RuntimeError):
@@ -25,7 +27,7 @@ class AIResult:
 class AIClient:
     def __init__(
         self,
-        model: str = "claude-opus-5-5",
+        model: str = "claude-haiku-5-5",
         effort: str = "high",
         client: Any = None,
         max_tokens: int = 64000,
@@ -50,6 +52,9 @@ class AIClient:
             cost.METER.check(getattr(self, "pool", "general"))
         except cost.BudgetExceeded as exc:
             raise AIError(str(exc)) from exc
+        fallback = (
+            {} if self.model.startswith(NO_FALLBACK) else {"betas": [FALLBACK_BETA], "fallbacks": "default"}
+        )
         with self._client.beta.messages.stream(
             model=self.model,
             max_tokens=self.max_tokens,
@@ -57,8 +62,7 @@ class AIClient:
             messages=[{"role": "user", "content": user}],
             thinking={"type": "adaptive"},
             output_config={"effort": self.effort, "format": {"type": "json_schema", "schema": schema}},
-            betas=[FALLBACK_BETA],
-            fallbacks="default",
+            **fallback,
         ) as stream:
             msg = stream.get_final_message()
         u = msg.usage

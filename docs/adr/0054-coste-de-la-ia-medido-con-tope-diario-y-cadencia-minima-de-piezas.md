@@ -100,3 +100,19 @@ ultima llamada, que se comprueba antes de hacerla y puede pasarse algo del tope.
 
 Con 1,5 USD caben unas pocas piezas Opus al dia; el resto de ciclos rastrean y contrastan sin IA.
 
+## Revision 2026-10-30: Claude Haiku 5.5 en vez de Opus (decision del usuario)
+"Ademas evita que sea opus el modelo si no que sea haiku." `AI_MODEL` pasa a `claude-haiku-5-5` en Railway y como
+valor por defecto (antes `claude-opus-5-5`): 0,10 / 0,50 USD por millon de tokens frente a 4 / 20, unas 40 veces
+menos por llamada, asi que el tope de 1,7 USD al dia alcanza para mucho mas trabajo. Lo que cambia en el cliente:
+
+- **Sin `fallbacks`**: Haiku 5.5 no tiene respaldo en el servidor ante un rechazo (con `fallbacks: "default"` el
+  rechazo se queda igual). Se envian solo a los modelos que lo tienen; un rechazo sigue siendo `AIError`.
+- **Dos tarifas**: por encima de 100 000 tokens de prompt (entrada + cache), Haiku 5.5 cobra 0,50 / 2,50 USD; el
+  contador del coste lo aplica para que el tope no se quede corto. Los dossieres actuales rondan los 10 000.
+- Sigue igual: pensamiento adaptativo, `effort` por paso (Haiku 5.5 admite `low` a `max`) y salida JSON por
+  esquema; el cliente no usa muestreo ni prefill, que Haiku 5.5 rechaza.
+
+Riesgo de calidad: Haiku es el modelo pequeno. Las reglas de fundamento (ADR 0007) no cambian: toda cifra de una
+pieza debe estar en su dossier o la pieza va a revision, asi que una pieza peor se queda en revision en vez de
+publicarse con un error.
+

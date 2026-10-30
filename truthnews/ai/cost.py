@@ -17,6 +17,9 @@ PRICES: dict[str, tuple[float, float, float, float]] = {
 # Un modelo que no esta en la tabla (p. ej. el de respaldo ante un rechazo) se cuenta al precio mas alto de
 # los de arriba: el tope diario nunca se queda corto por un precio que falta.
 UNKNOWN = max(PRICES.values())
+# Modelos con dos tarifas segun la longitud del prompt (entrada + cache): por encima del umbral, todo el
+# precio se multiplica. Claude Haiku 5.5: 0,10 / 0,50 USD hasta 100 000 tokens y 0,50 / 2,50 por encima.
+LONG_PROMPT: dict[str, tuple[int, float]] = {"claude-haiku-5-5": (100_000, 5.0)}
 USAGE_KEYS = ("input_tokens", "output_tokens", "cache_read_input_tokens", "cache_creation_input_tokens")
 
 
@@ -27,9 +30,12 @@ class BudgetExceeded(RuntimeError):
 def call_cost(model: str, usage: dict) -> float:
     # El nombre mas largo primero: "claude-opus-5-5" no debe caer en el precio de "claude-opus-5".
     by_length = sorted(PRICES.items(), key=lambda kv: -len(kv[0]))
-    price = next((p for name, p in by_length if model.startswith(name)), UNKNOWN)
+    name, price = next(((n, p) for n, p in by_length if model.startswith(n)), ("", UNKNOWN))
     tokens = [usage.get(k) or 0 for k in USAGE_KEYS]
-    return sum(t * p for t, p in zip(tokens, price, strict=True)) / 1_000_000
+    usd = sum(t * p for t, p in zip(tokens, price, strict=True)) / 1_000_000
+    threshold, factor = LONG_PROMPT.get(name, (0, 1.0))
+    prompt = tokens[0] + tokens[2] + tokens[3]  # entrada, lectura y escritura de cache
+    return usd * factor if threshold and prompt > threshold else usd
 
 
 VERIFY = (

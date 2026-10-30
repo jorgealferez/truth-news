@@ -74,7 +74,8 @@ class Settings:
     )
     # IA (ADR 0007). Sin ANTHROPIC_API_KEY no se generan temas ni piezas; el resto funciona igual.
     ai_enabled: bool = field(default_factory=lambda: bool(os.environ.get("ANTHROPIC_API_KEY")))
-    ai_model: str = field(default_factory=lambda: os.environ.get("AI_MODEL", "claude-opus-5-5"))
+    # Haiku por decision del usuario (2026-10-30: "evita que sea opus el modelo si no que sea haiku").
+    ai_model: str = field(default_factory=lambda: os.environ.get("AI_MODEL", "claude-haiku-5-5"))
     ai_effort: str = field(default_factory=lambda: os.environ.get("AI_EFFORT", "high"))
     ai_max_pieces_per_cycle: int = field(
         default_factory=lambda: int(os.environ.get("AI_MAX_PIECES_PER_CYCLE", "6"))
