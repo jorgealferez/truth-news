@@ -85,3 +85,18 @@ de 1,5 USD/dia** (`AI_DAILY_BUDGET_VERIFY_USD`, 0 = sin bolsa propia): las llama
 (`ai_claims` y `statement_checks_ai`, `AIClient(pool="verificacion")`) se cargan a ella y siguen todo el dia
 (~0,02 USD por ciclo, ~1 USD/dia medido). Tope total maximo: 11,5 USD/dia. `stats.ai_cost` separa
 `verificacion_usd` y `hoy_verificacion_usd`.
+
+## Revision 2026-10-30: tope de 2 EUR al dia (decision del usuario)
+"Limita el gasto diario en tokens de Claude a 2 EUR, estamos consumiendo mas de 25 EUR al dia." Los topes
+sumaban 26,5 USD (general 10 + verificacion 1,5 + foco 15, ADR 0056). Ahora, en Railway y como valores por
+defecto: general 1,5 USD, verificacion 0,2 USD y foco 0 (el foco conserva su prioridad pero gasta de la
+general): 1,7 USD en total, menos de 2 EUR mientras el euro valga al menos un dolar, con margen para la
+ultima llamada, que se comprueba antes de hacerla y puede pasarse algo del tope. Dos huecos cerrados:
+
+- **Ciclos cortados**: el gasto solo se guardaba al terminar el ciclo; uno cortado por un redespliegue no
+  contaba para el tope. Ahora se guarda tras cada paso que gasta (`_save_cost`).
+- **Piezas en paralelo**: con 3 a la vez, el tope se comprobaba antes de lanzar el lote y podian pasarse
+  hasta 3 piezas. `AI_PIECE_CONCURRENCY` pasa a 1: el tope se comprueba antes de cada pieza.
+
+Con 1,5 USD caben unas pocas piezas Opus al dia; el resto de ciclos rastrean y contrastan sin IA.
+

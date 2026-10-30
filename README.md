@@ -62,9 +62,9 @@ revisa en `/admin` (sección Redes).
 
 Variables del servicio `worker`. `AI_FOCUS` enciende el foco (terminos separados por comas, p. ej.
 `iryo,adif,los yebenes,urda,alta velocidad`); borrarla lo apaga. Mientras esta puesto, lo que case pasa
-primero por afirmaciones, hilos y piezas, cada 30 min y con su propia bolsa diaria, que no gasta de la
-general. Con `AI_FOCUS_QUESTION` se crea y se actualiza sola una investigacion con esa pregunta. Ajustes:
-`AI_FOCUS_BUDGET_USD` (15), `AI_FOCUS_MAX_PIECES` (3), `AI_FOCUS_MAX_THREADS` (2),
+primero por afirmaciones, hilos y piezas, cada 30 min, dentro del tope diario general (o con bolsa
+propia si `AI_FOCUS_BUDGET_USD` > 0). Con `AI_FOCUS_QUESTION` se crea y se actualiza sola una investigacion con esa pregunta. Ajustes:
+`AI_FOCUS_BUDGET_USD` (0: gasta de la general), `AI_FOCUS_MAX_PIECES` (3), `AI_FOCUS_MAX_THREADS` (2),
 `AI_FOCUS_CLAIMS_CALLS` (4), `AI_FOCUS_REFRESH_MINUTES` (30).
 
 ### Publicidad propia de Ridelta por zona (ADR 0055)

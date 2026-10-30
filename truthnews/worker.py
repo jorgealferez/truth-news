@@ -92,22 +92,26 @@ class _Timed(dict):
         self.seconds: dict[str, float] = {}
         self.cost: dict[str, float] = {}  # USD de IA por paso, igual que los segundos (ADR 0054)
         self._spent = cost.METER.spent
+        self.persist = None  # guarda el gasto tras cada paso: un ciclo cortado tambien cuenta para el tope
 
     def __setitem__(self, key, value):
         now = self._clock()
         self.seconds.setdefault(key, round(now - self._last, 1))
         self._last = now
         spent = cost.METER.spent
-        if spent > self._spent:
+        changed = spent > self._spent
+        if changed:
             self.cost.setdefault(key, round(spent - self._spent, 4))
         self._spent = spent
         super().__setitem__(key, value)
+        if changed and self.persist is not None:
+            self.persist()
 
 
 def spent_today(session, now: datetime | None = None) -> tuple[float, float]:
-    """USD de IA gastados hoy (dia UTC) en los ciclos ya guardados: (bolsa general, bolsa de verificacion).
-    Un ciclo cortado antes de guardar sus estadisticas no cuenta: el tope puede quedarse algo corto, nunca
-    bloquear de mas."""
+    """USD de IA gastados hoy (dia UTC): (bolsa general, bolsa de verificacion). Cada ciclo guarda su gasto
+    tras cada paso que gasta, asi que uno cortado por un redespliegue cuenta hasta su ultimo paso terminado
+    (antes no contaba y el tope se quedaba corto: decision del usuario 2026-10-30, tope de 2 EUR al dia)."""
     now = now or datetime.now(UTC)
     day = now.replace(hour=0, minute=0, second=0, microsecond=0)
     general = verify = 0.0
@@ -146,6 +150,7 @@ def _run_cycle(settings: Settings) -> dict:
     with session_scope(engine) as session:
         run = asyncio.run(crawl(session, settings))
         summary["run"] = run.id  # seconds["run"]: registro y rastreo
+        summary.persist = lambda run_id=run.id: _save_cost(engine, run_id, summary)
         summary.update(  # `update` no pasa por __setitem__: no son pasos
             feeds_ok=run.feeds_ok,
             feeds_failed=run.feeds_failed,
@@ -312,6 +317,18 @@ def _elections(settings: Settings) -> el_calendar.Calendar:
     if _calendar is None:
         _calendar = el_calendar.Calendar(settings.elections_lookback_days)
     return _calendar
+
+
+def _save_cost(engine, run_id: int, summary: _Timed) -> None:
+    """Gasto de IA del ciclo hasta ahora en su CrawlRun, para que el tope diario lo vea aunque se corte."""
+    try:
+        with session_scope(engine) as session:
+            row = session.get(CrawlRun, run_id)
+            if row is not None:
+                spent = {**cost.METER.summary(), "por_paso": summary.cost}
+                row.stats = {**(row.stats or {}), "ai_cost": spent}
+    except Exception:  # guardar el parcial nunca tumba el ciclo; el final lo vuelve a escribir
+        log.exception("coste parcial del ciclo %s no guardado", run_id)
 
 
 def _guarded(engine, name: str, step) -> dict:

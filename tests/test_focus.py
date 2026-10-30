@@ -182,3 +182,23 @@ def test_focus_investigation_gets_the_dossier_of_its_stories_only(session):
     (brief,) = r["dossier"]
     assert brief["titular"] == accident.title and len(brief["medios"]) == 3
     assert "foco" in r["metodo"]
+
+
+def test_a_cut_cycle_still_counts_its_ai_spend(session, engine):
+    """Decision del usuario 2026-10-30 (tope de 2 EUR al dia): el gasto se guarda tras cada paso que gasta,
+    asi que un ciclo cortado por un redespliegue tambien cuenta para el tope del siguiente ciclo."""
+    from truthnews import worker
+
+    run = CrawlRun(started_at=NOW, stats={})
+    session.add(run)
+    session.commit()
+    meter = cost.start_cycle(0, 1.5)
+    summary = worker._Timed()
+    summary.persist = lambda: worker._save_cost(engine, run.id, summary)
+    summary["run"] = run.id
+    meter.charge("claude-opus-5-5", {"output_tokens": 50_000})  # 1 USD
+    summary["threads"] = {}
+    # El ciclo se corta aqui (redespliegue): no llega al guardado final.
+    session.expire_all()
+    assert worker.spent_today(session, NOW)[0] == pytest.approx(1.0)
+    cost.start_cycle(0, 0)
