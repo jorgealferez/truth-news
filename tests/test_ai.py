@@ -50,7 +50,7 @@ def message(text='{"ok": 1}', stop="end_turn"):
 
 def test_client_sends_structured_cached_request_with_fallbacks():
     calls = []
-    res = AIClient(client=fake_sdk(message(), calls), effort="high").structured(
+    res = AIClient("claude-opus-5-5", client=fake_sdk(message(), calls), effort="high").structured(
         "SYS", "USER", {"type": "object"}
     )
     assert res.data == {"ok": 1} and res.usage["cache_creation_input_tokens"] == 8
@@ -75,8 +75,10 @@ def test_client_errors(msg, err):
         AIClient(client=fake_sdk(msg, [])).structured("s", "u", {})
 
 
-def test_real_sdk_serializes_request(monkeypatch):
-    """Pasa por el SDK oficial con un transporte simulado: la peticion se construye y la respuesta se lee."""
+@pytest.mark.parametrize(("model", "fallback"), [("claude-haiku-5-5", False), ("claude-opus-5-5", True)])
+def test_real_sdk_serializes_request(monkeypatch, model, fallback):
+    """Pasa por el SDK oficial con un transporte simulado: la peticion se construye y la respuesta se lee.
+    Haiku 5.5 va sin fallbacks (no tiene respaldo en el servidor); Opus, con ellos."""
     import anthropic
     import httpx2
 
@@ -131,10 +133,14 @@ def test_real_sdk_serializes_request(monkeypatch):
     sdk = anthropic.Anthropic(
         api_key="test", http_client=anthropic.DefaultHttpxClient(transport=httpx2.MockTransport(handler))
     )
-    res = AIClient(client=sdk).structured("SYS", "USER", topics_schema())
+    res = AIClient(model, client=sdk).structured("SYS", "USER", topics_schema())
     assert res.data == {"temas": []}
     body = seen["body"]
-    assert body["fallbacks"] == "default" and FALLBACK_BETA in seen["beta"]
+    assert body["model"] == model
+    if fallback:
+        assert body["fallbacks"] == "default" and FALLBACK_BETA in seen["beta"]
+    else:
+        assert "fallbacks" not in body and FALLBACK_BETA not in (seen["beta"] or "")
     assert body["output_config"]["format"]["schema"]["required"] == ["temas"] and body["stream"] is True
 
 
@@ -354,7 +360,10 @@ def test_call_cost_uses_model_prices_and_charges_unknown_at_the_top():
     usage = {"input_tokens": 1_000_000, "output_tokens": 100_000, "cache_read_input_tokens": 0}
     assert cost.call_cost("claude-opus-5-5", usage) == pytest.approx(4.0 + 2.0)
     assert cost.call_cost("claude-opus-5", usage) == pytest.approx(5.0 + 2.5)  # no se confunde con 5-5
-    assert cost.call_cost("claude-haiku-5-5", usage) == pytest.approx(0.1 + 0.05)
+    short = {"input_tokens": 100_000, "output_tokens": 100_000, "cache_read_input_tokens": 0}
+    assert cost.call_cost("claude-haiku-5-5", short) == pytest.approx(0.01 + 0.05)
+    # Mas de 100 000 tokens de prompt: tarifa larga de Haiku 5.5 (0,50 / 2,50 USD), cinco veces la corta.
+    assert cost.call_cost("claude-haiku-5-5", usage) == pytest.approx(0.5 + 0.25)
     assert cost.call_cost("modelo-nuevo", usage) == pytest.approx(5.0 + 2.5)
 
 
@@ -470,3 +479,15 @@ def test_verification_pool_keeps_judging_when_the_general_budget_is_spent(monkey
     monkeypatch.setattr(cost, "METER", shared)
     with pytest.raises(AIError, match="presupuesto diario de IA agotado"):
         judge.structured("s", "u", {})
+
+
+def test_haiku_is_the_default_and_goes_without_fallbacks():
+    """Decision del usuario 2026-10-30: Haiku y no Opus. Haiku 5.5 no tiene respaldo ante rechazos."""
+    from truthnews.config import Settings
+
+    assert Settings(database_url="sqlite://").ai_model == "claude-haiku-5-5"
+    calls = []
+    AIClient(client=fake_sdk(message(), calls)).structured("SYS", "USER", {"type": "object"})
+    kw = calls[0]
+    assert kw["model"] == "claude-haiku-5-5" and "fallbacks" not in kw and "betas" not in kw
+    assert kw["thinking"] == {"type": "adaptive"} and kw["output_config"]["format"]["type"] == "json_schema"
