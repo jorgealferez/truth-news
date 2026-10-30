@@ -33,6 +33,9 @@ foco. Sin la variable no cambia nada; se apaga borrandola. Mientras esta puesto,
    bolsa general esta agotada), el foco escribe igual sobre los temas que ya existen.
 4. **Investigacion**: con `AI_FOCUS_QUESTION`, la investigacion de esa pregunta se crea sola, se procesa
    antes que las demas y se reabre cada 30 min para que siga al suceso.
+   Su informe se cine a las historias del foco (no a la busqueda por terminos, que en produccion mezclo
+   la muerte de Fatima Banez y una protesta de tractores) y lleva su `dossier`: titular y resumen de cada
+   medio y cifras en disputa por historia (las 10 primeras), sin indicadores por pais, que no aplican.
 5. **Coste**: todo lo anterior va a una bolsa diaria propia, `AI_FOCUS_BUDGET_USD` (15 USD). Agotar la
    general no para el foco, y el foco no gasta de la general. Con 0 gasta de la general. El ciclo apunta
    `foco_usd` y `hoy_foco_usd` en `ai_cost`.

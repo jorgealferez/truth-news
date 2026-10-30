@@ -33,11 +33,13 @@ DEFAULT_QUESTIONS = (
 EUROPE_WORDS = ("europa", "europeo", "europea", "europeos", "europeas", "europe", "european")
 EU_FOCUS = ("FR", "DE", "IT", "ES", "PT", "GR")
 DATA_INDICATORS = ("paro", "inflacion", "precio_vivienda")
+DOSSIER_STORIES = 10  # historias con dossier completo en la investigacion del foco (~10 000 tokens)
 INVESTIGATION_SYSTEM = """\
 Eres el equipo de investigacion de un medio de verificacion en espanol, riguroso y politicamente neutral.
 Recibes una PREGUNTA y un INFORME cerrado: historias publicadas por varios medios, datos oficiales por
 pais y la evolucion de la cobertura mundial (GDELT). Respondes a la pregunta solo con lo que hay en el
 informe: toda cifra que escribas debe aparecer en el informe tal cual. Atribuyes cada afirmacion. Si el
+informe trae "dossier", compara medio a medio con sus titulares, resumenes y cifras en disputa. Si el
 informe no permite responder algo, lo dices en "lo_que_no_sabemos". Planteas hipotesis y las evaluas con
 la evidencia a favor y en contra, sin tomar partido por gobiernos, partidos ni ideologias. Espanol de
 Espana, claro, para el gran publico."""
@@ -182,12 +184,19 @@ def build_report(
     inv: Investigation,
     verifier: Verifier,
     timeline: Callable[..., list[dict]] = gdelt.timeline,
+    stories: list[Story] | None = None,
 ) -> dict:
+    """Con `stories` (las del foco, ADR 0056) el informe se ciñe a ellas y lleva su dossier medio a medio
+    en vez de buscar por terminos, que mezclaba historias ajenas; los indicadores por pais no aplican."""
+    from truthnews.ai.threads import story_brief  # threads importa este modulo
+
     qn = normalize(inv.question)
     geos = countries_in(qn)
-    stories = related_stories(session, inv.question, geos)
+    deep = stories is not None
+    if not deep:
+        stories = related_stories(session, inv.question, geos)
     data = []
-    for geo in geos[:8]:
+    for geo in [] if deep else geos[:8]:
         for ind in DATA_INDICATORS:
             obs = verifier.observation(ind, geo)
             if obs is None or obs.is_stale():
@@ -216,7 +225,7 @@ def build_report(
         "maximo": max(values) if values else None,
         "fuente": "GDELT DOC 2.0 (porcentaje de la cobertura mundial monitorizada)",
     }
-    return {
+    report = {
         "pregunta": inv.question,
         "paises": geos,
         "historias": [
@@ -236,6 +245,14 @@ def build_report(
             "cobertura mundial en GDELT."
         ),
     }
+    if deep:
+        report["dossier"] = [story_brief(session, s) for s in stories[:DOSSIER_STORIES]]
+        report["metodo"] = (
+            "Historias del suceso en foco de las ultimas 72 h contadas por al menos 2 medios, con el "
+            "titular y el resumen de cada medio y las cifras en las que discrepan; volumen diario de "
+            "cobertura mundial en GDELT."
+        )
+    return report
 
 
 def process_pending(
@@ -245,6 +262,7 @@ def process_pending(
     timeline: Callable[..., list[dict]] = gdelt.timeline,
     limit: int = 2,
     question: str | None = None,
+    stories: list[Story] | None = None,
 ) -> dict:
     verifier = verifier or Verifier()
     q = select(Investigation).where(Investigation.status == "pendiente")
@@ -256,7 +274,7 @@ def process_pending(
         inv.status, inv.updated_at = "en-curso", utcnow()
         session.flush()
         try:
-            report = build_report(session, inv, verifier, timeline)
+            report = build_report(session, inv, verifier, timeline, stories)
             if ai is not None:
                 try:
                     res = ai.structured(
