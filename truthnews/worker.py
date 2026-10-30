@@ -123,6 +123,25 @@ def spent_today(session, now: datetime | None = None) -> tuple[float, float]:
     return general, verify
 
 
+def budget_start(session, settings: Settings, now: datetime | None = None) -> tuple[float, ...]:
+    """Argumentos de `cost.start_cycle`. Lo gastado hoy por una bolsa que ya no tiene tope propio (0) cuenta
+    contra la general: el tope del dia es del total (decision del usuario 2026-10-30, 2 EUR al dia)."""
+    general, verify = spent_today(session, now)
+    focus = focus_spent_today(session, now)
+    if settings.ai_daily_budget_verify_usd <= 0:
+        general, verify = general + verify, 0.0
+    if settings.ai_focus_budget_usd <= 0:
+        general, focus = general + focus, 0.0
+    return (
+        general,
+        settings.ai_daily_budget_usd,
+        verify,
+        settings.ai_daily_budget_verify_usd,
+        focus,
+        settings.ai_focus_budget_usd,
+    )
+
+
 def focus_spent_today(session, now: datetime | None = None) -> float:
     """USD de la bolsa del foco gastados hoy (ADR 0056)."""
     now = now or datetime.now(UTC)
@@ -134,15 +153,7 @@ def focus_spent_today(session, now: datetime | None = None) -> float:
 def _run_cycle(settings: Settings) -> dict:
     engine = get_engine(settings.database_url)
     with session_scope(engine) as session:
-        general, verify = spent_today(session)
-        cost.start_cycle(
-            general,
-            settings.ai_daily_budget_usd,
-            verify,
-            settings.ai_daily_budget_verify_usd,
-            focus_spent_today(session),
-            settings.ai_focus_budget_usd,
-        )
+        cost.start_cycle(*budget_start(session, settings))
     focus = Focus(settings.ai_focus)
     summary = _Timed()
     with session_scope(engine) as session:

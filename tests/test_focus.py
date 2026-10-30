@@ -202,3 +202,30 @@ def test_a_cut_cycle_still_counts_its_ai_spend(session, engine):
     session.expire_all()
     assert worker.spent_today(session, NOW)[0] == pytest.approx(1.0)
     cost.start_cycle(0, 0)
+
+
+def test_spend_of_a_pool_without_own_cap_counts_against_the_general_one(session):
+    """Con el foco a 0 (tope de 2 EUR, 2026-10-30), lo que el foco ya gasto hoy cuenta contra la general."""
+    from truthnews.config import Settings
+    from truthnews.worker import budget_start
+
+    session.add(
+        CrawlRun(started_at=NOW, stats={"ai_cost": {"usd": 4.74, "verificacion_usd": 0.04, "foco_usd": 3.64}})
+    )
+    session.flush()
+    own = Settings(database_url="sqlite://", ai_daily_budget_usd=10, ai_focus_budget_usd=15)
+    assert budget_start(session, own, NOW) == pytest.approx(
+        (1.06, 10, 0.04, own.ai_daily_budget_verify_usd, 3.64, 15)
+    )
+    shared = Settings(
+        database_url="sqlite://",
+        ai_daily_budget_usd=1.5,
+        ai_daily_budget_verify_usd=0.2,
+        ai_focus_budget_usd=0,
+    )
+    general, budget, *_ = budget_start(session, shared, NOW)
+    assert general == pytest.approx(4.70) and budget == 1.5
+    meter = cost.start_cycle(*budget_start(session, shared, NOW))
+    with pytest.raises(cost.BudgetExceeded):
+        meter.check(cost.FOCUS)  # el foco sin bolsa propia ve el tope general, ya pasado hoy
+    cost.start_cycle(0, 0)
